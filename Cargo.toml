@@ -1,0 +1,15 @@
+[package]
+name = "bobashare"
+version = "0.1.0"
+authors = ["BBaoVanC <bbaovanc@bbaovanc.com>"]
+edition = "2021"
+description = "Simple ephemeral file sharing service"
+repository = "https://github.com/BBaoVanC/bobashare"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.6.0-rc.1"
+hyper = { version = "0.14.20", features = ["full"] }
+tokio = { version = "1.20.1", features = ["full"] }
