@@ -7,15 +7,10 @@ use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub struct UploadMetadata {
-    /// The original name of the file before it was uploaded. This should be a filename and extension only; it should not include a directory.
+pub struct Upload {
+    /// The original name of the file before it was uploaded. This should be a
+    /// filename and extension only; it should not include a directory.
     pub filename: PathBuf,
-    /// The file extension, which should be used to also look the actual file up
-    /// under the `files_dir` in [`FileBackend`].
-    ///
-    /// The dot should not be included (so instead of `.rs`, it should be just
-    /// `rs`).
-    pub file_extension: String,
     /// File size in bytes
     pub size: u64,
     // pub mime_type: FileFormat,
@@ -30,36 +25,25 @@ pub struct UploadMetadata {
     // TODO: delete (edit?) key
     // TODO: should we have checksum?
 }
-impl UploadMetadata {
+impl Upload {
     /// Returns `true` if the file has expired.
     pub fn is_expired(&self) -> bool {
         self.expiry_date < Utc::now()
     }
 }
 
-/*
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub enum FileFormat {
-    Plaintext { mime: String, charset: String },
-    Mime(String),
-}
-*/
-
 pub struct FileBackend {
-    pub files_dir: PathBuf,
-    pub metadata_dir: PathBuf,
+    pub path: PathBuf,
 }
 impl FileBackend {
-    /// Make a file backend, and create the `files` and `metadata` directories
-    /// if they do not exist.
-    pub fn new_checked(files_dir: PathBuf, metadata_dir: PathBuf) -> Result<Self, io::Error> {
-        fs::create_dir(&files_dir)?;
-        fs::create_dir(&metadata_dir)?;
-        Ok(Self {
-            files_dir,
-            metadata_dir,
-        })
+    /// Make a file backend, creating the directory if it doesn't exist.
+    pub fn new(path: PathBuf) -> Result<Self, io::Error> {
+        fs::create_dir(&path)?;
+        Ok(Self { path })
     }
 
-    // pub fn list_files(&self) -> Result<Vec<File>, io::Error> {}
+    /// Make a file backend, without checking if its directory exists.
+    pub fn new_unchecked(path: PathBuf) -> Self {
+        Self { path }
+    }
 }

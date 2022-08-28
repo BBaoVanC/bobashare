@@ -1,15 +1,15 @@
 //! Test serialization of [`File`]
 
-use std::{path::{ PathBuf}};
+use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 
-use crate::backend::UploadMetadata;
+use crate::backend::Upload;
 
 #[test]
 fn test_serialization() {
     let now = Utc::now();
-    let metadata = UploadMetadata {
+    let metadata = Upload {
         filename: PathBuf::from("super_cool_code.rs"),
         file_extension: String::from("rs"),
         size: 64,
