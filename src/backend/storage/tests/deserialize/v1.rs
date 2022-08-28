@@ -1,10 +1,7 @@
 //! Test serialization of the latest structs
 
-use std::path::PathBuf;
 
-use chrono::{prelude::*, Duration};
-
-use crate::backend::{storage::UploadMetadata, Upload, UploadContents, UploadFile};
+use crate::backend::{storage::UploadMetadata, Upload};
 
 #[test]
 fn deserialize_single_file() {
@@ -25,9 +22,10 @@ fn deserialize_single_file() {
     }
     "#;
 
+    let upload: Upload = serde_json::from_str::<UploadMetadata>(json).unwrap().into();
     println!(
         "{:#?}",
-        serde_json::from_str::<UploadMetadata>(json).unwrap()
+        upload
     );
 }
 
@@ -57,8 +55,9 @@ fn serialize_multiple_files() {
     }
     "#;
 
+    let upload: Upload = serde_json::from_str::<UploadMetadata>(json).unwrap().into();
     println!(
-        // "{}",
-        // serde_json::to_string_pretty(&UploadMetadata::latest(upload)).unwrap()
+        "{:#?}",
+        upload
     );
 }

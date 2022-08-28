@@ -19,8 +19,8 @@ pub enum UploadMetadata {
     #[serde(rename = "1")]
     V1(UploadV1),
 }
-impl UploadMetadata {
-    pub fn latest(upload: Upload) -> Self {
+impl From<Upload> for UploadMetadata {
+    fn from(upload: Upload) -> Self {
         Self::V1(upload.into())
     }
 }
