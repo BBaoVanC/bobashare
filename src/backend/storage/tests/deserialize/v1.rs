@@ -1,6 +1,5 @@
 //! Test serialization of the latest structs
 
-
 use crate::backend::{storage::UploadMetadata, Upload};
 
 #[test]
@@ -23,10 +22,7 @@ fn deserialize_single_file() {
     "#;
 
     let upload: Upload = serde_json::from_str::<UploadMetadata>(json).unwrap().into();
-    println!(
-        "{:#?}",
-        upload
-    );
+    println!("{:#?}", upload);
 }
 
 #[test]
@@ -56,8 +52,5 @@ fn serialize_multiple_files() {
     "#;
 
     let upload: Upload = serde_json::from_str::<UploadMetadata>(json).unwrap().into();
-    println!(
-        "{:#?}",
-        upload
-    );
+    println!("{:#?}", upload);
 }

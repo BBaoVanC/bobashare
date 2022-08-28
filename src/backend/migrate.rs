@@ -1,6 +1,12 @@
 //! Functions to convert serialized [`UploadMetadata`] versions to [`Upload`]
 
-use super::{storage::{v1::{UploadV1, UploadContentsV1, UploadFileV1}, UploadMetadata}, Upload, UploadContents, UploadFile};
+use super::{
+    storage::{
+        v1::{UploadContentsV1, UploadFileV1, UploadV1},
+        UploadMetadata,
+    },
+    Upload, UploadContents, UploadFile,
+};
 
 impl From<UploadMetadata> for Upload {
     fn from(metadata: UploadMetadata) -> Self {
@@ -25,7 +31,12 @@ impl From<UploadContentsV1> for UploadContents {
     fn from(contents: UploadContentsV1) -> Self {
         match contents {
             UploadContentsV1::Single(file) => Self::Single(file.into()),
-            UploadContentsV1::Multiple(files) => Self::Multiple(files.into_iter().map(Into::into).collect::<Vec<UploadFile>>()),
+            UploadContentsV1::Multiple(files) => Self::Multiple(
+                files
+                    .into_iter()
+                    .map(Into::into)
+                    .collect::<Vec<UploadFile>>(),
+            ),
         }
     }
 }

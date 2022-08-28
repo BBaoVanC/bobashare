@@ -3,7 +3,6 @@
 use serde::{Deserialize, Serialize};
 
 use self::v1::UploadV1;
-
 use super::Upload;
 
 #[cfg(test)]

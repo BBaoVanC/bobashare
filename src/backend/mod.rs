@@ -1,14 +1,17 @@
 //! File backend
 
-pub mod storage;
 pub mod migrate;
+pub mod storage;
 
 use std::{fs, io, path::PathBuf};
 
 use chrono::prelude::*;
 use serde::Serialize;
 
-use self::storage::{v1::{UploadFileV1, UploadV1, UploadContentsV1}, UploadMetadata};
+use self::storage::{
+    v1::{UploadContentsV1, UploadFileV1, UploadV1},
+    UploadMetadata,
+};
 
 pub struct FileBackend {
     pub path: PathBuf,
@@ -32,8 +35,9 @@ pub struct Upload {
     /// The path to the upload's directory (should be part of the URL too)
     pub path: PathBuf,
     /// Sum of the size of all files in bytes, calculated at the time of upload
-    /// 
-    /// The accuracy of this value should not be relied on. It should only be used to display to the user.
+    ///
+    /// The accuracy of this value should not be relied on. It should only be
+    /// used to display to the user.
     pub total_size: u64,
     /// When the file(s) were uploaded. This should only be used for display
     /// purposes, and should not be compared to the expiry date.
