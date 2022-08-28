@@ -24,7 +24,7 @@ fn serialize_single_file() {
 
     println!(
         "{}",
-        serde_json::to_string_pretty(&UploadMetadata::from_upload(&upload).unwrap()).unwrap()
+        serde_json::to_string_pretty(UploadMetadata::V1(upload)).unwrap()
     );
 }
 
