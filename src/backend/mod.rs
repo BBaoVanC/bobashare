@@ -7,6 +7,8 @@ use std::{fs, io, path::PathBuf};
 use chrono::prelude::*;
 use serde::Serialize;
 
+use self::storage::v1::{UploadFileV1, UploadV1, UploadContentsV1};
+
 pub struct FileBackend {
     pub path: PathBuf,
 }
@@ -57,17 +59,6 @@ pub enum UploadContents {
     /// The upload contains many files.
     Multiple(Vec<UploadFile>),
 }
-/*
-impl From<Vec<UploadFile>> for UploadContents {
-    fn from(v: Vec<UploadFile>) -> Self {
-        if v.len() > 1 {
-            Self::Multiple(v)
-        } else {
-            Self::Single(v[0])
-        }
-    }
-}
-*/
 
 #[derive(Debug, Clone, Serialize)]
 pub struct UploadFile {
@@ -80,4 +71,38 @@ pub struct UploadFile {
     // TODO: should this contain a reference to the file contents? (serde would skip it)
     // TODO: maybe add reference to the filesystem metadata, so creation/modification date could be
     // displayed, maybe even exif
+}
+
+impl From<Upload> for UploadV1 {
+    fn from(upload: Upload) -> Self {
+        Self {
+            path: upload.path,
+            total_size: upload.total_size,
+            creation_date: upload.creation_date,
+            expiry_date: upload.expiry_date,
+            files: upload.files.into(),
+        }
+    }
+}
+impl From<UploadContents> for UploadContentsV1 {
+    fn from(contents: UploadContents) -> Self {
+        match contents {
+            UploadContents::Single(file) => Self::Single(file.into()),
+            UploadContents::Multiple(files) => Self::Multiple(
+                files
+                    .into_iter()
+                    .map(Into::into)
+                    .collect::<Vec<UploadFileV1>>(),
+            ),
+        }
+    }
+}
+impl From<UploadFile> for UploadFileV1 {
+    fn from(upload_file: UploadFile) -> Self {
+        Self {
+            path: upload_file.path,
+            filename: upload_file.filename,
+            size: upload_file.size,
+        }
+    }
 }

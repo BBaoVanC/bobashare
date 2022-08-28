@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
 use chrono::prelude::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+
+use crate::backend::{Upload, UploadContents, UploadFile};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 /// An upload can contain one or many files.
@@ -9,8 +11,9 @@ pub struct UploadV1 {
     /// The path to the upload's directory (should be part of the URL too)
     pub path: PathBuf,
     /// Sum of the size of all files in bytes, calculated at the time of upload
-    /// 
-    /// The accuracy of this value should not be relied on. It should only be used to display to the user.
+    ///
+    /// The accuracy of this value should not be relied on. It should only be
+    /// used to display to the user.
     pub total_size: u64,
     /// When the file(s) were uploaded. This should only be used for display
     /// purposes, and should not be compared to the expiry date.
@@ -37,17 +40,6 @@ pub enum UploadContentsV1 {
     /// The upload contains many files.
     Multiple(Vec<UploadFileV1>),
 }
-/*
-impl From<Vec<UploadFile>> for UploadContents {
-    fn from(v: Vec<UploadFile>) -> Self {
-        if v.len() > 1 {
-            Self::Multiple(v)
-        } else {
-            Self::Single(v[0])
-        }
-    }
-}
-*/
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UploadFileV1 {
