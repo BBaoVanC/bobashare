@@ -5,6 +5,7 @@ pub mod storage;
 use std::{fs, io, path::PathBuf};
 
 use chrono::prelude::*;
+use serde::Serialize;
 
 pub struct FileBackend {
     pub path: PathBuf,
@@ -22,7 +23,7 @@ impl FileBackend {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Clone, Serialize)]
 /// An upload can contain one or many files.
 pub struct Upload {
     /// The path to the upload's directory (should be part of the URL too)
@@ -48,7 +49,7 @@ impl Upload {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Clone, Serialize)]
 /// Represents the contents of an upload: one or many files.
 pub enum UploadContents {
     /// The upload only contains one single file.
@@ -56,6 +57,7 @@ pub enum UploadContents {
     /// The upload contains many files.
     Multiple(Vec<UploadFile>),
 }
+/*
 impl From<Vec<UploadFile>> for UploadContents {
     fn from(v: Vec<UploadFile>) -> Self {
         if v.len() > 1 {
@@ -65,8 +67,9 @@ impl From<Vec<UploadFile>> for UploadContents {
         }
     }
 }
+*/
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UploadFile {
     /// The path to the file
     pub path: PathBuf,

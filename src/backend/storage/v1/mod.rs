@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::backend::{Upload, UploadFile, UploadContents};
+use crate::backend::{Upload, UploadFile};
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UploadV1 {
     pub path: PathBuf,
     pub total_size: u64,
@@ -25,7 +25,7 @@ impl Into<Upload> for UploadV1 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UploadFileV1 {
     pub path: PathBuf,
     pub filename: String,
