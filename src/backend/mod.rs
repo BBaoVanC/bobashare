@@ -6,12 +6,6 @@ pub mod storage;
 use std::{fs, io, path::PathBuf};
 
 use chrono::prelude::*;
-use serde::Serialize;
-
-use self::storage::{
-    v1::{UploadContentsV1, UploadFileV1, UploadV1},
-    UploadMetadata,
-};
 
 pub struct FileBackend {
     pub path: PathBuf,
