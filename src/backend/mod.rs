@@ -7,8 +7,6 @@ use std::path::PathBuf;
 
 use chrono::prelude::*;
 
-use self::serialization::{UploadMetadata, v1::UploadV1};
-
 #[derive(Debug, Clone)]
 // TODO: remove non_exhaustive
 #[non_exhaustive]

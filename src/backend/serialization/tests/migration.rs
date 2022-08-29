@@ -7,7 +7,7 @@ use crate::backend::{
         v0::{UploadFileV0, UploadV0},
         UploadMetadata,
     },
-    Upload, UploadContents, UploadFile,
+    Upload
 };
 
 #[test]
