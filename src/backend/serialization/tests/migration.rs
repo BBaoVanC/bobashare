@@ -26,6 +26,6 @@ fn migrate_v0_to_v1() {
         coolness: 0,
     });
 
-    let one: Upload = zero.into();
+    let one: Upload = Upload::from_migrated(PathBuf::from("abc123xyz"), zero);
     println!("{:#?}", one);
 }

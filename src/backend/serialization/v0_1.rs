@@ -20,25 +20,3 @@ pub struct UploadFileV0_1 {
     pub filename: String,
     pub size_bytes: u64,
 }
-
-impl From<UploadV0> for UploadV0_1 {
-    fn from(upload: UploadV0) -> Self {
-        Self {
-            size_total: upload.size_total,
-            date_created: upload.date_created,
-            date_expires: upload.date_expires,
-            coolness: upload.coolness,
-            files: upload.files.into_iter().map(Into::into).collect::<Vec<UploadFileV0_1>>(),
-        }
-    }
-}
-
-impl From<UploadFileV0> for UploadFileV0_1 {
-    fn from(file: UploadFileV0) -> Self {
-        Self {
-            path: PathBuf::from(file.path),
-            filename: file.filename,
-            size_bytes: file.size_bytes,
-        }
-    }
-}
