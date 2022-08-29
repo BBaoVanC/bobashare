@@ -1,16 +1,17 @@
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
+use pretty_assertions::assert_eq;
 
 use crate::backend::{serialization::UploadMetadata, Upload, UploadContents, UploadFile};
 
-use pretty_assertions::assert_eq;
-
 #[test]
 fn serialize_latest_single_file() {
-    let creation = "2022-08-29T01:02:19.824375631Z".parse::<DateTime<Utc>>().unwrap();
+    let creation = "2022-08-29T01:02:19.824375631Z"
+        .parse::<DateTime<Utc>>()
+        .unwrap();
 
-    let metadata = UploadMetadata::new_latest(Upload {
+    let metadata = UploadMetadata::new(Upload {
         path: PathBuf::from("abc123xyz"),
         total_size: 1234,
         creation_date: creation,

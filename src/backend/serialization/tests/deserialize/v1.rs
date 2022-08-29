@@ -18,5 +18,8 @@ fn deserialize_single_file() {
       }
     "#;
 
-    println!("{:#?}", serde_json::from_str::<UploadMetadata>(json).unwrap());
+    println!(
+        "{:#?}",
+        serde_json::from_str::<UploadMetadata>(json).unwrap()
+    );
 }

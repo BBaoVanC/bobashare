@@ -7,7 +7,11 @@ use std::path::PathBuf;
 
 use chrono::prelude::*;
 
+use self::serialization::{UploadMetadata, v1::UploadV1};
+
 #[derive(Debug, Clone)]
+// TODO: remove non_exhaustive
+#[non_exhaustive]
 /// An upload can contain one or many files.
 pub struct Upload {
     /// The path to the upload's directory (should be part of the URL too)

@@ -1,13 +1,11 @@
-//! Version 1 of the upload metadata format
+//! Version 1
 
 use std::path::PathBuf;
 
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::backend::{UploadContents, Upload, UploadFile};
-
-// use crate::backend::{UploadFile, Upload};
+use super::{v0::{UploadFileV0, UploadV0}, v0_1::{UploadFileV0_1, UploadV0_1}};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UploadV1 {
@@ -23,35 +21,43 @@ pub struct UploadFileV1 {
     pub filename: String,
     pub size: u64,
 }
-// impl From<UploadFileV1> for UploadFile {
-//     fn from(file: UploadFileV1) -> Self {
+
+// impl From<UploadV0> for UploadV1 {
+//     fn from(upload: UploadV0) -> Self {
 //         Self {
-//             path: file.path,
+//             total_size: upload.size_total,
+//             creation_date: upload.date_created,
+//             expiry_date: upload.date_expires,
+//             files: upload.files.into_iter().map(Into::into).collect::<Vec<UploadFileV1>>(),
+//         }
+//     }
+// }
+// impl From<UploadFileV0> for UploadFileV1 {
+//     fn from(file: UploadFileV0) -> Self {
+//         Self {
+//             path: PathBuf::from(file.path),
 //             filename: file.filename,
-//             size: file.size,
+//             size: file.size_bytes,
 //         }
 //     }
 // }
 
-impl From<Upload> for UploadV1 {
-    fn from(upload: Upload) -> Self {
+impl From<UploadV0_1> for UploadV1 {
+    fn from(upload: UploadV0_1) -> Self {
         Self {
-            total_size: upload.total_size,
-            creation_date: upload.creation_date,
-            expiry_date: upload.expiry_date,
-            files: match upload.files {
-                UploadContents::Single(file) => vec![file.into()],
-                UploadContents::Multiple(files) => files.into_iter().map(Into::into).collect::<Vec<UploadFileV1>>(),
-            },
+            total_size: upload.size_total,
+            creation_date: upload.date_created,
+            expiry_date: upload.date_expires,
+            files: upload.files.into_iter().map(Into::into).collect::<Vec<UploadFileV1>>(),
         }
     }
 }
-impl From<UploadFile> for UploadFileV1 {
-    fn from(file: UploadFile) -> Self {
+impl From<UploadFileV0_1> for UploadFileV1 {
+    fn from(file: UploadFileV0_1) -> Self {
         Self {
             path: file.path,
             filename: file.filename,
-            size: file.size,
+            size: file.size_bytes,
         }
     }
 }

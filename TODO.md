@@ -3,6 +3,8 @@
 - https://docs.rs/axum/0.6.0-rc.1/axum/index.html
 
 - [ ] Rename `backend::serialization` to `backend::serde`?
+- [ ] Add IP banning (requires saving in metadata)
+- [ ] Add delete key
 
 ## Library
 
@@ -11,6 +13,7 @@
 - [ ] CLI to interact/test the file backend library
 
 - If a file is missing a metadata entry, warning should be sent
+- Check for extraneous files, maybe in CLI
 
 #### Directory structure
 
