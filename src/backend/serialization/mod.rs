@@ -1,31 +1,25 @@
 //! All the code to (de)serialize upload metadata.
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
-use super::Upload;
+use self::v1::{UploadV1, UploadFileV1};
 
+use super::{Upload, UploadContents, UploadFile};
+
+pub mod migrate;
 pub mod v1;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize)]
-pub enum UploadMetadataVersion {
-    #[serde(rename = "1")]
-    V1,
-}
+#[cfg(test)]
+mod tests;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct UploadMetadata {
-    version: UploadMetadataVersion,
-    #[serde(flatten)]
-    data: Value,
+#[serde(tag = "version")]
+pub enum UploadMetadata {
+    #[serde(rename = "1")]
+    V1(UploadV1),
 }
-
-impl From<UploadMetadata> for Upload {
-    fn from(metadata: UploadMetadata) -> Self {
-        match metadata.version {
-            UploadMetadataVersion::V1 => Self {
-
-            }
-        }
+impl UploadMetadata {
+    pub fn new_latest(upload: Upload) -> Self {
+        Self::V1(upload.into())
     }
 }

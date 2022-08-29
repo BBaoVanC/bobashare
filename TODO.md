@@ -2,6 +2,8 @@
 
 - https://docs.rs/axum/0.6.0-rc.1/axum/index.html
 
+- [ ] Rename `backend::serialization` to `backend::serde`?
+
 ## Library
 
 ### File backend
