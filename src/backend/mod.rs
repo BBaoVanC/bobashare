@@ -1,5 +1,6 @@
 //! TODO: write description
 
+pub mod serialization;
 pub mod storage;
 
 use std::path::PathBuf;

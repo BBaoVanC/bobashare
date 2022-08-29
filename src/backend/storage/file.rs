@@ -1,6 +1,6 @@
 //! A backend that stores as files
 
-use std::{path::PathBuf, io, fs};
+use std::{fs, io, path::PathBuf};
 
 pub struct FileBackend {
     pub path: PathBuf,
@@ -13,6 +13,9 @@ impl FileBackend {
     }
 
     /// Make a file backend, without checking if its directory exists.
+    ///
+    /// If the directory doesn't already exist, then almost any operation will
+    /// panic.
     pub fn new_unchecked(path: PathBuf) -> Self {
         Self { path }
     }
