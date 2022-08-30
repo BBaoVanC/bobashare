@@ -22,4 +22,5 @@ chrono = { version = "0.4.22", features = ["serde"] }
 mime = "0.3.16"
 
 [dev-dependencies]
-indoc = "1.0.7"
+pretty_assertions = "1.2.1"
+#indoc = "1.0.7"
