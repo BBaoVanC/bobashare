@@ -1,3 +1,3 @@
 mod deserialize;
-mod serialize;
 mod migration;
+mod serialize;

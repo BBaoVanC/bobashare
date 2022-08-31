@@ -1,17 +1,13 @@
 use std::path::PathBuf;
 
-use super::{
-    v0_1::{UploadFileV0_1, UploadV0_1},
-    v1::{UploadFileV1, UploadV1},
-    UploadMetadata,
-};
+use super::UploadMetadata;
 use crate::backend::{Upload, UploadContents, UploadFile};
 
 /// Convert the deserialized metadata into the actual type used by the rest of
 /// the code.
 impl Upload {
     // TODO: proper error handling of zero-length files array
-    pub fn from_migrated(path: PathBuf, upload: UploadMetadata) -> Self {
+    pub fn new_migrated(path: PathBuf, upload: UploadMetadata) -> Self {
         let mut current = upload;
         loop {
             match current {

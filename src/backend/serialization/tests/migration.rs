@@ -7,7 +7,7 @@ use crate::backend::{
         v0::{UploadFileV0, UploadV0},
         UploadMetadata,
     },
-    Upload
+    Upload,
 };
 
 #[test]
@@ -26,6 +26,6 @@ fn migrate_v0_to_v1() {
         coolness: 0,
     });
 
-    let one: Upload = Upload::from_migrated(PathBuf::from("abc123xyz"), zero);
+    let one: Upload = Upload::new_migrated(PathBuf::from("abc123xyz"), zero);
     println!("{:#?}", one);
 }
