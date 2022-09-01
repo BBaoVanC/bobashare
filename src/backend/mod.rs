@@ -6,7 +6,10 @@ pub mod storage;
 use std::path::PathBuf;
 
 use chrono::prelude::*;
-use rand::{distributions::{Alphanumeric, DistString}, thread_rng};
+use rand::{
+    distributions::{Alphanumeric, DistString},
+    thread_rng,
+};
 
 use crate::UPLOAD_NAME_LENGTH;
 
