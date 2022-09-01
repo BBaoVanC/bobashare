@@ -2,37 +2,24 @@
 
 use serde::{Deserialize, Serialize};
 
-use self::{
-    v0::UploadV0,
-    v0_1::UploadV0_1,
-    v1::{UploadFileV1, UploadV1},
-};
+use self::v1::{UploadFileV1, UploadV1};
 use super::{Upload, UploadContents, UploadFile};
 
 pub mod migrate;
 
-pub mod v0;
-pub mod v0_1;
 pub mod v1;
 
 #[cfg(test)]
 mod tests;
 
-pub trait Migrate {
-    type Output;
-
-    fn migrate(self) -> Self::Output;
-}
+/// The latest format for serialized upload metadata.
+pub type LatestUploadFormat = UploadV1;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(tag = "version")]
 /// Main struct that serializes into the metadata stored on disk about an
 /// upload.
 pub enum UploadMetadata {
-    #[serde(rename = "0")]
-    V0(UploadV0),
-    #[serde(rename = "0.1")]
-    V0_1(UploadV0_1),
     #[serde(rename = "1")]
     V1(UploadV1),
 }
