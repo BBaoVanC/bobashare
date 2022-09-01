@@ -6,6 +6,13 @@ pub mod storage;
 use std::path::PathBuf;
 
 use chrono::prelude::*;
+use rand::{distributions::{Alphanumeric, DistString}, thread_rng};
+
+use crate::UPLOAD_NAME_LENGTH;
+
+pub fn generate_randomized_name() -> String {
+    Alphanumeric.sample_string(&mut thread_rng(), UPLOAD_NAME_LENGTH.into())
+}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 // TODO: remove non_exhaustive
