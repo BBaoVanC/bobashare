@@ -15,19 +15,38 @@ use thiserror::Error;
 
 use crate::UPLOAD_NAME_LENGTH;
 
-#[derive(Debug, Error, PartialEq, Eq)]
+use self::serialization::UploadMetadata;
+
+#[derive(Debug, Error)]
 pub enum CreateUploadError {
     #[error("the list of files to upload was empty")]
     ZeroFiles,
+
+}
+
+#[derive(Debug, Error)]
+pub enum QueryUploadError {
+    #[error("error while doing i/o")]
+    IoError(#[from] std::io::Error),
+}
+
+#[derive(Debug, Error)]
+pub enum DeleteUploadError {
+    #[error("error while doing i/o")]
+    IoError(#[from] std::io::Error)
 }
 
 #[async_trait]
 pub trait StorageBackend {
     async fn create_upload(
         &self,
+        name: String,
         files: Vec<UploadFile>,
         expiry: Duration,
     ) -> Result<(), CreateUploadError>;
+
+    async fn delete_upload(&self, name: String) -> Result<(), DeleteUploadError>;
+    async fn query_metadata(&self, name: String) -> Result<UploadMetadata, QueryUploadError>;
 }
 
 pub fn generate_randomized_name() -> String {
