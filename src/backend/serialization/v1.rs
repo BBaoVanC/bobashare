@@ -5,6 +5,8 @@ use std::path::PathBuf;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::backend::UploadFile;
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct UploadV1 {
     pub total_size: u64,
@@ -18,4 +20,14 @@ pub struct UploadFileV1 {
     pub path: PathBuf,
     pub filename: String,
     pub size: u64,
+}
+
+impl From<UploadFile> for UploadFileV1 {
+    fn from(file: UploadFile) -> Self {
+        Self {
+            path: file.path,
+            filename: file.filename,
+            size: file.size,
+        }
+    }
 }

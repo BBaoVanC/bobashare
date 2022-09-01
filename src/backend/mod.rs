@@ -25,7 +25,7 @@ pub struct Upload {
     /// When the upload expires
     pub expiry_date: DateTime<Utc>,
     /// The file(s) contained in the upload
-    pub files: UploadContents,
+    pub files: Vec<UploadFile>,
     // TODO: delete (edit?) key (jwt?)
     // TODO: should we have checksum?
 }
@@ -34,15 +34,6 @@ impl Upload {
     pub fn is_expired(&self) -> bool {
         self.expiry_date < Utc::now()
     }
-}
-
-#[derive(Debug, Clone)]
-/// Represents the contents of an upload: one or many files.
-pub enum UploadContents {
-    /// The upload only contains one single file.
-    Single(UploadFile),
-    /// The upload contains many files.
-    Multiple(Vec<UploadFile>),
 }
 
 #[derive(Debug, Clone)]

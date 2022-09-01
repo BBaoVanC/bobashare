@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use thiserror::Error;
 
 use super::{LatestUploadFormat, UploadMetadata};
-use crate::backend::{Upload, UploadContents, UploadFile};
+use crate::backend::{Upload, UploadFile};
 
 /// Convert the deserialized metadata into the actual type used by the rest of
 /// the code.
@@ -52,12 +52,7 @@ impl Upload {
             total_size: upload.total_size,
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
-            // TODO: handle files.len() == 0
-            files: if files.len() > 1 {
-                UploadContents::Multiple(files)
-            } else {
-                UploadContents::Single(files[0].clone()) // TODO: don't clone
-            },
+            files,
         })
     }
 }
