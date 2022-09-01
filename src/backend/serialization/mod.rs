@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use self::v1::{UploadFileV1, UploadV1};
-use super::{Upload, UploadFile};
+use super::Upload;
 
 pub mod migrate;
 
@@ -15,7 +15,7 @@ mod tests;
 /// The latest format for serialized upload metadata.
 pub type LatestUploadFormat = UploadV1;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(tag = "version")]
 /// Main struct that serializes into the metadata stored on disk about an
 /// upload.
@@ -38,7 +38,11 @@ impl From<Upload> for LatestUploadFormat {
             total_size: upload.total_size,
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
-            files: upload.files.into_iter().map(Into::into).collect::<Vec<UploadFileV1>>(),
+            files: upload
+                .files
+                .into_iter()
+                .map(Into::into)
+                .collect::<Vec<UploadFileV1>>(),
         }
     }
 }

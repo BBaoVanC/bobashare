@@ -7,7 +7,7 @@ use std::path::PathBuf;
 
 use chrono::prelude::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 // TODO: remove non_exhaustive
 #[non_exhaustive]
 /// An upload can contain one or many files.
@@ -36,7 +36,7 @@ impl Upload {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UploadFile {
     /// The path to the file
     pub path: PathBuf,
