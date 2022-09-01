@@ -2,18 +2,14 @@
 
 use std::path::PathBuf;
 
+use async_trait::async_trait;
 use chrono::{prelude::*, Duration};
-use thiserror::Error;
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
 
-use crate::backend::{generate_randomized_name, Upload, UploadFile};
-
-#[derive(Debug, Error, PartialEq, Eq)]
-pub enum CreateUploadError {
-    #[error("the list of files to upload was empty")]
-    ZeroFiles,
-}
+use crate::backend::{
+    generate_randomized_name, CreateUploadError, StorageBackend, Upload, UploadFile,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
@@ -25,13 +21,16 @@ impl FileBackend {
         fs::create_dir(&path).await?;
         Ok(Self { path })
     }
+}
 
+#[async_trait]
+impl StorageBackend for FileBackend {
     #[instrument]
-    pub async fn create_upload(
+    async fn create_upload(
         &self,
         files: Vec<UploadFile>,
         expiry: Duration,
-    ) -> Result<Upload, CreateUploadError> {
+    ) -> Result<(), CreateUploadError> {
         if files.is_empty() {
             event!(Level::DEBUG, "cannot upload zero files");
             return Err(CreateUploadError::ZeroFiles);

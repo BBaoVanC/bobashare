@@ -5,13 +5,30 @@ pub mod storage;
 
 use std::path::PathBuf;
 
-use chrono::prelude::*;
+use async_trait::async_trait;
+use chrono::{prelude::*, Duration};
 use rand::{
     distributions::{Alphanumeric, DistString},
     thread_rng,
 };
+use thiserror::Error;
 
 use crate::UPLOAD_NAME_LENGTH;
+
+#[derive(Debug, Error, PartialEq, Eq)]
+pub enum CreateUploadError {
+    #[error("the list of files to upload was empty")]
+    ZeroFiles,
+}
+
+#[async_trait]
+pub trait StorageBackend {
+    async fn create_upload(
+        &self,
+        files: Vec<UploadFile>,
+        expiry: Duration,
+    ) -> Result<(), CreateUploadError>;
+}
 
 pub fn generate_randomized_name() -> String {
     Alphanumeric.sample_string(&mut thread_rng(), UPLOAD_NAME_LENGTH.into())
