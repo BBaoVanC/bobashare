@@ -3,6 +3,7 @@
 use async_trait::async_trait;
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
+use tracing::instrument;
 
 use super::{serialization::UploadMetadata, Upload, UploadFile};
 
@@ -30,13 +31,13 @@ pub enum DeleteUploadError {
 pub trait StorageBackend {
     type StreamOutput;
 
-    async fn create_upload(&self, name: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError>;
-    async fn check_exists(&self, name: String) -> Result<bool, QueryUploadError>;
-    async fn query_metadata(&self, name: String) -> Result<UploadMetadata, QueryUploadError>;
+    async fn create_upload(&self, url: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError>;
+    async fn check_exists(&self, url: String) -> Result<bool, QueryUploadError>;
+    async fn query_metadata(&self, url: String) -> Result<UploadMetadata, QueryUploadError>;
     async fn stream_file(
         &self,
-        name: String,
+        url: String,
         file: String,
     ) -> Result<Self::StreamOutput, QueryUploadError>;
-    async fn delete_upload(&self, name: String) -> Result<(), DeleteUploadError>;
+    async fn delete_upload(&self, url: String) -> Result<(), DeleteUploadError>;
 }

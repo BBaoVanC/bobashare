@@ -48,7 +48,7 @@ impl Upload {
         }
 
         Ok(Self {
-            path,
+            url: path,
             total_size: upload.total_size,
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,

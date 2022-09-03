@@ -7,22 +7,22 @@ use std::path::PathBuf;
 
 use chrono::prelude::*;
 
-use rand::{
-    distributions::{Alphanumeric, DistString},
-    thread_rng,
-};
+// use rand::{
+//     distributions::{Alphanumeric, DistString},
+//     thread_rng,
+// };
 
-pub fn generate_randomized_name(length: usize) -> String {
-    Alphanumeric.sample_string(&mut thread_rng(), length)
-}
+// pub fn generate_randomized_name(length: usize) -> String {
+//     Alphanumeric.sample_string(&mut thread_rng(), length)
+// }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 // TODO: remove non_exhaustive
 #[non_exhaustive]
 /// An upload can contain one or many files.
 pub struct Upload {
-    /// The path to the upload's directory (should be part of the URL too)
-    pub path: PathBuf,
+    /// The upload's URL, part of the directory name in [`crate::backend::storage::file::FileBackend`].
+    pub url: String,
     /// Sum of the size of all files in bytes, calculated at the time of upload
     ///
     /// The accuracy of this value should not be relied on. It should only be

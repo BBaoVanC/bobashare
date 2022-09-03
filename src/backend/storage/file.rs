@@ -7,7 +7,7 @@ use chrono::{prelude::*, Duration};
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
 
-use super::{CreateUploadError, StorageBackend, UploadRequest};
+use super::{CreateUploadError, StorageBackend};
 use crate::backend::{Upload, UploadFile};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -25,26 +25,18 @@ impl FileBackend {
 #[async_trait]
 impl StorageBackend for FileBackend {
     #[instrument]
-    async fn create_upload(&self, request: UploadRequest) -> Result<Upload, CreateUploadError> {
-        if request.files.is_empty() {
-            event!(Level::DEBUG, "cannot upload zero files");
+    async fn create_upload(&self, url: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError> {
+        if files.is_empty() {
+            event!(Level::DEBUG, "cannot create upload with zero files");
             return Err(CreateUploadError::ZeroFiles);
         }
 
-        let now = Utc::now();
-        let expiry = now + request.expiry;
-        let path = self.path.join(generate_randomized_name());
+        let creation_date = Utc::now();
+        let expiry_date = creation_date + expiry;
+        let path = self.path.join(url);
 
-        loop {
-            match fs::create_dir(&path).await {
-                Ok(()) => break,
-                Err(e) => event!(
-                    Level::TRACE,
-                    "error while creating directory for upload, retrying: {}",
-                    e
-                ),
-            }
-        }
+        event!(Level::DEBUG, "creating directory to store upload");
+        fs::create_dir(&path).await.map_err(|e| CreateUploadError::AlreadyExists)?;
 
         todo!()
     }

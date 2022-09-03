@@ -19,7 +19,7 @@ pub fn example_expiry_date() -> DateTime<Utc> {
 
 pub fn single_file_example() -> Upload {
     Upload {
-        path: example_path(),
+        url: example_path(),
         total_size: 1234,
         creation_date: example_creation_date(),
         expiry_date: example_expiry_date(),
@@ -33,7 +33,7 @@ pub fn single_file_example() -> Upload {
 
 pub fn multiple_files_example() -> Upload {
     Upload {
-        path: example_path(),
+        url: example_path(),
         total_size: 59909,
         creation_date: example_creation_date(),
         expiry_date: example_expiry_date(),
