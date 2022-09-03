@@ -4,10 +4,10 @@ use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
-use tokio::{io, fs};
-use tracing::{instrument, event, Level};
+use tokio::{fs, io};
+use tracing::{event, instrument, Level};
 
-use super::{serde::UploadMetadata, Upload, UploadFile};
+use super::{Upload, UploadFile};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
@@ -20,16 +20,25 @@ pub enum CreateUploadError {
     ZeroFiles,
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
+    #[error("error while doing i/o")]
+    IoError(#[from] io::Error),
 }
 #[derive(Debug, Error)]
 pub enum QueryUploadError {
     #[error("error while doing i/o")]
-    IoError(#[from] std::io::Error),
+    IoError(#[from] io::Error),
 }
 #[derive(Debug, Error)]
 pub enum DeleteUploadError {
     #[error("error while doing i/o")]
-    IoError(#[from] std::io::Error),
+    IoError(#[from] io::Error),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct UploadRequestFile<'r> {
+    filename: &'r str,
+    mimetype: &'r str,
+    contents: Vec<u8>,
 }
 
 impl FileBackend {
@@ -39,8 +48,14 @@ impl FileBackend {
         Ok(Self { path })
     }
 
+    // TODO: use stream instead of Vec<u8>
     #[instrument]
-    async fn create_upload(&self, url: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError> {
+    async fn create_upload(
+        &self,
+        url: String,
+        files: Vec<UploadRequestFile<'_>>,
+        expiry: Duration,
+    ) -> Result<Upload, CreateUploadError> {
         if files.is_empty() {
             event!(Level::DEBUG, "cannot create upload with zero files");
             return Err(CreateUploadError::ZeroFiles);
@@ -48,19 +63,43 @@ impl FileBackend {
 
         let creation_date = Utc::now();
         let expiry_date = creation_date + expiry;
-        let path = self.path.join(url);
+        let upload_root = self.path.join(&url);
 
         event!(Level::DEBUG, "creating directory to store upload");
-        fs::create_dir(&path).await.map_err(|e| CreateUploadError::AlreadyExists)?;
+        fs::create_dir(&upload_root)
+            .await
+            .map_err(|e| match e.kind() {
+                io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
+                _ => CreateUploadError::IoError(e),
+            })?; // TODO: make this statement less ugly, get rid of the match
 
-        todo!()
+        let mut upload = Upload {
+            url,
+            creation_date,
+            expiry_date,
+            files: Vec::new(),
+            total_size: 0,
+        };
+
+        for (i, file) in files.into_iter().enumerate() {
+            let name_on_disk = format!("{:0<4}", i); // sanitized name of the file on disk
+            fs::write(upload_root.join(&name_on_disk), &file.contents).await?;
+            upload.total_size += file.contents.len() as u64;
+            upload.files.push(UploadFile {
+                path: PathBuf::from(name_on_disk),
+                filename: String::from(file.filename),
+                mimetype: String::from(file.mimetype),
+            });
+        }
+
+        Ok(upload)
     }
 
     async fn check_exists(&self, url: String) -> Result<bool, QueryUploadError> {
         todo!()
     }
 
-    async fn query_metadata(&self, url: String) -> Result<UploadMetadata, QueryUploadError> {
+    async fn query_metadata(&self, url: String) -> Result<Upload, QueryUploadError> {
         todo!()
     }
 
