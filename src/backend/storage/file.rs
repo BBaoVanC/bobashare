@@ -7,9 +7,8 @@ use chrono::{prelude::*, Duration};
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
 
-use crate::backend::{
-    generate_randomized_name, CreateUploadError, StorageBackend, Upload, UploadFile,
-};
+use super::{CreateUploadError, StorageBackend, UploadRequest};
+use crate::backend::{Upload, UploadFile};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
@@ -26,18 +25,14 @@ impl FileBackend {
 #[async_trait]
 impl StorageBackend for FileBackend {
     #[instrument]
-    async fn create_upload(
-        &self,
-        files: Vec<UploadFile>,
-        expiry: Duration,
-    ) -> Result<(), CreateUploadError> {
-        if files.is_empty() {
+    async fn create_upload(&self, request: UploadRequest) -> Result<Upload, CreateUploadError> {
+        if request.files.is_empty() {
             event!(Level::DEBUG, "cannot upload zero files");
             return Err(CreateUploadError::ZeroFiles);
         }
 
         let now = Utc::now();
-        let expiry = now + expiry;
+        let expiry = now + request.expiry;
         let path = self.path.join(generate_randomized_name());
 
         loop {
