@@ -1,6 +1,6 @@
 use pretty_assertions::assert_eq;
 
-use crate::backend::serialization::{tests::util, UploadMetadata};
+use crate::backend::serde::{tests::util, UploadMetadata};
 
 #[test]
 fn serialize_latest_single_file() {

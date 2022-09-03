@@ -1,7 +1,7 @@
 use pretty_assertions::assert_eq;
 
 use crate::backend::{
-    serialization::{tests::util, UploadMetadata},
+    serde::{tests::util, UploadMetadata},
     Upload,
 };
 

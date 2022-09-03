@@ -100,11 +100,9 @@ name = "bobashare"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "async-trait",
  "axum",
  "chrono",
  "hyper",
- "mime",
  "pretty_assertions",
  "rand",
  "serde",

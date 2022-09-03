@@ -4,8 +4,9 @@ use chrono::{prelude::*, Duration};
 
 use crate::backend::{Upload, UploadFile};
 
+pub const EXAMPLE_NAME: &str = "abc123xyz";
 pub fn example_path() -> PathBuf {
-    PathBuf::from("abc123xyz")
+    PathBuf::from(EXAMPLE_NAME)
 }
 
 pub fn example_creation_date() -> DateTime<Utc> {
@@ -19,13 +20,14 @@ pub fn example_expiry_date() -> DateTime<Utc> {
 
 pub fn single_file_example() -> Upload {
     Upload {
-        url: example_path(),
+        url: String::from(EXAMPLE_NAME),
         total_size: 1234,
         creation_date: example_creation_date(),
         expiry_date: example_expiry_date(),
         files: vec![UploadFile {
-            name: PathBuf::from("code.py"),
+            path: PathBuf::from("code.py"),
             filename: String::from("code.py"),
+            mimetype: "text/plain",
             size: 1234,
         }],
     }
@@ -33,24 +35,27 @@ pub fn single_file_example() -> Upload {
 
 pub fn multiple_files_example() -> Upload {
     Upload {
-        url: example_path(),
+        url: String::from(EXAMPLE_NAME),
         total_size: 59909,
         creation_date: example_creation_date(),
         expiry_date: example_expiry_date(),
         files: vec![
             UploadFile {
-                name: PathBuf::from("code.py"),
+                path: PathBuf::from("code.py"),
                 filename: String::from("code.py"),
+                mimetype: "text/plain",
                 size: 1234,
             },
             UploadFile {
-                name: PathBuf::from("awesome.exe"),
+                path: PathBuf::from("awesome.exe"),
                 filename: String::from("awesome.exe"),
+                mimetype: "text/plain",
                 size: 56843,
             },
             UploadFile {
-                name: PathBuf::from("document.txt"),
+                path: PathBuf::from("document.txt"),
                 filename: String::from("document.txt"),
+                mimetype: "text/plain",
                 size: 1832,
             },
         ],

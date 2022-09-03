@@ -1,13 +1,18 @@
 //! Modules that handle storing uploaded files and serialized metadata.
 
-use async_trait::async_trait;
+use std::path::PathBuf;
+
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
-use tracing::instrument;
+use tokio::{io, fs};
+use tracing::{instrument, event, Level};
 
-use super::{serialization::UploadMetadata, Upload, UploadFile};
+use super::{serde::UploadMetadata, Upload, UploadFile};
 
-pub mod file;
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct FileBackend {
+    pub path: PathBuf,
+}
 
 #[derive(Debug, Error)]
 pub enum CreateUploadError {
@@ -27,17 +32,47 @@ pub enum DeleteUploadError {
     IoError(#[from] std::io::Error),
 }
 
-#[async_trait]
-pub trait StorageBackend {
-    type StreamOutput;
+impl FileBackend {
+    /// Make a file backend, creating the directory if it doesn't exist.
+    pub async fn new(path: PathBuf) -> Result<Self, io::Error> {
+        fs::create_dir(&path).await?;
+        Ok(Self { path })
+    }
 
-    async fn create_upload(&self, url: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError>;
-    async fn check_exists(&self, url: String) -> Result<bool, QueryUploadError>;
-    async fn query_metadata(&self, url: String) -> Result<UploadMetadata, QueryUploadError>;
+    #[instrument]
+    async fn create_upload(&self, url: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError> {
+        if files.is_empty() {
+            event!(Level::DEBUG, "cannot create upload with zero files");
+            return Err(CreateUploadError::ZeroFiles);
+        }
+
+        let creation_date = Utc::now();
+        let expiry_date = creation_date + expiry;
+        let path = self.path.join(url);
+
+        event!(Level::DEBUG, "creating directory to store upload");
+        fs::create_dir(&path).await.map_err(|e| CreateUploadError::AlreadyExists)?;
+
+        todo!()
+    }
+
+    async fn check_exists(&self, url: String) -> Result<bool, QueryUploadError> {
+        todo!()
+    }
+
+    async fn query_metadata(&self, url: String) -> Result<UploadMetadata, QueryUploadError> {
+        todo!()
+    }
+
     async fn stream_file(
         &self,
         url: String,
         file: String,
-    ) -> Result<Self::StreamOutput, QueryUploadError>;
-    async fn delete_upload(&self, url: String) -> Result<(), DeleteUploadError>;
+    ) -> Result<io::BufReader<u8>, QueryUploadError> {
+        todo!()
+    }
+
+    async fn delete_upload(&self, url: String) -> Result<(), DeleteUploadError> {
+        todo!()
+    }
 }

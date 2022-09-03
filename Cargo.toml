@@ -24,9 +24,7 @@ anyhow = "1.0.62"
 thiserror = "1.0.33"
 rand = "0.8.5"
 chrono = { version = "0.4.22", features = ["serde"] }
-mime = "0.3.16"
-async-trait = "0.1.57"
+# mime = "0.3.16"
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"
-#indoc = "1.0.7"

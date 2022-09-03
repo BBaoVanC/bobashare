@@ -9,14 +9,14 @@ use crate::backend::{Upload, UploadFile};
 /// the code.
 impl Upload {
     // TODO: proper error handling of zero-length files array
-    pub fn new_migrated(path: PathBuf, upload: UploadMetadata) -> Result<Self, ParseUploadError> {
+    pub fn new_migrated(name: String, upload: UploadMetadata) -> Result<Self, ParseUploadError> {
         #[allow(unused_mut)]
         let mut current = upload;
 
         #[allow(clippy::never_loop)]
         loop {
             match current {
-                UploadMetadata::V1(data) => break Upload::from_latest(path, data),
+                UploadMetadata::V1(data) => break Upload::from_latest(name, data),
             }
         }
     }
@@ -30,15 +30,16 @@ pub enum ParseUploadError {
 
 impl Upload {
     pub fn from_latest(
-        path: PathBuf,
+        name: String,
         upload: LatestUploadFormat,
     ) -> Result<Self, ParseUploadError> {
         let files = upload
             .files
             .into_iter()
             .map(|f| UploadFile {
-                name: f.path,
+                path: f.path,
                 filename: f.filename,
+                mimetype: f.mimetype,
                 size: f.size,
             })
             .collect::<Vec<UploadFile>>();
@@ -48,7 +49,7 @@ impl Upload {
         }
 
         Ok(Self {
-            url: path,
+            url: name,
             total_size: upload.total_size,
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,

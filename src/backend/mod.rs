@@ -1,12 +1,11 @@
 //! TODO: write description
 
-pub mod serialization;
+pub mod serde;
 pub mod storage;
 
 use std::path::PathBuf;
 
 use chrono::prelude::*;
-use mime::Mime;
 
 // use rand::{
 //     distributions::{Alphanumeric, DistString},
@@ -49,7 +48,7 @@ impl Upload {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UploadFile {
     /// The path to the file
-    pub name: String,
+    pub path: PathBuf,
     /// The original name of the file
     pub filename: String,
     /// The MIME type of the file
