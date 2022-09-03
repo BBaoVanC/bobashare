@@ -12,6 +12,8 @@ pub mod file;
 pub enum CreateUploadError {
     #[error("the list of files to upload was empty")]
     ZeroFiles,
+    #[error("an upload with the requested name already exists")]
+    AlreadyExists,
 }
 #[derive(Debug, Error)]
 pub enum QueryUploadError {
@@ -28,8 +30,7 @@ pub enum DeleteUploadError {
 pub trait StorageBackend {
     type StreamOutput;
 
-    async fn create_upload(&self, request: UploadRequest) -> Result<Upload, CreateUploadError>;
-
+    async fn create_upload(&self, name: String, files: Vec<UploadFile>, expiry: Duration) -> Result<Upload, CreateUploadError>;
     async fn check_exists(&self, name: String) -> Result<bool, QueryUploadError>;
     async fn query_metadata(&self, name: String) -> Result<UploadMetadata, QueryUploadError>;
     async fn stream_file(
@@ -38,15 +39,4 @@ pub trait StorageBackend {
         file: String,
     ) -> Result<Self::StreamOutput, QueryUploadError>;
     async fn delete_upload(&self, name: String) -> Result<(), DeleteUploadError>;
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-/// A request to crate an upload using a [`StorageBackend`].
-pub struct UploadRequest {
-    /// The name of the upload itself (used in the URL)
-    name: String,
-    /// The files to upload
-    files: Vec<UploadFile>,
-    /// The time until the upload should expire
-    expiry: Duration,
 }

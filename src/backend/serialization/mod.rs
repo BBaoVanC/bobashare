@@ -19,6 +19,7 @@ pub type LatestUploadFormat = UploadV1;
 #[serde(tag = "version")]
 /// Main struct that serializes into the metadata stored on disk about an
 /// upload.
+// TODO: use https://github.com/Soft/enum-kinds to implement Ord
 pub enum UploadMetadata {
     #[serde(rename = "1")]
     V1(UploadV1),

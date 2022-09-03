@@ -4,22 +4,16 @@ pub mod serialization;
 pub mod storage;
 
 use std::path::PathBuf;
-use tokio::io;
 
-use async_trait::async_trait;
-use chrono::{prelude::*, Duration};
+use chrono::prelude::*;
+
 use rand::{
     distributions::{Alphanumeric, DistString},
     thread_rng,
 };
-use thiserror::Error;
 
-use crate::UPLOAD_NAME_LENGTH;
-
-use self::serialization::UploadMetadata;
-
-pub fn generate_randomized_name() -> String {
-    Alphanumeric.sample_string(&mut thread_rng(), UPLOAD_NAME_LENGTH.into())
+pub fn generate_randomized_name(length: usize) -> String {
+    Alphanumeric.sample_string(&mut thread_rng(), length)
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
