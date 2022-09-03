@@ -53,8 +53,8 @@ pub struct UploadFile {
     pub filename: String,
     /// The MIME type of the file
     pub mimetype: String,
-    // /// Size of the file in bytes
-    // pub size: u64,
+    /// Size of the file in bytes
+    pub size: u64,
     // TODO: should this contain a reference to the file contents? (serde would skip it)
     // TODO: maybe add reference to the filesystem metadata, so creation/modification date could be
     // displayed, maybe even exif

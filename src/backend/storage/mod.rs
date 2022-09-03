@@ -1,8 +1,10 @@
 //! Modules that handle storing uploaded files and serialized metadata.
 
-use std::path::PathBuf;
+use std::{path::PathBuf, future::Future};
 
+use axum::{body::Bytes, extract::multipart::MultipartError};
 use chrono::{prelude::*, Duration};
+use futures_core::Stream;
 use thiserror::Error;
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
@@ -34,11 +36,11 @@ pub enum DeleteUploadError {
     IoError(#[from] io::Error),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug)]
 pub struct UploadRequestFile<'r> {
     filename: &'r str,
     mimetype: &'r str,
-    contents: Vec<u8>,
+    contents: Box<dyn Stream<Item = Result<Bytes, MultipartError>>>,
 }
 
 impl FileBackend {
@@ -84,11 +86,13 @@ impl FileBackend {
         for (i, file) in files.into_iter().enumerate() {
             let name_on_disk = format!("{:0<4}", i); // sanitized name of the file on disk
             fs::write(upload_root.join(&name_on_disk), &file.contents).await?;
-            upload.total_size += file.contents.len() as u64;
+            let size = file.contents.len() as u64;
+            upload.total_size += size;
             upload.files.push(UploadFile {
                 path: PathBuf::from(name_on_disk),
                 filename: String::from(file.filename),
                 mimetype: String::from(file.mimetype),
+                size,
             });
         }
 

@@ -25,6 +25,7 @@ thiserror = "1.0.33"
 rand = "0.8.5"
 chrono = { version = "0.4.22", features = ["serde"] }
 # mime = "0.3.16"
+futures-core = "0.3.24"
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"
