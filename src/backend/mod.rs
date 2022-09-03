@@ -6,6 +6,7 @@ pub mod storage;
 use std::path::PathBuf;
 
 use chrono::prelude::*;
+use mime::Mime;
 
 // use rand::{
 //     distributions::{Alphanumeric, DistString},
@@ -48,9 +49,11 @@ impl Upload {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UploadFile {
     /// The path to the file
-    pub path: PathBuf,
+    pub name: String,
     /// The original name of the file
     pub filename: String,
+    /// The MIME type of the file
+    pub mimetype: Mime,
     /// Size of the file in bytes
     pub size: u64,
     // TODO: should this contain a reference to the file contents? (serde would skip it)

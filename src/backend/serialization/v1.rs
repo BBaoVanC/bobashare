@@ -25,7 +25,7 @@ pub struct UploadFileV1 {
 impl From<UploadFile> for UploadFileV1 {
     fn from(file: UploadFile) -> Self {
         Self {
-            path: file.path,
+            path: file.name,
             filename: file.filename,
             size: file.size,
         }

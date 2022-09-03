@@ -37,7 +37,7 @@ impl Upload {
             .files
             .into_iter()
             .map(|f| UploadFile {
-                path: f.path,
+                name: f.path,
                 filename: f.filename,
                 size: f.size,
             })

@@ -2,6 +2,8 @@ use axum::{response::{IntoResponse, Response}, extract::{Multipart, multipart::M
 use hyper::{Request, Body, StatusCode};
 use thiserror::Error;
 
+use crate::backend::UploadFile;
+
 
 #[derive(Debug, Error)]
 pub enum UploadError {
@@ -16,10 +18,17 @@ pub enum UploadError {
 //     }
 // }
 
+/// # Form fields
+/// 
+/// - 
 async fn upload_post(mut form: Multipart) -> axum::response::Result<impl IntoResponse> {
-    // let mut 
-    while let Some(field) = form.next_field().await.map_err(|_| ("error parsing multipart form data", StatusCode::INTERNAL_SERVER_ERROR))? {
-        // field.
+    let mut files: Vec<UploadFile> = Vec::new();
+    while let Some(field) = form.next_field().await.map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "error parsing multipart form data"))? {
+        if field.content_type().is_none() { continue; }
+        if field.file_name().is_none() { continue; }
+        files.append(UploadFile {
+            filename:
+        });
     }
 
     Ok(())

@@ -24,7 +24,7 @@ pub fn single_file_example() -> Upload {
         creation_date: example_creation_date(),
         expiry_date: example_expiry_date(),
         files: vec![UploadFile {
-            path: PathBuf::from("code.py"),
+            name: PathBuf::from("code.py"),
             filename: String::from("code.py"),
             size: 1234,
         }],
@@ -39,17 +39,17 @@ pub fn multiple_files_example() -> Upload {
         expiry_date: example_expiry_date(),
         files: vec![
             UploadFile {
-                path: PathBuf::from("code.py"),
+                name: PathBuf::from("code.py"),
                 filename: String::from("code.py"),
                 size: 1234,
             },
             UploadFile {
-                path: PathBuf::from("awesome.exe"),
+                name: PathBuf::from("awesome.exe"),
                 filename: String::from("awesome.exe"),
                 size: 56843,
             },
             UploadFile {
-                path: PathBuf::from("document.txt"),
+                name: PathBuf::from("document.txt"),
                 filename: String::from("document.txt"),
                 size: 1832,
             },
