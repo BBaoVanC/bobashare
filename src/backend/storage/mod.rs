@@ -1,15 +1,32 @@
 //! Modules that handle storing uploaded files and serialized metadata.
 
-use std::{path::PathBuf, future::Future};
+use std::{path::PathBuf};
 
-use axum::{body::Bytes, extract::multipart::MultipartError};
 use chrono::{prelude::*, Duration};
-use futures_core::Stream;
 use thiserror::Error;
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
 
-use super::{Upload, UploadFile};
+
+pub mod metadata;
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Upload {
+    pub path: PathBuf,
+    pub total_size: u64,
+    pub creation_date: DateTime<Utc>,
+    pub expiry_date: Option<DateTime<Utc>>,
+    pub files: Vec<UploadFile>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct UploadFile {
+    pub path: PathBuf,
+    pub filename: String,
+    pub mimetype: String,
+    // only a hint
+    pub size: u64,
+}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
@@ -25,23 +42,6 @@ pub enum CreateUploadError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
 }
-#[derive(Debug, Error)]
-pub enum QueryUploadError {
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-}
-#[derive(Debug, Error)]
-pub enum DeleteUploadError {
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-}
-
-#[derive(Debug)]
-pub struct UploadRequestFile<'r> {
-    filename: &'r str,
-    mimetype: &'r str,
-    contents: Box<dyn Stream<Item = Result<Bytes, MultipartError>>>,
-}
 
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
@@ -52,19 +52,14 @@ impl FileBackend {
 
     // TODO: use stream instead of Vec<u8>
     #[instrument]
-    async fn create_upload(
+    pub async fn create_upload(
         &self,
         url: String,
-        files: Vec<UploadRequestFile<'_>>,
-        expiry: Duration,
+        expiry: Option<Duration>,
     ) -> Result<Upload, CreateUploadError> {
-        if files.is_empty() {
-            event!(Level::DEBUG, "cannot create upload with zero files");
-            return Err(CreateUploadError::ZeroFiles);
-        }
 
         let creation_date = Utc::now();
-        let expiry_date = creation_date + expiry;
+        let expiry_date = expiry.map(|e| creation_date + e);
         let upload_root = self.path.join(&url);
 
         event!(Level::DEBUG, "creating directory to store upload");
@@ -75,47 +70,31 @@ impl FileBackend {
                 _ => CreateUploadError::IoError(e),
             })?; // TODO: make this statement less ugly, get rid of the match
 
-        let mut upload = Upload {
-            url,
+        Ok(Upload {
+            path: PathBuf::from(url),
             creation_date,
             expiry_date,
             files: Vec::new(),
             total_size: 0,
-        };
+        })
 
-        for (i, file) in files.into_iter().enumerate() {
-            let name_on_disk = format!("{:0<4}", i); // sanitized name of the file on disk
-            fs::write(upload_root.join(&name_on_disk), &file.contents).await?;
-            let size = file.contents.len() as u64;
-            upload.total_size += size;
-            upload.files.push(UploadFile {
-                path: PathBuf::from(name_on_disk),
-                filename: String::from(file.filename),
-                mimetype: String::from(file.mimetype),
-                size,
-            });
-        }
-
-        Ok(upload)
+        // for (i, file) in files.into_iter().enumerate() {
+        //     let name_on_disk = format!("{:0<4}", i); // sanitized name of the file on disk
+        //     fs::write(upload_root.join(&name_on_disk), &file.contents).await?;
+        //     let size = file.contents.len() as u64;
+        //     upload.total_size += size;
+        //     upload.files.push(UploadFile {
+        //         path: PathBuf::from(name_on_disk),
+        //         filename: String::from(file.filename),
+        //         mimetype: String::from(file.mimetype),
+        //         size,
+        //     });
+        // }
     }
+}
 
-    async fn check_exists(&self, url: String) -> Result<bool, QueryUploadError> {
-        todo!()
-    }
+impl Upload {
+    pub fn add_file_from_stream(&mut self, file: Vec<u8>) {
 
-    async fn query_metadata(&self, url: String) -> Result<Upload, QueryUploadError> {
-        todo!()
-    }
-
-    async fn stream_file(
-        &self,
-        url: String,
-        file: String,
-    ) -> Result<io::BufReader<u8>, QueryUploadError> {
-        todo!()
-    }
-
-    async fn delete_upload(&self, url: String) -> Result<(), DeleteUploadError> {
-        todo!()
     }
 }

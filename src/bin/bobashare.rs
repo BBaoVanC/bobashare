@@ -1,6 +1,7 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
 use axum::{routing::get, Router};
+use bobashare::{backend::storage::FileBackend, AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
@@ -12,7 +13,12 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let app = Router::new()
+    let backend_path = "storage/";
+    let state = Arc::new(AppState {
+        backend: FileBackend::new(PathBuf::from(backend_path)).await?,
+    });
+
+    let app = Router::with_state(state)
         .route("/test", get(|| async { "Hello World" }))
         .route("/hello", get(|| async { "world" }));
 

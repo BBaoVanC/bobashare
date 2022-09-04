@@ -1,12 +1,15 @@
+use std::sync::Arc;
+
 use axum::{
     extract::{multipart::MultipartError, Multipart},
-    response::{IntoResponse, Response},
+    response::{IntoResponse, Response}, Extension,
 };
 use futures_core::Stream;
 use hyper::{Body, Request, StatusCode};
 use thiserror::Error;
 
-use crate::backend::{storage::UploadRequestFile, UploadFile};
+use crate::{backend::storage::FileBackend, AppState};
+
 // use axum::response::Result;
 
 #[derive(Debug, Error)]
@@ -29,8 +32,7 @@ impl IntoResponse for UploadError {
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-async fn upload_post(mut form: Multipart) -> Result<impl IntoResponse, UploadError> {
-    let mut files: Vec<UploadRequestFile> = Vec::new();
+async fn upload_post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<impl IntoResponse, UploadError> {
     while let Some(mut field) = form.next_field().await? {
         if field.content_type().is_none() {
             continue;
@@ -41,13 +43,10 @@ async fn upload_post(mut form: Multipart) -> Result<impl IntoResponse, UploadErr
         let mimetype = field.content_type().unwrap();
         let filename = field.file_name().unwrap();
 
-        let contents = Box::new(field.chunk() as dyn Stream);
 
-        files.push(UploadRequestFile {
-            filename,
-            mimetype,
-            contents,
-        });
+        // let contents = Box<field as dyn Stream>;
+
+        todo!()
     }
 
     Ok(())
