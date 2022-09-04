@@ -1,6 +1,6 @@
 //! Simple ephemeral file sharing service
 
-use backend::storage::FileBackend;
+use backend::storage::file::FileBackend;
 
 pub mod api;
 pub mod backend;

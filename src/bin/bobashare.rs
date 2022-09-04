@@ -1,7 +1,7 @@
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
 use axum::{routing::get, Router};
-use bobashare::{backend::storage::FileBackend, AppState};
+use bobashare::{backend::storage::file::FileBackend, AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]

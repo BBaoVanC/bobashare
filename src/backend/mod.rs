@@ -2,7 +2,7 @@
 
 pub mod storage;
 
-use chrono::{prelude::*};
+use chrono::prelude::*;
 
 // use rand::{
 //     distributions::{Alphanumeric, DistString},

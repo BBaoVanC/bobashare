@@ -2,13 +2,17 @@ use std::sync::Arc;
 
 use axum::{
     extract::{multipart::MultipartError, Multipart},
-    response::{IntoResponse, Response}, Extension,
+    response::{IntoResponse, Response},
+    Extension,
 };
-use futures_core::Stream;
-use hyper::{Body, Request, StatusCode};
+use chrono::Duration;
+use hyper::StatusCode;
 use thiserror::Error;
 
-use crate::{backend::storage::FileBackend, AppState};
+use crate::{
+    backend::storage::{file::CreateUploadError, upload::AddFileError},
+    AppState,
+};
 
 // use axum::response::Result;
 
@@ -16,6 +20,10 @@ use crate::{backend::storage::FileBackend, AppState};
 pub enum UploadError {
     #[error("error parsing multipart form data")]
     FormParseError(#[from] MultipartError),
+    #[error("error creating upload")]
+    CreateUploadError(#[from] CreateUploadError),
+    #[error("error while adding file to upload")]
+    AddFileError(#[from] AddFileError),
 }
 impl IntoResponse for UploadError {
     fn into_response(self) -> Response {
@@ -23,6 +31,15 @@ impl IntoResponse for UploadError {
             UploadError::FormParseError(e) => (
                 StatusCode::BAD_REQUEST,
                 format!("error parsing form data: {}", e),
+            ),
+            UploadError::CreateUploadError(e) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("error creating upload: {}", e),
+            ),
+            // TODO: make these more specific by matching io::Error
+            UploadError::AddFileError(e) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("error adding file to upload: {}", e),
             ),
         }
         .into_response()
@@ -32,8 +49,17 @@ impl IntoResponse for UploadError {
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-async fn upload_post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<impl IntoResponse, UploadError> {
+async fn upload_post(
+    state: Extension<Arc<AppState>>,
+    mut form: Multipart,
+) -> Result<impl IntoResponse, UploadError> {
+    let mut upload = state
+        .backend
+        .create_upload("abc123xyz", Some(Duration::hours(1)))
+        .await?;
+    let mut i = 0;
     while let Some(mut field) = form.next_field().await? {
+        i += 1; // starts at 1
         if field.content_type().is_none() {
             continue;
         }
@@ -43,10 +69,12 @@ async fn upload_post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Re
         let mimetype = field.content_type().unwrap();
         let filename = field.file_name().unwrap();
 
+        upload
+            .add_file_from_stream(&format!("{:0<4}", i), field)
+            .await?;
 
-        // let contents = Box<field as dyn Stream>;
-
-        todo!()
+        // let name_on_disk = format!("{:0<4}", 5);
+        todo!();
     }
 
     Ok(())
