@@ -1,10 +1,14 @@
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
-use axum::{routing::get, Router};
+use axum::{routing::{get, post}, Router};
 use bobashare::{backend::storage::file::FileBackend, AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod api;
+
+struct AppState {
+    pub backend: FileBackend,
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -22,7 +26,8 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::with_state(state)
         .route("/test", get(|| async { "Hello World" }))
-        .route("/hello", get(|| async { "world" }));
+        .route("/hello", get(|| async { "world" }))
+        .route("/api/v1/upload", post(api::v1::upload_post));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::info!("Listening on http://{}", addr);

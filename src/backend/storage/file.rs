@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
+use relative_path::RelativePathBuf;
 use thiserror::Error;
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
@@ -49,7 +50,7 @@ impl FileBackend {
             })?; // TODO: make this statement less ugly, get rid of the match
 
         Ok(Upload {
-            path: PathBuf::from(url),
+            path: RelativePathBuf::from(url),
             creation_date,
             expiry_date,
             files: Vec::new(),

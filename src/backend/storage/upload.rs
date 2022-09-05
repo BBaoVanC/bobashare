@@ -4,6 +4,7 @@ use axum::{body::Bytes, extract::multipart::MultipartError};
 use chrono::prelude::*;
 use futures_core::Stream;
 use futures_util::StreamExt;
+use relative_path::RelativePathBuf;
 use thiserror::Error;
 use tokio::{
     fs::{self, File},
@@ -12,7 +13,7 @@ use tokio::{
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Upload {
-    pub path: PathBuf,
+    pub path: RelativePathBuf,
     pub total_size: u64,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
@@ -21,7 +22,7 @@ pub struct Upload {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UploadFile {
-    pub path: PathBuf,
+    pub path: RelativePathBuf,
     pub filename: String,
     pub mimetype: String,
     // only a hint
