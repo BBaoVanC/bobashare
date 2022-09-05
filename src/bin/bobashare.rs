@@ -1,6 +1,9 @@
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use bobashare::{backend::storage::file::FileBackend, AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
