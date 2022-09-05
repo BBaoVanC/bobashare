@@ -27,6 +27,7 @@ chrono = { version = "0.4.22", features = ["serde"] }
 # mime = "0.3.16"
 futures-core = "0.3.24"
 futures-util = "0.3.24"
+relative-path = "1.7.2"
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"

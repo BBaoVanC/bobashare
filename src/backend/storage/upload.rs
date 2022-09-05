@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 
 use axum::{body::Bytes, extract::multipart::MultipartError};
 use chrono::prelude::*;
@@ -36,6 +36,12 @@ pub enum AddFileError {
     IoError(#[from] io::Error),
 }
 impl Upload {
+    pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(&mut self, name: P, mimetype: S) -> Result<(File, UploadFile), io::Error> {
+        let file = File::create(self.path.join(name)).await?;
+        let upload_file = UploadFile { path: PathBuf::from(name.as_ref()), filename: String::from(name.as_ref().to_str()), mimetype, size: 0 }
+        Ok((file, upload_file))
+    }
+
     pub async fn add_file_from_stream(
         &mut self,
         name: &str,

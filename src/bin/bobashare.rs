@@ -4,6 +4,8 @@ use axum::{routing::get, Router};
 use bobashare::{backend::storage::file::FileBackend, AppState};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod api;
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
