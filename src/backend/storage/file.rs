@@ -39,7 +39,8 @@ impl FileBackend {
     ) -> Result<Upload, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let upload_root = self.path.join(url);
+        let path = RelativePathBuf::from(url);
+        let upload_root = path.to_path(&self.path);
 
         event!(Level::DEBUG, "creating directory to store upload");
         fs::create_dir(&upload_root)
@@ -50,7 +51,7 @@ impl FileBackend {
             })?; // TODO: make this statement less ugly, get rid of the match
 
         Ok(Upload {
-            path: RelativePathBuf::from(url),
+            path,
             creation_date,
             expiry_date,
             files: Vec::new(),

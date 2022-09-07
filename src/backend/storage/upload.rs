@@ -42,7 +42,7 @@ impl Upload {
         name: P,
         mimetype: S,
     ) -> Result<(File, UploadFile), io::Error> {
-        let file = File::create(self.path.join(name)).await?;
+        let file = File::create(self.path(name)).await?;
         let upload_file = UploadFile {
             path: PathBuf::from(name.as_ref()),
             filename: String::from(name.as_ref().to_str()),
