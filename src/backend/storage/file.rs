@@ -1,7 +1,6 @@
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
-use relative_path::RelativePathBuf;
 use thiserror::Error;
 use tokio::{fs, io};
 use tracing::{event, instrument, Level};
@@ -26,8 +25,9 @@ pub enum CreateUploadError {
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
     pub async fn new(path: PathBuf) -> Result<Self, io::Error> {
-        fs::create_dir(&path).await?;
-        Ok(Self { path })
+        let root = fs::canonicalize(path).await?;
+        fs::create_dir(&root).await?;
+        Ok(Self { path: root })
     }
 
     // TODO: use stream instead of Vec<u8>
@@ -39,8 +39,7 @@ impl FileBackend {
     ) -> Result<Upload, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let path = RelativePathBuf::from(url);
-        let upload_root = path.to_path(&self.path);
+        let upload_root = fs::canonicalize(self.path.join(url));
 
         event!(Level::DEBUG, "creating directory to store upload");
         fs::create_dir(&upload_root)
