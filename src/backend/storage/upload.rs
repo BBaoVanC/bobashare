@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use axum::{body::Bytes, extract::multipart::MultipartError};
-use chrono::prelude::*;
+use chrono::{prelude::*, Duration};
 use futures_core::Stream;
 use futures_util::StreamExt;
 use thiserror::Error;
@@ -10,7 +10,7 @@ use tokio::{
     io::{self, AsyncWriteExt},
 };
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug)]
 pub struct Upload {
     pub path: PathBuf,
     // pub total_size: u64,
@@ -19,9 +19,10 @@ pub struct Upload {
     pub files: Vec<UploadFile>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug)]
 pub struct UploadFile {
     pub path: PathBuf,
+    pub file: File,
     pub filename: String,
     pub mimetype: String,
     // // only a hint
@@ -36,20 +37,32 @@ pub enum CreateFileError<'e> {
     PathToStrError(&'e Path),
 }
 impl Upload {
+    pub async fn create<P: AsRef<Path>>(path: P, expiry: Option<Duration>) -> Result<Self, io::Error> {
+        let creation_date = Utc::now();
+        let file = fs::create_dir(&path).await?;
+        Ok(Self {
+            path: path.as_ref().to_path_buf(),
+            creation_date: Utc::now(),
+            expiry_date: expiry.and_then(|e| Some(creation_date + e)),
+            files: Vec::new(),
+        })
+    }
+
     pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(
         &mut self,
         path: P,
         filename: S,
         mimetype: S,
-    ) -> Result<File, CreateFileError> {
+    ) -> Result<UploadFile, CreateFileError> {
         let file = File::create(self.path.join(path.as_ref())).await?;
 
         let upload_file = UploadFile {
             path: path.as_ref().to_path_buf(),
             filename: filename.as_ref().to_string(),
+            file,
             mimetype: mimetype.as_ref().to_string(),
         };
         self.files.push(upload_file);
-        Ok(file)
+        Ok(upload_file)
     }
 }
