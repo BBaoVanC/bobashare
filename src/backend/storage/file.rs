@@ -18,7 +18,7 @@ impl FileBackend {
         fs::create_dir(&path).await?;
         // let root = fs::canonicalize(path).await?;
         // Ok(Self { path: root })
-        Ok(Self {path})
+        Ok(Self { path })
     }
 }
 
@@ -32,14 +32,14 @@ pub enum CreateUploadError {
     IoError(#[from] io::Error),
 }
 impl FileBackend {
-    pub async fn create_upload(
+    pub async fn create_upload<S: AsRef<str>>(
         &self,
-        url: &str,
+        url: S,
         expiry: Option<Duration>,
     ) -> Result<Upload, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let upload_root = fs::canonicalize(self.path.join(url)).await?;
+        let upload_root = self.path.join(url.as_ref());
 
         fs::create_dir(&upload_root)
             .await

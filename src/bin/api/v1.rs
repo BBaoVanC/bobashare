@@ -10,9 +10,7 @@ use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
 
-use crate::{
-    AppState,
-};
+use crate::AppState;
 
 // use axum::response::Result;
 
