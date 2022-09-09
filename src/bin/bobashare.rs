@@ -4,12 +4,12 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use bobashare::{backend::storage::file::FileBackend, AppState};
+use bobashare::{backend::storage::file::FileBackend};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-mod api;
+pub mod api;
 
-struct AppState {
+pub struct AppState {
     pub backend: FileBackend,
 }
 

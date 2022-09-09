@@ -5,12 +5,12 @@ use axum::{
     response::{IntoResponse, Response},
     Extension,
 };
+use bobashare::backend::storage::{file::CreateUploadError, upload::CreateFileError};
 use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
 
 use crate::{
-    backend::storage::{file::CreateUploadError, upload::AddFileError},
     AppState,
 };
 
@@ -22,8 +22,8 @@ pub enum UploadError {
     FormParseError(#[from] MultipartError),
     #[error("error creating upload")]
     CreateUploadError(#[from] CreateUploadError),
-    #[error("error while adding file to upload")]
-    AddFileError(#[from] AddFileError),
+    // #[error("error while creating file for upload")]
+    // CreateFileError(#[from] CreateFileError<'_>),
 }
 impl IntoResponse for UploadError {
     fn into_response(self) -> Response {
@@ -37,10 +37,10 @@ impl IntoResponse for UploadError {
                 format!("error creating upload: {}", e),
             ),
             // TODO: make these more specific by matching io::Error
-            UploadError::AddFileError(e) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("error adding file to upload: {}", e),
-            ),
+            // UploadError::AddFileError(e) => (
+            //     StatusCode::INTERNAL_SERVER_ERROR,
+            //     format!("error adding file to upload: {}", e),
+            // ),
         }
         .into_response()
     }
@@ -49,7 +49,7 @@ impl IntoResponse for UploadError {
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-async fn upload_post(
+pub async fn upload_post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
 ) -> Result<impl IntoResponse, UploadError> {
@@ -69,9 +69,9 @@ async fn upload_post(
         let mimetype = field.content_type().unwrap();
         let filename = field.file_name().unwrap();
 
-        upload
-            .add_file_from_stream(&format!("{:0<4}", i), field)
-            .await?;
+        // upload
+        //     .add_file_from_stream(&format!("{:0<4}", i), field)
+        //     .await?;
 
         // let name_on_disk = format!("{:0<4}", 5);
         todo!();

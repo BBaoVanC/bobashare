@@ -1,1 +1,4 @@
 /target
+
+# path to store files while testing the program
+/experiment

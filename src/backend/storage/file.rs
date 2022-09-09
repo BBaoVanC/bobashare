@@ -11,6 +11,16 @@ use super::upload::Upload;
 pub struct FileBackend {
     pub path: PathBuf,
 }
+impl FileBackend {
+    /// Make a file backend, creating the directory if it doesn't exist.
+    pub async fn new(path: PathBuf) -> Result<Self, io::Error> {
+        // TODO: check if exists
+        fs::create_dir(&path).await?;
+        // let root = fs::canonicalize(path).await?;
+        // Ok(Self { path: root })
+        Ok(Self {path})
+    }
+}
 
 #[derive(Debug, Error)]
 pub enum CreateUploadError {
@@ -21,17 +31,7 @@ pub enum CreateUploadError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
 }
-
 impl FileBackend {
-    /// Make a file backend, creating the directory if it doesn't exist.
-    pub async fn new(path: PathBuf) -> Result<Self, io::Error> {
-        let root = fs::canonicalize(path).await?;
-        fs::create_dir(&root).await?;
-        Ok(Self { path: root })
-    }
-
-    // TODO: use stream instead of Vec<u8>
-    #[instrument]
     pub async fn create_upload(
         &self,
         url: &str,
@@ -39,9 +39,8 @@ impl FileBackend {
     ) -> Result<Upload, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let upload_root = fs::canonicalize(self.path.join(url));
+        let upload_root = fs::canonicalize(self.path.join(url)).await?;
 
-        event!(Level::DEBUG, "creating directory to store upload");
         fs::create_dir(&upload_root)
             .await
             .map_err(|e| match e.kind() {
@@ -50,11 +49,11 @@ impl FileBackend {
             })?; // TODO: make this statement less ugly, get rid of the match
 
         Ok(Upload {
-            path,
+            path: upload_root,
             creation_date,
             expiry_date,
             files: Vec::new(),
-            total_size: 0,
+            // total_size: 0,
         })
     }
 }
