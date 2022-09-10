@@ -39,11 +39,17 @@ pub enum CreateFileError<'e> {
 impl Upload {
     pub async fn create<P: AsRef<Path>>(path: P, expiry: Option<Duration>) -> Result<Self, io::Error> {
         let creation_date = Utc::now();
-        let file = fs::create_dir(&path).await?;
+
+        if let Err(e) = fs::create_dir(&path).await {
+            if e.kind() != io::ErrorKind::AlreadyExists {
+                return Err(e);
+            }
+        }
+
         Ok(Self {
             path: path.as_ref().to_path_buf(),
             creation_date: Utc::now(),
-            expiry_date: expiry.and_then(|e| Some(creation_date + e)),
+            expiry_date: expiry.map(|e| creation_date + e),
             files: Vec::new(),
         })
     }
@@ -53,7 +59,7 @@ impl Upload {
         path: P,
         filename: S,
         mimetype: S,
-    ) -> Result<UploadFile, CreateFileError> {
+    ) -> Result<&mut UploadFile, CreateFileError> {
         let file = File::create(self.path.join(path.as_ref())).await?;
 
         let upload_file = UploadFile {
@@ -63,6 +69,7 @@ impl Upload {
             mimetype: mimetype.as_ref().to_string(),
         };
         self.files.push(upload_file);
-        Ok(upload_file)
+        Ok(self.files.last_mut().unwrap())
+        // Ok(&mut upload_file)
     }
 }
