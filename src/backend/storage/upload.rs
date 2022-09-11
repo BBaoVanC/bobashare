@@ -30,11 +30,9 @@ pub struct UploadFile {
 }
 
 #[derive(Debug, Error)]
-pub enum CreateFileError<'e> {
+pub enum CreateFileError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
-    #[error("error converting Path to &str: {0}")]
-    PathToStrError(&'e Path),
 }
 impl Upload {
     pub async fn create<P: AsRef<Path>>(path: P, expiry: Option<Duration>) -> Result<Self, io::Error> {
@@ -70,6 +68,5 @@ impl Upload {
         };
         self.files.push(upload_file);
         Ok(self.files.last_mut().unwrap())
-        // Ok(&mut upload_file)
     }
 }
