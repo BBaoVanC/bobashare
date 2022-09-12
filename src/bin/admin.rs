@@ -7,6 +7,8 @@ use bobashare::backend::storage::file::FileBackend;
 use chrono::{prelude::*, Duration};
 use clap::{Args, Parser, Subcommand};
 
+mod cli;
+
 #[derive(Debug, Parser)]
 struct Cli {
     #[clap(short, long, value_parser, default_value = "experiment/")]
