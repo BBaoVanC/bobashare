@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
 use tokio::{fs, io};
-use tracing::{event, instrument, Level};
 
 use super::upload::Upload;
 

@@ -1,13 +1,10 @@
 use std::path::{Path, PathBuf};
 
-use axum::{body::Bytes, extract::multipart::MultipartError};
 use chrono::{prelude::*, Duration};
-use futures_core::Stream;
-use futures_util::StreamExt;
 use thiserror::Error;
 use tokio::{
     fs::{self, File},
-    io::{self, AsyncWriteExt},
+    io::{self},
 };
 
 #[derive(Debug)]
@@ -35,7 +32,10 @@ pub enum CreateFileError {
     IoError(#[from] io::Error),
 }
 impl Upload {
-    pub async fn create<P: AsRef<Path>>(path: P, expiry: Option<Duration>) -> Result<Self, io::Error> {
+    pub async fn create<P: AsRef<Path>>(
+        path: P,
+        expiry: Option<Duration>,
+    ) -> Result<Self, io::Error> {
         let creation_date = Utc::now();
 
         if let Err(e) = fs::create_dir(&path).await {

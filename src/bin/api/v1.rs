@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
     Extension,
 };
-use bobashare::backend::storage::{file::CreateUploadError, upload::CreateFileError};
+use bobashare::backend::storage::file::CreateUploadError;
 use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
