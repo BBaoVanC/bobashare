@@ -17,7 +17,7 @@ pub struct UploadFileMetadata {
     pub filename: String,
     pub mimetype: String,
     // only a hint
-    pub size: u64,
+    // pub size: u64,
     // TODO: should this contain a reference to the file contents? (serde would skip it)
     // TODO: maybe add reference to the filesystem metadata, so creation/modification date could be
     // displayed, maybe even exif

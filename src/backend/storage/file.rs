@@ -2,9 +2,20 @@ use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
-use tokio::{fs, io};
+use tokio::{
+    fs::{self},
+    io,
+};
 
 use super::upload::Upload;
+
+#[derive(Debug, Error)]
+pub enum BackendError {
+    #[error("the file {0} is not a directory")]
+    NotADirectory(PathBuf),
+    #[error("error while doing i/o")]
+    IoError(#[from] io::Error),
+}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
@@ -12,19 +23,23 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
-    pub async fn new(path: PathBuf) -> Result<Self, io::Error> {
-        // TODO: check if exists
-        fs::create_dir(&path).await?;
-        // let root = fs::canonicalize(path).await?;
-        // Ok(Self { path: root })
+    pub async fn new(path: PathBuf) -> Result<Self, BackendError> {
+        if let Err(e) = fs::create_dir(&path).await {
+            if e.kind() != io::ErrorKind::AlreadyExists {
+                // ignore AlreadyExists; propagate all other errors
+                return Err(BackendError::from(e));
+            }
+        }
+        if !fs::metadata(&path).await?.is_dir() {
+            return Err(BackendError::NotADirectory(path));
+        }
+
         Ok(Self { path })
     }
 }
 
 #[derive(Debug, Error)]
 pub enum CreateUploadError {
-    #[error("the list of files to upload was empty")]
-    ZeroFiles,
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
     #[error("error while doing i/o")]
@@ -44,7 +59,7 @@ impl FileBackend {
             .await
             .map_err(|e| match e.kind() {
                 io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
-                _ => CreateUploadError::IoError(e),
+                _ => CreateUploadError::from(e),
             })?; // TODO: make this statement less ugly, get rid of the match
 
         Ok(Upload {

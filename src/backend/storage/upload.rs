@@ -32,25 +32,25 @@ pub enum CreateFileError {
     IoError(#[from] io::Error),
 }
 impl Upload {
-    pub async fn create<P: AsRef<Path>>(
-        path: P,
-        expiry: Option<Duration>,
-    ) -> Result<Self, io::Error> {
-        let creation_date = Utc::now();
+    // pub async fn create<P: AsRef<Path>>(
+    //     path: P,
+    //     expiry: Option<Duration>,
+    // ) -> Result<Self, io::Error> {
+    //     let creation_date = Utc::now();
 
-        if let Err(e) = fs::create_dir(&path).await {
-            if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(e);
-            }
-        }
+    //     if let Err(e) = fs::create_dir(&path).await {
+    //         if e.kind() != io::ErrorKind::AlreadyExists {
+    //             return Err(e);
+    //         }
+    //     }
 
-        Ok(Self {
-            path: path.as_ref().to_path_buf(),
-            creation_date: Utc::now(),
-            expiry_date: expiry.map(|e| creation_date + e),
-            files: Vec::new(),
-        })
-    }
+    //     Ok(Self {
+    //         path: path.as_ref().to_path_buf(),
+    //         creation_date: Utc::now(),
+    //         expiry_date: expiry.map(|e| creation_date + e),
+    //         files: Vec::new(),
+    //     })
+    // }
 
     pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(
         &mut self,
