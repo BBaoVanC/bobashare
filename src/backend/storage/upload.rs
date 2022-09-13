@@ -16,14 +16,34 @@ pub struct Upload {
     pub files: Vec<UploadFile>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UploadFile {
     pub path: PathBuf,
-    pub file: File,
     pub filename: String,
     pub mimetype: String,
     // // only a hint
     // pub size: u64,
+}
+
+#[derive(Debug)]
+pub struct UploadFileHandle<'h> {
+    pub metadata: UploadFile,
+    pub file: File,
+    files_vec: &'h mut Vec<UploadFile>
+}
+impl<'h> UploadFileHandle<'_> {
+    pub fn new(metadata: UploadFile, file: File, files_vec: &'h mut Vec<UploadFile>) -> UploadFileHandle<'h> {
+        UploadFileHandle {
+            metadata,
+            file,
+            files_vec,
+        }
+    }
+}
+impl Drop for UploadFileHandle<'_> {
+    fn drop(&mut self) {
+        self.files_vec.push(self.metadata.clone());
+    }
 }
 
 #[derive(Debug, Error)]
@@ -57,16 +77,15 @@ impl Upload {
         path: P,
         filename: S,
         mimetype: S,
-    ) -> Result<&mut UploadFile, CreateFileError> {
+    ) -> Result<UploadFileHandle, CreateFileError> {
         let file = File::create(self.path.join(path.as_ref())).await?;
 
-        let upload_file = UploadFile {
+        let metadata = UploadFile {
             path: path.as_ref().to_path_buf(),
             filename: filename.as_ref().to_string(),
-            file,
             mimetype: mimetype.as_ref().to_string(),
         };
-        self.files.push(upload_file);
-        Ok(self.files.last_mut().unwrap())
+        let handle = UploadFileHandle::new(metadata, file, &mut self.files);
+        Ok(handle)
     }
 }

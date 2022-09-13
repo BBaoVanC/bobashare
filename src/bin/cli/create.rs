@@ -4,7 +4,7 @@ use bobashare::backend::{
     storage::file::{CreateUploadError, FileBackend},
 };
 use chrono::Duration;
-use clap::{Args, Subcommand, ArgGroup};
+use clap::{Args, Subcommand};
 use log::info;
 
 // #[derive(Debug, Args)]
@@ -63,6 +63,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
                 let name = generate_randomized_name(length.into());
                 let res = backend.create_upload(&name, expiry).await;
                 if let Err(CreateUploadError::AlreadyExists) = res {
+                    // TODO: should use tracing
                     info!("An upload with the randomized name {} already exists; trying a new name", &name);
                     continue;
                 }
@@ -74,24 +75,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
         }
     };
 
-    // if let Some(name) = args.name {
-    //     backend.create_upload(name, expiry).await.context("error creating upload")?;
-    // } else {
-    //     loop {
-    //         let name = generate_randomized_name(args.)
-    //         match backend.create_upload(&args.name, args.expiry.map(|e| Duration::days(e.into()))) {
-                
-    //         }
-    //         if let Err(CreateUploadError::AlreadyExists) = backend
-    //             .create_upload(&args.name, args.expiry.map(|e| Duration::days(e.into())))
-    //             .await
-    //         {
-    //             continue;
-    //         } else {
-    //             return Err()
-    //         }
-    //     }
-    // }
+    println!("{:?}", upload);
 
     Ok(())
 }
