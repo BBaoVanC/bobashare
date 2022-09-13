@@ -119,6 +119,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "hyper",
+ "log",
  "pretty_assertions",
  "rand",
  "relative-path",
