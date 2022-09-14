@@ -8,7 +8,7 @@ use tokio::{fs, io};
 
 use crate::backend::storage::upload::UploadFile;
 
-use super::{FromMetadataError};
+use super::{IntoMetadataError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadV1 {
@@ -26,7 +26,7 @@ pub struct UploadFileV1 {
 }
 
 impl UploadFileV1 {
-    pub async fn from_file(file: UploadFile) -> Result<Self, FromMetadataError> {
+    pub async fn from_file(file: UploadFile) -> Result<Self, IntoMetadataError> {
         let size = fs::metadata(&file.path).await?.len();
 
         Ok(Self {
