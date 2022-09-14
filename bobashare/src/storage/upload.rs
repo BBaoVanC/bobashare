@@ -1,12 +1,12 @@
 use std::path::{Path, PathBuf};
 
-use chrono::{prelude::*,};
+use chrono::prelude::*;
 use thiserror::Error;
 use tokio::{
-    fs::{File},
+    fs::File,
     io::{self},
 };
-use tracing::{instrument, event, Level};
+use tracing::{event, instrument, Level};
 
 #[derive(Debug, Clone)]
 pub struct Upload {
@@ -41,10 +41,14 @@ pub struct UploadFile {
 pub struct UploadFileHandle<'h> {
     pub metadata: UploadFile,
     pub file: File,
-    files_vec: &'h mut Vec<UploadFile>
+    files_vec: &'h mut Vec<UploadFile>,
 }
 impl<'h> UploadFileHandle<'_> {
-    pub fn new(metadata: UploadFile, file: File, files_vec: &'h mut Vec<UploadFile>) -> UploadFileHandle<'h> {
+    pub fn new(
+        metadata: UploadFile,
+        file: File,
+        files_vec: &'h mut Vec<UploadFile>,
+    ) -> UploadFileHandle<'h> {
         UploadFileHandle {
             metadata,
             file,
