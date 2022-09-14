@@ -6,6 +6,7 @@ use tokio::{
     fs::{self, File},
     io::{self},
 };
+use tracing::{instrument, event, Level};
 
 #[derive(Debug, Clone)]
 pub struct Upload {
@@ -14,11 +15,18 @@ pub struct Upload {
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
     pub files: Vec<UploadFile>,
+    pub saved: bool,
 }
 impl Drop for Upload {
+    #[instrument]
     /// Save upload metadata when the object is dropped.
     fn drop(&mut self) {
-        todo!() // serialization
+        if !self.saved {
+            event!(Level::ERROR, "An upload was dropped without being saved! This means the metadata was not updated on disk!");
+        } else {
+            event!(Level::TRACE, "Upload was saved.");
+        }
+        // todo!() // serialization
     }
 }
 

@@ -68,6 +68,7 @@ impl FileBackend {
             expiry_date,
             files: Vec::new(),
             // total_size: 0,
+            saved: false,
         })
     }
 }

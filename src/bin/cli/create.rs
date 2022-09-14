@@ -5,7 +5,7 @@ use bobashare::backend::{
 };
 use chrono::Duration;
 use clap::{Args, Subcommand};
-use log::info;
+use tracing::{instrument, event, Level};
 
 // #[derive(Debug, Args)]
 // pub(crate) struct CreateUpload {
@@ -54,6 +54,7 @@ pub(crate) enum NameOptions {
     },
 }
 
+#[instrument]
 pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> anyhow::Result<()> {
     let expiry = args.expiry.map(|e| Duration::days(e.into()));
 
@@ -64,7 +65,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
                 let res = backend.create_upload(&name, expiry).await;
                 if let Err(CreateUploadError::AlreadyExists) = res {
                     // TODO: should use tracing
-                    info!("An upload with the randomized name {} already exists; trying a new name", &name);
+                    event!(Level::INFO, "An upload with the randomized name {} already exists; trying a new name", &name);
                     continue;
                 }
                 break res.context("error creating upload")?
