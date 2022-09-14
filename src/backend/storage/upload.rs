@@ -7,7 +7,7 @@ use tokio::{
     io::{self},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Upload {
     pub path: PathBuf,
     // pub total_size: u64,
@@ -15,14 +15,17 @@ pub struct Upload {
     pub expiry_date: Option<DateTime<Utc>>,
     pub files: Vec<UploadFile>,
 }
+impl Drop for Upload {
+    /// Save upload metadata when the object is dropped.
+    fn drop(&mut self) {
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct UploadFile {
     pub path: PathBuf,
     pub filename: String,
     pub mimetype: String,
-    // // only a hint
-    // pub size: u64,
 }
 
 #[derive(Debug)]
@@ -41,6 +44,7 @@ impl<'h> UploadFileHandle<'_> {
     }
 }
 impl Drop for UploadFileHandle<'_> {
+    /// Automatically add file to the [`Upload`] when the handle is dropped.
     fn drop(&mut self) {
         self.files_vec.push(self.metadata.clone());
     }

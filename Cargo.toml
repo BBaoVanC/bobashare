@@ -28,7 +28,7 @@ chrono = { version = "0.4.22", features = ["serde"] }
 futures-core = "0.3.24"
 futures-util = "0.3.24"
 clap = { version = "3.2.20", features = ["derive"] }
-relative-path = "1.7.2"
+relative-path = { version = "1.7.2", features = ["serde"] }
 log = "0.4.17"
 
 [dev-dependencies]

@@ -1,6 +1,7 @@
 //! TODO: write description
 
 pub mod storage;
+pub mod serde;
 
 // use chrono::prelude::*;
 
