@@ -1,5 +1,5 @@
 use anyhow::Context;
-use bobashare::backend::{
+use bobashare::{
     generate_randomized_name,
     storage::file::{CreateUploadError, FileBackend},
 };

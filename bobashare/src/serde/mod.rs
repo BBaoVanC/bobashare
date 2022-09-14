@@ -1,15 +1,12 @@
-use std::{fmt::Display, path::PathBuf};
-
 use relative_path::FromPathError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::io::AsyncWriteExt;
 use tokio::{io, fs};
-use tokio::fs::File;
 
 use self::v1::{UploadV1, UploadFileV1};
 
-use super::storage::upload::{Upload, UploadFile};
+use super::storage::upload::{Upload};
 
 #[cfg(test)]
 mod tests;
