@@ -8,7 +8,7 @@ use tokio::{fs, io};
 
 use crate::backend::storage::upload::UploadFile;
 
-use super::MigrateMetadataError;
+use super::{FromMetadataError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadV1 {
@@ -25,21 +25,8 @@ pub struct UploadFileV1 {
     pub size: u64,
 }
 
-#[derive(Debug, Error)]
-pub enum MigrateV1Error {
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-    #[error("error converting the contained PathBuf to a RelativePathBuf")]
-    RelativePathError(#[from] FromPathError)
-}
-impl From<MigrateV1Error> for MigrateMetadataError {
-    fn from(error: MigrateV1Error) -> Self {
-        Self::V1(error)
-    }
-}
-
 impl UploadFileV1 {
-    pub async fn from_file(file: UploadFile) -> Result<Self, MigrateV1Error> {
+    pub async fn from_file(file: UploadFile) -> Result<Self, FromMetadataError> {
         let size = fs::metadata(&file.path).await?.len();
 
         Ok(Self {

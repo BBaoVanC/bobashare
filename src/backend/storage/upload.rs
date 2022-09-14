@@ -18,6 +18,7 @@ pub struct Upload {
 impl Drop for Upload {
     /// Save upload metadata when the object is dropped.
     fn drop(&mut self) {
+        todo!() // serialization
     }
 }
 
