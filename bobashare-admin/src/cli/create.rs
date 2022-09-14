@@ -1,11 +1,11 @@
 use anyhow::Context;
-use bobashare::backend::{
+use bobashare::{
     generate_randomized_name,
     storage::file::{CreateUploadError, FileBackend},
 };
 use chrono::Duration;
 use clap::{Args, Subcommand};
-use tracing::{instrument, event, Level};
+use tracing::{event, instrument, Level};
 
 // #[derive(Debug, Args)]
 // pub(crate) struct CreateUpload {
@@ -30,16 +30,12 @@ use tracing::{instrument, event, Level};
 pub(crate) struct CreateUpload {
     #[clap(short, long, value_parser)]
     /// How long (in days) before the upload expires and is deleted.
-    /// 
+    ///
     /// If not provided, the default is no expiry (permanent).
     expiry: Option<u16>,
 
     #[clap(subcommand)]
-    name: NameOptions
-    // #[clap(short, long)]
-    // random: bool,
-    // #[clap(short, long, value_parser)]
-    // name: Option<String>,
+    name: NameOptions,
 }
 #[derive(Debug, Subcommand, Clone)]
 pub(crate) enum NameOptions {
@@ -49,9 +45,7 @@ pub(crate) enum NameOptions {
         length: u16,
     },
     /// Use a specific name for the upload
-    Name {
-        name: String,
-    },
+    Name { name: String },
 }
 
 #[instrument]
@@ -59,21 +53,26 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
     let expiry = args.expiry.map(|e| Duration::days(e.into()));
 
     let upload = match args.name {
-        NameOptions::Random{ length } => {
+        NameOptions::Random { length } => {
             loop {
                 let name = generate_randomized_name(length.into());
                 let res = backend.create_upload(&name, expiry).await;
                 if let Err(CreateUploadError::AlreadyExists) = res {
                     // TODO: should use tracing
-                    event!(Level::INFO, "An upload with the randomized name {} already exists; trying a new name", &name);
+                    event!(
+                        Level::INFO,
+                        "An upload with the randomized name {} already exists; trying a new name",
+                        &name
+                    );
                     continue;
                 }
-                break res.context("error creating upload")?
+                break res.context("error creating upload")?;
             }
-        },
-        NameOptions::Name { name } => {
-            backend.create_upload(name, expiry).await.context("error creating upload")?
         }
+        NameOptions::Name { name } => backend
+            .create_upload(name, expiry)
+            .await
+            .context("error creating upload")?,
     };
 
     println!("{:?}", upload);

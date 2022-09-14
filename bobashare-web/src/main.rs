@@ -4,7 +4,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use bobashare::backend::storage::file::FileBackend;
+use bobashare::storage::file::FileBackend;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod api;

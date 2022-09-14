@@ -1,14 +1,12 @@
 //! Version 1
 
 use chrono::prelude::*;
-use relative_path::{RelativePathBuf, FromPathError};
+use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
-use tokio::{fs, io};
+use tokio::fs;
 
-use crate::backend::storage::upload::UploadFile;
-
-use super::{IntoMetadataError};
+use super::IntoMetadataError;
+use crate::storage::upload::UploadFile;
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadV1 {

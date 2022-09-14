@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
     Extension,
 };
-use bobashare::backend::storage::file::CreateUploadError;
+use bobashare::storage::file::CreateUploadError;
 use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
@@ -20,8 +20,6 @@ pub enum UploadError {
     FormParseError(#[from] MultipartError),
     #[error("error creating upload")]
     CreateUploadError(#[from] CreateUploadError),
-    // #[error("error while creating file for upload")]
-    // CreateFileError(#[from] CreateFileError<'_>),
 }
 impl IntoResponse for UploadError {
     fn into_response(self) -> Response {
@@ -51,12 +49,13 @@ pub async fn upload_post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
 ) -> Result<impl IntoResponse, UploadError> {
-    let mut upload = state
+    let mut _upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
         .await?;
     let mut i = 0;
-    while let Some(mut field) = form.next_field().await? {
+    // while let Some(mut field) = form.next_field().await? {
+    while let Some(field) = form.next_field().await? {
         i += 1; // starts at 1
         if field.content_type().is_none() {
             continue;
@@ -64,14 +63,11 @@ pub async fn upload_post(
         if field.file_name().is_none() {
             continue;
         }
-        let mimetype = field.content_type().unwrap();
-        let filename = field.file_name().unwrap();
-
-        // upload
-        //     .add_file_from_stream(&format!("{:0<4}", i), field)
-        //     .await?;
+        let _mimetype = field.content_type().unwrap();
+        let _filename = field.file_name().unwrap();
 
         // let name_on_disk = format!("{:0<4}", 5);
+        println!("{}", i); // TODO: remove this
         todo!();
     }
 

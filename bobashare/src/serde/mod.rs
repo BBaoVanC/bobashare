@@ -1,15 +1,10 @@
-use std::{fmt::Display, path::PathBuf};
-
 use relative_path::FromPathError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use tokio::io::AsyncWriteExt;
-use tokio::{io, fs};
-use tokio::fs::File;
+use tokio::{fs, io, io::AsyncWriteExt};
 
-use self::v1::{UploadV1, UploadFileV1};
-
-use super::storage::upload::{Upload, UploadFile};
+use self::v1::{UploadFileV1, UploadV1};
+use super::storage::upload::Upload;
 
 #[cfg(test)]
 mod tests;
@@ -31,12 +26,13 @@ pub enum IntoMetadataError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
     #[error("error while converting path {0} to relative path")]
-    ToRelativeError(#[from] FromPathError)
+    ToRelativeError(#[from] FromPathError),
 }
 impl UploadMetadata {
     pub async fn from_upload(upload: Upload) -> Result<Self, IntoMetadataError> {
         let mut files = Vec::with_capacity(upload.files.len());
-        for file in upload.files.clone() { // TODO: get rid of this clone
+        for file in upload.files.clone() {
+            // TODO: get rid of this clone
             files.push(UploadFileV1::from_file(file).await?);
         }
 
@@ -55,12 +51,19 @@ pub enum SerializeMetadataError {
     #[error("error converting Upload to UploadMetadata")]
     FromMetadataError(#[from] IntoMetadataError),
     #[error("error from serde_json")]
-    SerdeError(#[from] serde_json::Error)
+    SerdeError(#[from] serde_json::Error),
 }
 impl Upload {
     pub async fn save(self) -> Result<(), SerializeMetadataError> {
-        let mut file = fs::OpenOptions::new().write(true).create(true).open(self.path.join("metadata.json")).await?;
-        file.write_all(serde_json::to_string(&UploadMetadata::from_upload(self).await?)?.as_bytes()).await?;
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(self.path.join("metadata.json"))
+            .await?;
+        file.write_all(
+            serde_json::to_string(&UploadMetadata::from_upload(self).await?)?.as_bytes(),
+        )
+        .await?;
         Ok(())
     }
 }
