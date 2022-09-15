@@ -43,27 +43,3 @@ impl UploadMetadata {
         }))
     }
 }
-
-#[derive(Debug, Error)]
-pub enum SerializeMetadataError {
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-    #[error("error converting Upload to UploadMetadata")]
-    FromMetadataError(#[from] IntoMetadataError),
-    #[error("error from serde_json")]
-    SerdeError(#[from] serde_json::Error),
-}
-impl Upload {
-    pub async fn save(self) -> Result<(), SerializeMetadataError> {
-        let mut file = fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .open(self.path.join("metadata.json"))
-            .await?;
-        file.write_all(
-            serde_json::to_string(&UploadMetadata::from_upload(self).await?)?.as_bytes(),
-        )
-        .await?;
-        Ok(())
-    }
-}

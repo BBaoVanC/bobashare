@@ -6,6 +6,7 @@ use tokio::{
     fs,
     io,
 };
+use tracing::instrument;
 
 use super::upload::Upload;
 
@@ -23,6 +24,7 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
+    #[instrument]
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
             if e.kind() != io::ErrorKind::AlreadyExists {
@@ -55,22 +57,25 @@ impl FileBackend {
     ) -> Result<Upload, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let upload_root = self.path.join(url.as_ref());
+        let path = self.path.join(url.as_ref());
 
-        fs::create_dir(&upload_root)
+        fs::create_dir(&path)
             .await
             .map_err(|e| match e.kind() {
                 io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
                 _ => CreateUploadError::from(e),
             })?; // TODO: make this statement less ugly, get rid of the match
 
+        // TODO: this probably isnt needed, could cause confusing errors
+        // let path = fs::canonicalize(path).await?;
+
         Ok(Upload {
-            path: upload_root,
+            path,
             creation_date,
             expiry_date,
             files: Vec::new(),
-            // total_size: 0,
-            saved: false,
         })
     }
+
+    // TODO: maybe create_upload_with_capacity
 }
