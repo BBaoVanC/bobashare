@@ -10,7 +10,7 @@ fn serialize_into_latest_with_expiry() {
 
     let output = serde_json::to_string(&metadata).unwrap();
 
-    assert_eq!(output, constants::EXAMPLE_UPLOAD_WITH_EXPIRY_SERIALIZED);
+    assert_eq!(output, constants::EXAMPLE_UPLOADV1_WITH_EXPIRY_SERIALIZED);
 }
 
 #[test]
@@ -20,5 +20,5 @@ fn serialize_into_latest_no_expiry() {
 
     let output = serde_json::to_string(&metadata).unwrap();
 
-    assert_eq!(output, constants::EXAMPLE_UPLOAD_NO_EXPIRY_SERIALIZED);
+    assert_eq!(output, constants::EXAMPLE_UPLOADV1_NO_EXPIRY_SERIALIZED);
 }

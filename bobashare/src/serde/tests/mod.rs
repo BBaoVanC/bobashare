@@ -25,7 +25,6 @@ mod constants {
         creation_date() + Duration::days(4)
     }
 
-    pub(crate) const EXAMPLE_UPLOAD_WITH_EXPIRY_SERIALIZED: &str = r#"{"version":"1","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":"2022-09-02T01:02:19.824375631Z","files":[{"path":"0001","filename":"code.py","mimetype":"text/plain"},{"path":"0002","filename":"awesome.exe","mimetype":"application/vnd.microsoft.portable-executable"},{"path":"0003","filename":"document.txt","mimetype":"text/plain"}]}"#;
     pub(crate) fn example_upload_with_expiry() -> Upload {
         Upload {
             path: upload_path(),
@@ -50,10 +49,12 @@ mod constants {
             ],
         }
     }
-    pub(crate) const EXAMPLE_UPLOAD_NO_EXPIRY_SERIALIZED: &str = r#"{"version":"1","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":null,"files":[{"path":"0001","filename":"code.py","mimetype":"text/plain"},{"path":"0002","filename":"awesome.exe","mimetype":"application/vnd.microsoft.portable-executable"},{"path":"0003","filename":"document.txt","mimetype":"text/plain"}]}"#;
     pub(crate) fn example_upload_no_expiry() -> Upload {
         let mut upload = example_upload_with_expiry();
         upload.expiry_date = None;
         upload
     }
+
+    pub(crate) const EXAMPLE_UPLOADV1_WITH_EXPIRY_SERIALIZED: &str = r#"{"version":"1","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":"2022-09-02T01:02:19.824375631Z","files":[{"path":"0001","filename":"code.py","mimetype":"text/plain"},{"path":"0002","filename":"awesome.exe","mimetype":"application/vnd.microsoft.portable-executable"},{"path":"0003","filename":"document.txt","mimetype":"text/plain"}]}"#;
+    pub(crate) const EXAMPLE_UPLOADV1_NO_EXPIRY_SERIALIZED: &str = r#"{"version":"1","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":null,"files":[{"path":"0001","filename":"code.py","mimetype":"text/plain"},{"path":"0002","filename":"awesome.exe","mimetype":"application/vnd.microsoft.portable-executable"},{"path":"0003","filename":"document.txt","mimetype":"text/plain"}]}"#;
 }
