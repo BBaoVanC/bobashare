@@ -1,14 +1,24 @@
-use tokio_test::block_on;
-
 use super::constants;
 use crate::serde::UploadMetadata;
+
+use pretty_assertions::assert_eq;
 
 #[test]
 fn serialize_into_latest_with_expiry() {
     let upload = constants::example_upload_with_expiry();
-    let metadata = block_on(async { UploadMetadata::from_upload(upload).await.unwrap() });
+    let metadata = UploadMetadata::from_upload(upload);
 
-    let output = serde_json::to_string_pretty(&metadata).unwrap();
+    let output = serde_json::to_string(&metadata).unwrap();
 
-    println!("{}", output);
+    assert_eq!(output, constants::EXAMPLE_UPLOAD_WITH_EXPIRY_SERIALIZED);
+}
+
+#[test]
+fn serialize_into_latest_no_expiry() {
+    let upload = constants::example_upload_no_expiry();
+    let metadata = UploadMetadata::from_upload(upload);
+
+    let output = serde_json::to_string(&metadata).unwrap();
+
+    assert_eq!(output, constants::EXAMPLE_UPLOAD_NO_EXPIRY_SERIALIZED);
 }

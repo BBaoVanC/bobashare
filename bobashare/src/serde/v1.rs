@@ -20,18 +20,14 @@ pub struct UploadFileV1 {
     pub path: RelativePathBuf,
     pub filename: String,
     pub mimetype: String,
-    pub size: u64,
 }
 
 impl UploadFileV1 {
-    pub async fn from_file(file: UploadFile) -> Result<Self, IntoMetadataError> {
-        let size = fs::metadata(&file.path).await?.len();
-
-        Ok(Self {
-            path: RelativePathBuf::from_path(file.path)?,
+    pub fn from_file(file: UploadFile) -> Self {
+        Self {
+            path: file.path,
             filename: file.filename,
             mimetype: file.mimetype,
-            size,
-        })
+        }
     }
 }

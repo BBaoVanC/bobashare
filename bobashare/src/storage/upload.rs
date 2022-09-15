@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use chrono::prelude::*;
+use relative_path::{RelativePathBuf, FromPathError};
 use thiserror::Error;
 use tokio::{fs, fs::File, io, io::AsyncWriteExt};
 use tracing::{event, instrument, Level};
@@ -10,14 +11,13 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 #[derive(Debug, Clone)]
 pub struct Upload {
     pub path: PathBuf,
-    // pub total_size: u64,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
     pub files: Vec<UploadFile>,
 }
 #[derive(Debug, Clone)]
 pub struct UploadFile {
-    pub path: PathBuf,
+    pub path: RelativePathBuf,
     pub filename: String,
     pub mimetype: String,
 }
@@ -54,7 +54,7 @@ impl UploadHandle {
         self.data_file
             .write_all(
                 // TODO: get rid of self.metadata.clone()
-                serde_json::to_string(&UploadMetadata::from_upload(self.metadata.clone()).await?)?
+                serde_json::to_string(&UploadMetadata::from_upload(self.metadata.clone()))?
                     .as_bytes(),
             )
             .await?;
@@ -111,6 +111,8 @@ impl Drop for UploadFileHandle<'_> {
 pub enum CreateFileError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
+    #[error("error converting path to a relative path")]
+    RelativePathError(#[from] FromPathError),
 }
 impl Upload {
     pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(
@@ -122,7 +124,7 @@ impl Upload {
         let file = File::create(self.path.join(path.as_ref())).await?;
 
         let metadata = UploadFile {
-            path: path.as_ref().to_path_buf(),
+            path: RelativePathBuf::from_path(path)?,
             filename: filename.as_ref().to_string(),
             mimetype: mimetype.as_ref().to_string(),
         };

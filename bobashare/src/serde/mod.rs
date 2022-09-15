@@ -29,17 +29,17 @@ pub enum IntoMetadataError {
     ToRelativeError(#[from] FromPathError),
 }
 impl UploadMetadata {
-    pub async fn from_upload(upload: Upload) -> Result<Self, IntoMetadataError> {
+    pub fn from_upload(upload: Upload) -> Self {
         let mut files = Vec::with_capacity(upload.files.len());
         for file in upload.files.clone() {
             // TODO: get rid of this clone
-            files.push(UploadFileV1::from_file(file).await?);
+            files.push(UploadFileV1::from_file(file));
         }
 
-        Ok(Self::V1(UploadV1 {
+        Self::V1(UploadV1 {
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
             files,
-        }))
+        })
     }
 }
