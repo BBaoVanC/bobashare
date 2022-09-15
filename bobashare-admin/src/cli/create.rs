@@ -28,10 +28,10 @@ use tracing::{event, instrument, Level};
 //     ArgGroup::new("random_or_name").required(true).args(&["random", "name"])
 // ))]
 pub(crate) struct CreateUpload {
-    #[clap(short, long, value_parser)]
     /// How long (in days) before the upload expires and is deleted.
     ///
     /// If not provided, the default is no expiry (permanent).
+    #[clap(short, long, value_parser)]
     expiry: Option<u16>,
 
     #[clap(subcommand)]

@@ -3,14 +3,14 @@ use std::path::PathBuf;
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
 use tokio::{
-    fs::{self},
+    fs,
     io,
 };
 
 use super::upload::Upload;
 
 #[derive(Debug, Error)]
-pub enum BackendError {
+pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
     NotADirectory(PathBuf),
     #[error("error while doing i/o")]
@@ -23,15 +23,17 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
-    pub async fn new(path: PathBuf) -> Result<Self, BackendError> {
+    pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
             if e.kind() != io::ErrorKind::AlreadyExists {
                 // ignore AlreadyExists; propagate all other errors
-                return Err(BackendError::from(e));
+                return Err(NewBackendError::from(e));
             }
         }
+
+        let path = fs::canonicalize(path).await?;
         if !fs::metadata(&path).await?.is_dir() {
-            return Err(BackendError::NotADirectory(path));
+            return Err(NewBackendError::NotADirectory(path));
         }
 
         Ok(Self { path })
