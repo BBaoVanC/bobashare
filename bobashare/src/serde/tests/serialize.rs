@@ -1,7 +1,7 @@
+use pretty_assertions::assert_eq;
+
 use super::constants;
 use crate::serde::UploadMetadata;
-
-use pretty_assertions::assert_eq;
 
 #[test]
 fn serialize_into_latest_with_expiry() {

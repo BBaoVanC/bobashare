@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use chrono::prelude::*;
-use relative_path::{RelativePathBuf, FromPathError};
+use relative_path::{FromPathError, RelativePathBuf};
 use thiserror::Error;
 use tokio::{fs, fs::File, io, io::AsyncWriteExt};
 use tracing::{event, instrument, Level};

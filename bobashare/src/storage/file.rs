@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
-use tokio::{
-    fs,
-    io,
-};
+use tokio::{fs, io};
 use tracing::instrument;
 
 use super::upload::Upload;
@@ -59,12 +56,10 @@ impl FileBackend {
         let expiry_date = expiry.map(|e| creation_date + e);
         let path = self.path.join(url.as_ref());
 
-        fs::create_dir(&path)
-            .await
-            .map_err(|e| match e.kind() {
-                io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
-                _ => CreateUploadError::from(e),
-            })?; // TODO: make this statement less ugly, get rid of the match
+        fs::create_dir(&path).await.map_err(|e| match e.kind() {
+            io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
+            _ => CreateUploadError::from(e),
+        })?; // TODO: make this statement less ugly, get rid of the match
 
         // TODO: this probably isnt needed, could cause confusing errors
         // let path = fs::canonicalize(path).await?;
