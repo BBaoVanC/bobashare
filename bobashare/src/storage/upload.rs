@@ -3,19 +3,19 @@ use std::path::{Path, PathBuf};
 use chrono::prelude::*;
 use relative_path::{FromPathError, RelativePathBuf};
 use thiserror::Error;
-use tokio::{fs, fs::File, io, io::AsyncWriteExt};
+use tokio::{fs::File, io, io::AsyncWriteExt};
 use tracing::{event, instrument, Level};
 
 use crate::serde::{IntoMetadataError, UploadMetadata};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Upload {
     pub path: PathBuf,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
     pub files: Vec<UploadFile>,
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UploadFile {
     pub path: RelativePathBuf,
     pub filename: String,
@@ -50,7 +50,9 @@ pub enum SerializeMetadataError {
     SerdeError(#[from] serde_json::Error),
 }
 impl UploadHandle {
+    #[instrument]
     pub async fn save(mut self) -> Result<(), SerializeMetadataError> {
+        event!(Level::TRACE, "UploadHandle.save() called");
         self.data_file
             .write_all(
                 // TODO: get rid of self.metadata.clone()
@@ -66,18 +68,11 @@ impl UploadHandle {
 impl Drop for UploadHandle {
     #[instrument]
     fn drop(&mut self) {
-        if !self.saved {
-            event!(
-                Level::ERROR,
-                "An UploadHandle was dropped without using the save() method! \
-                The metadata has not been saved!"
-            );
-        } else {
-            event!(
-                Level::TRACE,
-                "UploadHandle was dropped after properly calling save()"
-            );
-        }
+        // only for logging purposes
+        event!(
+            Level::TRACE,
+            "UploadHandle was dropped"
+        );
     }
 }
 

@@ -1,10 +1,13 @@
+use std::path::PathBuf;
+
 use relative_path::FromPathError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use tokio::{fs, io, io::AsyncWriteExt};
+use tokio::io;
 
 use self::v1::{UploadFileV1, UploadV1};
 use super::storage::upload::Upload;
+use crate::storage::upload::UploadFile;
 
 #[cfg(test)]
 mod tests;
@@ -41,5 +44,27 @@ impl UploadMetadata {
             expiry_date: upload.expiry_date,
             files,
         })
+    }
+}
+
+impl UploadMetadata {
+    pub fn into_migrated_upload(path: PathBuf, metadata: UploadMetadata) -> Upload {
+        match metadata {
+            // latest
+            Self::V1(data) => Upload {
+                path,
+                creation_date: data.creation_date,
+                expiry_date: data.expiry_date,
+                files: data
+                    .files
+                    .into_iter()
+                    .map(|f| UploadFile {
+                        filename: f.filename,
+                        mimetype: f.mimetype,
+                        path: f.path,
+                    })
+                    .collect::<Vec<_>>(),
+            },
+        }
     }
 }
