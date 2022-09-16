@@ -22,8 +22,11 @@ pub struct UploadFile {
     pub mimetype: String,
 }
 
+/// Make sure to call [`flush`] or else the metadata won't be saved!
+/// 
+/// [`flush`]: fn@Self::flush
+// TODO: impl Drop so it can automatically flush with RAII
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct UploadHandle {
     pub metadata: Upload,
     data_file: File,
@@ -39,7 +42,6 @@ impl UploadHandle {
         })
     }
 }
-
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
     #[error("error while doing i/o")]
@@ -78,28 +80,18 @@ impl Drop for UploadHandle {
 
 #[derive(Debug)]
 pub struct UploadFileHandle<'h> {
-    pub metadata: UploadFile,
+    pub metadata: &'h UploadFile,
     pub file: File,
-    files_vec: &'h mut Vec<UploadFile>,
 }
 impl<'h> UploadFileHandle<'_> {
     pub fn new(
-        metadata: UploadFile,
+        metadata: &'h UploadFile,
         file: File,
-        files_vec: &'h mut Vec<UploadFile>,
     ) -> UploadFileHandle<'h> {
         UploadFileHandle {
             metadata,
             file,
-            files_vec,
         }
-    }
-}
-impl Drop for UploadFileHandle<'_> {
-    /// Automatically add file to the [`Upload`] when the handle is dropped.
-    fn drop(&mut self) {
-        // TODO: see if this clone can be removed
-        self.files_vec.push(self.metadata.clone());
     }
 }
 
@@ -124,7 +116,11 @@ impl Upload {
             filename: filename.as_ref().to_string(),
             mimetype: mimetype.as_ref().to_string(),
         };
-        let handle = UploadFileHandle::new(metadata, file, &mut self.files);
+
+        self.files.push(metadata);
+
+        let handle = UploadFileHandle::new(self.files.last().unwrap(), file);
+        // let handle = UploadFileHandle::new(metadata, file, &mut self.files);
         Ok(handle)
     }
 }
