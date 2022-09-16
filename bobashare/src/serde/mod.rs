@@ -34,8 +34,7 @@ pub enum IntoMetadataError {
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
         let mut files = Vec::with_capacity(upload.files.len());
-        for file in upload.files.clone() {
-            // TODO: get rid of this clone
+        for file in upload.files.into_iter() {
             files.push(UploadFileV1::from_file(file));
         }
 

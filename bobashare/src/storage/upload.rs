@@ -51,7 +51,7 @@ pub enum SerializeMetadataError {
 }
 impl UploadHandle {
     #[instrument]
-    pub async fn save(mut self) -> Result<(), SerializeMetadataError> {
+    pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
         event!(Level::TRACE, "UploadHandle.save() called");
         self.data_file
             .write_all(
@@ -66,9 +66,9 @@ impl UploadHandle {
     }
 }
 impl Drop for UploadHandle {
+    /// Only for logging
     #[instrument]
     fn drop(&mut self) {
-        // only for logging purposes
         event!(
             Level::TRACE,
             "UploadHandle was dropped"
@@ -98,6 +98,7 @@ impl<'h> UploadFileHandle<'_> {
 impl Drop for UploadFileHandle<'_> {
     /// Automatically add file to the [`Upload`] when the handle is dropped.
     fn drop(&mut self) {
+        // TODO: see if this clone can be removed
         self.files_vec.push(self.metadata.clone());
     }
 }
