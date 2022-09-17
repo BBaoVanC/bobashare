@@ -7,7 +7,6 @@ use tokio::io;
 
 use self::v1::{UploadFileV1, UploadV1};
 use super::storage::upload::Upload;
-use crate::storage::upload::UploadFile;
 
 #[cfg(test)]
 mod tests;
@@ -57,11 +56,7 @@ impl UploadMetadata {
                 files: data
                     .files
                     .into_iter()
-                    .map(|f| UploadFile {
-                        filename: f.filename,
-                        mimetype: f.mimetype,
-                        path: f.path,
-                    })
+                    .map(Into::into) // From<UploadFileV1> for UploadFile
                     .collect::<Vec<_>>(),
             },
         }

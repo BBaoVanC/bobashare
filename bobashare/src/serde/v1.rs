@@ -29,3 +29,12 @@ impl UploadFileV1 {
         }
     }
 }
+impl From<UploadFileV1> for UploadFile {
+    fn from(upload: UploadFileV1) -> Self {
+        Self {
+            path: upload.path,
+            filename: upload.filename,
+            mimetype: upload.mimetype,
+        }
+    }
+}
