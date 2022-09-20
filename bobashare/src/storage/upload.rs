@@ -23,7 +23,4 @@ pub struct UploadFile {
 }
 
 impl Upload {
-    pub async fn delete(self) -> Result<(), io::Error> {
-        todo!()
-    }
 }

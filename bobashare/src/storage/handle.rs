@@ -19,16 +19,6 @@ pub struct UploadHandle<'h> {
     data_file: File,
     saved: bool,
 }
-// impl UploadHandle {
-//     pub async fn new(metadata: Upload) -> Result<Self, io::Error> {
-//         let data_file = File::create(metadata.path.join("metadata.json")).await?;
-//         Ok(Self {
-//             metadata,
-//             data_file,
-//             saved: false,
-//         })
-//     }
-// }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
     #[error("error while doing i/o")]
@@ -46,6 +36,10 @@ pub enum CreateFileError {
     RelativePathError(#[from] FromPathError),
 }
 impl UploadHandle<'_> {
+    pub async fn delete(self) -> Result<(), io::Error> {
+        todo!()
+    }
+
     #[instrument]
     pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
         event!(Level::TRACE, "UploadHandle.save() called");
@@ -116,5 +110,9 @@ impl<'h> UploadFileHandle<'_> {
             metadata,
             file,
         }
+    }
+
+    pub fn delete(self) -> Result<(), io::Error> {
+        todo!()
     }
 }
