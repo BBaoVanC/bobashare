@@ -43,6 +43,11 @@ impl UploadHandle<'_> {
     pub async fn delete(self) -> Result<(), io::Error> {
         todo!()
     }
+    pub async fn delete_file(&mut self, handle: UploadFileHandle<'_>) -> Result<(), io::Error> {
+        fs::remove_file(&handle.full_path).await?;
+        todo!("remove from Vec");
+        Ok(())
+    }
 
     #[instrument]
     pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
@@ -126,14 +131,10 @@ pub struct UploadFileHandle<'h> {
     pub file: File,
     full_path: PathBuf,
 }
-impl<'h> UploadFileHandle<'_> {
+impl UploadFileHandle<'_> {
     // fn new<P: AsRef<Path>>(metadata: &'h UploadFile, file: File, root: P) ->
     // UploadFileHandle<'h> {     UploadFileHandle { metadata, file, full_path:
     // metadata.path.to_path(root) } }
-
-    pub fn delete(self) -> Result<(), io::Error> {
-        todo!()
-    }
 }
 impl Drop for UploadFileHandle<'_> {
     /// Only for logging
