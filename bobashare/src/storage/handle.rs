@@ -2,15 +2,14 @@ use std::{io, path::Path};
 
 use relative_path::{FromPathError, RelativePathBuf};
 use thiserror::Error;
-use tokio::{fs::{File, self}, io::AsyncWriteExt};
-use tracing::{event, Level, instrument};
+use tokio::{fs::File, io::AsyncWriteExt};
+use tracing::{event, instrument, Level};
 
-use crate::serde::{UploadMetadata, IntoMetadataError};
-
-use super::upload::{UploadFile, Upload};
+use super::upload::{Upload, UploadFile};
+use crate::serde::{IntoMetadataError, UploadMetadata};
 
 /// Make sure to call [`flush`] or else the metadata won't be saved!
-/// 
+///
 /// [`flush`]: fn@Self::flush
 // TODO: impl Drop so it can automatically flush with RAII
 #[derive(Debug)]
@@ -76,23 +75,20 @@ impl UploadHandle<'_> {
         Ok(handle)
     }
 
-    pub async fn read_file<'f>(&'f self, metadata: &'f UploadFile) -> Result<UploadFileHandle, io::Error> {
+    pub async fn read_file<'f>(
+        &'f self,
+        metadata: &'f UploadFile,
+    ) -> Result<UploadFileHandle, io::Error> {
         let file = File::open(metadata.path.to_path(&self.metadata.path)).await?;
 
-        Ok(UploadFileHandle {
-            file,
-            metadata,
-        })
+        Ok(UploadFileHandle { file, metadata })
     }
 }
 impl Drop for UploadHandle<'_> {
     /// Only for logging
     #[instrument]
     fn drop(&mut self) {
-        event!(
-            Level::TRACE,
-            "UploadHandle was dropped"
-        );
+        event!(Level::TRACE, "UploadHandle was dropped");
     }
 }
 
@@ -102,14 +98,8 @@ pub struct UploadFileHandle<'h> {
     pub file: File,
 }
 impl<'h> UploadFileHandle<'_> {
-    pub fn new(
-        metadata: &'h UploadFile,
-        file: File,
-    ) -> UploadFileHandle<'h> {
-        UploadFileHandle {
-            metadata,
-            file,
-        }
+    pub fn new(metadata: &'h UploadFile, file: File) -> UploadFileHandle<'h> {
+        UploadFileHandle { metadata, file }
     }
 
     pub fn delete(self) -> Result<(), io::Error> {

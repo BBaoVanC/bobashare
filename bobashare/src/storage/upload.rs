@@ -1,11 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use chrono::prelude::*;
-use relative_path::{FromPathError, RelativePathBuf};
-use thiserror::Error;
-use tokio::{fs::{File, self}, io::{self, AsyncWriteExt}};
-
-use super::handle::UploadFileHandle;
+use relative_path::RelativePathBuf;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Upload {
@@ -22,5 +18,4 @@ pub struct UploadFile {
     pub mimetype: String,
 }
 
-impl Upload {
-}
+impl Upload {}
