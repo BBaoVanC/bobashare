@@ -17,5 +17,3 @@ pub struct UploadFile {
     pub filename: String,
     pub mimetype: String,
 }
-
-impl Upload {}
