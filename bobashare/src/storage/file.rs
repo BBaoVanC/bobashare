@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, collections::HashMap};
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
@@ -68,7 +68,7 @@ impl FileBackend {
             path,
             creation_date,
             expiry_date,
-            files: Vec::new(),
+            files: HashMap::new(),
         })
     }
 

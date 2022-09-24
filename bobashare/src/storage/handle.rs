@@ -1,9 +1,10 @@
 use std::{
+    ffi::{OsStr, OsString},
     io,
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
-use relative_path::{FromPathError, RelativePathBuf};
 use thiserror::Error;
 use tokio::{
     fs::{self, File},
@@ -34,10 +35,10 @@ pub enum SerializeMetadataError {
 }
 #[derive(Debug, Error)]
 pub enum CreateFileError {
+    #[error("the file already exists: {}",.0.to_string_lossy())]
+    AlreadyExists(OsString),
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
-    #[error("error converting path to a relative path")]
-    RelativePathError(#[from] FromPathError),
 }
 impl UploadHandle<'_> {
     pub async fn delete(self) -> Result<(), io::Error> {
@@ -62,57 +63,44 @@ impl UploadHandle<'_> {
         Ok(())
     }
 
-    pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(
+    pub async fn create_file<P: AsRef<OsStr>, S: AsRef<str>>(
         &mut self,
         path: P,
         filename: S,
         mimetype: S,
     ) -> Result<UploadFileHandle, CreateFileError> {
-        let full_path = self.metadata.path.join(path.as_ref());
-        let file = File::create(&full_path).await?;
+        let path = path.as_ref();
+
+        let full_path = self.metadata.path.join(path);
 
         let metadata = UploadFile {
-            path: RelativePathBuf::from_path(path)?,
+            path: OsString::from(path),
             filename: filename.as_ref().to_string(),
             mimetype: mimetype.as_ref().to_string(),
         };
 
-        self.metadata.files.push(metadata);
+        let path_owned = OsString::from(path);
+        if self.metadata.files.contains_key(path) {
+            return Err(CreateFileError::AlreadyExists(path_owned));
+        }
+        self.metadata.files.insert(path_owned, metadata);
+
+        let file = File::create(&full_path).await?;
 
         Ok(UploadFileHandle {
-            metadata: self.metadata.files.last().unwrap(),
+            metadata: self.metadata.files.get(path).unwrap(),
+            // metadata: self.metadata.files.last().unwrap(),
             file,
             full_path,
         })
     }
 
-    pub async fn read_file<'f>(
-        &'f self,
-        metadata: &'f UploadFile,
-    ) -> Result<UploadFileHandle, io::Error> {
-        let full_path = metadata.path.to_path(&self.metadata.path);
-        let file = File::open(&full_path).await?;
-
-        Ok(UploadFileHandle {
-            metadata,
-            file,
-            full_path,
-        })
+    pub async fn read_file() {
+        todo!()
     }
 
-    pub async fn open_file<'f>(
-        &'f self,
-        metadata: &'f UploadFile,
-        options: fs::OpenOptions,
-    ) -> Result<UploadFileHandle, io::Error> {
-        let full_path = metadata.path.to_path(&self.metadata.path);
-        let file = options.open(&full_path).await?;
-
-        Ok(UploadFileHandle {
-            metadata,
-            file,
-            full_path,
-        })
+    pub async fn open_file() {
+        todo!()
     }
 }
 // impl Drop for UploadHandle<'_> {

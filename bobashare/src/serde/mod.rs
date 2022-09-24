@@ -1,15 +1,16 @@
 use std::path::PathBuf;
 
-use relative_path::FromPathError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::io;
 
+use crate::storage::upload::UploadFile;
+
 use self::v1::{UploadFileV1, UploadV1};
 use super::storage::upload::Upload;
 
-#[cfg(test)]
-mod tests;
+// #[cfg(test)]
+// mod tests;
 
 pub mod v1;
 
@@ -27,14 +28,17 @@ pub enum UploadMetadata {
 pub enum IntoMetadataError {
     #[error("error while doing i/o")]
     IoError(#[from] io::Error),
-    #[error("error while converting path {0} to relative path")]
-    ToRelativeError(#[from] FromPathError),
 }
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
         let mut files = Vec::with_capacity(upload.files.len());
-        for file in upload.files.into_iter() {
-            files.push(UploadFileV1::from_file(file));
+        for (path, file) in upload.files.into_iter() {
+            // files.push(UploadFileV1::from_file(file));
+            files.push(UploadFileV1 {
+                path,
+                filename: file.filename,
+                mimetype: file.mimetype,
+            })
         }
 
         Self::V1(UploadV1 {
@@ -56,8 +60,8 @@ impl UploadMetadata {
                 files: data
                     .files
                     .into_iter()
-                    .map(Into::into) // From<UploadFileV1> for UploadFile
-                    .collect::<Vec<_>>(),
+                    .map(|f| (f.path.clone(), UploadFile { path: f.path.clone(), filename: f.filename, mimetype: f.mimetype })) // From<UploadFileV1> for UploadFile
+                    .collect(),
             },
         }
     }

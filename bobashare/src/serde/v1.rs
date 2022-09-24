@@ -1,7 +1,8 @@
 //! Version 1
 
+use std::ffi::OsString;
+
 use chrono::prelude::*;
-use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 
 use crate::storage::upload::UploadFile;
@@ -15,26 +16,26 @@ pub struct UploadV1 {
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadFileV1 {
-    pub path: RelativePathBuf,
+    pub path: OsString,
     pub filename: String,
     pub mimetype: String,
 }
 
-impl UploadFileV1 {
-    pub fn from_file(file: UploadFile) -> Self {
-        Self {
-            path: file.path,
-            filename: file.filename,
-            mimetype: file.mimetype,
-        }
-    }
-}
-impl From<UploadFileV1> for UploadFile {
-    fn from(upload: UploadFileV1) -> Self {
-        Self {
-            path: upload.path,
-            filename: upload.filename,
-            mimetype: upload.mimetype,
-        }
-    }
-}
+// impl UploadFileV1 {
+//     pub fn from_file(file: UploadFile) -> Self {
+//         Self {
+//             path: file.path,
+//             filename: file.filename,
+//             mimetype: file.mimetype,
+//         }
+//     }
+// }
+// impl From<UploadFileV1> for UploadFile {
+//     fn from(upload: UploadFileV1) -> Self {
+//         Self {
+//             path: upload.path,
+//             filename: upload.filename,
+//             mimetype: upload.mimetype,
+//         }
+//     }
+// }
