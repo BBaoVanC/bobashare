@@ -17,7 +17,7 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 /// Make sure to call [`flush`] or else the metadata won't be saved!
 ///
 /// [`flush`]: fn@Self::flush
-// TODO: impl Drop so it can automatically flush with RAII
+// TODO: impl Drop so it can automatically flush() with RAII
 #[derive(Debug)]
 pub struct UploadHandle<'h> {
     pub metadata: &'h mut Upload,
@@ -93,7 +93,6 @@ impl UploadHandle<'_> {
         let full_path = metadata.path.to_path(&self.metadata.path);
         let file = File::open(&full_path).await?;
 
-        // Ok(UploadFileHandle::new(metadata, file, &self.metadata.path))
         Ok(UploadFileHandle {
             metadata,
             file,
@@ -109,7 +108,6 @@ impl UploadHandle<'_> {
         let full_path = metadata.path.to_path(&self.metadata.path);
         let file = options.open(&full_path).await?;
 
-        // Ok(UploadFileHandle::new(metadata, file, &self.metadata.path))
         Ok(UploadFileHandle {
             metadata,
             file,
@@ -117,13 +115,13 @@ impl UploadHandle<'_> {
         })
     }
 }
-impl Drop for UploadHandle<'_> {
-    /// Only for logging
-    #[instrument]
-    fn drop(&mut self) {
-        event!(Level::TRACE, "UploadHandle was dropped");
-    }
-}
+// impl Drop for UploadHandle<'_> {
+//     /// Only for logging
+//     #[instrument]
+//     fn drop(&mut self) {
+//         event!(Level::TRACE, "UploadHandle was dropped");
+//     }
+// }
 
 #[derive(Debug)]
 pub struct UploadFileHandle<'h> {
@@ -131,15 +129,10 @@ pub struct UploadFileHandle<'h> {
     pub file: File,
     full_path: PathBuf,
 }
-impl UploadFileHandle<'_> {
-    // fn new<P: AsRef<Path>>(metadata: &'h UploadFile, file: File, root: P) ->
-    // UploadFileHandle<'h> {     UploadFileHandle { metadata, file, full_path:
-    // metadata.path.to_path(root) } }
-}
-impl Drop for UploadFileHandle<'_> {
-    /// Only for logging
-    #[instrument]
-    fn drop(&mut self) {
-        event!(Level::TRACE, "UploadFileHandle was dropped");
-    }
-}
+// impl Drop for UploadFileHandle<'_> {
+//     /// Only for logging
+//     #[instrument]
+//     fn drop(&mut self) {
+//         event!(Level::TRACE, "UploadFileHandle was dropped");
+//     }
+// }
