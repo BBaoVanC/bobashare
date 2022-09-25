@@ -1,4 +1,4 @@
-use std::{path::PathBuf, collections::HashMap, ffi::OsString};
+use std::{path::PathBuf, collections::HashMap};
 
 use chrono::prelude::*;
 
@@ -7,12 +7,11 @@ pub struct Upload {
     pub path: PathBuf,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
-    pub files: HashMap<OsString, UploadFile>,
+    pub files: HashMap<String, UploadFile>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UploadFile {
-    pub path: PathBuf,
     pub filename: String,
     pub mimetype: String,
 }

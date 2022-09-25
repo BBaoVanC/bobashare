@@ -1,6 +1,6 @@
 //! Version 1
 
-use std::ffi::OsString;
+use std::collections::HashMap;
 
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -11,12 +11,11 @@ use crate::storage::upload::UploadFile;
 pub struct UploadV1 {
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
-    pub files: Vec<UploadFileV1>,
+    pub files: HashMap<String, UploadFileV1>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadFileV1 {
-    pub path: String,
     pub filename: String,
     pub mimetype: String,
 }

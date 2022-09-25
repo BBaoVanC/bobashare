@@ -21,11 +21,11 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
-    #[instrument]
+    // #[instrument]
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
+            // ignore AlreadyExists; propagate all other errors
             if e.kind() != io::ErrorKind::AlreadyExists {
-                // ignore AlreadyExists; propagate all other errors
                 return Err(NewBackendError::from(e));
             }
         }
