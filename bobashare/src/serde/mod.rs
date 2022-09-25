@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, ffi::OsString};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -35,7 +35,7 @@ impl UploadMetadata {
         for (path, file) in upload.files.into_iter() {
             // files.push(UploadFileV1::from_file(file));
             files.push(UploadFileV1 {
-                path,
+                path: path.to_string_lossy().to_string(),
                 filename: file.filename,
                 mimetype: file.mimetype,
             })
@@ -54,14 +54,14 @@ impl UploadMetadata {
         match metadata {
             // latest
             Self::V1(data) => Upload {
-                path,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
                 files: data
                     .files
                     .into_iter()
-                    .map(|f| (f.path.clone(), UploadFile { path: f.path.clone(), filename: f.filename, mimetype: f.mimetype })) // From<UploadFileV1> for UploadFile
+                    .map(|f| (OsString::from(f.path.clone()), UploadFile { path: path.join(OsString::from(f.path)), filename: f.filename, mimetype: f.mimetype })) // From<UploadFileV1> for UploadFile
                     .collect(),
+                path,
             },
         }
     }

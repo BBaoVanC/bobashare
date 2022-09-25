@@ -1,7 +1,6 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, collections::HashMap, ffi::OsString};
 
 use chrono::{prelude::*, Duration};
-use relative_path::RelativePathBuf;
 
 use crate::storage::upload::{Upload, UploadFile};
 
@@ -23,23 +22,23 @@ pub(crate) fn example_upload_with_expiry() -> Upload {
         path: upload_path(),
         creation_date: creation_date(),
         expiry_date: Some(expiry_date()),
-        files: vec![
-            UploadFile {
-                path: RelativePathBuf::from("0001"),
+        files: HashMap::from([
+            (OsString::from("0001"), UploadFile {
+                path: PathBuf::from("0001"),
                 filename: String::from("code.py"),
                 mimetype: String::from("text/plain"),
-            },
-            UploadFile {
-                path: RelativePathBuf::from("0002"),
+            }),
+            (OsString::from("0002"), UploadFile {
+                path: PathBuf::from("0002"),
                 filename: String::from("awesome.exe"),
                 mimetype: String::from("application/vnd.microsoft.portable-executable"),
-            },
-            UploadFile {
-                path: RelativePathBuf::from("0003"),
+            }),
+            (OsString::from("0003"), UploadFile {
+                path: PathBuf::from("0003"),
                 filename: String::from("document.txt"),
                 mimetype: String::from("text/plain"),
-            },
-        ],
+            }),
+        ]),
     }
 }
 pub(crate) fn example_upload_no_expiry() -> Upload {

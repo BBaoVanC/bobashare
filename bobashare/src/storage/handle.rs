@@ -33,23 +33,7 @@ pub enum SerializeMetadataError {
     #[error("error while serializing with serde_json")]
     SerdeError(#[from] serde_json::Error),
 }
-#[derive(Debug, Error)]
-pub enum CreateFileError {
-    #[error("the file already exists: {}",.0.to_string_lossy())]
-    AlreadyExists(OsString),
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-}
 impl UploadHandle<'_> {
-    pub async fn delete(self) -> Result<(), io::Error> {
-        todo!()
-    }
-    pub async fn delete_file(&mut self, handle: UploadFileHandle<'_>) -> Result<(), io::Error> {
-        fs::remove_file(&handle.full_path).await?;
-        todo!("remove from Vec");
-        Ok(())
-    }
-
     #[instrument]
     pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
         self.data_file
@@ -61,6 +45,29 @@ impl UploadHandle<'_> {
             .await?;
         self.data_file.flush().await?;
         Ok(())
+    }
+}
+#[derive(Debug, Error)]
+pub enum CreateFileError {
+    // TODO: to_string_lossy() could make for some unreadable error messages
+    #[error("the file already exists: {}",.0.to_string_lossy())]
+    AlreadyExists(OsString),
+    #[error("error while doing i/o")]
+    IoError(#[from] io::Error),
+}
+impl UploadHandle<'_> {
+    pub async fn delete(self) -> Result<(), io::Error> {
+        todo!()
+    }
+    pub async fn delete_file(&mut self) -> Result<(), io::Error> {
+        todo!()
+    }
+
+    pub async fn get_file<P: AsRef<OsStr>>(&self, path: P) -> Result<UploadFileHandle, io::Error> {
+        // self.metadata.files.get(path.as_ref()).;
+        let full_path = self.metadata.path.join(path.as_ref());
+
+        todo!()
     }
 
     pub async fn create_file<P: AsRef<OsStr>, S: AsRef<str>>(
@@ -74,7 +81,7 @@ impl UploadHandle<'_> {
         let full_path = self.metadata.path.join(path);
 
         let metadata = UploadFile {
-            path: OsString::from(path),
+            path: full_path.clone(),
             filename: filename.as_ref().to_string(),
             mimetype: mimetype.as_ref().to_string(),
         };

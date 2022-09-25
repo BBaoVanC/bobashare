@@ -12,7 +12,7 @@ pub struct Upload {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UploadFile {
-    pub path: OsString,
+    pub path: PathBuf,
     pub filename: String,
     pub mimetype: String,
 }

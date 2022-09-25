@@ -16,7 +16,7 @@ pub struct UploadV1 {
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadFileV1 {
-    pub path: OsString,
+    pub path: String,
     pub filename: String,
     pub mimetype: String,
 }
