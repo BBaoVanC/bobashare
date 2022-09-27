@@ -1,6 +1,9 @@
 use std::io::{self, ErrorKind};
 
-use axum::response::{IntoResponse, Response};
+use axum::{
+    response::{IntoResponse, Response},
+    Json,
+};
 use hyper::StatusCode;
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +15,7 @@ pub type Result<T = ApiSuccessV1, E = ApiErrorV1> = std::result::Result<T, E>;
 pub struct ApiResponseV1(StatusCode, ApiResultV1);
 impl IntoResponse for ApiResponseV1 {
     fn into_response(self) -> Response {
-        (self.0, self.1.into_response())
+        (self.0, Json(self.1)).into_response()
     }
 }
 impl From<io::Error> for ApiResponseV1 {
@@ -22,7 +25,12 @@ impl From<io::Error> for ApiResponseV1 {
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        Self(code, ApiResultV1::Error(ApiErrorV1 { message: err.to_string() }))
+        Self(
+            code,
+            ApiResultV1::Error(ApiErrorV1 {
+                message: err.to_string(),
+            }),
+        )
     }
 }
 
@@ -36,10 +44,16 @@ pub enum ApiResultV1 {
 }
 
 #[derive(Debug, Serialize)]
-pub enum ApiSuccessV1 {
-}
+pub enum ApiSuccessV1 {}
 
 #[derive(Debug, Serialize)]
 pub struct ApiErrorV1 {
     message: String,
+}
+impl<T: ToString> From<T> for ApiErrorV1 {
+    fn from(err: T) -> Self {
+        Self {
+            message: err.to_string(),
+        }
+    }
 }

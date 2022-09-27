@@ -16,10 +16,7 @@ use crate::AppState;
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-pub async fn post(
-    state: Extension<Arc<AppState>>,
-    mut form: Multipart,
-) -> Result {
+pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result {
     let mut _upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
@@ -32,7 +29,7 @@ pub async fn post(
         });
     let mut i = 0;
     // while let Some(mut field) = form.next_field().await? {
-    while let Some(field) = form.next_field().await? {
+    while let Some(field) = form.next_field().await.map_err(|e| e.to_string())? {
         i += 1; // starts at 1
         if field.content_type().is_none() {
             continue;
@@ -48,5 +45,6 @@ pub async fn post(
         todo!();
     }
 
-    (StatusCode::CREATED, "Created")
+    todo!();
+    // (StatusCode::CREATED, "Created")
 }

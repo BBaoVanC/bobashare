@@ -27,8 +27,7 @@ async fn main() -> anyhow::Result<()> {
         backend: FileBackend::new(PathBuf::from(backend_path)).await?,
     });
 
-    let app = Router::with_state(state)
-        .route("/api/v1/upload", post(api::v1::upload::post));
+    let app = Router::with_state(state).route("/api/v1/upload", post(api::v1::upload::post));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::info!("Listening on http://{}", addr);
