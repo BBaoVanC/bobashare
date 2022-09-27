@@ -1,40 +1,17 @@
 use std::sync::Arc;
 
-use axum::{extract::{multipart::MultipartError, Multipart}, response::{IntoResponse, Response}, Extension};
+use axum::{
+    extract::{multipart::MultipartError, Multipart},
+    response::{IntoResponse, Response},
+    Extension, Json,
+};
 use bobashare::storage::file::CreateUploadError;
 use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
 
+use super::Result;
 use crate::AppState;
-
-#[derive(Debug, Error)]
-pub enum UploadError {
-    #[error("error parsing multipart form data")]
-    FormParseError(#[from] MultipartError),
-    #[error("error creating upload")]
-    CreateUploadError(#[from] CreateUploadError),
-}
-impl IntoResponse for UploadError {
-    fn into_response(self) -> Response {
-        match self {
-            UploadError::FormParseError(e) => (
-                StatusCode::BAD_REQUEST,
-                format!("error parsing form data: {}", e),
-            ),
-            UploadError::CreateUploadError(e) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                format!("error creating upload: {}", e),
-            ),
-            // TODO: make these more specific by matching io::Error
-            // UploadError::AddFileError(e) => (
-            //     StatusCode::INTERNAL_SERVER_ERROR,
-            //     format!("error adding file to upload: {}", e),
-            // ),
-        }
-        .into_response()
-    }
-}
 
 /// Accepts: `multipart/form-data`
 ///
@@ -42,12 +19,15 @@ impl IntoResponse for UploadError {
 pub async fn post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
-) -> impl IntoResponse {
+) -> Result {
     let mut _upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
-        .await.map_err(|e| match e {
-            CreateUploadError::AlreadyExists => (StatusCode::FORBIDDEN, String::from("already exists")),
+        .await
+        .map_err(|e| match e {
+            CreateUploadError::AlreadyExists => {
+                (StatusCode::FORBIDDEN, String::from("already exists"))
+            }
             CreateUploadError::IoError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
         });
     let mut i = 0;
