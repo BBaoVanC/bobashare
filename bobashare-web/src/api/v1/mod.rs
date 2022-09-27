@@ -35,7 +35,7 @@ impl From<io::Error> for ApiResponseV1 {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(tag = "type")]
+#[serde(tag = "status")]
 pub enum ApiResultV1 {
     #[serde(rename = "success")]
     Success(ApiSuccessV1),
