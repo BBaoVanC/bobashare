@@ -1,15 +1,15 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
-use relative_path::FromPathError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::io;
 
 use self::v1::{UploadFileV1, UploadV1};
 use super::storage::upload::Upload;
+use crate::storage::upload::UploadFile;
 
-#[cfg(test)]
-mod tests;
+// #[cfg(test)]
+// mod tests;
 
 pub mod v1;
 
@@ -25,17 +25,24 @@ pub enum UploadMetadata {
 
 #[derive(Debug, Error)]
 pub enum IntoMetadataError {
-    #[error("error while doing i/o")]
+    #[error("error while doing i/o: {0}")]
     IoError(#[from] io::Error),
-    #[error("error while converting path {0} to relative path")]
-    ToRelativeError(#[from] FromPathError),
 }
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
-        let mut files = Vec::with_capacity(upload.files.len());
-        for file in upload.files.into_iter() {
-            files.push(UploadFileV1::from_file(file));
-        }
+        let files = upload
+            .files
+            .into_iter()
+            .map(|(s, f)| {
+                (
+                    s,
+                    UploadFileV1 {
+                        filename: f.filename,
+                        mimetype: f.mimetype,
+                    },
+                )
+            })
+            .collect::<HashMap<_, _>>();
 
         Self::V1(UploadV1 {
             creation_date: upload.creation_date,
@@ -50,14 +57,22 @@ impl UploadMetadata {
         match metadata {
             // latest
             Self::V1(data) => Upload {
-                path,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
                 files: data
                     .files
                     .into_iter()
-                    .map(Into::into) // From<UploadFileV1> for UploadFile
-                    .collect::<Vec<_>>(),
+                    .map(|(s, f)| {
+                        (
+                            s,
+                            UploadFile {
+                                filename: f.filename,
+                                mimetype: f.mimetype,
+                            },
+                        )
+                    })
+                    .collect(),
+                path,
             },
         }
     }

@@ -4,6 +4,7 @@
 
 - [ ] Add IP banning (requires saving in metadata)
 - [ ] Add delete key
+- [ ] Figure out file locking and concurrent safety
 
 ## Library
 

@@ -3,13 +3,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use relative_path::{FromPathError, RelativePathBuf};
 use thiserror::Error;
 use tokio::{
-    fs::{self, File},
+    fs::{File, OpenOptions},
     io::AsyncWriteExt,
 };
-use tracing::{event, instrument, Level};
 
 use super::upload::{Upload, UploadFile};
 use crate::serde::{IntoMetadataError, UploadMetadata};
@@ -25,31 +23,15 @@ pub struct UploadHandle<'h> {
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
-    #[error("error while doing i/o")]
+    #[error("error while doing i/o: {0}")]
     IoError(#[from] io::Error),
     #[error("error converting Upload to UploadMetadata")]
     FromMetadataError(#[from] IntoMetadataError),
     #[error("error while serializing with serde_json")]
     SerdeError(#[from] serde_json::Error),
 }
-#[derive(Debug, Error)]
-pub enum CreateFileError {
-    #[error("error while doing i/o")]
-    IoError(#[from] io::Error),
-    #[error("error converting path to a relative path")]
-    RelativePathError(#[from] FromPathError),
-}
 impl UploadHandle<'_> {
-    pub async fn delete(self) -> Result<(), io::Error> {
-        todo!()
-    }
-    pub async fn delete_file(&mut self, handle: UploadFileHandle<'_>) -> Result<(), io::Error> {
-        fs::remove_file(&handle.full_path).await?;
-        todo!("remove from Vec");
-        Ok(())
-    }
-
-    #[instrument]
+    // #[instrument]
     pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
         self.data_file
             .write_all(
@@ -61,78 +43,93 @@ impl UploadHandle<'_> {
         self.data_file.flush().await?;
         Ok(())
     }
+}
+#[derive(Debug, Error)]
+pub enum CreateFileError {
+    #[error("the file already exists")]
+    AlreadyExists,
+    #[error("error while doing i/o: {0}")]
+    IoError(#[from] io::Error),
+}
+impl UploadHandle<'_> {
+    pub async fn delete(self) -> Result<(), io::Error> {
+        todo!()
+    }
+    pub async fn delete_file(&mut self) -> Result<(), io::Error> {
+        todo!()
+    }
 
-    pub async fn create_file<P: AsRef<Path>, S: AsRef<str>>(
+    pub async fn create_file<S: AsRef<str>>(
         &mut self,
-        path: P,
+        url: S,
         filename: S,
         mimetype: S,
     ) -> Result<UploadFileHandle, CreateFileError> {
-        let full_path = self.metadata.path.join(path.as_ref());
-        let file = File::create(&full_path).await?;
+        let url = url.as_ref();
 
         let metadata = UploadFile {
-            path: RelativePathBuf::from_path(path)?,
             filename: filename.as_ref().to_string(),
             mimetype: mimetype.as_ref().to_string(),
         };
 
-        self.metadata.files.push(metadata);
+        if self.metadata.files.contains_key(url) {
+            return Err(CreateFileError::AlreadyExists);
+        }
+        self.metadata.files.insert(String::from(url), metadata);
+
+        let full_path = self.metadata.path.join(url);
+        let file = File::create(&full_path).await?;
 
         Ok(UploadFileHandle {
-            metadata: self.metadata.files.last().unwrap(),
-            file,
+            // TODO: assert this unwrap can never fail
+            metadata: self.metadata.files.get(url).unwrap(),
             full_path,
+            file,
         })
     }
-
-    pub async fn read_file<'f>(
-        &'f self,
-        metadata: &'f UploadFile,
-    ) -> Result<UploadFileHandle, io::Error> {
-        let full_path = metadata.path.to_path(&self.metadata.path);
-        let file = File::open(&full_path).await?;
-
-        Ok(UploadFileHandle {
-            metadata,
-            file,
-            full_path,
-        })
+}
+#[derive(Debug, Error)]
+pub enum OpenFileError {
+    #[error("the file is not listed in the Upload metadata")]
+    NotFound,
+    #[error("error while doing i/o: {0}")]
+    IoError(#[from] io::Error),
+}
+impl UploadHandle<'_> {
+    pub async fn read_file<S: AsRef<str>>(
+        &self,
+        url: S,
+    ) -> Result<UploadFileHandle, OpenFileError> {
+        self.open_file(url, OpenOptions::new().read(true)).await
     }
 
-    pub async fn open_file<'f>(
-        &'f self,
-        metadata: &'f UploadFile,
-        options: fs::OpenOptions,
-    ) -> Result<UploadFileHandle, io::Error> {
-        let full_path = metadata.path.to_path(&self.metadata.path);
+    async fn open_file<S: AsRef<str>>(
+        &self,
+        url: S,
+        options: &OpenOptions,
+    ) -> Result<UploadFileHandle, OpenFileError> {
+        let url = url.as_ref();
+
+        let metadata = self
+            .metadata
+            .files
+            .get(url)
+            .ok_or(OpenFileError::NotFound)?;
+        let full_path = self.metadata.path.join(url);
         let file = options.open(&full_path).await?;
 
         Ok(UploadFileHandle {
             metadata,
-            file,
             full_path,
+            file,
         })
     }
 }
-// impl Drop for UploadHandle<'_> {
-//     /// Only for logging
-//     #[instrument]
-//     fn drop(&mut self) {
-//         event!(Level::TRACE, "UploadHandle was dropped");
-//     }
-// }
 
+// TODO: impl Drop
 #[derive(Debug)]
 pub struct UploadFileHandle<'h> {
     pub metadata: &'h UploadFile,
     pub file: File,
     full_path: PathBuf,
 }
-// impl Drop for UploadFileHandle<'_> {
-//     /// Only for logging
-//     #[instrument]
-//     fn drop(&mut self) {
-//         event!(Level::TRACE, "UploadFileHandle was dropped");
-//     }
-// }

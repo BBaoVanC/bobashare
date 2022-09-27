@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
@@ -11,7 +11,7 @@ use super::upload::Upload;
 pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
     NotADirectory(PathBuf),
-    #[error("error while doing i/o")]
+    #[error("error while doing i/o: {0}")]
     IoError(#[from] io::Error),
 }
 
@@ -21,11 +21,11 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
-    #[instrument]
+    // #[instrument]
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
+            // ignore AlreadyExists; propagate all other errors
             if e.kind() != io::ErrorKind::AlreadyExists {
-                // ignore AlreadyExists; propagate all other errors
                 return Err(NewBackendError::from(e));
             }
         }
@@ -43,7 +43,7 @@ impl FileBackend {
 pub enum CreateUploadError {
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
-    #[error("error while doing i/o")]
+    #[error("error while doing i/o: {0}")]
     IoError(#[from] io::Error),
 }
 impl FileBackend {
@@ -68,7 +68,7 @@ impl FileBackend {
             path,
             creation_date,
             expiry_date,
-            files: Vec::new(),
+            files: HashMap::new(),
         })
     }
 
