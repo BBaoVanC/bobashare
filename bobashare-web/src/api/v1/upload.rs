@@ -1,18 +1,12 @@
 use std::sync::Arc;
 
-use axum::{
-    extract::{multipart::MultipartError, Multipart},
-    response::{IntoResponse, Response},
-    Extension,
-};
+use axum::{extract::{multipart::MultipartError, Multipart}, response::{IntoResponse, Response}, Extension};
 use bobashare::storage::file::CreateUploadError;
 use chrono::Duration;
 use hyper::StatusCode;
 use thiserror::Error;
 
 use crate::AppState;
-
-// use axum::response::Result;
 
 #[derive(Debug, Error)]
 pub enum UploadError {
@@ -45,14 +39,17 @@ impl IntoResponse for UploadError {
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-pub async fn upload_post(
+pub async fn post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
-) -> Result<impl IntoResponse, UploadError> {
+) -> impl IntoResponse {
     let mut _upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
-        .await?;
+        .await.map_err(|e| match e {
+            CreateUploadError::AlreadyExists => (StatusCode::FORBIDDEN, String::from("already exists")),
+            CreateUploadError::IoError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+        });
     let mut i = 0;
     // while let Some(mut field) = form.next_field().await? {
     while let Some(field) = form.next_field().await? {
@@ -71,5 +68,5 @@ pub async fn upload_post(
         todo!();
     }
 
-    Ok(())
+    (StatusCode::CREATED, "Created")
 }

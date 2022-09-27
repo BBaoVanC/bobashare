@@ -28,9 +28,7 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let app = Router::with_state(state)
-        .route("/test", get(|| async { "Hello World" }))
-        .route("/hello", get(|| async { "world" }))
-        .route("/api/v1/upload", post(api::v1::upload_post));
+        .route("/api/v1/upload", post(api::v1::upload::post));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::info!("Listening on http://{}", addr);
