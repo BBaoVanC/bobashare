@@ -1,22 +1,32 @@
-use std::sync::Arc;
+use std::{sync::Arc, io};
 
 use axum::{
     extract::{multipart::MultipartError, Multipart},
-    response::{IntoResponse, Response},
+    response::{IntoResponse, Response, ErrorResponse},
     Extension, Json,
 };
 use bobashare::storage::file::CreateUploadError;
 use chrono::Duration;
 use hyper::StatusCode;
+use serde::Serialize;
 use thiserror::Error;
 
-use super::Result;
 use crate::AppState;
+// use axum::response::Result;
+use super::Result;
+
+// #[derive(Debug, Error, Serialize)]
+// pub enum UploadError {
+//     #[error("error while reading multipart form data")]
+//     MultipartError(#[from] MultipartError),
+//     #[error("error while doing i/o")]
+//     IoError(#[from] io::Error)
+// }
 
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result {
+pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<String> {
     let mut _upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
