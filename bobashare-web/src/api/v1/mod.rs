@@ -5,59 +5,44 @@ use axum::{
     Json,
 };
 use hyper::StatusCode;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, ser::SerializeMap};
 use thiserror::Error;
 
 pub mod upload;
 
 
-#[derive(Debug, Error, Serialize)]
-#[serde(tag = "type")]
-pub enum ApiErrorV1 {
-    IoError(#[from] io::Error)
+#[derive(Debug)]
+// #[serde(tag = "type")]
+pub struct ApiErrorV1 {
+    message: String
 }
-impl IntoResponse for ApiErrorV1 {
-    fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(self)).into_response()
+impl Serialize for ApiErrorV1 {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer {
+        let mut map = serializer.serialize_map(Some(1))?;
+        map.serialize_entry("message", &self.message)?;
+        map.end()
     }
 }
-
-// #[derive(Debug, Serialize)]
-// pub enum ApiErrorV1 {
-//     InternalServerError(String),
+// impl Serialize for ApiErrorV1 {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//         where
+//             S: serde::Serializer {
+//                 let mut s = serializer.serialize_map(Some(1))?;
+//                 s.serialize_entry("message", match self {
+//                     ApiErrorV1::IoError(e) => e.to_string(),
+//                 });
+//                 s.end()
+//     }
 // }
-
-// #[derive(Debug)]
-// pub struct ApiResponseV1(StatusCode, ApiResultV1);
-// impl IntoResponse for ApiResponseV1 {
+// impl IntoResponse for ApiErrorV1 {
 //     fn into_response(self) -> Response {
-//         (self.0, Json(self.1)).into_response()
-//     }
-// }
-// impl From<io::Error> for ApiResponseV1 {
-//     fn from(err: io::Error) -> Self {
-//         let code = match err.kind() {
-//             // TODO: match many of the `ErrorKind`s to different error responses
-//             _ => StatusCode::INTERNAL_SERVER_ERROR,
+//         let code = match &self {
+//             ApiErrorV1::IoError(e) => match e.kind() {
+//                 _ => StatusCode::INTERNAL_SERVER_ERROR,
+//             }
 //         };
-
-//         Self(
-//             code,
-//             ApiResultV1::Error(ApiErrorV1 {
-//                 message: err.to_string(),
-//             }),
-//         )
-//     }
-// }
-
-// #[derive(Debug, Serialize)]
-// pub struct ApiErrorV1 {
-//     message: String,
-// }
-// impl<T: ToString> From<T> for ApiErrorV1 {
-//     fn from(err: T) -> Self {
-//         Self {
-//             message: err.to_string(),
-//         }
+//         (code, Json(self)).into_response()
 //     }
 // }

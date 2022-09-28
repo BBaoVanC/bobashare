@@ -6,14 +6,14 @@ use axum::{
     Extension, Json,
 };
 use bobashare::storage::file::CreateUploadError;
-use chrono::Duration;
+use chrono::{Duration, DateTime, Utc};
 use hyper::StatusCode;
 use serde::Serialize;
 use thiserror::Error;
 
 use crate::AppState;
-// use axum::response::Result;
-use super::Result;
+use axum::response::Result;
+// use super::Result;
 
 // #[derive(Debug, Error, Serialize)]
 // pub enum UploadError {
@@ -23,11 +23,32 @@ use super::Result;
 //     IoError(#[from] io::Error)
 // }
 
+#[derive(Debug, Serialize)]
+#[serde(tag = "status")]
+pub enum UploadResponse {
+    Success {
+        url: String,
+        /// expiration date in RFC 3339 format
+        expiry_date: DateTime<Utc>,
+    },
+}
+
+#[derive(Debug, Serialize)]
+pub struct UploadError {
+    message: String
+}
+impl<T: ToString> From<T> for UploadError {
+    fn from(err: T) -> Self {
+        Self { message: err.to_string() }
+    }
+}
+
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<String> {
-    let mut _upload = state
+pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<Json<UploadResponse>> {
+    // need function to set duration after the fact
+    let mut upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
         .await
