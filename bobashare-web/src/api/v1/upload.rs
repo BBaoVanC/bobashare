@@ -34,33 +34,59 @@ pub enum UploadResponse {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UploadError {
-    message: String
+pub struct UploadInternalError {
+    message: String,
+    #[serde(skip)]
+    code: StatusCode
 }
-impl<T: ToString> From<T> for UploadError {
-    fn from(err: T) -> Self {
-        Self { message: err.to_string() }
+impl From<io::Error> for UploadInternalError {
+    fn from(err: io::Error) -> Self {
+        Self {
+            message: err.to_string(),
+            code: match err.kind() {
+                _ => StatusCode::INTERNAL_SERVER_ERROR,
+            }
+        }
     }
 }
+impl From<MultipartError> for UploadInternalError {
+    fn from(err: MultipartError) -> Self {
+        Self {
+            message: err.to_string(),
+            code: StatusCode::BAD_REQUEST,
+        }
+    }
+}
+impl From<CreateUploadError> for UploadInternalError {
+    fn from(err: CreateUploadError) -> Self {
+
+    }
+}
+// impl<T: ToString> From<T> for UploadError {
+//     fn from(err: T) -> Self {
+//         Self { message: err.to_string(), code: StatusCode::INTERNAL_SERVER_ERROR }
+//     }
+// }
 
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
-pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<Json<UploadResponse>> {
+pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<Json<UploadResponse>, UploadInternalError> {
     // need function to set duration after the fact
     let mut upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
-        .await
-        .map_err(|e| match e {
-            CreateUploadError::AlreadyExists => {
-                (StatusCode::FORBIDDEN, String::from("already exists"))
-            }
-            CreateUploadError::IoError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-        });
+        .await?;
+        // .await
+        // .map_err(|e| match e {
+        //     CreateUploadError::AlreadyExists => {
+        //         (StatusCode::FORBIDDEN, String::from("already exists"))
+        //     }
+        //     CreateUploadError::IoError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+        // });
     let mut i = 0;
     // while let Some(mut field) = form.next_field().await? {
-    while let Some(field) = form.next_field().await.map_err(|e| e.to_string())? {
+    while let Some(field) = form.next_field().await? {
         i += 1; // starts at 1
         if field.content_type().is_none() {
             continue;
