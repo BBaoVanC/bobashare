@@ -59,7 +59,13 @@ impl From<MultipartError> for UploadInternalError {
 }
 impl From<CreateUploadError> for UploadInternalError {
     fn from(err: CreateUploadError) -> Self {
-
+        Self {
+            message: err.to_string(),
+            code: match err {
+                CreateUploadError::AlreadyExists => StatusCode::FORBIDDEN,
+                CreateUploadError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            }
+        }
     }
 }
 // impl<T: ToString> From<T> for UploadError {
@@ -73,6 +79,15 @@ impl From<CreateUploadError> for UploadInternalError {
 /// Each form field should be a file to upload. The `name` header is ignored.
 pub async fn post(state: Extension<Arc<AppState>>, mut form: Multipart) -> Result<Json<UploadResponse>, UploadInternalError> {
     // need function to set duration after the fact
+    let mut name: Option<String> = None;
+    let mut duration: Option<Duration> = None;
+    let mut files = Vec::new();
+
+    while let Some(field) = form.next_field().await? {
+        field.
+    }
+
+
     let mut upload = state
         .backend
         .create_upload("abc123xyz", Some(Duration::hours(1)))
