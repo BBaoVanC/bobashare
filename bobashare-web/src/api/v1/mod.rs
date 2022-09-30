@@ -1,48 +1,32 @@
 use std::io::{self, ErrorKind};
 
 use axum::{
-    response::{ErrorResponse, IntoResponse, Response},
+    extract::multipart::MultipartError,
+    response::{IntoResponse, Response},
     Json,
 };
+use bobashare::storage::file::CreateUploadError;
 use hyper::StatusCode;
-use serde::{ser::SerializeMap, Deserialize, Serialize};
+use serde_json::json;
 use thiserror::Error;
 
 pub mod upload;
 
-#[derive(Debug)]
-// #[serde(tag = "type")]
-pub struct ApiErrorV1 {
-    message: String,
+#[derive(Debug, Error)]
+pub enum ApiErrorV1 {
+    #[error("{0}")]
+    Io(#[from] io::Error),
+    #[error("{0}")]
+    Multipart(#[from] MultipartError),
 }
-impl Serialize for ApiErrorV1 {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut map = serializer.serialize_map(Some(1))?;
-        map.serialize_entry("message", &self.message)?;
-        map.end()
+impl IntoResponse for ApiErrorV1 {
+    fn into_response(self) -> Response {
+        let code = match self {
+            ApiErrorV1::Io(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiErrorV1::Multipart(_) => StatusCode::BAD_REQUEST,
+        };
+
+        let body = Json(json!({"status": "error", "message": self.to_string()}));
+        (code, body).into_response()
     }
 }
-// impl Serialize for ApiErrorV1 {
-//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-//         where
-//             S: serde::Serializer {
-//                 let mut s = serializer.serialize_map(Some(1))?;
-//                 s.serialize_entry("message", match self {
-//                     ApiErrorV1::IoError(e) => e.to_string(),
-//                 });
-//                 s.end()
-//     }
-// }
-// impl IntoResponse for ApiErrorV1 {
-//     fn into_response(self) -> Response {
-//         let code = match &self {
-//             ApiErrorV1::IoError(e) => match e.kind() {
-//                 _ => StatusCode::INTERNAL_SERVER_ERROR,
-//             }
-//         };
-//         (code, Json(self)).into_response()
-//     }
-// }

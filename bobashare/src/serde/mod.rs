@@ -26,7 +26,7 @@ pub enum UploadMetadata {
 #[derive(Debug, Error)]
 pub enum IntoMetadataError {
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {

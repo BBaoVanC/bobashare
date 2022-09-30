@@ -12,7 +12,7 @@ pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
     NotADirectory(PathBuf),
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -44,7 +44,7 @@ pub enum CreateUploadError {
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 impl FileBackend {
     pub async fn create_upload<S: AsRef<str>>(

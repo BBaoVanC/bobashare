@@ -1,7 +1,4 @@
-use std::{
-    io,
-    path::{Path, PathBuf},
-};
+use std::{io, path::PathBuf};
 
 use thiserror::Error;
 use tokio::{
@@ -24,11 +21,11 @@ pub struct UploadHandle<'h> {
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
     #[error("error converting Upload to UploadMetadata")]
-    FromMetadataError(#[from] IntoMetadataError),
+    FromMetadata(#[from] IntoMetadataError),
     #[error("error while serializing with serde_json")]
-    SerdeError(#[from] serde_json::Error),
+    Serde(#[from] serde_json::Error),
 }
 impl UploadHandle<'_> {
     // #[instrument]
@@ -49,7 +46,7 @@ pub enum CreateFileError {
     #[error("the file already exists")]
     AlreadyExists,
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 impl UploadHandle<'_> {
     pub async fn delete(self) -> Result<(), io::Error> {
@@ -93,7 +90,7 @@ pub enum OpenFileError {
     #[error("the file is not listed in the Upload metadata")]
     NotFound,
     #[error("error while doing i/o: {0}")]
-    IoError(#[from] io::Error),
+    Io(#[from] io::Error),
 }
 impl UploadHandle<'_> {
     pub async fn read_file<S: AsRef<str>>(

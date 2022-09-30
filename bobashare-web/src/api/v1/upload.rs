@@ -2,7 +2,7 @@ use std::{io, sync::Arc};
 
 use axum::{
     extract::{multipart::MultipartError, Multipart},
-    response::{ErrorResponse, IntoResponse, Response, Result},
+    response::Result,
     Extension, Json,
 };
 use bobashare::storage::file::CreateUploadError;
@@ -12,66 +12,16 @@ use serde::Serialize;
 use thiserror::Error;
 
 use crate::AppState;
-// use super::Result;
 
-// #[derive(Debug, Error, Serialize)]
-// pub enum UploadError {
-//     #[error("error while reading multipart form data")]
-//     MultipartError(#[from] MultipartError),
-//     #[error("error while doing i/o")]
-//     IoError(#[from] io::Error)
-// }
+use super::ApiErrorV1;
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "status")]
-pub enum UploadResponse {
-    Success {
-        url: String,
-        /// expiration date in RFC 3339 format
-        expiry_date: DateTime<Utc>,
-    },
+pub struct UploadResponse {
+    url: String,
+    /// expiration date in RFC 3339 format
+    expiry_date: DateTime<Utc>,
 }
-
-#[derive(Debug, Serialize)]
-pub struct UploadInternalError {
-    message: String,
-    #[serde(skip)]
-    code: StatusCode,
-}
-impl From<io::Error> for UploadInternalError {
-    fn from(err: io::Error) -> Self {
-        Self {
-            message: err.to_string(),
-            code: match err.kind() {
-                _ => StatusCode::INTERNAL_SERVER_ERROR,
-            },
-        }
-    }
-}
-impl From<MultipartError> for UploadInternalError {
-    fn from(err: MultipartError) -> Self {
-        Self {
-            message: err.to_string(),
-            code: StatusCode::BAD_REQUEST,
-        }
-    }
-}
-impl From<CreateUploadError> for UploadInternalError {
-    fn from(err: CreateUploadError) -> Self {
-        Self {
-            message: err.to_string(),
-            code: match err {
-                CreateUploadError::AlreadyExists => StatusCode::FORBIDDEN,
-                CreateUploadError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            },
-        }
-    }
-}
-// impl<T: ToString> From<T> for UploadError {
-//     fn from(err: T) -> Self {
-//         Self { message: err.to_string(), code:
-// StatusCode::INTERNAL_SERVER_ERROR }     }
-// }
 
 /// Accepts: `multipart/form-data`
 ///
@@ -79,11 +29,11 @@ impl From<CreateUploadError> for UploadInternalError {
 pub async fn post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
-) -> Result<Json<UploadResponse>, UploadInternalError> {
+) -> Result<Json<UploadResponse>, ApiErrorV1> {
     // need function to set duration after the fact
     let mut name: Option<String> = None;
     let mut duration: Option<Duration> = None;
-    let mut files = Vec::new();
+    // let mut files = Vec::new();
 
     // while let Some(field) = form.next_field().await? {
     //     match field.name().ok_or(UploadInternalError {
