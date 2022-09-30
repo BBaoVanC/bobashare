@@ -1,25 +1,25 @@
 use std::io::{self, ErrorKind};
 
 use axum::{
-    response::{IntoResponse, Response, ErrorResponse},
+    response::{ErrorResponse, IntoResponse, Response},
     Json,
 };
 use hyper::StatusCode;
-use serde::{Deserialize, Serialize, ser::SerializeMap};
+use serde::{ser::SerializeMap, Deserialize, Serialize};
 use thiserror::Error;
 
 pub mod upload;
 
-
 #[derive(Debug)]
 // #[serde(tag = "type")]
 pub struct ApiErrorV1 {
-    message: String
+    message: String,
 }
 impl Serialize for ApiErrorV1 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer {
+    where
+        S: serde::Serializer,
+    {
         let mut map = serializer.serialize_map(Some(1))?;
         map.serialize_entry("message", &self.message)?;
         map.end()
