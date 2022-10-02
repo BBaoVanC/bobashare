@@ -5,7 +5,7 @@ use axum::{
     extract::{multipart::MultipartError, Multipart},
     http::HeaderValue,
     response::{IntoResponse, Response, Result},
-    Extension, Json,
+    Extension, Json, headers,
 };
 use bobashare::storage::file::CreateUploadError;
 use chrono::{DateTime, Duration, Utc};
@@ -88,6 +88,11 @@ impl From<CreateUploadError> for UploadError {
 /// # Body
 ///
 /// - contents of the single file to upload
+/// 
+/// # Success
+/// 
+/// - 201 Created
+/// - Body is JSON, see [`UploadResponse`]
 ///
 /// # Description
 ///
@@ -95,9 +100,10 @@ impl From<CreateUploadError> for UploadError {
 pub async fn put(
     state: Extension<Arc<AppState>>,
     // headers: HeaderMap,
-    HeaderValue(expiry_header): HeaderValue,
+    // HeaderValue(expiry_header): HeaderValue,
     body: Bytes,
-) -> Result<Json<UploadResponse>, UploadError> {
+// ) -> Result<Json<UploadResponse>, UploadError> {
+) -> Result<impl IntoResponse, UploadError> {
     // TODO: get expiry from header
     // let expiry = headers.get("Bobashare-Expiry").map(|e| Duration::seconds(e));
     let upload = state
@@ -105,10 +111,11 @@ pub async fn put(
         .create_upload_random_name(state.url_length, None)
         .await?;
 
-    Ok(Json(UploadResponse {
+    Ok(([headers::ContentLocation],
+        Json(UploadResponse {
         url: upload.url,
         expiry_date: upload.expiry_date,
-    }))
+    })))
 }
 
 /// Accepts: `multipart/form-data`
