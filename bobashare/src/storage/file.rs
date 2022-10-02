@@ -43,7 +43,7 @@ impl FileBackend {
 pub enum CreateUploadError {
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
-    #[error("error while doing i/o: {0}")]
+    #[error(transparent)]
     Io(#[from] io::Error),
 }
 impl FileBackend {

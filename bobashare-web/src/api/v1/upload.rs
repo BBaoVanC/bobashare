@@ -1,19 +1,19 @@
-use std::{io, sync::Arc};
+use std::{io::ErrorKind, sync::Arc};
 
 use axum::{
     extract::{multipart::MultipartError, Multipart},
-    response::Result,
+    response::{IntoResponse, Response, Result},
     Extension, Json,
 };
 use bobashare::storage::file::CreateUploadError;
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use serde::Serialize;
+use serde_json::json;
 use thiserror::Error;
+use tokio::io;
 
 use crate::AppState;
-
-use super::ApiErrorV1;
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "status")]
@@ -23,13 +23,56 @@ pub struct UploadResponse {
     expiry_date: DateTime<Utc>,
 }
 
+#[derive(Debug)]
+pub struct UploadError {
+    code: StatusCode,
+    message: String,
+}
+impl IntoResponse for UploadError {
+    fn into_response(self) -> Response {
+        let message = Json(json!({"status": "error", "message": self.message}));
+        (self.code, message).into_response()
+    }
+}
+impl From<MultipartError> for UploadError {
+    fn from(err: MultipartError) -> Self {
+        Self {
+            code: StatusCode::BAD_REQUEST,
+            message: err.to_string(),
+        }
+    }
+}
+impl From<CreateUploadError> for UploadError {
+    fn from(err: CreateUploadError) -> Self {
+        match err {
+            CreateUploadError::AlreadyExists => Self {
+                code: StatusCode::FORBIDDEN,
+                message: String::from("an upload with the requested name already exists"),
+            },
+            CreateUploadError::Io(e) => {
+                // See https://github.com/rust-lang/rust-clippy/issues/9575
+                #[allow(clippy::match_single_binding)]
+                let code = match e.kind() {
+                    // TODO: track io_error_more and once it's added, match the relevant errors
+                    _ => StatusCode::INTERNAL_SERVER_ERROR,
+                };
+
+                Self {
+                    code,
+                    message: e.to_string(),
+                }
+            }
+        }
+    }
+}
+
 /// Accepts: `multipart/form-data`
 ///
 /// Each form field should be a file to upload. The `name` header is ignored.
 pub async fn post(
     state: Extension<Arc<AppState>>,
     mut form: Multipart,
-) -> Result<Json<UploadResponse>, ApiErrorV1> {
+) -> Result<Json<UploadResponse>, UploadError> {
     // need function to set duration after the fact
     let mut name: Option<String> = None;
     let mut duration: Option<Duration> = None;

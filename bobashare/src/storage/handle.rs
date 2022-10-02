@@ -89,8 +89,8 @@ impl UploadHandle<'_> {
 pub enum OpenFileError {
     #[error("the file is not listed in the Upload metadata")]
     NotFound,
-    #[error("error while doing i/o: {0}")]
-    Io(#[from] io::Error),
+    #[error(transparent)]
+    Io(#[from] io::Error)
 }
 impl UploadHandle<'_> {
     pub async fn read_file<S: AsRef<str>>(
