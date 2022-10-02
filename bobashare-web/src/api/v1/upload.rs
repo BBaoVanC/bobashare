@@ -1,8 +1,9 @@
-use std::{io::ErrorKind, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     body::Bytes,
     extract::{multipart::MultipartError, Multipart},
+    http::HeaderValue,
     response::{IntoResponse, Response, Result},
     Extension, Json,
 };
@@ -11,17 +12,27 @@ use chrono::{DateTime, Duration, Utc};
 use hyper::{HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
-use thiserror::Error;
-use tokio::io;
 
 use crate::AppState;
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "status")]
 pub struct UploadResponse {
+    /// url to the upload
     url: String,
-    /// expiration date in RFC 3339 format
-    expiry_date: DateTime<Utc>,
+    /// expiration date in RFC 3339 format, null if the upload never expires
+    expiry_date: Option<DateTime<Utc>>,
+    // /// metadata about each of the uploaded files
+    // files: HashMap<String, FileResponse>,
+}
+#[derive(Debug, Serialize)]
+pub struct FileResponse {
+    /// size of the file in bytes
+    size: usize,
+    /// url to download the file directly
+    url: String,
+    /// the MIME type of the file
+    mimetype: String,
 }
 
 #[derive(Debug)]
@@ -69,16 +80,35 @@ impl From<CreateUploadError> for UploadError {
 
 /// PUT /api/v1/upload
 ///
-/// Accepts: a single file as the body
+/// # Headers
+///
+/// - `Bobashare-Expiry` -- number -- amount of seconds until the upload should
+///   expire
+///
+/// # Body
+///
+/// - contents of the single file to upload
+///
+/// # Description
 ///
 /// This will create an upload that contains a single file.
 pub async fn put(
     state: Extension<Arc<AppState>>,
-    headers: HeaderMap,
+    // headers: HeaderMap,
+    HeaderValue(expiry_header): HeaderValue,
     body: Bytes,
 ) -> Result<Json<UploadResponse>, UploadError> {
     // TODO: get expiry from header
-    let upload = state.backend.create_upload_random_name(state.url_length, None).await?;
+    // let expiry = headers.get("Bobashare-Expiry").map(|e| Duration::seconds(e));
+    let upload = state
+        .backend
+        .create_upload_random_name(state.url_length, None)
+        .await?;
+
+    Ok(Json(UploadResponse {
+        url: upload.url,
+        expiry_date: upload.expiry_date,
+    }))
 }
 
 /// Accepts: `multipart/form-data`

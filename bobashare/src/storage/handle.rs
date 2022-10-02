@@ -1,4 +1,7 @@
-use std::{io, path::PathBuf};
+use std::{
+    io,
+    path::{Path, PathBuf},
+};
 
 use thiserror::Error;
 use tokio::{
@@ -74,7 +77,7 @@ impl UploadHandle<'_> {
         }
         self.metadata.files.insert(String::from(url), metadata);
 
-        let full_path = self.metadata.path.join(url);
+        let full_path = Path::new(&self.metadata.url).join(url);
         let file = File::create(&full_path).await?;
 
         Ok(UploadFileHandle {
@@ -90,7 +93,7 @@ pub enum OpenFileError {
     #[error("the file is not listed in the Upload metadata")]
     NotFound,
     #[error(transparent)]
-    Io(#[from] io::Error)
+    Io(#[from] io::Error),
 }
 impl UploadHandle<'_> {
     pub async fn read_file<S: AsRef<str>>(
@@ -112,7 +115,7 @@ impl UploadHandle<'_> {
             .files
             .get(url)
             .ok_or(OpenFileError::NotFound)?;
-        let full_path = self.metadata.path.join(url);
+        let full_path = Path::new(&self.metadata.url).join(url);
         let file = options.open(&full_path).await?;
 
         Ok(UploadFileHandle {

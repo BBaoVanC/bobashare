@@ -3,11 +3,9 @@ use std::{collections::HashMap, path::PathBuf};
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
 use tokio::{fs, io};
-use tracing::instrument;
-
-use crate::generate_randomized_name;
 
 use super::upload::Upload;
+use crate::generate_randomized_name;
 
 #[derive(Debug, Error)]
 pub enum NewBackendError {
@@ -67,14 +65,18 @@ impl FileBackend {
         // let path = fs::canonicalize(path).await?;
 
         Ok(Upload {
-            path,
+            url: String::from(url.as_ref()),
             creation_date,
             expiry_date,
             files: HashMap::new(),
         })
     }
 
-    pub async fn create_upload_random_name(&self, length: usize, expiry: Option<Duration>) -> Result<Upload, CreateUploadError> {
+    pub async fn create_upload_random_name(
+        &self,
+        length: usize,
+        expiry: Option<Duration>,
+    ) -> Result<Upload, CreateUploadError> {
         let url = generate_randomized_name(length);
         self.create_upload(url, expiry).await
     }

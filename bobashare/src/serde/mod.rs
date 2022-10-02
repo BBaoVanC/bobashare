@@ -1,4 +1,4 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -53,7 +53,7 @@ impl UploadMetadata {
 }
 
 impl UploadMetadata {
-    pub fn into_migrated_upload(path: PathBuf, metadata: UploadMetadata) -> Upload {
+    pub fn into_migrated_upload(url: String, metadata: UploadMetadata) -> Upload {
         match metadata {
             // latest
             Self::V1(data) => Upload {
@@ -72,7 +72,7 @@ impl UploadMetadata {
                         )
                     })
                     .collect(),
-                path,
+                url,
             },
         }
     }
