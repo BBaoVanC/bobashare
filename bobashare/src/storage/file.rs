@@ -5,6 +5,8 @@ use thiserror::Error;
 use tokio::{fs, io};
 use tracing::instrument;
 
+use crate::generate_randomized_name;
+
 use super::upload::Upload;
 
 #[derive(Debug, Error)]
@@ -70,6 +72,11 @@ impl FileBackend {
             expiry_date,
             files: HashMap::new(),
         })
+    }
+
+    pub async fn create_upload_random_name(&self, length: usize, expiry: Option<Duration>) -> Result<Upload, CreateUploadError> {
+        let url = generate_randomized_name(length);
+        self.create_upload(url, expiry).await
     }
 
     // TODO: maybe create_upload_with_capacity

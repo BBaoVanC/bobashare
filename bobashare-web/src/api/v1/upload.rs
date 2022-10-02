@@ -1,13 +1,14 @@
 use std::{io::ErrorKind, sync::Arc};
 
 use axum::{
+    body::Bytes,
     extract::{multipart::MultipartError, Multipart},
     response::{IntoResponse, Response, Result},
     Extension, Json,
 };
 use bobashare::storage::file::CreateUploadError;
 use chrono::{DateTime, Duration, Utc};
-use hyper::StatusCode;
+use hyper::{HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
 use thiserror::Error;
@@ -64,6 +65,20 @@ impl From<CreateUploadError> for UploadError {
             }
         }
     }
+}
+
+/// PUT /api/v1/upload
+///
+/// Accepts: a single file as the body
+///
+/// This will create an upload that contains a single file.
+pub async fn put(
+    state: Extension<Arc<AppState>>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Result<Json<UploadResponse>, UploadError> {
+    // TODO: get expiry from header
+    let upload = state.backend.create_upload_random_name(state.url_length, None).await?;
 }
 
 /// Accepts: `multipart/form-data`

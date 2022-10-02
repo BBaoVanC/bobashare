@@ -11,6 +11,7 @@ pub mod api;
 
 pub struct AppState {
     pub backend: FileBackend,
+    pub url_length: usize,
 }
 
 #[tokio::main]
@@ -25,6 +26,7 @@ async fn main() -> anyhow::Result<()> {
     let backend_path = "storage/";
     let state = Arc::new(AppState {
         backend: FileBackend::new(PathBuf::from(backend_path)).await?,
+        url_length: 8,
     });
 
     let app = Router::with_state(state).route("/api/v1/upload", post(api::v1::upload::post));
