@@ -32,7 +32,7 @@ pub enum SerializeMetadataError {
     Serde(#[from] serde_json::Error),
 }
 impl UploadHandle {
-    pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
+    pub async fn flush(mut self) -> Result<Upload, SerializeMetadataError> {
         self.data_file
             .write_all(
                 // TODO: get rid of self.metadata.clone()
@@ -41,7 +41,7 @@ impl UploadHandle {
             )
             .await?;
         self.data_file.flush().await?;
-        Ok(())
+        Ok(self.metadata)
     }
 }
 #[derive(Debug, Error)]

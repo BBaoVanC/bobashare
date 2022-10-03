@@ -75,12 +75,6 @@ impl FileBackend {
             },
             data_file,
         })
-        // Ok(Upload {
-        //     url: String::from(url.as_ref()),
-        //     creation_date,
-        //     expiry_date,
-        //     files: HashMap::new(),
-        // })
     }
 
     pub async fn create_upload_random_name(
