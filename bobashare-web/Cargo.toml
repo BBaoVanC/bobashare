@@ -14,6 +14,8 @@ anyhow = "1.0.65"
 axum = { version = "0.6.0-rc.2", features = ["headers", "multipart"] }
 bobashare = { version = "0.1.0", path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
+futures-util = "0.3.24"
+# hyper = { version = "0.14.20", features = ["stream"] }
 hyper = "0.14.20"
 serde = "1.0.145"
 serde_json = "1.0.85"
