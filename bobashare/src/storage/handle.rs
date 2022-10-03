@@ -9,7 +9,7 @@ use tokio::{
     io::AsyncWriteExt,
 };
 
-use super::upload::{Upload, UploadFile};
+use super::upload::{Upload};
 use crate::serde::{IntoMetadataError, UploadMetadata};
 
 /// Make sure to call [`flush`] or else the metadata won't be saved!
@@ -55,10 +55,6 @@ impl UploadHandle {
     pub async fn delete(self) -> Result<(), io::Error> {
         todo!()
     }
-    pub async fn delete_file(&mut self) -> Result<(), io::Error> {
-        todo!()
-    }
-
     pub async fn create_file<S: AsRef<str>>(
         &mut self,
         url: S,
@@ -88,48 +84,4 @@ impl UploadHandle {
         })
     }
 }
-#[derive(Debug, Error)]
-pub enum OpenFileError {
-    #[error("the file is not listed in the Upload metadata")]
-    NotFound,
-    #[error(transparent)]
-    Io(#[from] io::Error),
-}
-impl UploadHandle {
-    pub async fn read_file<S: AsRef<str>>(
-        &self,
-        url: S,
-    ) -> Result<UploadFileHandle, OpenFileError> {
-        self.open_file(url, OpenOptions::new().read(true)).await
-    }
 
-    async fn open_file<S: AsRef<str>>(
-        &self,
-        url: S,
-        options: &OpenOptions,
-    ) -> Result<UploadFileHandle, OpenFileError> {
-        let url = url.as_ref();
-
-        let metadata = self
-            .metadata
-            .files
-            .get(url)
-            .ok_or(OpenFileError::NotFound)?;
-        let full_path = Path::new(&self.metadata.url).join(url);
-        let file = options.open(&full_path).await?;
-
-        Ok(UploadFileHandle {
-            metadata,
-            full_path,
-            file,
-        })
-    }
-}
-
-// TODO: impl Drop
-#[derive(Debug)]
-pub struct UploadFileHandle<'h> {
-    pub metadata: &'h UploadFile,
-    pub file: File,
-    full_path: PathBuf,
-}

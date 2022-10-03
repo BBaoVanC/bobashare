@@ -53,6 +53,9 @@ impl FileBackend {
     pub async fn create_upload<S: AsRef<str>>(
         &self,
         url: S,
+        filename: S,
+        mimetype: S,
+        size: Option<usize>,
         expiry: Option<Duration>,
     ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
@@ -69,9 +72,11 @@ impl FileBackend {
         Ok(UploadHandle {
             metadata: Upload {
                 url: String::from(url.as_ref()),
+                filename: String::from(filename.as_ref()),
+                mimetype: String::from(mimetype.as_ref()),
+                size,
                 creation_date,
                 expiry_date,
-                files: HashMap::new(),
             },
             data_file,
         })
