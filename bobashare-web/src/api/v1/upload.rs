@@ -19,19 +19,14 @@ use crate::AppState;
 pub struct UploadResponse {
     /// url to the upload
     url: String,
+    /// direct url to download the raw uploaded file
+    direct_url: String,
+    /// the size in bytes of the uploaded file
+    size: usize,
+    /// the MIME type of the uploaded file
+    mimetype: String,
     /// expiration date in RFC 3339 format, null if the upload never expires
     expiry_date: Option<DateTime<Utc>>,
-    // /// metadata about each of the uploaded files
-    // files: HashMap<String, FileResponse>,
-}
-#[derive(Debug, Serialize)]
-pub struct FileResponse {
-    /// size of the file in bytes
-    size: usize,
-    /// url to download the file directly
-    url: String,
-    /// the MIME type of the file
-    mimetype: String,
 }
 
 #[derive(Debug, Error)]
