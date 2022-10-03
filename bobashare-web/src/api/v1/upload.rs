@@ -1,15 +1,14 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{cmp::Ordering, collections::HashMap, sync::Arc};
 
 use axum::{
     body::Bytes,
     extract::{multipart::MultipartError, Multipart},
-    http::HeaderValue,
     response::{IntoResponse, Response, Result},
-    Extension, Json, headers,
+    Extension, Json,
 };
-use bobashare::storage::file::CreateUploadError;
+use bobashare::storage::{file::CreateUploadError, upload::Upload};
 use chrono::{DateTime, Duration, Utc};
-use hyper::{HeaderMap, StatusCode};
+use hyper::{header, Body, HeaderMap, Request, StatusCode};
 use serde::Serialize;
 use serde_json::json;
 
@@ -78,6 +77,8 @@ impl From<CreateUploadError> for UploadError {
     }
 }
 
+/// Create an upload that contains a single file
+///
 /// PUT /api/v1/upload
 ///
 /// # Headers
@@ -87,35 +88,58 @@ impl From<CreateUploadError> for UploadError {
 ///
 /// # Body
 ///
-/// - contents of the single file to upload
-/// 
+/// Contents of the file to upload
+///
 /// # Success
-/// 
+///
 /// - 201 Created
 /// - Body is JSON, see [`UploadResponse`]
-///
-/// # Description
-///
-/// This will create an upload that contains a single file.
 pub async fn put(
     state: Extension<Arc<AppState>>,
     // headers: HeaderMap,
-    // HeaderValue(expiry_header): HeaderValue,
-    body: Bytes,
-// ) -> Result<Json<UploadResponse>, UploadError> {
+    // body: Bytes,
+    request: Request<Body>, // ) -> Result<Json<UploadResponse>, UploadError> {
 ) -> Result<impl IntoResponse, UploadError> {
-    // TODO: get expiry from header
-    // let expiry = headers.get("Bobashare-Expiry").map(|e| Duration::seconds(e));
+    // let expiry = request
+    //     .headers()
+    //     .get("Bobashare-Expiry")
+    //     .and_then(|e| Some(Duration::seconds(e.to_str().ok()?.parse().ok()?)));
+
+    let expiry = match request.headers().get("Bobashare-Expiry") {
+        None => Some(state.default_expiry),
+        Some(e) => {
+            let expiry = e
+                .to_str()
+                .map_err(|e| UploadError {
+                    code: StatusCode::BAD_REQUEST,
+                    message: format!("Error parsing Bobashare-Expiry header: {}", e),
+                })?
+                .parse::<i64>()
+                .map_err(|e| UploadError {
+                    code: StatusCode::BAD_REQUEST,
+                    message: format!("Error parsing Bobashare-Expiry header: {}", e),
+                })?;
+
+            match expiry.cmp(&0) {
+                Ordering::Less => Some(state.default_expiry),
+                Ordering::Equal => None,
+                Ordering::Greater => Some(Duration::seconds(expiry)),
+            }
+        }
+    };
+
     let upload = state
         .backend
-        .create_upload_random_name(state.url_length, None)
+        .create_upload_random_name(state.url_length, expiry)
         .await?;
 
-    Ok(([headers::ContentLocation],
+    Ok((
+        [(header::CONTENT_LOCATION, upload.metadata.url.clone())],
         Json(UploadResponse {
-        url: upload.url,
-        expiry_date: upload.expiry_date,
-    })))
+            url: upload.metadata.url,
+            expiry_date: upload.metadata.expiry_date,
+        }),
+    ))
 }
 
 /// Accepts: `multipart/form-data`

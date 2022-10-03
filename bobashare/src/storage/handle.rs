@@ -17,9 +17,10 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 /// [`flush`]: fn@Self::flush
 // TODO: impl Drop so it can automatically flush() with RAII
 #[derive(Debug)]
-pub struct UploadHandle<'h> {
-    pub metadata: &'h mut Upload,
-    data_file: File,
+pub struct UploadHandle {
+    pub metadata: Upload,
+    // pub(super) so it can be accessed by [`super::file`]
+    pub(super) data_file: File,
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
@@ -30,8 +31,7 @@ pub enum SerializeMetadataError {
     #[error("error while serializing with serde_json")]
     Serde(#[from] serde_json::Error),
 }
-impl UploadHandle<'_> {
-    // #[instrument]
+impl UploadHandle {
     pub async fn flush(mut self) -> Result<(), SerializeMetadataError> {
         self.data_file
             .write_all(
@@ -51,7 +51,7 @@ pub enum CreateFileError {
     #[error("error while doing i/o: {0}")]
     Io(#[from] io::Error),
 }
-impl UploadHandle<'_> {
+impl UploadHandle {
     pub async fn delete(self) -> Result<(), io::Error> {
         todo!()
     }
@@ -95,7 +95,7 @@ pub enum OpenFileError {
     #[error(transparent)]
     Io(#[from] io::Error),
 }
-impl UploadHandle<'_> {
+impl UploadHandle {
     pub async fn read_file<S: AsRef<str>>(
         &self,
         url: S,

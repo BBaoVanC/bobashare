@@ -5,6 +5,7 @@ use axum::{
     Router,
 };
 use bobashare::storage::file::FileBackend;
+use chrono::Duration;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod api;
@@ -12,6 +13,8 @@ pub mod api;
 pub struct AppState {
     pub backend: FileBackend,
     pub url_length: usize,
+    pub default_expiry: Duration,
+    pub max_expiry: Duration,
 }
 
 #[tokio::main]
@@ -27,6 +30,8 @@ async fn main() -> anyhow::Result<()> {
     let state = Arc::new(AppState {
         backend: FileBackend::new(PathBuf::from(backend_path)).await?,
         url_length: 8,
+        default_expiry: Duration::hours(24),
+        max_expiry: Duration::days(30),
     });
 
     let app = Router::with_state(state).route("/api/v1/upload", post(api::v1::upload::post));

@@ -2,9 +2,12 @@ use std::{collections::HashMap, path::PathBuf};
 
 use chrono::{prelude::*, Duration};
 use thiserror::Error;
-use tokio::{fs, io};
+use tokio::{
+    fs::{self, File},
+    io,
+};
 
-use super::upload::Upload;
+use super::{handle::UploadHandle, upload::Upload};
 use crate::generate_randomized_name;
 
 #[derive(Debug, Error)]
@@ -51,7 +54,7 @@ impl FileBackend {
         &self,
         url: S,
         expiry: Option<Duration>,
-    ) -> Result<Upload, CreateUploadError> {
+    ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
         let path = self.path.join(url.as_ref());
@@ -61,22 +64,30 @@ impl FileBackend {
             _ => CreateUploadError::from(e),
         })?; // TODO: make this statement less ugly, get rid of the match
 
-        // TODO: this probably isnt needed, could cause confusing errors
-        // let path = fs::canonicalize(path).await?;
+        let data_file = File::create(path.join("metadata.json")).await?;
 
-        Ok(Upload {
-            url: String::from(url.as_ref()),
-            creation_date,
-            expiry_date,
-            files: HashMap::new(),
+        Ok(UploadHandle {
+            metadata: Upload {
+                url: String::from(url.as_ref()),
+                creation_date,
+                expiry_date,
+                files: HashMap::new(),
+            },
+            data_file,
         })
+        // Ok(Upload {
+        //     url: String::from(url.as_ref()),
+        //     creation_date,
+        //     expiry_date,
+        //     files: HashMap::new(),
+        // })
     }
 
     pub async fn create_upload_random_name(
         &self,
         length: usize,
         expiry: Option<Duration>,
-    ) -> Result<Upload, CreateUploadError> {
+    ) -> Result<UploadHandle, CreateUploadError> {
         let url = generate_randomized_name(length);
         self.create_upload(url, expiry).await
     }
