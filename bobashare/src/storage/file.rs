@@ -67,7 +67,8 @@ impl FileBackend {
             _ => CreateUploadError::from(e),
         })?; // TODO: make this statement less ugly, get rid of the match
 
-        let data_file = File::create(path.join("metadata.json")).await?;
+        let metadata_file = File::create(path.join("metadata.json")).await?;
+        let file = File::create(path.join(url.as_ref())).await?;
 
         Ok(UploadHandle {
             metadata: Upload {
@@ -78,18 +79,8 @@ impl FileBackend {
                 creation_date,
                 expiry_date,
             },
-            data_file,
+            metadata_file,
+            file,
         })
     }
-
-    pub async fn create_upload_random_name(
-        &self,
-        length: usize,
-        expiry: Option<Duration>,
-    ) -> Result<UploadHandle, CreateUploadError> {
-        let url = generate_randomized_name(length);
-        self.create_upload(url, expiry).await
-    }
-
-    // TODO: maybe create_upload_with_capacity
 }

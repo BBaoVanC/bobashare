@@ -1,7 +1,4 @@
-use std::{
-    io,
-    path::{Path, PathBuf},
-};
+use std::io;
 
 use thiserror::Error;
 use tokio::{
@@ -9,7 +6,7 @@ use tokio::{
     io::AsyncWriteExt,
 };
 
-use super::upload::{Upload};
+use super::upload::Upload;
 use crate::serde::{IntoMetadataError, UploadMetadata};
 
 /// Make sure to call [`flush`] or else the metadata won't be saved!
@@ -19,8 +16,9 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 #[derive(Debug)]
 pub struct UploadHandle {
     pub metadata: Upload,
-    // pub(super) so it can be accessed by [`super::file`]
-    pub(super) data_file: File,
+    // pub(super) so it can be constructed by [`super::file`]
+    pub(super) metadata_file: File,
+    pub(super) file: File,
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
@@ -33,55 +31,22 @@ pub enum SerializeMetadataError {
 }
 impl UploadHandle {
     pub async fn flush(mut self) -> Result<Upload, SerializeMetadataError> {
-        self.data_file
+        self.metadata_file
             .write_all(
                 // TODO: get rid of self.metadata.clone()
                 serde_json::to_string(&UploadMetadata::from_upload(self.metadata.clone()))?
                     .as_bytes(),
             )
             .await?;
-        self.data_file.flush().await?;
+        self.metadata_file.sync_all().await?;
+
+        self.file.sync_all().await?;
+
         Ok(self.metadata)
     }
-}
-#[derive(Debug, Error)]
-pub enum CreateFileError {
-    #[error("the file already exists")]
-    AlreadyExists,
-    #[error("error while doing i/o: {0}")]
-    Io(#[from] io::Error),
 }
 impl UploadHandle {
     pub async fn delete(self) -> Result<(), io::Error> {
         todo!()
     }
-    pub async fn create_file<S: AsRef<str>>(
-        &mut self,
-        url: S,
-        filename: S,
-        mimetype: S,
-    ) -> Result<UploadFileHandle, CreateFileError> {
-        let url = url.as_ref();
-
-        let metadata = UploadFile {
-            filename: filename.as_ref().to_string(),
-            mimetype: mimetype.as_ref().to_string(),
-        };
-
-        if self.metadata.files.contains_key(url) {
-            return Err(CreateFileError::AlreadyExists);
-        }
-        self.metadata.files.insert(String::from(url), metadata);
-
-        let full_path = Path::new(&self.metadata.url).join(url);
-        let file = File::create(&full_path).await?;
-
-        Ok(UploadFileHandle {
-            // TODO: assert this unwrap can never fail
-            metadata: self.metadata.files.get(url).unwrap(),
-            full_path,
-            file,
-        })
-    }
 }
-
