@@ -1,3 +1,6 @@
+use std::{ffi::OsString, path::PathBuf};
+use anyhow::anyhow;
+
 use anyhow::Context;
 use bobashare::{
     generate_randomized_name,
@@ -5,6 +8,7 @@ use bobashare::{
 };
 use chrono::Duration;
 use clap::{Args, Subcommand};
+use tokio::fs::File;
 use tracing::{event, instrument, Level};
 
 // #[derive(Debug, Args)]
@@ -24,15 +28,14 @@ use tracing::{event, instrument, Level};
 // }
 
 #[derive(Debug, Args, Clone)]
-// #[clap(group(
-//     ArgGroup::new("random_or_name").required(true).args(&["random", "name"])
-// ))]
 pub(crate) struct CreateUpload {
     /// How long (in days) before the upload expires and is deleted.
     ///
     /// If not provided, the default is no expiry (permanent).
     #[clap(short, long, value_parser)]
     expiry: Option<u16>,
+    #[clap(short, long, value_parser)]
+    source_file: PathBuf,
 
     #[clap(subcommand)]
     name: NameOptions,
@@ -42,40 +45,36 @@ pub(crate) enum NameOptions {
     /// Use a randomized name for the upload
     Random {
         /// The length of name to randomly generate
+        #[clap(short, long, default_value_t = 8)]
         length: u16,
     },
     /// Use a specific name for the upload
-    Name { name: String },
+    Name {
+        #[clap(short, long)]
+        name: String,
+    },
 }
 
 #[instrument]
 pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> anyhow::Result<()> {
     let expiry = args.expiry.map(|e| Duration::days(e.into()));
-
-    let upload = match args.name {
-        NameOptions::Random { length } => {
-            loop {
-                let name = generate_randomized_name(length.into());
-                let res = backend.create_upload(&name, expiry).await;
-                if let Err(CreateUploadError::AlreadyExists) = res {
-                    // TODO: should use tracing
-                    event!(
-                        Level::INFO,
-                        "An upload with the randomized name {} already exists; trying a new name",
-                        &name
-                    );
-                    continue;
-                }
-                break res.context("error creating upload")?;
-            }
-        }
-        NameOptions::Name { name } => backend
-            .create_upload(name, expiry)
-            .await
-            .context("error creating upload")?,
+    let name = match args.name {
+        // TODO: handle already existing name
+        NameOptions::Name { name } => name,
+        NameOptions::Random { length } => generate_randomized_name(length.into()),
     };
 
-    println!("{:?}", upload);
+    let filename = args.source_file.file_name().ok_or("invalid filename for source file")?;
+    let file = File::open(&args.source_file)
+        .await
+        .with_context(|| format!("error opening file at {:?}", args.source_file))?;
+    let size = file.metadata().await?.len();
+
+    // TODO: use mime_guess
+
+    let upload = backend.create_upload(name, filename, mimetype, size, expiry)
+
+    // println!("{:?}", upload);
 
     Ok(())
 }
