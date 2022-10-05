@@ -1,12 +1,9 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::io;
 
-use self::v1::{UploadFileV1, UploadV1};
+use self::v1::UploadV1;
 use super::storage::upload::Upload;
-use crate::storage::upload::UploadFile;
 
 // #[cfg(test)]
 // mod tests;
@@ -30,24 +27,12 @@ pub enum IntoMetadataError {
 }
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
-        let files = upload
-            .files
-            .into_iter()
-            .map(|(s, f)| {
-                (
-                    s,
-                    UploadFileV1 {
-                        filename: f.filename,
-                        mimetype: f.mimetype,
-                    },
-                )
-            })
-            .collect::<HashMap<_, _>>();
-
         Self::V1(UploadV1 {
+            size: upload.size,
+            filename: upload.filename,
+            mimetype: upload.mimetype,
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
-            files,
         })
     }
 }
@@ -57,22 +42,12 @@ impl UploadMetadata {
         match metadata {
             // latest
             Self::V1(data) => Upload {
+                url,
+                size: data.size,
+                filename: data.filename,
+                mimetype: data.mimetype,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
-                files: data
-                    .files
-                    .into_iter()
-                    .map(|(s, f)| {
-                        (
-                            s,
-                            UploadFile {
-                                filename: f.filename,
-                                mimetype: f.mimetype,
-                            },
-                        )
-                    })
-                    .collect(),
-                url,
             },
         }
     }

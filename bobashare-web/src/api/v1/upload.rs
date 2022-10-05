@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response, Result},
     Extension, Json,
 };
-use bobashare::storage::{file::CreateUploadError, handle::SerializeMetadataError};
+use bobashare::{storage::{file::CreateUploadError, handle::SerializeMetadataError}, generate_randomized_name};
 use chrono::{DateTime, Duration, Utc};
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
@@ -19,19 +19,14 @@ use crate::AppState;
 pub struct UploadResponse {
     /// url to the upload
     url: String,
+    /// direct url to download the raw uploaded file
+    direct_url: String,
+    /// the size in bytes of the uploaded file
+    size: usize,
+    /// the MIME type of the uploaded file
+    mimetype: String,
     /// expiration date in RFC 3339 format, null if the upload never expires
     expiry_date: Option<DateTime<Utc>>,
-    // /// metadata about each of the uploaded files
-    // files: HashMap<String, FileResponse>,
-}
-#[derive(Debug, Serialize)]
-pub struct FileResponse {
-    /// size of the file in bytes
-    size: usize,
-    /// url to download the file directly
-    url: String,
-    /// the MIME type of the file
-    mimetype: String,
 }
 
 #[derive(Debug, Error)]
@@ -99,8 +94,7 @@ impl From<CreateUploadError> for UploadError {
 ///
 /// ## Body `multipart/form-data`
 ///
-/// Should contain one field per file to upload. No other fields should be
-/// provided.
+/// Should contain one field named `file` which contains the file to upload.
 ///
 /// # Response
 ///
@@ -142,27 +136,25 @@ pub async fn post(
         }
     };
 
-    let upload = state
-        .backend
-        .create_upload_random_name(state.url_length, expiry)
-        .await?;
+    // let upload = state.backend.create_upload(generate_randomized_name(state.url_length), filename, mimetype, size, expiry)
+    let url = generate_randomized_name(state.url_length);
 
-    let mut i = 0;
-    while let Some(field) = form.next_field().await? {
-        i += 1; // starts at 1
+    // let file_field = while let Some(field) = form.next_field().await? {
+    //     if field.name() == Some("file") {
+    //         break field;
+    //     }
+    //     let filename = field.file_name().map(|n| String::from(n)).unwrap_or_else(|| url.clone());
+    // };
 
-        println!("{}", i);
-        todo!();
-    }
+    // let metadata = upload.flush().await?;
 
-    let metadata = upload.flush().await?;
-
-    Ok((
-        StatusCode::CREATED,
-        [(header::LOCATION, metadata.url.clone())],
-        Json(UploadResponse {
-            url: metadata.url,
-            expiry_date: metadata.expiry_date,
-        }),
-    ))
+    Ok(())
+    // Ok((
+    //     StatusCode::CREATED,
+    //     [(header::LOCATION, metadata.url.clone())],
+    //     Json(UploadResponse {
+    //         url: metadata.url,
+    //         expiry_date: metadata.expiry_date,
+    //     }),
+    // ))
 }
