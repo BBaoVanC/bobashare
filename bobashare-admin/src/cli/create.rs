@@ -1,7 +1,6 @@
 use std::{ffi::OsString, path::PathBuf};
-use anyhow::anyhow;
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use bobashare::{
     generate_randomized_name,
     storage::file::{CreateUploadError, FileBackend},
@@ -64,17 +63,23 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
         NameOptions::Random { length } => generate_randomized_name(length.into()),
     };
 
-    let filename = args.source_file.file_name().ok_or("invalid filename for source file")?;
+    let filename = args
+        .source_file
+        .file_name()
+        .ok_or_else(|| anyhow!("invalid filename for source file"))?
+        .to_string_lossy()
+        .to_string();
     let file = File::open(&args.source_file)
         .await
-        .with_context(|| format!("error opening file at {:?}", args.source_file))?;
-    let size = file.metadata().await?.len();
+        .with_context(|| format!("error opening file at {:?}", &args.source_file))?;
+    let size = file.metadata().await?.len().try_into().unwrap();
+    let mimetype = mime_guess::from_path(&args.source_file)
+        .first_or_octet_stream()
+        .to_string();
 
-    // TODO: use mime_guess
-
-    let upload = backend.create_upload(name, filename, mimetype, size, expiry)
-
-    // println!("{:?}", upload);
+    let upload = backend
+        .create_upload(name, filename, mimetype, Some(size), expiry)
+        .await?;
 
     Ok(())
 }
