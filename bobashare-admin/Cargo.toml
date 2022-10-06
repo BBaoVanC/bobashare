@@ -17,3 +17,4 @@ clap = { version = "4.0.8", features = ["derive"] }
 mime_guess = "2.0.4"
 tokio = { version = "1.21.1", features = ["full"] }
 tracing = "0.1.36"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }

@@ -171,6 +171,7 @@ dependencies = [
  "mime_guess",
  "tokio",
  "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
