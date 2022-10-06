@@ -24,6 +24,8 @@ pub(crate) enum Command {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // TODO: set up logging
+
     let cli = Cli::parse();
     let backend = FileBackend::new(cli.root)
         .await

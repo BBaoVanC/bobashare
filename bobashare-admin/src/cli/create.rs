@@ -7,7 +7,7 @@ use bobashare::{
 };
 use chrono::Duration;
 use clap::{Args, Subcommand};
-use tokio::fs::File;
+use tokio::{fs::File, io::{AsyncWriteExt, BufReader, AsyncReadExt, BufWriter, self}};
 use tracing::{event, instrument, Level};
 
 // #[derive(Debug, Args)]
@@ -69,7 +69,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
         .ok_or_else(|| anyhow!("invalid filename for source file"))?
         .to_string_lossy()
         .to_string();
-    let file = File::open(&args.source_file)
+    let mut file = File::open(&args.source_file)
         .await
         .with_context(|| format!("error opening file at {:?}", &args.source_file))?;
     let size = file.metadata().await?.len().try_into().unwrap();
@@ -77,9 +77,17 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
         .first_or_octet_stream()
         .to_string();
 
-    let upload = backend
+    let mut upload = backend
         .create_upload(name, filename, mimetype, Some(size), expiry)
         .await?;
+
+    println!("{:?}", upload.metadata);
+
+    let copied = io::copy(&mut file, &mut upload.file).await?;
+
+    event!(Level::DEBUG, "Wrote {} bytes to the upload file", copied);
+    upload.file.sync_all().await?;
+    upload.flush().await?;
 
     Ok(())
 }

@@ -16,9 +16,9 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 #[derive(Debug)]
 pub struct UploadHandle {
     pub metadata: Upload,
+    pub file: File,
     // pub(super) so it can be constructed by [`super::file`]
     pub(super) metadata_file: File,
-    pub(super) file: File,
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
