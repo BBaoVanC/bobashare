@@ -1,4 +1,5 @@
 /target
 
 # path to store files while testing the program
-/experiment
+/bobashare-admin/experiment
+/bobashare-web/experiment
