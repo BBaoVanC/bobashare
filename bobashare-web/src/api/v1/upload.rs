@@ -18,7 +18,7 @@ use serde_json::json;
 use thiserror::Error;
 use tokio::io::{self, AsyncWriteExt};
 
-use crate::{clamp_expiry, state::AppState};
+use crate::{clamp_expiry, AppState};
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "status")]
