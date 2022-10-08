@@ -8,6 +8,7 @@ pub mod api;
 #[derive(Debug)]
 pub struct AppState {
     pub backend: FileBackend,
+    // TODO: replace with `url` crate
     pub root_url: Uri,
     pub url_length: usize,
     pub default_expiry: Duration,
