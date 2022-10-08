@@ -150,6 +150,7 @@ name = "bobashare"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "mime",
  "pretty_assertions",
  "rand",
  "serde",
@@ -184,6 +185,7 @@ dependencies = [
  "chrono",
  "futures-util",
  "hyper",
+ "pretty_assertions",
  "serde",
  "serde_json",
  "thiserror",

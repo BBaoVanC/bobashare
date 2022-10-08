@@ -1,13 +1,13 @@
-use std::{ffi::OsString, path::PathBuf};
+use std::{path::PathBuf};
 
 use anyhow::{anyhow, Context};
 use bobashare::{
     generate_randomized_name,
-    storage::file::{CreateUploadError, FileBackend},
+    storage::file::{FileBackend},
 };
 use chrono::Duration;
 use clap::{Args, Subcommand};
-use tokio::{fs::File, io::{AsyncWriteExt, BufReader, AsyncReadExt, BufWriter, self}};
+use tokio::{fs::File, io::{self}};
 use tracing::{event, instrument, Level};
 
 // #[derive(Debug, Args)]
@@ -72,10 +72,9 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
     let mut file = File::open(&args.source_file)
         .await
         .with_context(|| format!("error opening file at {:?}", &args.source_file))?;
-    let size = file.metadata().await?.len().try_into().unwrap();
+    let size = file.metadata().await?.len();
     let mimetype = mime_guess::from_path(&args.source_file)
-        .first_or_octet_stream()
-        .to_string();
+        .first_or_octet_stream();
 
     let mut upload = backend
         .create_upload(name, filename, mimetype, Some(size), expiry)

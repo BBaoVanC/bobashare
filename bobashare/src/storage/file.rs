@@ -1,6 +1,7 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{path::PathBuf};
 
 use chrono::{prelude::*, Duration};
+use mime::Mime;
 use thiserror::Error;
 use tokio::{
     fs::{self, File},
@@ -8,7 +9,6 @@ use tokio::{
 };
 
 use super::{handle::UploadHandle, upload::Upload};
-use crate::generate_randomized_name;
 
 #[derive(Debug, Error)]
 pub enum NewBackendError {
@@ -54,8 +54,8 @@ impl FileBackend {
         &self,
         url: S,
         filename: S,
-        mimetype: S,
-        size: Option<usize>,
+        mimetype: Mime,
+        size: Option<u64>,
         expiry: Option<Duration>,
     ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
@@ -74,7 +74,7 @@ impl FileBackend {
             metadata: Upload {
                 url: String::from(url.as_ref()),
                 filename: String::from(filename.as_ref()),
-                mimetype: String::from(mimetype.as_ref()),
+                mimetype,
                 size,
                 creation_date,
                 expiry_date,

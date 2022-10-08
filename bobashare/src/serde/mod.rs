@@ -1,3 +1,4 @@
+use mime::Mime;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tokio::io;
@@ -30,25 +31,33 @@ impl UploadMetadata {
         Self::V1(UploadV1 {
             size: upload.size,
             filename: upload.filename,
-            mimetype: upload.mimetype,
+            mimetype: upload.mimetype.to_string(),
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
         })
     }
 }
 
+#[derive(Debug, Error)]
+pub enum MigrateErrorV1 {
+    #[error("error parsing `mimetype` field: {0}")]
+    ParseMime(#[from] mime::FromStrError),
+}
 impl UploadMetadata {
-    pub fn into_migrated_upload(url: String, metadata: UploadMetadata) -> Upload {
-        match metadata {
+    pub fn into_migrated_upload(
+        url: String,
+        metadata: UploadMetadata,
+    ) -> Result<Upload, MigrateErrorV1> {
+        Ok(match metadata {
             // latest
             Self::V1(data) => Upload {
                 url,
                 size: data.size,
                 filename: data.filename,
-                mimetype: data.mimetype,
+                mimetype: data.mimetype.parse::<Mime>()?,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
             },
-        }
+        })
     }
 }

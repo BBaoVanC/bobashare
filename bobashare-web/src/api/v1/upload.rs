@@ -1,18 +1,24 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{multipart::MultipartError, Multipart},
+    extract::{BodyStream, Path},
+    headers::ContentType,
     response::{IntoResponse, Response, Result},
-    Extension, Json,
+    Extension, Json, TypedHeader,
 };
-use bobashare::{storage::{file::CreateUploadError, handle::SerializeMetadataError}, generate_randomized_name};
+use bobashare::{
+    generate_randomized_name,
+    storage::{file::CreateUploadError, handle::SerializeMetadataError},
+};
 use chrono::{DateTime, Duration, Utc};
+use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
 use thiserror::Error;
+use tokio::io::{self, AsyncWriteExt};
 
-use crate::AppState;
+use crate::{clamp_expiry, state::AppState};
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "status")]
@@ -22,7 +28,7 @@ pub struct UploadResponse {
     /// direct url to download the raw uploaded file
     direct_url: String,
     /// the size in bytes of the uploaded file
-    size: usize,
+    size: Option<u64>,
     /// the MIME type of the uploaded file
     mimetype: String,
     /// expiration date in RFC 3339 format, null if the upload never expires
@@ -33,20 +39,20 @@ pub struct UploadResponse {
 pub enum UploadError {
     #[error("an upload at the url already exists")]
     AlreadyExists,
+
     #[error("internal error creating upload: {0}")]
     CreateUpload(CreateUploadError),
-    #[error("failed to parse {name} header: {source}")]
-    ParseHeader { name: String, source: anyhow::Error },
-    #[error("error parsing multipart form data: {0}")]
-    Multipart(#[from] MultipartError),
-    #[error("missing Content-Type in the multipart field {0}")]
-    MissingMultipartContentType(String),
-    #[error("missing Content-Disposition (filename) in the multipart field {0}")]
-    MissingMultipartFilename(String),
-    #[error("requested expiry is too long: {0}")]
-    ExpiryTooLong(Duration),
     #[error("internal error while serializing upload metadata: {0}")]
     SerializeMetadata(#[from] SerializeMetadataError),
+    #[error("error while uploading file to disk: {0}")]
+    WriteFile(#[from] io::Error),
+    #[error("miscellaneous axum error: {0}")]
+    AxumInternal(#[from] axum::Error),
+
+    #[error("failed to parse {name} header: {source}")]
+    ParseHeader { name: String, source: anyhow::Error },
+    #[error("requested expiry is too long: {0}")]
+    ExpiryTooLong(Duration),
 }
 impl IntoResponse for UploadError {
     fn into_response(self) -> Response {
@@ -58,11 +64,10 @@ impl IntoResponse for UploadError {
             // TODO: handle io_error_more errors
             UploadError::CreateUpload(_) => StatusCode::INTERNAL_SERVER_ERROR,
             UploadError::SerializeMetadata(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            UploadError::WriteFile(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            UploadError::AxumInternal(_) => StatusCode::INTERNAL_SERVER_ERROR,
 
-            UploadError::Multipart(_) => StatusCode::BAD_REQUEST,
             UploadError::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
-            UploadError::MissingMultipartContentType(_) => StatusCode::BAD_REQUEST,
-            UploadError::MissingMultipartFilename(_) => StatusCode::BAD_REQUEST,
             UploadError::ExpiryTooLong(_) => StatusCode::BAD_REQUEST,
         };
         let message = Json(json!({
@@ -92,9 +97,9 @@ impl From<CreateUploadError> for UploadError {
 ///   expire
 ///   - specify `0` for no expiry
 ///
-/// ## Body `multipart/form-data`
+/// ## Body
 ///
-/// Should contain one field named `file` which contains the file to upload.
+/// Should contain the contents of the file to upload
 ///
 /// # Response
 ///
@@ -103,13 +108,20 @@ impl From<CreateUploadError> for UploadError {
 /// - 201 Created
 /// - `Location` header containing the URL of the upload
 /// - JSON body created from [`UploadResponse`]
-pub async fn post(
+pub async fn put(
     state: Extension<Arc<AppState>>,
+    Path(filename): Path<String>,
+    // headers: HeaderMap,
+    TypedHeader(mimetype): TypedHeader<ContentType>,
+    // headers: HeaderMap,
+    // request: Request<BodyStream>,
     headers: HeaderMap,
-    mut form: Multipart,
+    mut body: BodyStream,
 ) -> Result<impl IntoResponse, UploadError> {
     let expiry = match headers.get("Bobashare-Expiry") {
+        // if header not found, use default expiry
         None => Some(state.default_expiry),
+        // otherwise, clamp the requested expiry to the max
         Some(e) => {
             let expiry = e
                 .to_str()
@@ -123,38 +135,38 @@ pub async fn post(
                     source: e.into(),
                 })?;
 
-            if expiry == 0 {
+            let expiry = if expiry == 0 {
                 None
             } else {
-                let duration = Duration::seconds(expiry.into());
-                if duration > state.max_expiry {
-                    return Err(UploadError::ExpiryTooLong(duration));
-                } else {
-                    Some(duration)
-                }
-            }
+                Some(Duration::seconds(expiry.into()))
+            };
+
+            clamp_expiry(state.max_expiry, expiry)
         }
     };
 
-    // let upload = state.backend.create_upload(generate_randomized_name(state.url_length), filename, mimetype, size, expiry)
     let url = generate_randomized_name(state.url_length);
+    let mut upload = state
+        .backend
+        .create_upload(url, filename, mimetype.into(), None, expiry)
+        .await?;
 
-    // let file_field = while let Some(field) = form.next_field().await? {
-    //     if field.name() == Some("file") {
-    //         break field;
-    //     }
-    //     let filename = field.file_name().map(|n| String::from(n)).unwrap_or_else(|| url.clone());
-    // };
+    while let Some(chunk) = body.try_next().await? {
+        upload.file.write_all(&chunk).await?;
+    }
 
-    // let metadata = upload.flush().await?;
+    upload.metadata.size = Some(upload.file.metadata().await?.len());
+    let metadata = upload.flush().await?;
 
-    Ok(())
-    // Ok((
-    //     StatusCode::CREATED,
-    //     [(header::LOCATION, metadata.url.clone())],
-    //     Json(UploadResponse {
-    //         url: metadata.url,
-    //         expiry_date: metadata.expiry_date,
-    //     }),
-    // ))
+    Ok((
+        StatusCode::CREATED,
+        [(header::LOCATION, metadata.url.clone())],
+        Json(UploadResponse {
+            url: metadata.url.clone(),
+            direct_url: metadata.url,
+            size: metadata.size,
+            mimetype: metadata.mimetype.to_string(),
+            expiry_date: metadata.expiry_date,
+        }),
+    ))
 }

@@ -2,7 +2,7 @@ use std::io;
 
 use thiserror::Error;
 use tokio::{
-    fs::{File, OpenOptions},
+    fs::{File},
     io::AsyncWriteExt,
 };
 

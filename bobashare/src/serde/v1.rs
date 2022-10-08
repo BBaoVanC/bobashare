@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadV1 {
-    pub size: Option<usize>,
+    pub size: Option<u64>,
     pub filename: String,
     pub mimetype: String,
     pub creation_date: DateTime<Utc>,
