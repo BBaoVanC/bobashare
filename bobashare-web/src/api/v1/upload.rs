@@ -154,7 +154,6 @@ pub async fn put(
         .backend
         .create_upload(id, filename, mimetype.into(), None, expiry)
         .await?;
-
     event!(Level::TRACE, "Created upload: {:?}", upload);
 
     while let Some(chunk) = body.try_next().await? {
@@ -168,11 +167,14 @@ pub async fn put(
     let metadata = upload.flush().await?;
     event!(Level::DEBUG, "Flushed upload metadata to disk");
 
+    let url = state.base_url.join(&metadata.id).unwrap().to_string();
+    event!(Level::INFO, "Uploaded file at {}", url);
+
     Ok((
         StatusCode::CREATED,
         [(header::LOCATION, metadata.id.clone())],
         Json(UploadResponse {
-            url: state.base_url.join(&metadata.id).unwrap().to_string(),
+            url,
             direct_url: state.raw_url.join(&metadata.id).unwrap().to_string(),
             size: metadata.size,
             mimetype: metadata.mimetype.to_string(),
