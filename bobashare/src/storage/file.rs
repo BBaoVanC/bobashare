@@ -52,7 +52,7 @@ pub enum CreateUploadError {
 impl FileBackend {
     pub async fn create_upload<S: AsRef<str>>(
         &self,
-        url: S,
+        id: S,
         filename: S,
         mimetype: Mime,
         size: Option<u64>,
@@ -60,7 +60,7 @@ impl FileBackend {
     ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
         let expiry_date = expiry.map(|e| creation_date + e);
-        let path = self.path.join(url.as_ref());
+        let path = self.path.join(id.as_ref());
 
         fs::create_dir(&path).await.map_err(|e| match e.kind() {
             io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
@@ -68,11 +68,11 @@ impl FileBackend {
         })?; // TODO: make this statement less ugly, get rid of the match
 
         let metadata_file = File::create(path.join("metadata.json")).await?;
-        let file = File::create(path.join(url.as_ref())).await?;
+        let file = File::create(path.join(id.as_ref())).await?;
 
         Ok(UploadHandle {
             metadata: Upload {
-                url: String::from(url.as_ref()),
+                id: String::from(id.as_ref()),
                 filename: String::from(filename.as_ref()),
                 mimetype,
                 size,

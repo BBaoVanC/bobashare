@@ -1,27 +1,27 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{BodyStream, Path},
+    extract::{BodyStream, Path, State},
     headers::ContentType,
     response::{IntoResponse, Response, Result},
-    Extension, Json, TypedHeader,
+    Json, TypedHeader,
 };
 use bobashare::{
-    generate_randomized_name,
+    generate_randomized_id,
     storage::{file::CreateUploadError, handle::SerializeMetadataError},
 };
 use chrono::{DateTime, Duration, Utc};
 use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
-use serde_json::json;
 use thiserror::Error;
 use tokio::io::{self, AsyncWriteExt};
+use tracing::{instrument, event, Level};
 
 use crate::{clamp_expiry, AppState};
 
+/// The JSON API response after uploading a file
 #[derive(Debug, Serialize)]
-#[serde(tag = "status")]
 pub struct UploadResponse {
     /// url to the upload
     url: String,
@@ -35,6 +35,7 @@ pub struct UploadResponse {
     expiry_date: Option<DateTime<Utc>>,
 }
 
+/// Errors that could occur during upload
 #[derive(Debug, Error)]
 pub enum UploadError {
     #[error("an upload at the url already exists")]
@@ -70,12 +71,8 @@ impl IntoResponse for UploadError {
             UploadError::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
             UploadError::ExpiryTooLong(_) => StatusCode::BAD_REQUEST,
         };
-        let message = Json(json!({
-            "status": "error",
-            "message": self.to_string()
-        }));
 
-        (code, message).into_response()
+        (code, self.to_string()).into_response()
     }
 }
 impl From<CreateUploadError> for UploadError {
@@ -108,19 +105,24 @@ impl From<CreateUploadError> for UploadError {
 /// - 201 Created
 /// - `Location` header containing the URL of the upload
 /// - JSON body created from [`UploadResponse`]
+#[instrument(skip(state, filename, mimetype, headers, body), fields(id))]
 pub async fn put(
-    state: Extension<Arc<AppState>>,
+    state: State<Arc<AppState>>,
     Path(filename): Path<String>,
-    // headers: HeaderMap,
     TypedHeader(mimetype): TypedHeader<ContentType>,
-    // headers: HeaderMap,
-    // request: Request<BodyStream>,
     headers: HeaderMap,
     mut body: BodyStream,
 ) -> Result<impl IntoResponse, UploadError> {
+    let id = generate_randomized_id(state.id_length);
+    tracing::Span::current().record("id", &id);
+    event!(Level::DEBUG, "Generated random ID for upload");
+
     let expiry = match headers.get("Bobashare-Expiry") {
         // if header not found, use default expiry
-        None => Some(state.default_expiry),
+        None => {
+            event!(Level::DEBUG, "No `Bobashare-Expiry` header provided, using default");
+            Some(state.default_expiry)
+        },
         // otherwise, clamp the requested expiry to the max
         Some(e) => {
             let expiry = e
@@ -135,6 +137,8 @@ pub async fn put(
                     source: e.into(),
                 })?;
 
+            event!(Level::DEBUG, "`Bobashare-Expiry` header says {} seconds", expiry);
+
             let expiry = if expiry == 0 {
                 None
             } else {
@@ -144,26 +148,32 @@ pub async fn put(
             clamp_expiry(state.max_expiry, expiry)
         }
     };
+    event!(Level::DEBUG, "Final expiry: {:?}", expiry.map(|e| e.to_string()));
 
-    let url = generate_randomized_name(state.url_length);
     let mut upload = state
         .backend
-        .create_upload(url, filename, mimetype.into(), None, expiry)
+        .create_upload(id, filename, mimetype.into(), None, expiry)
         .await?;
 
+    event!(Level::TRACE, "Created upload: {:?}", upload);
+
     while let Some(chunk) = body.try_next().await? {
+        event!(Level::TRACE, "Writing chunk of {} bytes to file", chunk.len());
         upload.file.write_all(&chunk).await?;
     }
 
+    event!(Level::TRACE, "Upload is fully written, now finding size...");
     upload.metadata.size = Some(upload.file.metadata().await?.len());
+    event!(Level::DEBUG, "Updated size of upload to be {} bytes", upload.metadata.size.unwrap());
     let metadata = upload.flush().await?;
+    event!(Level::DEBUG, "Flushed upload metadata to disk");
 
     Ok((
         StatusCode::CREATED,
-        [(header::LOCATION, metadata.url.clone())],
+        [(header::LOCATION, metadata.id.clone())],
         Json(UploadResponse {
-            url: metadata.url.clone(),
-            direct_url: metadata.url,
+            url: state.base_url.join(&metadata.id).unwrap().to_string(),
+            direct_url: state.raw_url.join(&metadata.id).unwrap().to_string(),
             size: metadata.size,
             mimetype: metadata.mimetype.to_string(),
             expiry_date: metadata.expiry_date,

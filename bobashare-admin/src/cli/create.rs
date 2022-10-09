@@ -2,7 +2,7 @@ use std::{path::PathBuf};
 
 use anyhow::{anyhow, Context};
 use bobashare::{
-    generate_randomized_name,
+    generate_randomized_id,
     storage::file::{FileBackend},
 };
 use chrono::Duration;
@@ -60,7 +60,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
     let name = match args.name {
         // TODO: handle already existing name
         NameOptions::Name { name } => name,
-        NameOptions::Random { length } => generate_randomized_name(length.into()),
+        NameOptions::Random { length } => generate_randomized_id(length.into()),
     };
 
     let filename = args

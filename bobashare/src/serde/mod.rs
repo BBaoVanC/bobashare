@@ -45,13 +45,13 @@ pub enum MigrateErrorV1 {
 }
 impl UploadMetadata {
     pub fn into_migrated_upload(
-        url: String,
+        id: String,
         metadata: UploadMetadata,
     ) -> Result<Upload, MigrateErrorV1> {
         Ok(match metadata {
             // latest
             Self::V1(data) => Upload {
-                url,
+                id,
                 size: data.size,
                 filename: data.filename,
                 mimetype: data.mimetype.parse::<Mime>()?,
