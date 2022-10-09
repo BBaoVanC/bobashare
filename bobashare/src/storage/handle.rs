@@ -1,10 +1,7 @@
-use std::io;
+use std::{io, path::PathBuf};
 
 use thiserror::Error;
-use tokio::{
-    fs::{File},
-    io::AsyncWriteExt,
-};
+use tokio::{fs::File, io::AsyncWriteExt};
 
 use super::upload::Upload;
 use crate::serde::{IntoMetadataError, UploadMetadata};
@@ -17,6 +14,7 @@ use crate::serde::{IntoMetadataError, UploadMetadata};
 pub struct UploadHandle {
     pub metadata: Upload,
     pub file: File,
+    pub file_path: PathBuf,
     // pub(super) so it can be constructed by [`super::file`]
     pub(super) metadata_file: File,
 }

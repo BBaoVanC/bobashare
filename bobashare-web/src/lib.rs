@@ -1,5 +1,6 @@
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
+use serde::Serializer;
 // use thiserror::Error;
 use url::Url;
 
@@ -15,6 +16,14 @@ pub struct AppState {
     pub id_length: usize,
     pub default_expiry: Duration,
     pub max_expiry: Option<Duration>,
+}
+
+/// Serialize an [`anyhow::Error`] into a string
+pub fn serialize_error<S>(err: &anyhow::Error, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_str(&format!("{:#}", err))
 }
 
 /// Take the requested expiry, and make sure it's within the maximum expiry.

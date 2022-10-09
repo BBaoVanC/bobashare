@@ -17,12 +17,15 @@ chrono = { version = "0.4.22", features = ["serde"] }
 futures-util = "0.3.24"
 # hyper = { version = "0.14.20", features = ["stream"] }
 hyper = "0.14.20"
+mime = "0.3.16"
 serde = "1.0.145"
 serde_json = "1.0.85"
 thiserror = "1.0.35"
 tokio = { version = "1.21.1", features = ["full"] }
+tokio-util = { version = "0.7.4", features = ["io"] }
 tracing = "0.1.36"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+tree_magic = "0.2.3"
 url = "2.3.1"
 
 [dev-dependencies]

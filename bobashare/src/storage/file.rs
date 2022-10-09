@@ -1,14 +1,15 @@
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use mime::Mime;
 use thiserror::Error;
 use tokio::{
-    fs::{self, File},
-    io,
+    fs::{self, File, OpenOptions},
+    io::{self, AsyncReadExt},
 };
 
 use super::{handle::UploadHandle, upload::Upload};
+use crate::serde::{MigrateError, UploadMetadata};
 
 #[derive(Debug, Error)]
 pub enum NewBackendError {
@@ -55,7 +56,6 @@ impl FileBackend {
         id: S,
         filename: S,
         mimetype: Mime,
-        size: Option<u64>,
         expiry: Option<Duration>,
     ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
@@ -68,19 +68,76 @@ impl FileBackend {
         })?; // TODO: make this statement less ugly, get rid of the match
 
         let metadata_file = File::create(path.join("metadata.json")).await?;
-        let file = File::create(path.join(id.as_ref())).await?;
+        let file_path = path.join(id.as_ref());
+        let file = File::create(&file_path).await?;
 
         Ok(UploadHandle {
             metadata: Upload {
                 id: String::from(id.as_ref()),
                 filename: String::from(filename.as_ref()),
                 mimetype,
-                size,
                 creation_date,
                 expiry_date,
             },
+            file,
+            file_path,
+            metadata_file,
+        })
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum OpenUploadError {
+    #[error("the upload was not found")]
+    NotFound(io::Error),
+    #[error("error while reading metadata file")]
+    ReadMetadata(io::Error),
+
+    #[error("error while opening upload file")]
+    OpenFile(io::Error),
+
+    #[error("error deserializing upload metadata")]
+    DeserializeMetadata(#[from] serde_json::Error),
+    #[error("error while migrating upload metadata to latest version")]
+    MigrateMetadata(#[from] MigrateError),
+}
+impl FileBackend {
+    pub async fn open_upload<S: AsRef<str>>(
+        &self,
+        id: S,
+        write: bool,
+    ) -> Result<UploadHandle, OpenUploadError> {
+        let path = self.path.join(id.as_ref());
+        let mut open_options = OpenOptions::new();
+        open_options.read(true).create(false).write(write);
+
+        let file_path = path.join(id.as_ref());
+        let file = open_options
+            .open(&file_path)
+            .await
+            .map_err(OpenUploadError::OpenFile)?;
+
+        let metadata_path = path.join("metadata.json");
+        let mut metadata_file = open_options
+            .open(metadata_path)
+            .await
+            .map_err(OpenUploadError::NotFound)?;
+
+        let mut metadata = String::new();
+        metadata_file
+            .read_to_string(&mut metadata)
+            .await
+            .map_err(OpenUploadError::ReadMetadata)?;
+        let metadata = UploadMetadata::into_migrated_upload(
+            id.as_ref().to_string(),
+            serde_json::from_str(&metadata)?,
+        )?;
+
+        Ok(UploadHandle {
+            metadata,
             metadata_file,
             file,
+            file_path,
         })
     }
 }

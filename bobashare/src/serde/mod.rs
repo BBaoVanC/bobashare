@@ -29,7 +29,6 @@ pub enum IntoMetadataError {
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
         Self::V1(UploadV1 {
-            size: upload.size,
             filename: upload.filename,
             mimetype: upload.mimetype.to_string(),
             creation_date: upload.creation_date,
@@ -43,18 +42,25 @@ pub enum MigrateErrorV1 {
     #[error("error parsing `mimetype` field: {0}")]
     ParseMime(#[from] mime::FromStrError),
 }
+#[derive(Debug, Error)]
+pub enum MigrateError {
+    #[error(transparent)]
+    V1(#[from] MigrateErrorV1),
+}
 impl UploadMetadata {
     pub fn into_migrated_upload(
         id: String,
         metadata: UploadMetadata,
-    ) -> Result<Upload, MigrateErrorV1> {
+    ) -> Result<Upload, MigrateError> {
         Ok(match metadata {
             // latest
             Self::V1(data) => Upload {
                 id,
-                size: data.size,
                 filename: data.filename,
-                mimetype: data.mimetype.parse::<Mime>()?,
+                mimetype: data
+                    .mimetype
+                    .parse::<Mime>()
+                    .map_err(MigrateErrorV1::from)?,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
             },

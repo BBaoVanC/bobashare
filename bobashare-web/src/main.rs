@@ -1,8 +1,11 @@
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
-use axum::{routing::{put, get}, Router};
+use axum::{
+    routing::{get, put},
+    Router,
+};
 use bobashare::storage::file::FileBackend;
-use bobashare_web::{api, AppState, views};
+use bobashare_web::{api, views, AppState};
 use chrono::Duration;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
@@ -31,16 +34,16 @@ async fn main() -> anyhow::Result<()> {
         max_expiry: Some(Duration::days(30)),
     });
 
-    let app =
-        Router::with_state(state)
-            .route("/:id", get(views::upload::display))
-            .route("/api/v1/upload/:filename", put(api::v1::upload::put));
+    let app = Router::with_state(state)
+        .route("/:id", get(views::upload::display))
+        .route("/raw/:id", get(views::upload::raw))
+        .route("/api/v1/upload", put(api::v1::upload::put))
+        .route("/api/v1/upload/:filename", put(api::v1::upload::put))
+        .into_make_service();
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::info!("Listening on http://{}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await?;
+    axum::Server::bind(&addr).serve(app).await?;
 
     Ok(())
 }
