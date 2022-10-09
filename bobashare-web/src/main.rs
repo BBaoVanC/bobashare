@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app =
         Router::with_state(state)
-            .route("/:id", get(views::display))
+            .route("/:id", get(views::upload::display))
             .route("/api/v1/upload/:filename", put(api::v1::upload::put));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
