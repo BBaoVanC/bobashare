@@ -35,6 +35,7 @@ pub struct UploadResponse {
     expiry_date: Option<DateTime<Utc>>,
 }
 
+// TODO: maybe derive Error on this
 /// Errors that could occur during upload
 #[derive(Debug, Serialize)]
 pub enum UploadError {
