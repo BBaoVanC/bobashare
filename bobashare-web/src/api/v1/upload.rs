@@ -14,7 +14,7 @@ use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 use tracing::{event, instrument, span, Level};
 
 use crate::{clamp_expiry, AppState};
@@ -43,6 +43,7 @@ pub enum UploadError {
     ParseHeader {
         name: String,
         #[serde(serialize_with = "crate::serialize_error")]
+        #[serde(rename = "error")]
         source: anyhow::Error,
     },
     #[serde(serialize_with = "crate::serialize_error")]
@@ -242,7 +243,7 @@ pub async fn put(
             Level::DEBUG,
             "Guessing mimetype since it was not already provided"
         );
-        if let Ok(mt) = tree_magic::from_filepath(&upload.file_path).parse() {
+        if let Some(Ok(mt)) = tree_magic_mini::from_filepath(&upload.file_path).map(|m| m.parse()) {
             event!(Level::DEBUG, "Guessed mimetype to be {}", mt);
             upload.metadata.mimetype = mt;
         } else {
@@ -253,8 +254,6 @@ pub async fn put(
         }
     }
 
-    // TODO: BUG: FIXME: this does not work, it reads 0 bytes
-    // TODO: BUG: FIXME: the span is closing prematurely for some reason
     if filename_needs_extension {
         let span = span!(Level::DEBUG, "update_extension");
         let _enter = span.enter();
@@ -262,25 +261,13 @@ pub async fn put(
             Level::DEBUG,
             "Adding file extension since the filename was not already provided"
         );
-        let mut buf = [0; 1024];
-        let read_byte_count = upload
-            .file
-            .read(&mut buf)
-            .await
-            .context("error while re-reading file in order to guess extension")?;
-        event!(
-            Level::DEBUG,
-            "Read {} bytes which will be used to infer extension",
-            read_byte_count
-        );
-        if let Some(mt) = infer::get(&buf) {
-            let ext = mt.extension();
+        if let Some(ext) = mime_db::extension(&upload.metadata.mimetype) {
             event!(Level::DEBUG, "Picked extension: .{}", ext);
             upload.metadata.filename += &format!(".{}", ext);
         } else {
             event!(
                 Level::DEBUG,
-                "No extensions could be guessed; no extension will be added"
+                "No extension could be guessed; no extension will be added"
             );
         }
     }

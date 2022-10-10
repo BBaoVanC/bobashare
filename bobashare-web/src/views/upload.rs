@@ -53,6 +53,7 @@ impl IntoResponse for ViewUploadError {
 pub async fn display() {}
 
 // TODO: BUG: `HEAD` request to this endpoint hangs
+// TODO: delete if expired
 #[instrument(ret(Debug), err(Display), skip(state))]
 pub async fn raw(
     state: State<Arc<AppState>>,
