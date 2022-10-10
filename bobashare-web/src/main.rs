@@ -16,7 +16,7 @@ use url::Url;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,tower_http=trace".into()),
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,tower_http=debug".into()),
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -36,12 +36,10 @@ async fn main() -> anyhow::Result<()> {
         max_expiry: Some(Duration::days(30)),
     });
 
-    // TODO: BUG: FIXME: tower_http logging not working
-    let app = Router::with_state(state)
+    let app = Router::with_state(Arc::clone(&state))
         .route("/:id", get(views::upload::display))
         .route("/raw/:id", get(views::upload::raw))
-        .route("/api/v1/upload", put(api::v1::upload::put))
-        .route("/api/v1/upload/:filename", put(api::v1::upload::put))
+        .nest("/api", api::router(Arc::clone(&state)))
         .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .into_make_service();
 
