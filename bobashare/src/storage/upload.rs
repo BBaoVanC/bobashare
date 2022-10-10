@@ -1,4 +1,4 @@
-use chrono::prelude::*;
+use chrono::{DateTime, Utc};
 use mime::Mime;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

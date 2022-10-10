@@ -6,25 +6,9 @@ use chrono::Duration;
 use clap::{Args, Subcommand};
 use tokio::{
     fs::File,
-    io::{self},
+    io::{self, AsyncWriteExt},
 };
 use tracing::{event, instrument, Level};
-
-// #[derive(Debug, Args)]
-// pub(crate) struct CreateUpload {
-//     expiry: Option<u16>,
-//     #[clap(subcommand)]
-//     name: NameOptions,
-// }
-
-// #[derive(Debug, Subcommand)]
-// pub(crate) enum NameOptions {
-//     Randomized,
-//     Name {
-//         #[clap(short, long, value_parser)]
-//         name: String,
-//     },
-// }
 
 #[derive(Debug, Args, Clone)]
 pub(crate) struct CreateUpload {

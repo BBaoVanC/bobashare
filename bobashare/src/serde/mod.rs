@@ -1,13 +1,12 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use tokio::io;
 
 use self::v1::UploadV1;
 use super::storage::upload::Upload;
 
-// #[cfg(test)]
-// mod tests;
+#[cfg(test)]
+mod tests;
 
 pub mod v1;
 

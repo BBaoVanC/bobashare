@@ -1,6 +1,6 @@
 //! Version 1
 
-use chrono::prelude::*;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
