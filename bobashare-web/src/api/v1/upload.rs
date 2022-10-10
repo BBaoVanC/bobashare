@@ -14,7 +14,7 @@ use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tracing::{event, instrument, span, Level};
 
 use crate::{clamp_expiry, AppState};
@@ -150,8 +150,17 @@ pub async fn put(
         None => (true, mime::APPLICATION_OCTET_STREAM),
     };
 
-    let filename = filename.map(|n| n.0).unwrap_or_else(|| id.clone());
-    event!(Level::DEBUG, "Filename is {}", filename);
+    let (filename_needs_extension, filename) = if let Some(n) = filename {
+        event!(Level::DEBUG, "Filename is {:?}", n.0);
+        (false, n.0)
+    } else {
+        event!(
+            Level::DEBUG,
+            "Filename is {:?}; extension will be guessed later",
+            id
+        );
+        (true, id.clone())
+    };
 
     let expiry = match headers.get("Bobashare-Expiry") {
         // if header not found, use default expiry
@@ -225,6 +234,10 @@ pub async fn put(
     if should_guess_mimetype {
         let span = span!(Level::DEBUG, "guess_mimetype");
         let _enter = span.enter();
+        event!(
+            Level::DEBUG,
+            "Guessing mimetype since it was not already provided"
+        );
         if let Ok(mt) = tree_magic::from_filepath(&upload.file_path).parse() {
             event!(Level::DEBUG, "Guessed mimetype to be {}", mt);
             upload.metadata.mimetype = mt;
@@ -232,6 +245,38 @@ pub async fn put(
             event!(
                 Level::DEBUG,
                 "Error while guessing mimetype; it will not be changed"
+            );
+        }
+    }
+
+    // TODO: BUG: FIXME: this does not work, it reads 0 bytes
+    // TODO: BUG: FIXME: the span is closing prematurely for some reason
+    if filename_needs_extension {
+        let span = span!(Level::DEBUG, "update_extension");
+        let _enter = span.enter();
+        event!(
+            Level::DEBUG,
+            "Adding file extension since the filename was not already provided"
+        );
+        let mut buf = [0; 1024];
+        let read_byte_count = upload
+            .file
+            .read(&mut buf)
+            .await
+            .context("error while re-reading file in order to guess extension")?;
+        event!(
+            Level::DEBUG,
+            "Read {} bytes which will be used to infer extension",
+            read_byte_count
+        );
+        if let Some(mt) = infer::get(&buf) {
+            let ext = mt.extension();
+            event!(Level::DEBUG, "Picked extension: .{}", ext);
+            upload.metadata.filename += &format!(".{}", ext);
+        } else {
+            event!(
+                Level::DEBUG,
+                "No extensions could be guessed; no extension will be added"
             );
         }
     }
@@ -253,7 +298,7 @@ pub async fn put(
         Json(UploadResponse {
             url,
             direct_url,
-            filename,
+            filename: metadata.filename,
             mimetype: metadata.mimetype.to_string(),
             expiry_date: metadata.expiry_date,
         }),

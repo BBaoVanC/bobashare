@@ -17,6 +17,7 @@ chrono = { version = "0.4.22", features = ["serde"] }
 futures-util = "0.3.24"
 # hyper = { version = "0.14.20", features = ["stream"] }
 hyper = "0.14.20"
+infer = { version = "0.9.0", default-features = false }
 mime = "0.3.16"
 serde = "1.0.145"
 serde_json = "1.0.85"

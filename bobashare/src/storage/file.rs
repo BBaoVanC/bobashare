@@ -4,13 +4,14 @@ use chrono::{prelude::*, Duration};
 use mime::Mime;
 use thiserror::Error;
 use tokio::{
-    fs::{self, File, OpenOptions},
+    fs::{self, OpenOptions},
     io::{self, AsyncReadExt},
 };
 
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
 
+// TODO: useless error types such as generic Io variant
 #[derive(Debug, Error)]
 pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
@@ -67,9 +68,18 @@ impl FileBackend {
             _ => CreateUploadError::from(e),
         })?; // TODO: make this statement less ugly, get rid of the match
 
-        let metadata_file = File::create(path.join("metadata.json")).await?;
+        let metadata_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path.join("metadata.json"))
+            .await?;
         let file_path = path.join(id.as_ref());
-        let file = File::create(&file_path).await?;
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(&file_path)
+            .await?;
 
         Ok(UploadHandle {
             metadata: Upload {
