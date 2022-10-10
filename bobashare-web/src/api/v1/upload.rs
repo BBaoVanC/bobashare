@@ -212,7 +212,10 @@ pub async fn put(
         .await
         .map_err(|e| match e {
             CreateUploadError::AlreadyExists => UploadError::AlreadyExists,
-            CreateUploadError::Io(e) => UploadError::InternalServer(
+
+            CreateUploadError::CreateDirectory(e)
+            | CreateUploadError::CreateMetadataFile(e)
+            | CreateUploadError::CreateUploadFile(e) => UploadError::InternalServer(
                 anyhow::Error::new(e).context("error while initializing upload"),
             ),
         })?;

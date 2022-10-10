@@ -11,13 +11,14 @@ use tokio::{
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
 
-// TODO: useless error types such as generic Io variant
 #[derive(Debug, Error)]
 pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
     NotADirectory(PathBuf),
-    #[error("error while doing i/o: {0}")]
-    Io(#[from] io::Error),
+    #[error("error creating directory for file backend")]
+    CreateDirectory(#[source] io::Error),
+    #[error("error checking if backend path is directory")]
+    ReadMetadata(#[source] io::Error),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -31,14 +32,20 @@ impl FileBackend {
         if let Err(e) = fs::create_dir(&path).await {
             // ignore AlreadyExists; propagate all other errors
             if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(NewBackendError::from(e));
+                return Err(NewBackendError::CreateDirectory(e));
             }
         }
 
-        let path = fs::canonicalize(path).await?;
-        if !fs::metadata(&path).await?.is_dir() {
+        if !fs::metadata(&path)
+            .await
+            .map_err(NewBackendError::ReadMetadata)?
+            .is_dir()
+        {
             return Err(NewBackendError::NotADirectory(path));
         }
+
+        // this should not fail because we already verified that the path exists
+        let path = fs::canonicalize(path).await.unwrap();
 
         Ok(Self { path })
     }
@@ -48,8 +55,12 @@ impl FileBackend {
 pub enum CreateUploadError {
     #[error("an upload with the requested name already exists")]
     AlreadyExists,
-    #[error(transparent)]
-    Io(#[from] io::Error),
+    #[error("error creating parent directory for the upload")]
+    CreateDirectory(#[source] io::Error),
+    #[error("error creating metadata file")]
+    CreateMetadataFile(#[source] io::Error),
+    #[error("error creating file for upload contents")]
+    CreateUploadFile(#[source] io::Error),
 }
 impl FileBackend {
     pub async fn create_upload<S: AsRef<str>>(
@@ -65,21 +76,23 @@ impl FileBackend {
 
         fs::create_dir(&path).await.map_err(|e| match e.kind() {
             io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
-            _ => CreateUploadError::from(e),
-        })?; // TODO: make this statement less ugly, get rid of the match
+            _ => CreateUploadError::CreateDirectory(e),
+        })?;
 
         let metadata_file = OpenOptions::new()
             .write(true)
             .create_new(true)
             .open(path.join("metadata.json"))
-            .await?;
+            .await
+            .map_err(CreateUploadError::CreateMetadataFile)?;
         let file_path = path.join(id.as_ref());
         let file = OpenOptions::new()
             .read(true)
             .write(true)
             .create_new(true)
             .open(&file_path)
-            .await?;
+            .await
+            .map_err(CreateUploadError::CreateUploadFile)?;
 
         Ok(UploadHandle {
             metadata: Upload {
@@ -99,12 +112,12 @@ impl FileBackend {
 #[derive(Debug, Error)]
 pub enum OpenUploadError {
     #[error("the upload was not found")]
-    NotFound(io::Error),
+    NotFound(#[source] io::Error),
     #[error("error while reading metadata file")]
-    ReadMetadata(io::Error),
+    ReadMetadata(#[source] io::Error),
 
     #[error("error while opening upload file")]
-    OpenFile(io::Error),
+    OpenFile(#[source] io::Error),
 
     #[error("error deserializing upload metadata")]
     DeserializeMetadata(#[from] serde_json::Error),
@@ -121,17 +134,17 @@ impl FileBackend {
         let mut open_options = OpenOptions::new();
         open_options.read(true).create(false).write(write);
 
-        let file_path = path.join(id.as_ref());
-        let file = open_options
-            .open(&file_path)
-            .await
-            .map_err(OpenUploadError::OpenFile)?;
-
         let metadata_path = path.join("metadata.json");
         let mut metadata_file = open_options
             .open(metadata_path)
             .await
             .map_err(OpenUploadError::NotFound)?;
+
+        let file_path = path.join(id.as_ref());
+        let file = open_options
+            .open(&file_path)
+            .await
+            .map_err(OpenUploadError::OpenFile)?;
 
         let mut metadata = String::new();
         metadata_file

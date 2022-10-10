@@ -4,7 +4,7 @@ use thiserror::Error;
 use tokio::{fs::File, io::AsyncWriteExt};
 
 use super::upload::Upload;
-use crate::serde::{IntoMetadataError, UploadMetadata};
+use crate::serde::UploadMetadata;
 
 /// Make sure to call [`flush`] or else the metadata won't be saved!
 ///
@@ -20,12 +20,15 @@ pub struct UploadHandle {
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
-    #[error("error while doing i/o: {0}")]
-    Io(#[from] io::Error),
-    #[error("error converting Upload to UploadMetadata")]
-    FromMetadata(#[from] IntoMetadataError),
     #[error("error while serializing with serde_json")]
-    Serde(#[from] serde_json::Error),
+    Serialize(#[from] serde_json::Error),
+    #[error("error writing metadata to file")]
+    WriteMetadata(#[source] io::Error),
+
+    #[error("error flushing metadata to disk")]
+    FlushMetadata(#[source] io::Error),
+    #[error("error flushing upload file to disk")]
+    FlushFile(#[source] io::Error),
 }
 impl UploadHandle {
     pub async fn flush(mut self) -> Result<Upload, SerializeMetadataError> {
@@ -35,10 +38,17 @@ impl UploadHandle {
                 serde_json::to_string(&UploadMetadata::from_upload(self.metadata.clone()))?
                     .as_bytes(),
             )
-            .await?;
-        self.metadata_file.sync_all().await?;
+            .await
+            .map_err(SerializeMetadataError::WriteMetadata)?;
+        self.metadata_file
+            .flush()
+            .await
+            .map_err(SerializeMetadataError::FlushMetadata)?;
 
-        self.file.sync_all().await?;
+        self.file
+            .flush()
+            .await
+            .map_err(SerializeMetadataError::FlushFile)?;
 
         Ok(self.metadata)
     }

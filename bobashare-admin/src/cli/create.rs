@@ -83,7 +83,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
     let copied = io::copy(&mut file, &mut upload.file).await?;
 
     event!(Level::DEBUG, "Wrote {} bytes to the upload file", copied);
-    upload.file.sync_all().await?;
+    upload.file.flush().await?;
     upload.flush().await?;
 
     Ok(())

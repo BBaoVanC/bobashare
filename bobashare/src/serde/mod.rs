@@ -20,12 +20,6 @@ pub enum UploadMetadata {
     #[serde(rename = "1")]
     V1(UploadV1),
 }
-
-#[derive(Debug, Error)]
-pub enum IntoMetadataError {
-    #[error("error while doing i/o: {0}")]
-    Io(#[from] io::Error),
-}
 impl UploadMetadata {
     pub fn from_upload(upload: Upload) -> Self {
         Self::V1(UploadV1 {
@@ -44,10 +38,12 @@ pub enum MigrateErrorV1 {
 }
 #[derive(Debug, Error)]
 pub enum MigrateError {
-    #[error(transparent)]
+    #[error("error migrating from V1")]
     V1(#[from] MigrateErrorV1),
 }
 impl UploadMetadata {
+    // TODO: maybe migrating should be a separate task and it should immediately
+    // error if not already migrated
     pub fn into_migrated_upload(
         id: String,
         metadata: UploadMetadata,
