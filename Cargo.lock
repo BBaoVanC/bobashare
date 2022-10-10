@@ -184,6 +184,8 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-util",
+ "tower",
+ "tower-http",
  "tracing",
  "tracing-subscriber",
  "tree_magic_mini",
@@ -1607,6 +1609,7 @@ dependencies = [
  "tower",
  "tower-layer",
  "tower-service",
+ "tracing",
 ]
 
 [[package]]

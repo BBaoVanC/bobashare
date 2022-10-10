@@ -24,6 +24,8 @@ serde_json = "1.0.85"
 thiserror = "1.0.35"
 tokio = { version = "1.21.1", features = ["full"] }
 tokio-util = { version = "0.7.4", features = ["io"] }
+tower = "0.4.13"
+tower-http = { version = "0.3.4", features = ["trace"] }
 tracing = "0.1.36"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 tree_magic_mini = "3.0.3"

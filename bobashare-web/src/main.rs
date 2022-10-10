@@ -7,6 +7,8 @@ use axum::{
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{api, views, AppState};
 use chrono::Duration;
+use tower::ServiceBuilder;
+use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 
@@ -14,7 +16,7 @@ use url::Url;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,tower_http=debug".into()),
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,tower_http=trace".into()),
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -34,11 +36,13 @@ async fn main() -> anyhow::Result<()> {
         max_expiry: Some(Duration::days(30)),
     });
 
+    // TODO: BUG: FIXME: tower_http logging not working
     let app = Router::with_state(state)
         .route("/:id", get(views::upload::display))
         .route("/raw/:id", get(views::upload::raw))
         .route("/api/v1/upload", put(api::v1::upload::put))
         .route("/api/v1/upload/:filename", put(api::v1::upload::put))
+        .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http()))
         .into_make_service();
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
