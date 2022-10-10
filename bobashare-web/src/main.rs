@@ -1,26 +1,39 @@
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
-use axum::{
-    routing::{get, put},
-    Router,
-};
+use axum::{routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{api, views, AppState};
 use chrono::Duration;
+use clap::Parser;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 
+#[derive(Debug, Parser)]
+struct Cli {
+    #[arg(short, long, action = clap::ArgAction::Count, value_parser = clap::value_parser!(u8).range(0..=2))]
+    verbose: u8,
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,tower_http=debug".into()),
+            std::env::var("RUST_LOG").unwrap_or_else(|_| {
+                match cli.verbose {
+                    0 => "info",
+                    1 => "info,bobashare=debug,tower_http=debug",
+                    2 => "debug",
+                    i => panic!("cli.verbose == {} (out of range)", i),
+                }
+                .into()
+            }),
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
-    tracing::debug!("Debug logging is enabled.");
 
     let backend_path = "storage/";
 

@@ -2,8 +2,7 @@
 
 use std::sync::Arc;
 
-use axum::{extract::State, routing::put, Router};
-use tower::MakeService;
+use axum::{routing::put, Router};
 
 use crate::AppState;
 
