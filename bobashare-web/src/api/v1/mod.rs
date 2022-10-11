@@ -22,15 +22,12 @@ pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
 
 pub trait ApiErrorExt: Error + Sized + Send + Sync + 'static {
     fn into_response_with_code(self, code: StatusCode) -> Response {
-        (
-            code,
-            Json(json!({
-                "status": "error",
-                "error": serde_error::Error::new(&self),
-                "message": format!("{:#}", anyhow::Error::new(self)),
-            })),
-        )
-            .into_response()
+        let resp = json!({
+            "status": "error",
+            "error": serde_error::Error::new(&self),
+            "message": format!("{:#}", anyhow::Error::new(self)),
+        });
+        (code, Json(resp)).into_response()
     }
 }
 impl<T> ApiErrorExt for T where T: Error + Send + Sync + 'static {}
