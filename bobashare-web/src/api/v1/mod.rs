@@ -1,10 +1,14 @@
 //! Version 1 of the bobashare API, hosted at `/api/v1/`
 
-use std::sync::Arc;
+use std::{error::Error, sync::Arc};
 
-use axum::{routing::put, Router, error_handling::HandleErrorLayer, BoxError};
+use axum::{
+    response::{IntoResponse, Response},
+    routing::put,
+    Json, Router,
+};
 use hyper::StatusCode;
-use tower::ServiceBuilder;
+use serde_json::json;
 
 use crate::AppState;
 
@@ -14,10 +18,19 @@ pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
         .route("/upload", put(upload::put))
         .route("/upload/:filename", put(upload::put))
-        .layer(
-            ServiceBuilder::new()
-                .layer(HandleErrorLayer::new(|err: BoxError| {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "abc")
-                }))
-        )
 }
+
+pub trait ApiErrorExt: Error + Sized + Send + Sync + 'static {
+    fn into_response_with_code(self, code: StatusCode) -> Response {
+        (
+            code,
+            Json(json!({
+                "status": "error",
+                "error": serde_error::Error::new(&self),
+                "message": format!("{:#}", anyhow::Error::new(self)),
+            })),
+        )
+            .into_response()
+    }
+}
+impl<T> ApiErrorExt for T where T: Error + Send + Sync + 'static {}

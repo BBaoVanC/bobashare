@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::EnvFilter::new(
             std::env::var("RUST_LOG").unwrap_or_else(|_| {
                 match cli.verbose {
-                    0 => "info",
+                    0 => "info,tower_http=debug",
                     1 => "info,bobashare=debug,tower_http=debug",
                     2 => "debug",
                     i => panic!("cli.verbose == {} (out of range)", i),

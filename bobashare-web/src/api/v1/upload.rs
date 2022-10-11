@@ -13,11 +13,11 @@ use chrono::{DateTime, Duration, Utc};
 use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
-use serde_json::json;
 use thiserror::Error;
 use tokio::io::AsyncWriteExt;
 use tracing::{event, instrument, span, Level};
 
+use super::ApiErrorExt;
 use crate::{clamp_expiry, AppState};
 
 /// The JSON API response after uploading a file
@@ -36,39 +36,27 @@ pub struct UploadResponse {
     expiry_date: Option<DateTime<Utc>>,
 }
 
-// TODO: maybe derive Error on this
 /// Errors that could occur during upload
-// #[derive(Debug, Error, Serialize)]
 #[derive(Debug, Error)]
 pub enum UploadError {
     #[error("an upload already exists with the same id")]
     AlreadyExists,
-    #[error("error parsing `{}` header: {:#}", .name, .source)]
-    ParseHeader {
-        name: String,
-        // #[serde(serialize_with = "crate::serialize_error")]
-        source: anyhow::Error,
-    },
-    #[error("internal server error: {0:#}",)]
-    // #[serde(serialize_with = "crate::serialize_error")]
+    #[error("error parsing `{}` header", .name)]
+    ParseHeader { name: String, source: anyhow::Error },
+    #[error("internal server error")]
     InternalServer(#[from] anyhow::Error),
 }
-// impl IntoResponse for UploadError {
-//     fn into_response(self) -> Response {
-//         let code = match self {
-//             Self::AlreadyExists => StatusCode::CONFLICT,
-//             Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
-//             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
-//         };
-//         let json = json!({
-//             "status": "error",
-//             "message": format!("{}", self),
-//             "error": self,
-//         });
+impl IntoResponse for UploadError {
+    fn into_response(self) -> Response {
+        let code = match self {
+            Self::AlreadyExists => StatusCode::CONFLICT,
+            Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
+            Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        };
 
-//         (code, Json(json)).into_response()
-//     }
-// }
+        self.into_response_with_code(code)
+    }
+}
 
 /// Create an upload
 ///
