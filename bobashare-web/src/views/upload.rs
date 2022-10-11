@@ -1,38 +1,25 @@
 use std::sync::Arc;
 
+use anyhow::Context;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
     response::IntoResponse,
-    Json,
 };
 use bobashare::storage::file::OpenUploadError;
 use hyper::{header, StatusCode};
-use serde::Serialize;
-use serde_json::json;
+use thiserror::Error;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::AppState;
+use crate::{api::v1::ApiErrorExt, AppState};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Error)]
 pub enum ViewUploadError {
-    #[serde(serialize_with = "crate::serialize_error")]
-    NotFound(anyhow::Error),
-    #[serde(serialize_with = "crate::serialize_error")]
-    InternalServer(anyhow::Error),
-}
-impl std::fmt::Display for ViewUploadError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotFound(e) => write!(
-                f,
-                "NotFound: an upload at the requested id was not found: {:#}",
-                e
-            ),
-            Self::InternalServer(e) => write!(f, "InternalServer: {:#}", e),
-        }
-    }
+    #[error("an upload at the specified id was not found")]
+    NotFound(#[source] anyhow::Error),
+    #[error("internal server error")]
+    InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for ViewUploadError {
     fn into_response(self) -> axum::response::Response {
@@ -40,13 +27,7 @@ impl IntoResponse for ViewUploadError {
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let json = json!({
-            "status": "error",
-            "message": format!("{}", self),
-            "error": self,
-        });
-
-        (code, Json(json)).into_response()
+        self.into_response_with_code(code)
     }
 }
 
@@ -65,18 +46,16 @@ pub async fn raw(
         .await
         .map_err(|e| match e {
             OpenUploadError::NotFound(e) => ViewUploadError::NotFound(e.into()),
-            _ => ViewUploadError::InternalServer(e.into()),
+            _ => ViewUploadError::InternalServer(
+                anyhow::Error::new(e).context("error opening upload"),
+            ),
         })?;
 
     let size = upload
         .file
         .metadata()
         .await
-        .map_err(|e| {
-            ViewUploadError::InternalServer(
-                anyhow::Error::new(e).context("error getting upload file metadata to read size"),
-            )
-        })?
+        .context("error getting upload file metadata in order to read size")?
         .len();
     event!(
         Level::DEBUG,
