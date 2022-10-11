@@ -14,6 +14,7 @@ use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use serde_json::json;
+use thiserror::Error;
 use tokio::io::AsyncWriteExt;
 use tracing::{event, instrument, span, Level};
 
@@ -37,57 +38,37 @@ pub struct UploadResponse {
 
 // TODO: maybe derive Error on this
 /// Errors that could occur during upload
-#[derive(Debug, Serialize)]
+// #[derive(Debug, Error, Serialize)]
+#[derive(Debug, Error)]
 pub enum UploadError {
+    #[error("an upload already exists with the same id")]
     AlreadyExists,
+    #[error("error parsing `{}` header: {:#}", .name, .source)]
     ParseHeader {
         name: String,
-        #[serde(serialize_with = "crate::serialize_error")]
-        #[serde(rename = "error")]
+        // #[serde(serialize_with = "crate::serialize_error")]
         source: anyhow::Error,
     },
-    #[serde(serialize_with = "crate::serialize_error")]
-    InternalServer(anyhow::Error),
+    #[error("internal server error: {0:#}",)]
+    // #[serde(serialize_with = "crate::serialize_error")]
+    InternalServer(#[from] anyhow::Error),
 }
-impl From<anyhow::Error> for UploadError {
-    fn from(err: anyhow::Error) -> Self {
-        Self::InternalServer(err)
-    }
-}
-impl std::fmt::Display for UploadError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::AlreadyExists => write!(
-                f,
-                "AlreadyExists: an upload already exists with the same id"
-            ),
-            Self::ParseHeader { name, source } => {
-                write!(
-                    f,
-                    "ParseHeader: error parsing `{}` header: {:#}",
-                    name, source
-                )
-            }
-            Self::InternalServer(e) => write!(f, "InternalServer: {:#}", e),
-        }
-    }
-}
-impl IntoResponse for UploadError {
-    fn into_response(self) -> Response {
-        let code = match self {
-            Self::AlreadyExists => StatusCode::CONFLICT,
-            Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
-            Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        };
-        let json = json!({
-            "status": "error",
-            "message": format!("{}", self),
-            "error": self,
-        });
+// impl IntoResponse for UploadError {
+//     fn into_response(self) -> Response {
+//         let code = match self {
+//             Self::AlreadyExists => StatusCode::CONFLICT,
+//             Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
+//             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
+//         };
+//         let json = json!({
+//             "status": "error",
+//             "message": format!("{}", self),
+//             "error": self,
+//         });
 
-        (code, Json(json)).into_response()
-    }
-}
+//         (code, Json(json)).into_response()
+//     }
+// }
 
 /// Create an upload
 ///
