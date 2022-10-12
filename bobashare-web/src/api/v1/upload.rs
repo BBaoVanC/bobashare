@@ -86,7 +86,7 @@ impl IntoResponse for UploadError {
 /// - 201 Created
 /// - `Location` header containing the URL of the upload
 /// - JSON body created from [`UploadResponse`]
-// TODO: remove instrument(ret, err) and customize TraceLayer instead
+// TODO: https://github.com/tokio-rs/tracing/pull/2335
 #[instrument(
     ret(Debug),
     err(Display),
