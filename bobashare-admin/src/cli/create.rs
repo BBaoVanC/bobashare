@@ -59,7 +59,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
     let mimetype = mime_guess::from_path(&args.source_file).first_or_octet_stream();
 
     let mut upload = backend
-        .create_upload(name, filename, mimetype, expiry)
+        .create_upload(name, filename, mimetype, expiry, None)
         .await?;
 
     println!("{:?}", upload.metadata);

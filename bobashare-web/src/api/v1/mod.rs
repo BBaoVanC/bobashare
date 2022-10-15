@@ -4,7 +4,7 @@ use std::{error::Error, sync::Arc};
 
 use axum::{
     response::{IntoResponse, Response},
-    routing::{delete, put},
+    routing::{delete, get, put},
     Json, Router,
 };
 use hyper::StatusCode;
@@ -14,16 +14,27 @@ use tracing::{event, Level};
 use crate::AppState;
 
 pub mod delete;
+pub mod info;
 pub mod upload;
 
+/// Routes under `/api/v1/`
+///
+/// - `/api/v1/upload`: [`upload::put`]
+/// - `/api/v1/upload/:filename`: [`upload::put`]
+/// - `/api/v1/delete/:id`: [`delete::delete`]
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
+        .route("/info/:id", get(info::info))
         .route("/upload", put(upload::put))
         .route("/upload/:filename", put(upload::put))
         .route("/delete/:id", delete(delete::delete))
 }
 
+/// Method to convert an [`std::error::Error`] into a [`Response`] with a
+/// specified [`StatusCode`]
 pub trait ApiErrorExt: Error + Sized + Send + Sync + 'static {
+    /// Consume the error and convert it to a [`Response`] with the specified
+    /// [`StatusCode`]
     fn into_response_with_code(self, code: StatusCode) -> Response {
         let mut error_msg = self.to_string(); // does not include causes
 

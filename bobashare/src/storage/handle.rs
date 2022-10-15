@@ -15,10 +15,12 @@ use crate::serde::UploadMetadata;
 #[derive(Debug)]
 pub struct UploadHandle {
     /// the path to the upload directory
+    pub path: PathBuf,
     pub metadata: Upload,
     pub file: File,
     pub file_path: PathBuf,
     pub(super) metadata_file: File,
+    pub(super) metadata_path: PathBuf,
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {

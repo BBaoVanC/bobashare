@@ -1,4 +1,4 @@
-//! `/api/v1/upload`
+//! API to create an upload
 
 use std::sync::Arc;
 
@@ -22,18 +22,21 @@ use crate::{clamp_expiry, AppState};
 
 /// The JSON API response after uploading a file
 #[derive(Debug, Serialize)]
-#[serde(tag = "type")]
 pub struct UploadResponse {
+    /// ID of the upload (used in URL)
+    pub id: String,
     /// url to the upload
-    url: String,
+    pub url: String,
     /// direct url to download the raw uploaded file
-    direct_url: String,
+    pub direct_url: String,
     /// the name of the file
-    filename: String,
+    pub filename: String,
     /// the MIME type of the uploaded file
-    mimetype: String,
+    pub mimetype: String,
     /// expiration date in RFC 3339 format, null if the upload never expires
-    expiry_date: Option<DateTime<Utc>>,
+    pub expiry_date: Option<DateTime<Utc>>,
+    /// key to delete the upload later before it's expired
+    pub delete_key: String,
 }
 
 /// Errors that could occur during upload
@@ -84,11 +87,13 @@ impl IntoResponse for UploadError {
 ///
 /// ## Headers
 ///
+/// - `Content-Type` -- mimetype (optional) -- the mime type (file format) of
+///   the file
 /// - `Bobashare-Expiry` -- number -- amount of seconds until the upload should
 ///   expire
 ///   - specify `0` for no expiry
-/// - `Content-Type` -- mimetype (optional) -- the mime type (file format) of
-///   the file
+/// - `Bobashare-Delete-Key` -- string -- custom key to use for deleting the
+///   file later, instead of a randomly generated one
 ///
 /// ## Body
 ///
@@ -185,9 +190,25 @@ pub async fn put(
     };
     event!(Level::DEBUG, expiry = %expiry.map_or_else(|| String::from("never"), |e| e.to_string()));
 
+    let delete_key = headers
+        .get("Bobashare-Delete-Key")
+        .map(|k| {
+            k.to_str().map_err(|e| UploadError::ParseHeader {
+                name: String::from("Bobashare-Delete-Key"),
+                source: anyhow::Error::new(e).context("error converting to string"),
+            })
+        })
+        .transpose()?
+        .map(ToString::to_string);
+    if delete_key.is_some() {
+        event!(Level::DEBUG, delete_key, "custom delete key was provided");
+    } else {
+        event!(Level::DEBUG, "delete_key will be randomly generated");
+    }
+
     let mut upload = state
         .backend
-        .create_upload(&id, &filename, mimetype, expiry)
+        .create_upload(&id, &filename, mimetype, expiry, delete_key)
         .await
         .map_err(|e| {
             if let CreateUploadError::AlreadyExists = e {
@@ -279,6 +300,7 @@ pub async fn put(
         .context("error flushing upload metadata to disk")?;
     event!(Level::DEBUG, "flushed upload metadata to disk");
 
+    // SAFETY: this shouldn't fail because `metadata.id` should be valid in a URL
     let url = state.base_url.join(&metadata.id).unwrap().to_string();
     let direct_url = state.raw_url.join(&metadata.id).unwrap().to_string();
     event!(
@@ -298,11 +320,13 @@ pub async fn put(
             (header::LOCATION, url.clone()),
         ],
         Json(UploadResponse {
+            id,
             url,
             direct_url,
             filename: metadata.filename,
             mimetype: metadata.mimetype.to_string(),
             expiry_date: metadata.expiry_date,
+            delete_key: metadata.delete_key,
         }),
     ))
 }
