@@ -120,6 +120,7 @@ name = "bobashare"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "displaydoc",
  "mime",
  "pretty_assertions",
  "rand",
@@ -152,6 +153,7 @@ dependencies = [
  "bobashare",
  "chrono",
  "clap",
+ "displaydoc",
  "futures-util",
  "hyper",
  "mime",
@@ -367,6 +369,17 @@ checksum = "adfbc57365a37acbd2ebf2b64d7e69bb766e2fea813521ed536f5d0520dcf86c"
 dependencies = [
  "block-buffer",
  "crypto-common",
+]
+
+[[package]]
+name = "displaydoc"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3bf95dc3f046b9da4f2d51833c0d3547d8564ef6910f5c1ed130306a75b92886"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

@@ -11,6 +11,7 @@ license = "MIT"
 
 [dependencies]
 chrono = { version = "0.4.22", features = ["serde"] }
+displaydoc = "0.2.3"
 mime = "0.3.16"
 rand = "0.8.5"
 serde = { version = "1.0.144", features = ["derive"] }

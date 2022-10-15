@@ -8,6 +8,7 @@ use axum::{
     Json,
 };
 use bobashare::storage::file::{DeleteUploadError, OpenUploadError};
+use displaydoc::Display;
 use hyper::StatusCode;
 use serde::Serialize;
 use thiserror::Error;
@@ -24,14 +25,14 @@ pub struct DeleteResponse {
 }
 
 /// Errors that could occur when deleting an upload
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum DeleteError {
-    #[error("an upload at the specified id was not found")]
+    /// an upload at the specified id was not found
     NotFound,
-    #[error("incorrect delete key")]
+    /// incorrect delete key
     IncorrectKey,
 
-    #[error("internal server error")]
+    /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
 impl From<DeleteUploadError> for DeleteError {

@@ -4,6 +4,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 /// A serializable form of [`Upload`], version 1
+///
+/// [`Upload`]: crate::storage::upload::Upload
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct UploadV1 {
     /// name of the uploaded file

@@ -9,6 +9,7 @@ use axum::{
 };
 use bobashare::storage::file::OpenUploadError;
 use chrono::{DateTime, Utc};
+use displaydoc::Display;
 use hyper::StatusCode;
 use serde::Serialize;
 use thiserror::Error;
@@ -38,12 +39,12 @@ pub struct InfoResponse {
 }
 
 /// Errors when querying info about an upload
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum InfoError {
-    #[error("an upload at the specified id was not found")]
+    /// an upload at the specified id was not found
     NotFound,
 
-    #[error("internal server error")]
+    /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for InfoError {

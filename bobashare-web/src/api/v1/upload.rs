@@ -10,6 +10,7 @@ use axum::{
 };
 use bobashare::{generate_randomized_id, storage::file::CreateUploadError};
 use chrono::{DateTime, Duration, Utc};
+use displaydoc::Display;
 use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
@@ -40,17 +41,17 @@ pub struct UploadResponse {
 }
 
 /// Errors that could occur during upload
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum UploadError {
-    #[error("an upload already exists with the same id")]
+    /// an upload already exists with the same id
     AlreadyExists,
-    #[error("error parsing `{}` header", .name)]
+    /// error parsing `{name}` header
     ParseHeader { name: String, source: anyhow::Error },
 
-    #[error("upload was cancelled")]
+    /// upload was cancelled
     Cancelled(#[source] anyhow::Error),
 
-    #[error("internal server error")]
+    /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for UploadError {

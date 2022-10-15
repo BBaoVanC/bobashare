@@ -3,6 +3,7 @@
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
+use displaydoc::Display;
 use mime::Mime;
 use rand::{
     distributions::{Alphanumeric, DistString},
@@ -18,13 +19,13 @@ use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
 
 /// Errors when creating a new [`FileBackend`]
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum NewBackendError {
-    #[error("the file {0} is not a directory")]
+    /// the file `{0}` is not a directory
     NotADirectory(PathBuf),
-    #[error("error creating directory for file backend")]
+    /// error creating directory for file backend
     CreateDirectory(#[source] io::Error),
-    #[error("error checking if backend path is directory")]
+    /// error checking if backend path is directory
     ReadMetadata(#[source] io::Error),
 }
 
@@ -73,15 +74,15 @@ impl FileBackend {
 }
 
 /// Errors when creating an upload in a file backend
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum CreateUploadError {
-    #[error("an upload with the requested name already exists")]
+    /// an upload with the requested name already exists
     AlreadyExists,
-    #[error("error creating parent directory for the upload")]
+    /// error creating parent directory for the upload
     CreateDirectory(#[source] io::Error),
-    #[error("error creating metadata file")]
+    /// error creating metadata file
     CreateMetadataFile(#[source] io::Error),
-    #[error("error creating file for upload contents")]
+    /// error creating file for upload contents
     CreateUploadFile(#[source] io::Error),
 }
 impl FileBackend {
@@ -137,19 +138,19 @@ impl FileBackend {
 }
 
 /// Errors when opening an upload stored in a file backend
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum OpenUploadError {
-    #[error("the upload was not found")]
+    /// the upload was not found
     NotFound(#[source] io::Error),
 
-    #[error("error while reading metadata file")]
+    /// error while reading metadata file
     ReadMetadata(#[source] io::Error),
-    #[error("error while opening upload file")]
+    /// error while opening upload file
     OpenFile(#[source] io::Error),
 
-    #[error("error deserializing upload metadata")]
+    /// error deserializing upload metadata
     DeserializeMetadata(#[from] serde_json::Error),
-    #[error("error while migrating upload metadata to latest version")]
+    /// error while migrating upload metadata to latest version
     MigrateMetadata(#[from] MigrateError),
 }
 impl FileBackend {
@@ -221,16 +222,16 @@ impl FileBackend {
 }
 
 /// Errors when deleting an upload stored in a file backend
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum DeleteUploadError {
-    #[error("an upload at the specified id was not found")]
+    /// an upload at the specified id was not found
     NotFound,
 
-    #[error("error deleting upload file")]
+    /// error deleting upload file
     DeleteFile(#[source] io::Error),
-    #[error("error deleting metadata file")]
+    /// error deleting metadata file
     DeleteMetadata(#[source] io::Error),
-    #[error("error deleting upload directory")]
+    /// error deleting upload directory
     DeleteDirectory(#[source] io::Error),
 }
 impl FileBackend {

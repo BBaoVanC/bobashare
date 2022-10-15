@@ -12,6 +12,7 @@ use bobashare::storage::{
     file::{FileBackend, OpenUploadError},
     handle::UploadHandle,
 };
+use displaydoc::Display;
 use hyper::{header, StatusCode};
 use thiserror::Error;
 use tokio_util::io::ReaderStream;
@@ -20,12 +21,12 @@ use tracing::{event, instrument, Level};
 use crate::{api::v1::ApiErrorExt, AppState};
 
 /// Errors when trying to view/download an upload
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum ViewUploadError {
-    #[error("an upload at the specified id was not found")]
+    /// an upload at the specified id was not found
     NotFound,
 
-    #[error("internal server error")]
+    /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for ViewUploadError {

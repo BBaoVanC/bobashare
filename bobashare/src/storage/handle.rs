@@ -6,6 +6,7 @@
 
 use std::{io, path::PathBuf};
 
+use displaydoc::Display;
 use thiserror::Error;
 use tokio::{fs::File, io::AsyncWriteExt};
 
@@ -28,16 +29,16 @@ pub struct UploadHandle {
     pub(super) metadata_file: File,
 }
 /// Errors when flushing the upload metadata to disk
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Display)]
 pub enum SerializeMetadataError {
-    #[error("error while serializing with serde_json")]
+    /// error while serializing with serde_json
     Serialize(#[from] serde_json::Error),
-    #[error("error writing metadata to file")]
+    /// error writing metadata to file
     WriteMetadata(#[source] io::Error),
 
-    #[error("error flushing metadata to disk")]
+    /// error flushing metadata to disk
     FlushMetadata(#[source] io::Error),
-    #[error("error flushing upload file to disk")]
+    /// error flushing upload file to disk
     FlushFile(#[source] io::Error),
 }
 impl UploadHandle {
