@@ -43,6 +43,10 @@ pub enum UploadError {
     AlreadyExists,
     #[error("error parsing `{}` header", .name)]
     ParseHeader { name: String, source: anyhow::Error },
+
+    #[error("upload was cancelled")]
+    Cancelled(#[source] anyhow::Error),
+
     #[error("internal server error")]
     InternalServer(#[from] anyhow::Error),
 }
@@ -51,10 +55,21 @@ impl IntoResponse for UploadError {
         let code = match self {
             Self::AlreadyExists => StatusCode::CONFLICT,
             Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
+            Self::Cancelled(_) => StatusCode::INTERNAL_SERVER_ERROR, // unused
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
-        self.into_response_with_code(code)
+        if let Self::Cancelled(_) = self {
+            let error = anyhow::Error::new(self);
+            event!(
+                Level::INFO,
+                error = format!("{:#}", error),
+                "returning empty response to cancelled upload"
+            );
+            ().into_response()
+        } else {
+            self.into_response_with_code(code)
+        }
     }
 }
 
@@ -86,23 +101,19 @@ impl IntoResponse for UploadError {
 /// - 201 Created
 /// - `Location` header containing the URL of the upload
 /// - JSON body created from [`UploadResponse`]
-// TODO: https://github.com/tokio-rs/tracing/pull/2335
-#[instrument(
-    ret(Debug),
-    err(Display),
-    skip(state, filename, headers, body),
-    fields(id)
-)]
+// TODO (outdated): https://github.com/tokio-rs/tracing/pull/2335
+// TODO: tracing needs an `ok` instead of `ret` to log just the Ok and not the Err, but workaround
+// can be done to log manually
+#[instrument(skip(state, filename, headers, body), fields(id))]
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Option<Path<String>>,
-    // TypedHeader(mimetype): TypedHeader<ContentType>,
     headers: HeaderMap,
     mut body: BodyStream,
 ) -> Result<impl IntoResponse, UploadError> {
     let id = generate_randomized_id(state.id_length);
     tracing::Span::current().record("id", &id);
-    event!(Level::DEBUG, "Generated random ID for upload");
+    event!(Level::DEBUG, "generated random ID for upload");
 
     let (should_guess_mimetype, mimetype) = match headers.get(header::CONTENT_TYPE) {
         Some(v) => (
@@ -123,13 +134,13 @@ pub async fn put(
     };
 
     let (filename_needs_extension, filename) = if let Some(n) = filename {
-        event!(Level::DEBUG, "Filename is {:?}", n.0);
+        event!(Level::DEBUG, filename = n.0);
         (false, n.0)
     } else {
         event!(
             Level::DEBUG,
-            "Filename is {:?}; extension will be guessed later",
-            id
+            filename = id,
+            "extension will be guessed later",
         );
         (true, id.clone())
     };
@@ -139,7 +150,7 @@ pub async fn put(
         None => {
             event!(
                 Level::DEBUG,
-                "No `Bobashare-Expiry` header provided, using default"
+                "`Bobashare-Expiry` header not provided, using default"
             );
             Some(state.default_expiry)
         }
@@ -149,12 +160,12 @@ pub async fn put(
                 .to_str()
                 .map_err(|e| UploadError::ParseHeader {
                     name: String::from("Bobashare-Expiry"),
-                    source: e.into(),
+                    source: anyhow::Error::new(e).context("error converting to string"),
                 })?
                 .parse::<u32>()
                 .map_err(|e| UploadError::ParseHeader {
                     name: String::from("Bobashare-Expiry"),
-                    source: e.into(),
+                    source: anyhow::Error::new(e).context("error parsing to number"),
                 })?;
 
             event!(
@@ -172,38 +183,51 @@ pub async fn put(
             clamp_expiry(state.max_expiry, expiry)
         }
     };
-    event!(
-        Level::DEBUG,
-        "Final expiry: {:?}",
-        expiry.map(|e| e.to_string())
-    );
+    event!(Level::DEBUG, expiry = %expiry.map_or_else(|| String::from("never"), |e| e.to_string()));
 
     let mut upload = state
         .backend
         .create_upload(&id, &filename, mimetype, expiry)
         .await
-        .map_err(|e| match e {
-            CreateUploadError::AlreadyExists => UploadError::AlreadyExists,
-
-            CreateUploadError::CreateDirectory(e)
-            | CreateUploadError::CreateMetadataFile(e)
-            | CreateUploadError::CreateUploadFile(e) => UploadError::InternalServer(
-                anyhow::Error::new(e).context("error while initializing upload"),
-            ),
+        .map_err(|e| {
+            if let CreateUploadError::AlreadyExists = e {
+                UploadError::AlreadyExists
+            } else {
+                UploadError::InternalServer(
+                    anyhow::Error::new(e).context("error while initializing upload"),
+                )
+            }
         })?;
-    event!(Level::TRACE, "Created upload: {:?}", upload);
+    event!(
+        Level::TRACE,
+        upload = format!("{:?}", upload),
+        "created upload handle"
+    );
 
-    while let Some(chunk) = body.try_next().await.context("error reading body")? {
-        event!(
-            Level::TRACE,
-            "Writing chunk of {} bytes to file",
-            chunk.len()
-        );
-        upload
-            .file
-            .write_all(&chunk)
-            .await
-            .context("error writing to upload file")?;
+    loop {
+        let chunk = body.try_next().await.context("error reading body");
+        match chunk {
+            Ok(ch) => match ch {
+                Some(c) => {
+                    event!(Level::TRACE, "writing chunk of {} bytes to file", c.len());
+                    upload
+                        .file
+                        .write_all(&c)
+                        .await
+                        .context("error writing to upload file")?;
+                }
+                None => break,
+            },
+            Err(e) => {
+                event!(Level::INFO, "upload was cancelled; it will be deleted");
+                upload
+                    .delete()
+                    .await
+                    .context("error deleting cancelled upload")?;
+                event!(Level::INFO, "upload was deleted successfully");
+                return Err(UploadError::Cancelled(e));
+            }
+        }
     }
 
     if should_guess_mimetype {
@@ -211,33 +235,35 @@ pub async fn put(
         let _enter = span.enter();
         event!(
             Level::DEBUG,
-            "Guessing mimetype since it was not already provided"
+            "guessing mimetype since it was not already provided"
         );
-        if let Some(Ok(mt)) = tree_magic_mini::from_filepath(&upload.file_path).map(|m| m.parse()) {
-            event!(Level::DEBUG, "Guessed mimetype to be {}", mt);
+        if let Some(Ok(mt)) =
+            tree_magic_mini::from_filepath(&upload.file_path).map(|m| m.parse::<mime::Mime>())
+        {
+            event!(Level::DEBUG, mimetype = mt.to_string(), "guessed");
             upload.metadata.mimetype = mt;
         } else {
             event!(
                 Level::DEBUG,
-                "Error while guessing mimetype; it will not be changed"
+                "error while guessing mimetype; it will not be changed"
             );
         }
     }
 
     if filename_needs_extension {
-        let span = span!(Level::DEBUG, "update_extension");
+        let span = span!(Level::DEBUG, "guess_extension");
         let _enter = span.enter();
         event!(
             Level::DEBUG,
-            "Adding file extension since the filename was not already provided"
+            "guessing file extension since the filename was not provided in request"
         );
         if let Some(ext) = mime_db::extension(&upload.metadata.mimetype) {
-            event!(Level::DEBUG, "Picked extension: .{}", ext);
+            event!(Level::DEBUG, extension = ext, "guessed");
             upload.metadata.filename += &format!(".{}", ext);
         } else {
             event!(
                 Level::DEBUG,
-                "No extension could be guessed; no extension will be added"
+                "no extension could be guessed; will not be added"
             );
         }
     }
@@ -246,10 +272,20 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing upload metadata to disk")?;
-    event!(Level::DEBUG, "Flushed upload metadata to disk");
+    event!(Level::DEBUG, "flushed upload metadata to disk");
 
     let url = state.base_url.join(&metadata.id).unwrap().to_string();
     let direct_url = state.raw_url.join(&metadata.id).unwrap().to_string();
+    event!(
+        Level::INFO,
+        url,
+        filename = metadata.filename,
+        mimetype = %metadata.mimetype,
+        expiry = %metadata
+            .expiry_date
+            .map_or_else(|| String::from("never"), |e| e.to_string()),
+        "successfully created upload"
+    );
     Ok((
         StatusCode::CREATED,
         [

@@ -35,7 +35,7 @@ pub async fn display() {}
 
 // TODO: BUG: `HEAD` request to this endpoint hangs
 // TODO: delete if expired
-#[instrument(ret(Debug), err(Display), skip(state))]
+#[instrument(skip(state))]
 pub async fn raw(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
@@ -57,15 +57,18 @@ pub async fn raw(
         .await
         .context("error getting upload file metadata in order to read size")?
         .len();
-    event!(
-        Level::DEBUG,
-        "Found size of upload file to be {} bytes",
-        size
-    );
+    event!(Level::DEBUG, size, "found size of upload file",);
 
     let stream = ReaderStream::new(upload.file);
     let body = StreamBody::new(stream);
 
+    event!(
+        Level::INFO,
+        "type" = %upload.metadata.mimetype,
+        length = size,
+        filename = upload.metadata.filename,
+        "successfully streaming upload file to client"
+    );
     Ok((
         StatusCode::OK,
         [

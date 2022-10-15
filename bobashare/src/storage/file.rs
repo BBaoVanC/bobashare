@@ -79,10 +79,11 @@ impl FileBackend {
             _ => CreateUploadError::CreateDirectory(e),
         })?;
 
+        let metadata_path = path.join("metadata.json");
         let metadata_file = OpenOptions::new()
             .write(true)
             .create_new(true)
-            .open(path.join("metadata.json"))
+            .open(&metadata_path)
             .await
             .map_err(CreateUploadError::CreateMetadataFile)?;
         let file_path = path.join(id.as_ref());
@@ -95,6 +96,7 @@ impl FileBackend {
             .map_err(CreateUploadError::CreateUploadFile)?;
 
         Ok(UploadHandle {
+            path,
             metadata: Upload {
                 id: String::from(id.as_ref()),
                 filename: String::from(filename.as_ref()),
@@ -105,6 +107,7 @@ impl FileBackend {
             file,
             file_path,
             metadata_file,
+            metadata_path,
         })
     }
 }
@@ -136,7 +139,7 @@ impl FileBackend {
 
         let metadata_path = path.join("metadata.json");
         let mut metadata_file = open_options
-            .open(metadata_path)
+            .open(&metadata_path)
             .await
             .map_err(OpenUploadError::NotFound)?;
 
@@ -157,8 +160,10 @@ impl FileBackend {
         )?;
 
         Ok(UploadHandle {
+            path,
             metadata,
             metadata_file,
+            metadata_path,
             file,
             file_path,
         })
