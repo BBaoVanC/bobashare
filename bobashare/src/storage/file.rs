@@ -116,9 +116,9 @@ impl FileBackend {
 pub enum OpenUploadError {
     #[error("the upload was not found")]
     NotFound(#[source] io::Error),
+
     #[error("error while reading metadata file")]
     ReadMetadata(#[source] io::Error),
-
     #[error("error while opening upload file")]
     OpenFile(#[source] io::Error),
 
@@ -128,6 +128,7 @@ pub enum OpenUploadError {
     MigrateMetadata(#[from] MigrateError),
 }
 impl FileBackend {
+    /// does not check if the upload is expired, do that yourself
     pub async fn open_upload<S: AsRef<str>>(
         &self,
         id: S,

@@ -16,15 +16,17 @@ use crate::{api::v1::ApiErrorExt, AppState};
 
 #[derive(Debug, Error)]
 pub enum ViewUploadError {
+    /// this also includes the upload being expired, but that information is not
+    /// sent to the client
     #[error("an upload at the specified id was not found")]
-    NotFound(#[source] anyhow::Error),
+    NotFound,
     #[error("internal server error")]
     InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for ViewUploadError {
     fn into_response(self) -> axum::response::Response {
         let code = match self {
-            Self::NotFound(_) => StatusCode::NOT_FOUND,
+            Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
         self.into_response_with_code(code)
@@ -33,7 +35,6 @@ impl IntoResponse for ViewUploadError {
 
 pub async fn display() {}
 
-// TODO: BUG: `HEAD` request to this endpoint hangs
 // TODO: delete if expired
 #[instrument(skip(state))]
 pub async fn raw(
@@ -45,11 +46,17 @@ pub async fn raw(
         .open_upload(id, false)
         .await
         .map_err(|e| match e {
-            OpenUploadError::NotFound(e) => ViewUploadError::NotFound(e.into()),
+            OpenUploadError::NotFound(_) => ViewUploadError::NotFound,
             _ => ViewUploadError::InternalServer(
                 anyhow::Error::new(e).context("error opening upload"),
             ),
         })?;
+
+    if upload.metadata.is_expired() {
+        event!(Level::INFO, "upload is expired; it will be deleted");
+        upload.delete().await.context("error deleting expired upload")?;
+        return Err(ViewUploadError::NotFound);
+    }
 
     let size = upload
         .file
