@@ -123,7 +123,6 @@ impl FileBackend {
             file,
             file_path,
             metadata_file,
-            metadata_path,
         })
     }
 }
@@ -205,7 +204,6 @@ impl FileBackend {
             path,
             metadata,
             metadata_file,
-            metadata_path,
             file,
             file_path,
         })

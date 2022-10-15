@@ -20,7 +20,6 @@ pub struct UploadHandle {
     pub file: File,
     pub file_path: PathBuf,
     pub(super) metadata_file: File,
-    pub(super) metadata_path: PathBuf,
 }
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
