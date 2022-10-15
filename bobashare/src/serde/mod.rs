@@ -26,6 +26,7 @@ impl UploadMetadata {
             mimetype: upload.mimetype.to_string(),
             creation_date: upload.creation_date,
             expiry_date: upload.expiry_date,
+            delete_key: upload.delete_key,
         })
     }
 }
@@ -58,6 +59,7 @@ impl UploadMetadata {
                     .map_err(MigrateErrorV1::from)?,
                 creation_date: data.creation_date,
                 expiry_date: data.expiry_date,
+                delete_key: data.delete_key,
             },
         })
     }

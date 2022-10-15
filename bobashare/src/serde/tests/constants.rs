@@ -22,6 +22,7 @@ pub(crate) fn example_upload_no_expiry() -> Upload {
         mimetype: "text/x-python".parse().unwrap(),
         creation_date: creation_date(),
         expiry_date: None,
+        delete_key: String::from("jasdflyhdas87nmgc7gf7342gcir874g23"),
     }
 }
 pub(crate) fn example_upload_with_expiry() -> Upload {

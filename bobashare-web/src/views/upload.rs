@@ -6,7 +6,10 @@ use axum::{
     extract::{Path, State},
     response::IntoResponse,
 };
-use bobashare::storage::file::OpenUploadError;
+use bobashare::storage::{
+    file::{FileBackend, OpenUploadError},
+    handle::UploadHandle,
+};
 use hyper::{header, StatusCode};
 use thiserror::Error;
 use tokio_util::io::ReaderStream;
@@ -33,17 +36,12 @@ impl IntoResponse for ViewUploadError {
     }
 }
 
-pub async fn display() {}
-
-// TODO: delete if expired
-#[instrument(skip(state))]
-pub async fn raw(
-    state: State<Arc<AppState>>,
-    Path(id): Path<String>,
-) -> Result<impl IntoResponse, ViewUploadError> {
-    let upload = state
-        .backend
-        .open_upload(id, false)
+async fn open_upload<S: AsRef<str>>(
+    backend: &FileBackend,
+    id: S,
+) -> Result<UploadHandle, ViewUploadError> {
+    let upload = backend
+        .open_upload(id.as_ref(), false)
         .await
         .map_err(|e| match e {
             OpenUploadError::NotFound(_) => ViewUploadError::NotFound,
@@ -54,9 +52,34 @@ pub async fn raw(
 
     if upload.metadata.is_expired() {
         event!(Level::INFO, "upload is expired; it will be deleted");
-        upload.delete().await.context("error deleting expired upload")?;
+        // don't upload.flush() since it's not open for writing -- it will fail
+        backend
+            .delete_upload(id.as_ref())
+            .await
+            .context("error deleting expired upload")?;
         return Err(ViewUploadError::NotFound);
     }
+
+    Ok(upload)
+}
+
+pub async fn display(
+    state: State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, ViewUploadError> {
+    let _upload = open_upload(&state.backend, id).await?;
+
+    todo!();
+    Ok(())
+}
+
+// TODO: delete if expired
+#[instrument(skip(state))]
+pub async fn raw(
+    state: State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, ViewUploadError> {
+    let upload = open_upload(&state.backend, id).await?;
 
     let size = upload
         .file

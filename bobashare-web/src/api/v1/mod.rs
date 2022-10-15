@@ -4,7 +4,7 @@ use std::{error::Error, sync::Arc};
 
 use axum::{
     response::{IntoResponse, Response},
-    routing::put,
+    routing::{delete, put},
     Json, Router,
 };
 use hyper::StatusCode;
@@ -13,12 +13,14 @@ use tracing::{event, Level};
 
 use crate::AppState;
 
+pub mod delete;
 pub mod upload;
 
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
         .route("/upload", put(upload::put))
         .route("/upload/:filename", put(upload::put))
+        .route("/delete/:id", delete(delete::delete))
 }
 
 pub trait ApiErrorExt: Error + Sized + Send + Sync + 'static {

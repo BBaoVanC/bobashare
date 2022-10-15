@@ -2,6 +2,10 @@ use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use mime::Mime;
+use rand::{
+    distributions::{Alphanumeric, DistString},
+    thread_rng,
+};
 use thiserror::Error;
 use tokio::{
     fs::{self, OpenOptions},
@@ -27,7 +31,6 @@ pub struct FileBackend {
 }
 impl FileBackend {
     /// Make a file backend, creating the directory if it doesn't exist.
-    // #[instrument]
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
             // ignore AlreadyExists; propagate all other errors
@@ -103,6 +106,7 @@ impl FileBackend {
                 mimetype,
                 creation_date,
                 expiry_date,
+                delete_key: Alphanumeric.sample_string(&mut thread_rng(), 32),
             },
             file,
             file_path,
@@ -168,5 +172,13 @@ impl FileBackend {
             file,
             file_path,
         })
+    }
+}
+
+impl FileBackend {
+    pub async fn delete_upload<S: AsRef<str>>(&self, id: S) -> Result<(), io::Error> {
+        let path = self.path.join(id.as_ref());
+        fs::remove_dir_all(path).await?;
+        Ok(())
     }
 }

@@ -221,7 +221,12 @@ pub async fn put(
             Err(e) => {
                 event!(Level::INFO, "upload was cancelled; it will be deleted");
                 upload
-                    .delete()
+                    .flush()
+                    .await
+                    .context("error flushing cancelled upload before deletion")?;
+                state
+                    .backend
+                    .delete_upload(id)
                     .await
                     .context("error deleting cancelled upload")?;
                 event!(Level::INFO, "upload was deleted successfully");

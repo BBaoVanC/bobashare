@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use mime::Mime;
 
+// TODO: maybe store uploader ip for spam reasons
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Upload {
     pub id: String,
@@ -8,6 +9,7 @@ pub struct Upload {
     pub mimetype: Mime,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
+    pub delete_key: String,
 }
 impl Upload {
     pub fn is_expired(&self) -> bool {
@@ -36,6 +38,7 @@ mod tests {
             mimetype: "text/plain".parse().unwrap(),
             creation_date: creation_date(),
             expiry_date: None,
+            delete_key: String::from("*^G^(MNCW#$(GMm9g87ctm4g98c43g789"),
         }
     }
     fn test_upload_expired() -> Upload {

@@ -9,4 +9,5 @@ pub struct UploadV1 {
     pub mimetype: String,
     pub creation_date: DateTime<Utc>,
     pub expiry_date: Option<DateTime<Utc>>,
+    pub delete_key: String,
 }
