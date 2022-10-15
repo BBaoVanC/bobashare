@@ -242,9 +242,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.0.14"
+version = "4.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ea54a38e4bce14ff6931c72e5b3c43da7051df056913d4e7e1fcdb1c03df69d"
+checksum = "6bf8832993da70a4c6d13c581f4463c2bdda27b9bf1c5498dc4365543abe6d6f"
 dependencies = [
  "atty",
  "bitflags",
@@ -1119,9 +1119,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.46"
+version = "1.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94e2ef8dbfc347b10c094890f778ee2e36ca9bb4262e86dc99cd217e35f3470b"
+checksum = "5ea3d908b0e36316caf9e9e2c4625cdde190a7e6f440d794667ed17a1855e725"
 dependencies = [
  "unicode-ident",
 ]
