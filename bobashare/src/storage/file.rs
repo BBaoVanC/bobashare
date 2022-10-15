@@ -1,3 +1,5 @@
+//! A backend where uploads are stored as files on disk
+
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
@@ -15,6 +17,7 @@ use tokio::{
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
 
+/// Errors when creating a new [`FileBackend`]
 #[derive(Debug, Error)]
 pub enum NewBackendError {
     #[error("the file {0} is not a directory")]
@@ -25,12 +28,14 @@ pub enum NewBackendError {
     ReadMetadata(#[source] io::Error),
 }
 
+/// A directory on disk which is used to store uploads
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FileBackend {
+    /// path of the directory containing all uploads
     pub path: PathBuf,
 }
 impl FileBackend {
-    /// Make a file backend, creating the directory if it doesn't exist.
+    /// Construct a file backend, creating the directory if it doesn't exist.
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
             // ignore AlreadyExists; propagate all other errors
@@ -53,17 +58,21 @@ impl FileBackend {
         Ok(Self { path })
     }
 
+    /// Get the path of the directory containing the upload
     fn get_upload_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
         self.path.join(id.as_ref())
     }
+    /// Get the path to the `metadata.json` of the upload
     fn get_metadata_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
         self.get_upload_path(id.as_ref()).join("metadata.json")
     }
+    /// Get the path to the uploaded file
     fn get_upload_file_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
         self.get_upload_path(id.as_ref()).join(id.as_ref())
     }
 }
 
+/// Errors when creating an upload in a file backend
 #[derive(Debug, Error)]
 pub enum CreateUploadError {
     #[error("an upload with the requested name already exists")]
@@ -127,6 +136,7 @@ impl FileBackend {
     }
 }
 
+/// Errors when opening an upload stored in a file backend
 #[derive(Debug, Error)]
 pub enum OpenUploadError {
     #[error("the upload was not found")]
@@ -210,6 +220,7 @@ impl FileBackend {
     }
 }
 
+/// Errors when deleting an upload stored in a file backend
 #[derive(Debug, Error)]
 pub enum DeleteUploadError {
     #[error("an upload at the specified id was not found")]

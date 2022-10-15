@@ -1,3 +1,6 @@
+//! Webserver written with [`axum`] which provides a frontend and REST API for
+//! [`bobashare`]
+
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
 use url::Url;
@@ -8,11 +11,17 @@ pub mod views;
 /// A struct that contains all the state and config for bobashare
 #[derive(Debug, Clone)]
 pub struct AppState {
+    /// storage backend
     pub backend: FileBackend,
+    /// base URL (ex. `http://localhost:3000/`)
     pub base_url: Url,
+    /// base URL for downloading raw upload files (ex. `http://localhost:3000/raw/`)
     pub raw_url: Url,
+    /// length of randomly generated IDs
     pub id_length: usize,
+    /// default expiry time
     pub default_expiry: Duration,
+    /// maximum expiry time ([`None`] for no maximum)
     pub max_expiry: Option<Duration>,
 }
 

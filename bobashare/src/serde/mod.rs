@@ -36,6 +36,7 @@ impl UploadMetadata {
     }
 }
 
+/// Errors when migrating from [`UploadV1`]
 #[derive(Debug, Error)]
 pub enum MigrateErrorV1 {
     #[error("error parsing `mimetype` field")]

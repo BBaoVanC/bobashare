@@ -1,3 +1,9 @@
+//! Methods to create a handle (RAII guard) to interact with an upload stored on
+//! disk.
+//!
+//! NOTE: Currently you must call [`UploadHandle::flush`] since it can't do
+//! that automatically yet without an async [`Drop`] impl.
+
 use std::{io, path::PathBuf};
 
 use thiserror::Error;
@@ -6,21 +12,22 @@ use tokio::{fs::File, io::AsyncWriteExt};
 use super::upload::Upload;
 use crate::serde::UploadMetadata;
 
-/// Make sure to call [`flush`] or else the metadata won't be saved!
-///
-/// [`flush`]: fn@Self::flush
-///
-/// some fields marked pub(super) so it can be constructed by [`super::file`]
+/// Make sure to call [`Self::flush`] or else the metadata won't be saved!
 // TODO: impl Drop so it can automatically flush() with RAII
 #[derive(Debug)]
 pub struct UploadHandle {
-    /// the path to the upload directory
+    /// path to the upload directory
     pub path: PathBuf,
+    /// info about the upload, see [`Upload`]
     pub metadata: Upload,
+    /// reference to the open uploaded file
     pub file: File,
+    /// path of the uploaded file
     pub file_path: PathBuf,
+    // marked pub(super) so it can be constructed by [`super::file`] methods
     pub(super) metadata_file: File,
 }
+/// Errors when flushing the upload metadata to disk
 #[derive(Debug, Error)]
 pub enum SerializeMetadataError {
     #[error("error while serializing with serde_json")]
@@ -34,6 +41,8 @@ pub enum SerializeMetadataError {
     FlushFile(#[source] io::Error),
 }
 impl UploadHandle {
+    /// Consume the handle, gracefully close the uploaded file, and flush the
+    /// metadata to disk.
     pub async fn flush(mut self) -> Result<Upload, SerializeMetadataError> {
         self.metadata_file
             .write_all(

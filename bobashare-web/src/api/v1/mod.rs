@@ -19,6 +19,7 @@ pub mod upload;
 
 /// Routes under `/api/v1/`
 ///
+/// - `/api/v1/info/:id`: [`info::info`]
 /// - `/api/v1/upload`: [`upload::put`]
 /// - `/api/v1/upload/:filename`: [`upload::put`]
 /// - `/api/v1/delete/:id`: [`delete::delete`]

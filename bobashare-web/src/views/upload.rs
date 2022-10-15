@@ -1,3 +1,5 @@
+//! Routes to display or download an upload in a browser
+
 use std::sync::Arc;
 
 use anyhow::Context;
@@ -17,10 +19,9 @@ use tracing::{event, instrument, Level};
 
 use crate::{api::v1::ApiErrorExt, AppState};
 
+/// Errors when trying to view/download an upload
 #[derive(Debug, Error)]
 pub enum ViewUploadError {
-    /// this also includes the upload being expired, but that information is not
-    /// sent to the client
     #[error("an upload at the specified id was not found")]
     NotFound,
 
@@ -64,6 +65,7 @@ async fn open_upload<S: AsRef<str>>(
     Ok(upload)
 }
 
+/// Display an upload as HTML
 pub async fn display(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
@@ -75,7 +77,7 @@ pub async fn display(
     Ok(())
 }
 
-// TODO: delete if expired
+/// Download the raw upload file
 #[instrument(skip(state))]
 pub async fn raw(
     state: State<Arc<AppState>>,

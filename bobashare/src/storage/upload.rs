@@ -1,17 +1,29 @@
+//! Type that stores information (metadata) about an upload, and related methods
+
 use chrono::{DateTime, Utc};
 use mime::Mime;
 
+/// Metadata about an upload
 // TODO: maybe store uploader ip for spam reasons
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Upload {
+    /// ID of the upload
     pub id: String,
+    /// name of the uploaded file
     pub filename: String,
+    /// MIME type of the uploaded file
     pub mimetype: Mime,
+    /// date the upload was created
     pub creation_date: DateTime<Utc>,
+    /// date the upload expires, or [`None`] if never
     pub expiry_date: Option<DateTime<Utc>>,
+    /// secret key needed to delete the upload before it expires
     pub delete_key: String,
 }
 impl Upload {
+    /// Check whether or not the upload is expired.
+    ///
+    /// Returns [`true`] if the upload has expired and should be deleted.
     pub fn is_expired(&self) -> bool {
         // if None (never expires) then not expired (false)
         // otherwise if expiry is before now, then it is expired
