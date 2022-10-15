@@ -99,7 +99,6 @@ impl FileBackend {
             .map_err(CreateUploadError::CreateUploadFile)?;
 
         Ok(UploadHandle {
-            path,
             metadata: Upload {
                 id: String::from(id.as_ref()),
                 filename: String::from(filename.as_ref()),
@@ -111,7 +110,6 @@ impl FileBackend {
             file,
             file_path,
             metadata_file,
-            metadata_path,
         })
     }
 }
@@ -132,6 +130,8 @@ pub enum OpenUploadError {
     MigrateMetadata(#[from] MigrateError),
 }
 impl FileBackend {
+    // TODO: some method to only read upload metadata instead of needing to grab an
+    // UploadHandle with write disabled
     /// does not check if the upload is expired, do that yourself
     pub async fn open_upload<S: AsRef<str>>(
         &self,
@@ -165,10 +165,8 @@ impl FileBackend {
         )?;
 
         Ok(UploadHandle {
-            path,
             metadata,
             metadata_file,
-            metadata_path,
             file,
             file_path,
         })

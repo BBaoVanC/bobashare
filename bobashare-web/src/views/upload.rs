@@ -70,6 +70,7 @@ pub async fn display(
     let _upload = open_upload(&state.backend, id).await?;
 
     todo!();
+    #[allow(unreachable_code)]
     Ok(())
 }
 
