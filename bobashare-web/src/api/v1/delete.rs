@@ -17,7 +17,7 @@ use super::ApiErrorExt;
 use crate::AppState;
 
 /// API response after deleting an upload successfully
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DeleteResponse {
     /// The ID of the deleted upload
     pub id: String,

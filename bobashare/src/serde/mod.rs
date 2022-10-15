@@ -1,3 +1,5 @@
+//! Methods to serialize [`Upload`]s using [`serde_json`]
+
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -10,18 +12,21 @@ mod tests;
 
 pub mod v1;
 
+/// The latest upload metadata version
 pub type LatestUploadMetadata = UploadV1;
 
-// TODO: maybe add an index to FileBackend with expiry dates
+/// All the versions of upload metadata
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(tag = "version")]
+#[non_exhaustive]
 pub enum UploadMetadata {
     #[serde(rename = "1")]
     V1(UploadV1),
 }
 impl UploadMetadata {
+    /// Convert an upload into the latest metadata version
     pub fn from_upload(upload: Upload) -> Self {
-        Self::V1(UploadV1 {
+        Self::V1(LatestUploadMetadata {
             filename: upload.filename,
             mimetype: upload.mimetype.to_string(),
             creation_date: upload.creation_date,
@@ -33,10 +38,13 @@ impl UploadMetadata {
 
 #[derive(Debug, Error)]
 pub enum MigrateErrorV1 {
-    #[error("error parsing `mimetype` field: {0}")]
+    #[error("error parsing `mimetype` field")]
     ParseMime(#[from] mime::FromStrError),
 }
+
+/// Errors that could occur while migrating an upload (during deserialization)
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum MigrateError {
     #[error("error migrating from V1")]
     V1(#[from] MigrateErrorV1),

@@ -10,14 +10,14 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub(crate) mod cli;
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 pub(crate) struct Cli {
     #[clap(short, long, value_parser, default_value = "experiment/")]
     root: PathBuf,
     #[clap(subcommand)]
     command: Command,
 }
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 pub(crate) enum Command {
     CreateUpload(CreateUpload),
 }

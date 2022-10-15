@@ -21,7 +21,7 @@ use super::ApiErrorExt;
 use crate::{clamp_expiry, AppState};
 
 /// The JSON API response after uploading a file
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UploadResponse {
     /// ID of the upload (used in URL)
     pub id: String,

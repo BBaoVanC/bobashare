@@ -6,7 +6,7 @@ pub mod api;
 pub mod views;
 
 /// A struct that contains all the state and config for bobashare
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AppState {
     pub backend: FileBackend,
     pub base_url: Url,

@@ -23,6 +23,7 @@ pub enum ViewUploadError {
     /// sent to the client
     #[error("an upload at the specified id was not found")]
     NotFound,
+
     #[error("internal server error")]
     InternalServer(#[from] anyhow::Error),
 }

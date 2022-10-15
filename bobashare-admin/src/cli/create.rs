@@ -10,7 +10,7 @@ use tokio::{
 };
 use tracing::{event, instrument, Level};
 
-#[derive(Debug, Args, Clone)]
+#[derive(Debug, Clone, Args)]
 pub(crate) struct CreateUpload {
     /// How long (in days) before the upload expires and is deleted.
     ///
@@ -23,7 +23,7 @@ pub(crate) struct CreateUpload {
     #[clap(subcommand)]
     name: NameOptions,
 }
-#[derive(Debug, Subcommand, Clone)]
+#[derive(Debug, Clone, Subcommand)]
 pub(crate) enum NameOptions {
     /// Use a randomized name for the upload
     Random {

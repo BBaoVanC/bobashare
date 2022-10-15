@@ -12,7 +12,7 @@ use tracing::Level;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 struct Cli {
     #[arg(short, long, action = clap::ArgAction::Count, value_parser = clap::value_parser!(u8).range(0..=3))]
     verbose: u8,

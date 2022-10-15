@@ -18,7 +18,7 @@ use super::ApiErrorExt;
 use crate::AppState;
 
 /// Successful upload info API response
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct InfoResponse {
     /// ID of the upload
     pub id: String,
