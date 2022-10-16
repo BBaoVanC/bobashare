@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use anyhow::Context;
+// use askama::Template;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
@@ -66,6 +67,12 @@ async fn open_upload<S: AsRef<str>>(
     Ok(upload)
 }
 
+// #[derive(Template)]
+// #[template(path = "")]
+// pub struct DisplayTemplate {
+
+// }
+
 /// Display an upload as HTML
 pub async fn display(
     state: State<Arc<AppState>>,
@@ -73,8 +80,8 @@ pub async fn display(
 ) -> Result<impl IntoResponse, ViewUploadError> {
     let _upload = open_upload(&state.backend, id).await?;
 
-    todo!();
-    #[allow(unreachable_code)]
+
+
     Ok(())
 }
 

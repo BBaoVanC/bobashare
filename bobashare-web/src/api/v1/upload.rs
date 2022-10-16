@@ -90,9 +90,16 @@ impl IntoResponse for UploadError {
 ///
 /// - `Content-Type` -- mimetype (optional) -- the mime type (file format) of
 ///   the file
-/// - `Bobashare-Expiry` -- number -- amount of seconds until the upload should
-///   expire
+/// - `Bobashare-Expiry` -- number -- duration until the upload should expire
 ///   - specify `0` for no expiry
+///   - examples (see [`duration_str`] for more information):
+///     - `1d` -- 1 day
+///     - `1h` -- 1 hour
+///     - `1m` -- 1 minute
+///     - `1s` -- 1 second
+///
+/// [`duration_str`]: https://crates.io/crates/duration_str
+///
 /// - `Bobashare-Delete-Key` -- string -- custom key to use for deleting the
 ///   file later, instead of a randomly generated one
 ///
@@ -162,28 +169,28 @@ pub async fn put(
         }
         // otherwise, clamp the requested expiry to the max
         Some(e) => {
-            let expiry = e
-                .to_str()
-                .map_err(|e| UploadError::ParseHeader {
-                    name: String::from("Bobashare-Expiry"),
-                    source: anyhow::Error::new(e).context("error converting to string"),
-                })?
-                .parse::<u32>()
-                .map_err(|e| UploadError::ParseHeader {
-                    name: String::from("Bobashare-Expiry"),
-                    source: anyhow::Error::new(e).context("error parsing to number"),
-                })?;
+            let expiry = e.to_str().map_err(|e| UploadError::ParseHeader {
+                name: String::from("Bobashare-Expiry"),
+                source: anyhow::Error::new(e).context("error converting to string"),
+            })?;
 
-            event!(
-                Level::DEBUG,
-                "`Bobashare-Expiry` header says {} seconds",
-                expiry
-            );
+            event!(Level::DEBUG, "`Bobashare-Expiry` header says {}", expiry);
 
-            let expiry = if expiry == 0 {
+            let expiry = if expiry == "never" {
                 None
             } else {
-                Some(Duration::seconds(expiry.into()))
+                Some(
+                    Duration::from_std(duration_str::parse(expiry).map_err(|e| {
+                        UploadError::ParseHeader {
+                            name: String::from("Bobashare-Expiry"),
+                            source: e.context("error parsing duration string"),
+                        }
+                    })?)
+                    .map_err(|e| UploadError::ParseHeader {
+                        name: String::from("Bobashare-Expiry"),
+                        source: anyhow::Error::new(e).context("error converting duration"),
+                    })?,
+                )
             };
 
             clamp_expiry(state.max_expiry, expiry)

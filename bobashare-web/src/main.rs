@@ -5,7 +5,7 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{routing::get, Router};
+use axum::{self, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{api, views, AppState};
 use chrono::Duration;
@@ -57,6 +57,7 @@ async fn main() -> anyhow::Result<()> {
 
     #[rustfmt::skip]
     let mut config = Config::builder()
+        .set_default("listen_addr", "127.0.0.1:3000").unwrap()
         .set_default("backend_path", "storage/").unwrap()
         .set_default("base_url", "http://localhost:3000/").unwrap()
         .set_default("id_length", 8).unwrap()
@@ -138,9 +139,8 @@ async fn main() -> anyhow::Result<()> {
     );
 
     let app = Router::with_state(Arc::clone(&state))
-        .route("/:id", get(views::upload::display))
-        .route("/raw/:id", get(views::upload::raw))
         .nest("/api", api::router(Arc::clone(&state)))
+        .merge(views::router(Arc::clone(&state)))
         .layer(
             ServiceBuilder::new().layer(
                 TraceLayer::new_for_http()
@@ -158,9 +158,13 @@ async fn main() -> anyhow::Result<()> {
         )
         .into_make_service();
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::info!("Listening on http://{}", addr);
-    axum::Server::bind(&addr).serve(app).await?;
+    let listen_addr: SocketAddr = config
+        .get_string("listen_addr")
+        .unwrap()
+        .parse()
+        .context("error parsing `listen_addr`")?;
+    event!(Level::INFO, "Listening on http://{}", listen_addr);
+    axum::Server::bind(&listen_addr).serve(app).await?;
 
     Ok(())
 }
