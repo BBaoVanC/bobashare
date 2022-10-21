@@ -35,29 +35,9 @@ version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fb98f10f371286b177db5eeb9a6e5396609555686a35e1d4f7b9a9c6d8af0139"
 dependencies = [
- "askama_derive 0.11.2",
- "askama_escape 0.10.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "askama_derive",
+ "askama_escape",
  "askama_shared",
-]
-
-[[package]]
-name = "askama"
-version = "0.11.2"
-dependencies = [
- "askama_derive 0.12.0",
- "askama_escape 0.10.3",
- "humansize 2.1.0",
- "num-traits",
- "percent-encoding",
-]
-
-[[package]]
-name = "askama_axum"
-version = "0.1.0"
-dependencies = [
- "askama 0.11.2",
- "axum-core",
- "http",
 ]
 
 [[package]]
@@ -72,24 +52,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "askama_derive"
-version = "0.12.0"
-dependencies = [
- "mime",
- "mime_guess",
- "nom 7.1.1",
- "proc-macro2",
- "quote",
- "serde",
- "syn",
- "toml",
-]
-
-[[package]]
-name = "askama_escape"
-version = "0.10.3"
-
-[[package]]
 name = "askama_escape"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -101,8 +63,8 @@ version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf722b94118a07fcbc6640190f247334027685d4e218b794dbfe17c32bf38ed0"
 dependencies = [
- "askama_escape 0.10.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "humansize 1.1.1",
+ "askama_escape",
+ "humansize",
  "mime",
  "mime_guess",
  "nom 7.1.1",
@@ -259,8 +221,7 @@ name = "bobashare-web"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "askama 0.11.1",
- "askama_axum",
+ "askama",
  "axum",
  "bobashare",
  "chrono",
@@ -767,15 +728,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "02296996cb8796d7c6e3bc2d9211b7802812d36999a51bb754123ead7d37d026"
 
 [[package]]
-name = "humansize"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a866837516f34ad34fb221f3ee01fd0db75f2c2f6abeda2047dc6963fb04ad9a"
-dependencies = [
- "libm",
-]
-
-[[package]]
 name = "hyper"
 version = "0.14.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -910,12 +862,6 @@ name = "libc"
 version = "0.2.135"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68783febc7782c6c5cb401fbda4de5a9898be1762314da0bb2c10ced61f18b0c"
-
-[[package]]
-name = "libm"
-version = "0.2.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "292a948cd991e376cf75541fe5b97a1081d713c618b4f1b9500f8844e49eb565"
 
 [[package]]
 name = "link-cplusplus"

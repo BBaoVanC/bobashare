@@ -18,7 +18,7 @@ use thiserror::Error;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::{AppState, templates::ErrorTemplate};
+use crate::{templates::ErrorTemplate, AppState};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -38,7 +38,8 @@ impl IntoResponse for ViewUploadError {
         ErrorTemplate {
             title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
             message: &self.to_string(),
-        }.into_response()
+        }
+        .into_response()
     }
 }
 

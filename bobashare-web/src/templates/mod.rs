@@ -1,5 +1,8 @@
 use askama::Template;
-use axum::response::IntoResponse;
+use axum::{
+    http::HeaderValue,
+    response::{IntoResponse, Response},
+};
 use hyper::header;
 
 #[derive(Template)]
@@ -9,10 +12,14 @@ pub struct ErrorTemplate<'t> {
     pub message: &'t str,
 }
 impl IntoResponse for ErrorTemplate<'_> {
-    fn into_response(self) -> axum::response::Response {
+    fn into_response(self) -> Response {
         (
-            [(header::CONTENT_TYPE, Self::MIME_TYPE)],
+            [(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static(Self::MIME_TYPE),
+            )],
             self.render().unwrap(),
-        ).into_response()
+        )
+            .into_response()
     }
 }
