@@ -3,7 +3,6 @@
 use std::sync::Arc;
 
 use anyhow::Context;
-use askama::Template;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
@@ -36,11 +35,10 @@ impl IntoResponse for ViewUploadError {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        // ErrorTemplate {
-        //     title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
-        //     message: &self.to_string(),
-        // }.render().unwrap()
-        ().into_response()
+        ErrorTemplate {
+            title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
+            message: &self.to_string(),
+        }.into_response()
     }
 }
 
