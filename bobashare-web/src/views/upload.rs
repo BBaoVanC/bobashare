@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use anyhow::Context;
-// use askama::Template;
+use askama::Template;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
@@ -19,7 +19,7 @@ use thiserror::Error;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::AppState;
+use crate::{AppState, templates::ErrorTemplate};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -32,11 +32,15 @@ pub enum ViewUploadError {
 }
 impl IntoResponse for ViewUploadError {
     fn into_response(self) -> Response {
-        let _code = match self {
+        let code = match self {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        todo!("use error message template")
+        // ErrorTemplate {
+        //     title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
+        //     message: &self.to_string(),
+        // }.render().unwrap()
+        ().into_response()
     }
 }
 
