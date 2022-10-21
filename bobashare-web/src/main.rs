@@ -5,13 +5,13 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{self, Router};
+use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
-use bobashare_web::{api, views, AppState};
+use bobashare_web::{api, static_routes, views, AppState};
 use chrono::Duration;
 use clap::Parser;
 use config::Config;
-use hyper::{Body, Request};
+use hyper::{Body, Request, Uri};
 use tower::ServiceBuilder;
 use tower_http::trace::{DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::{event, Level};
@@ -141,6 +141,8 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::with_state(Arc::clone(&state))
         .nest("/api", api::router(Arc::clone(&state)))
         .merge(views::router(Arc::clone(&state)))
+        .nest("/static", get(static_routes::handler))
+        .fallback(|| async { static_routes::handler(Uri::from_static("/404.html")).await })
         .layer(
             ServiceBuilder::new().layer(
                 TraceLayer::new_for_http()

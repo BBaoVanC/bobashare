@@ -6,6 +6,7 @@ use chrono::Duration;
 use url::Url;
 
 pub mod api;
+pub mod static_routes;
 pub mod views;
 
 /// A struct that contains all the state and config for bobashare

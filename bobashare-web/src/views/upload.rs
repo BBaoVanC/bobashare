@@ -7,7 +7,7 @@ use anyhow::Context;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
-    response::IntoResponse,
+    response::{IntoResponse, Response},
 };
 use bobashare::storage::{
     file::{FileBackend, OpenUploadError},
@@ -19,7 +19,7 @@ use thiserror::Error;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::{api::v1::ApiErrorExt, AppState};
+use crate::AppState;
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -31,12 +31,12 @@ pub enum ViewUploadError {
     InternalServer(#[from] anyhow::Error),
 }
 impl IntoResponse for ViewUploadError {
-    fn into_response(self) -> axum::response::Response {
-        let code = match self {
+    fn into_response(self) -> Response {
+        let _code = match self {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        self.into_response_with_code(code)
+        todo!("use error message template")
     }
 }
 
@@ -79,8 +79,6 @@ pub async fn display(
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ViewUploadError> {
     let _upload = open_upload(&state.backend, id).await?;
-
-
 
     Ok(())
 }
