@@ -32,17 +32,23 @@ pub enum ViewUploadError {
     /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
-impl IntoResponse for ViewUploadError {
-    fn into_response(self) -> Response {
+impl ViewUploadError {
+    pub fn into_template_response(self, state: &AppState) -> (StatusCode, ErrorTemplate<'_>) {
         let code = match self {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let tpl = ErrorTemplate {
-            title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
-            message: &self.to_string(),
+        let title = if let Some(reason) = code.canonical_reason() {
+            format!("{} {}", code, reason)
+        } else {
+            format!("{}", code)
         };
-        (code, tpl).into_response()
+        let message = &self.to_string();
+        (code, ErrorTemplate {
+            state,
+            title: &title,
+            message,
+        })
     }
 }
 
@@ -78,6 +84,7 @@ async fn open_upload<S: AsRef<str>>(
 #[derive(Template)]
 #[template(path = "display.html.jinja")]
 pub struct DisplayTemplate {
+    state: AppState,
     id: String,
     filename: String,
     expiry: Option<Duration>,
@@ -145,6 +152,7 @@ pub async fn display(
 
     event!(Level::DEBUG, "rendering upload template");
     Ok(DisplayTemplate {
+        state: *state,
         id: upload.metadata.id,
         filename: upload.metadata.filename,
         expiry: upload.metadata.expiry_date.map(|e| e - Utc::now()),
