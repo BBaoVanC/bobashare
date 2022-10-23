@@ -13,7 +13,11 @@ use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, Uri};
 use tower::ServiceBuilder;
-use tower_http::trace::{DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tower_http::{
+    request_id::MakeRequestUuid,
+    trace::{DefaultOnRequest, DefaultOnResponse, TraceLayer},
+    ServiceBuilderExt,
+};
 use tracing::{event, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
@@ -144,19 +148,23 @@ async fn main() -> anyhow::Result<()> {
         .nest("/static", get(static_routes::handler))
         .fallback(|| async { static_routes::handler(Uri::from_static("/404.html")).await })
         .layer(
-            ServiceBuilder::new().layer(
-                TraceLayer::new_for_http()
-                    .make_span_with(|request: &Request<Body>| {
-                        tracing::span!(
-                            Level::INFO,
-                            "request",
-                            method = %request.method(),
-                            uri = ?request.uri()
-                        )
-                    })
-                    .on_request(DefaultOnRequest::new().level(Level::INFO))
-                    .on_response(DefaultOnResponse::new().level(Level::INFO)),
-            ),
+            ServiceBuilder::new()
+                .set_x_request_id(MakeRequestUuid)
+                .layer(
+                    TraceLayer::new_for_http()
+                        .make_span_with(|request: &Request<Body>| {
+                            tracing::span!(
+                                Level::INFO,
+                                "request",
+                                method = %request.method(),
+                                uri = ?request.uri(),
+                                id = ?request.headers().get("X-Request-ID").unwrap()
+                            )
+                        })
+                        .on_request(DefaultOnRequest::new().level(Level::INFO))
+                        .on_response(DefaultOnResponse::new().level(Level::INFO)),
+                )
+                .propagate_x_request_id(),
         )
         .into_make_service();
 

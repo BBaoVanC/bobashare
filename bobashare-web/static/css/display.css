@@ -12,8 +12,5 @@
 
 /* Wrap text checkbox */
 .upload-content {
-    display: block;
-}
-#wrap-text:checked + .upload-content {
-    display: none;
+    overflow: auto;
 }
