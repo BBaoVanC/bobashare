@@ -1,0 +1,19 @@
+/* Titlebar */
+.upload-titlebar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.upload-titlebar > .upload-titlebar-right {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+/* Wrap text checkbox */
+.upload-content {
+    display: block;
+}
+#wrap-text:checked + .upload-content {
+    display: none;
+}

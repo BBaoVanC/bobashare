@@ -1,0 +1,17 @@
+/* Main document formatting */
+body {
+    max-width: 720px;
+    margin: 20px;
+}
+@media (min-width: 760px) {
+    body {
+        margin: 20px auto;
+    }
+}
+
+/* Top formatting */
+.top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

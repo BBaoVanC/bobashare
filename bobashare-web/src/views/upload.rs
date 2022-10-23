@@ -3,22 +3,25 @@
 use std::sync::Arc;
 
 use anyhow::Context;
+use askama::Template;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
     response::{IntoResponse, Response},
 };
-use bobashare::storage::{
-    file::{FileBackend, OpenUploadError},
-    handle::UploadHandle,
-};
+use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
+use chrono::{Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use thiserror::Error;
+use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::{templates::ErrorTemplate, AppState};
+use crate::{
+    templates::{filters, ErrorTemplate},
+    AppState,
+};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -35,19 +38,20 @@ impl IntoResponse for ViewUploadError {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        ErrorTemplate {
+        let tpl = ErrorTemplate {
             title: &format!("{} {}", code.as_u16(), code.canonical_reason().unwrap()),
             message: &self.to_string(),
-        }
-        .into_response()
+        };
+        (code, tpl).into_response()
     }
 }
 
 async fn open_upload<S: AsRef<str>>(
-    backend: &FileBackend,
+    state: &AppState,
     id: S,
 ) -> Result<UploadHandle, ViewUploadError> {
-    let upload = backend
+    let upload = state
+        .backend
         .open_upload(id.as_ref(), false)
         .await
         .map_err(|e| match e {
@@ -60,7 +64,8 @@ async fn open_upload<S: AsRef<str>>(
     if upload.metadata.is_expired() {
         event!(Level::INFO, "upload is expired; it will be deleted");
         // don't upload.flush() since it's not open for writing -- it will fail
-        backend
+        state
+            .backend
             .delete_upload(id.as_ref())
             .await
             .context("error deleting expired upload")?;
@@ -70,20 +75,82 @@ async fn open_upload<S: AsRef<str>>(
     Ok(upload)
 }
 
-// #[derive(Template)]
-// #[template(path = "")]
-// pub struct DisplayTemplate {
+#[derive(Template)]
+#[template(path = "display.html.jinja")]
+pub struct DisplayTemplate {
+    id: String,
+    filename: String,
+    expiry: Option<Duration>,
+    size: u64,
+    contents: DisplayType,
+}
+#[derive(Debug)]
+pub enum DisplayType {
+    Text(String),
+    Binary(String),
+    TooLarge(String),
+}
 
-// }
+/// Maximum file size that will be rendered
+const MAX_DISPLAY_SIZE: u64 = 1024 * 1024;
 
 /// Display an upload as HTML
+#[instrument(skip(state))]
 pub async fn display(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ViewUploadError> {
-    let _upload = open_upload(&state.backend, id).await?;
+    let mut upload = open_upload(&state, id).await?;
+    let size = upload
+        .file
+        .metadata()
+        .await
+        .context("error reading file size")?
+        .len();
 
-    Ok(())
+    let contents = if size > MAX_DISPLAY_SIZE {
+        DisplayType::TooLarge(
+            state
+                .base_url
+                .join(&upload.metadata.id)
+                .unwrap()
+                .to_string(),
+        )
+    } else {
+        let mimetype = upload.metadata.mimetype;
+        match (mimetype.type_(), mimetype.subtype()) {
+            (mime::TEXT, _) => {
+                let mut contents = String::with_capacity(size.try_into().unwrap_or(usize::MAX));
+                upload
+                    .file
+                    .read_to_string(&mut contents)
+                    .await
+                    .context("error reading file contents")?;
+                DisplayType::Text(contents)
+            }
+            (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary(
+                state
+                    .base_url
+                    .join(&upload.metadata.id)
+                    .unwrap()
+                    .to_string(),
+            ),
+        }
+    };
+    // let contents = match (upload.metadata.mimetype.type_(),
+    // upload.metadata.mimetype.subtype()) {     (mime::TEXT, _) => {
+
+    //     },
+    // };
+
+    event!(Level::DEBUG, "rendering upload template");
+    Ok(DisplayTemplate {
+        id: upload.metadata.id,
+        filename: upload.metadata.filename,
+        expiry: upload.metadata.expiry_date.map(|e| e - Utc::now()),
+        size,
+        contents,
+    })
 }
 
 /// Download the raw upload file
@@ -92,7 +159,7 @@ pub async fn raw(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ViewUploadError> {
-    let upload = open_upload(&state.backend, id).await?;
+    let upload = open_upload(&state, id).await?;
 
     let size = upload
         .file

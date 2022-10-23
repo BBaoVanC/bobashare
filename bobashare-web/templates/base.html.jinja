@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head %}{% endblock %}
+        <title>{% block title %}{% endblock %} - bobashare</title>
+        <link rel="stylesheet" type="text/css" href="/static/css/colors.css" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/static/css/bobashare.css" crossorigin="anonymous">
+    </head>
+    <body>
+        {% include "partials/top.html.jinja" %}
+
+        <main>
+            {% block main %}{% endblock %}
+        </main>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "base.html.jinja" %}
+
+{% block title %}{{ filename }} - {{ id }}{% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="/static/css/display.css" crossorigin="anonymous">
+{% endblock %}
+
+{% block main %}
+    {% let expiry_human %}
+    {% if expiry.is_some() %}
+        {% let expiry_human = expiry.unwrap()|humanduration %}
+    {% else %}
+        {% let expiry_human = String::from("never") %}
+    {% endif %}
+
+    <div class="upload-titlebar">
+        <div class="upload-filename">{{ filename }}</div>
+        <div class="upload-titlebar-right">
+            <div class="upload-expiry">expires {{ expiry_human }}</div>
+            <div class="upload-size">{{ size|humansize }}</div>
+            <div class="wrap-text-checkbox">
+                <label for="wrap-text">wrap</label>
+                {# TODO: make this checkbox work with JS #}
+                <input type="checkbox" id="wrap-text" name="wrap-text" value="Wrap text">
+            </div>
+            <div class="download-button">Download</div>
+        </div>
+    </div>
+    <div class="upload-content">
+
+        {% match contents %}
+            {% when DisplayType::TooLarge with (url) %}
+                <div class="upload-too-large">
+                    Upload is too large to be displayed. <a href="{{ url }}">Download</a> it instead.
+                </div>
+            {% when DisplayType::Text with (data) %}
+                <div class="upload-display-plaintext">
+                    <pre>{{ data }}</pre>
+                </div>
+            {% when DisplayType::Binary with (url) %}
+                <div class="upload-binary">
+                    Upload cannot be displayed. <a href="{{ url }}">Download</a> it instead.
+                </div>
+        {% endmatch %}
+
+        {# {% if let (mime::TEXT, mime::PLAIN) = content_type %}
+            plaintext
+        {% endif %} #}
+        {# {% match (content_type.type_(), mime.subtype()) %}
+            {% when (::mime::TEXT, ::mime::PLAIN) %}
+                plaintext
+            {% else %}
+                unknown type
+        {% endmatch %} #}
+    </div>
+{% endblock %}
