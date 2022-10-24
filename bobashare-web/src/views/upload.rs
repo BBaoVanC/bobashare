@@ -7,7 +7,7 @@ use askama::Template;
 use axum::{
     body::StreamBody,
     extract::{Path, State},
-    response::{IntoResponse, Response},
+    response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{Duration, Utc};
@@ -18,10 +18,8 @@ use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 
-use crate::{
-    templates::{filters, ErrorTemplate},
-    AppState,
-};
+use super::{filters, ErrorTemplate, TemplateState};
+use crate::AppState;
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -32,25 +30,23 @@ pub enum ViewUploadError {
     /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
-impl ViewUploadError {
-    pub fn into_template_response(self, state: &AppState) -> (StatusCode, ErrorTemplate<'_>) {
-        let code = match self {
-            Self::NotFound => StatusCode::NOT_FOUND,
-            Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        };
-        let title = if let Some(reason) = code.canonical_reason() {
-            format!("{} {}", code, reason)
-        } else {
-            format!("{}", code)
-        };
-        let message = &self.to_string();
-        (code, ErrorTemplate {
-            state,
-            title: &title,
-            message,
-        })
-    }
-}
+// impl ViewUploadError {
+//     pub fn into_template_response(self, state: &AppState) -> (StatusCode, ErrorTemplate) {
+//         let code = match self {
+//             Self::NotFound => StatusCode::NOT_FOUND,
+//             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
+//         };
+//         let message = self.to_string();
+//         (
+//             code,
+//             ErrorTemplate {
+//                 state: state.into(),
+//                 code,
+//                 message,
+//             },
+//         )
+//     }
+// }
 
 async fn open_upload<S: AsRef<str>>(
     state: &AppState,
@@ -84,7 +80,7 @@ async fn open_upload<S: AsRef<str>>(
 #[derive(Template)]
 #[template(path = "display.html.jinja")]
 pub struct DisplayTemplate {
-    state: AppState,
+    state: TemplateState,
     id: String,
     filename: String,
     expiry: Option<Duration>,
@@ -106,14 +102,25 @@ const MAX_DISPLAY_SIZE: u64 = 1024 * 1024;
 pub async fn display(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
-) -> Result<impl IntoResponse, ViewUploadError> {
-    let mut upload = open_upload(&state, id).await?;
+) -> Result<impl IntoResponse, ErrorTemplate> {
+    let mut upload = open_upload(&state, id).await.map_err(|e| {
+        ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::INTERNAL_SERVER_ERROR,
+            message: e.to_string(),
+        }
+    })?;
     let size = upload
         .file
         .metadata()
         .await
-        .context("error reading file size")?
-        .len();
+        .map_err(|e| {
+            ErrorTemplate {
+                state: state.0.clone().into(),
+                code: StatusCode::INTERNAL_SERVER_ERROR,
+                message: format!("error reading file size: {}", e),
+            }
+        })?.len();
 
     let contents = if size > MAX_DISPLAY_SIZE {
         DisplayType::TooLarge(
@@ -132,7 +139,13 @@ pub async fn display(
                     .file
                     .read_to_string(&mut contents)
                     .await
-                    .context("error reading file contents")?;
+                    .map_err(|e| {
+                        ErrorTemplate {
+                            state: state.0.clone().into(),
+                            code: StatusCode::INTERNAL_SERVER_ERROR,
+                            message: format!("error reading file contents: {}", e),
+                        }
+                    })?;
                 DisplayType::Text(contents)
             }
             (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary(
@@ -144,15 +157,10 @@ pub async fn display(
             ),
         }
     };
-    // let contents = match (upload.metadata.mimetype.type_(),
-    // upload.metadata.mimetype.subtype()) {     (mime::TEXT, _) => {
-
-    //     },
-    // };
 
     event!(Level::DEBUG, "rendering upload template");
     Ok(DisplayTemplate {
-        state: *state,
+        state: state.0.into(),
         id: upload.metadata.id,
         filename: upload.metadata.filename,
         expiry: upload.metadata.expiry_date.map(|e| e - Utc::now()),
@@ -166,15 +174,22 @@ pub async fn display(
 pub async fn raw(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
-) -> Result<impl IntoResponse, ViewUploadError> {
-    let upload = open_upload(&state, id).await?;
+) -> Result<impl IntoResponse, ErrorTemplate> {
+    let upload = open_upload(&state, id).await.map_err(|e| ErrorTemplate {
+        state: state.0.clone().into(),
+        code: StatusCode::INTERNAL_SERVER_ERROR,
+        message: e.to_string(),
+    })?;
 
     let size = upload
         .file
         .metadata()
         .await
-        .context("error getting upload file metadata in order to read size")?
-        .len();
+        .map_err(|e| ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::INTERNAL_SERVER_ERROR,
+            message: format!("error reading file size: {}", e),
+        })?.len();
     event!(Level::DEBUG, size, "found size of upload file",);
 
     let stream = ReaderStream::new(upload.file);

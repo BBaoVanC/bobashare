@@ -1,6 +1,6 @@
 {% extends "base.html.jinja" %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ code.as_u16() }}{% if let Some(reason) = code.canonical_reason() %} {{ reason }}{% endif %}{% endblock %}
 
 {% block main %}
     <div class="error-message">
