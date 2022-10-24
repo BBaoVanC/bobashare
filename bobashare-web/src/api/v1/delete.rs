@@ -39,7 +39,7 @@ impl From<DeleteUploadError> for DeleteError {
     fn from(err: DeleteUploadError) -> Self {
         match err {
             DeleteUploadError::NotFound => Self::NotFound,
-            e => Self::InternalServer(anyhow::Error::new(e).context("error deleting upload")),
+            e => Self::InternalServer(e.into()),
         }
     }
 }

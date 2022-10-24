@@ -42,15 +42,5 @@
                     Upload cannot be displayed. <a href="{{ url }}">Download</a> it instead.
                 </div>
         {% endmatch %}
-
-        {# {% if let (mime::TEXT, mime::PLAIN) = content_type %}
-            plaintext
-        {% endif %} #}
-        {# {% match (content_type.type_(), mime.subtype()) %}
-            {% when (::mime::TEXT, ::mime::PLAIN) %}
-                plaintext
-            {% else %}
-                unknown type
-        {% endmatch %} #}
     </div>
 {% endblock %}
