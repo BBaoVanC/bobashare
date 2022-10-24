@@ -30,23 +30,6 @@ pub enum ViewUploadError {
     /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
-// impl ViewUploadError {
-//     pub fn into_template_response(self, state: &AppState) -> (StatusCode, ErrorTemplate) {
-//         let code = match self {
-//             Self::NotFound => StatusCode::NOT_FOUND,
-//             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
-//         };
-//         let message = self.to_string();
-//         (
-//             code,
-//             ErrorTemplate {
-//                 state: state.into(),
-//                 code,
-//                 message,
-//             },
-//         )
-//     }
-// }
 
 async fn open_upload<S: AsRef<str>>(
     state: &AppState,
@@ -103,24 +86,28 @@ pub async fn display(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ErrorTemplate> {
-    let mut upload = open_upload(&state, id).await.map_err(|e| {
-        ErrorTemplate {
+    let mut upload = open_upload(&state, id).await.map_err(|e| match e {
+        ViewUploadError::NotFound => ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::NOT_FOUND,
+            message: e.to_string(),
+        },
+        ViewUploadError::InternalServer(_) => ErrorTemplate {
             state: state.0.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: e.to_string(),
-        }
+        },
     })?;
     let size = upload
         .file
         .metadata()
         .await
-        .map_err(|e| {
-            ErrorTemplate {
-                state: state.0.clone().into(),
-                code: StatusCode::INTERNAL_SERVER_ERROR,
-                message: format!("error reading file size: {}", e),
-            }
-        })?.len();
+        .map_err(|e| ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::INTERNAL_SERVER_ERROR,
+            message: format!("error reading file size: {}", e),
+        })?
+        .len();
 
     let contents = if size > MAX_DISPLAY_SIZE {
         DisplayType::TooLarge(
@@ -139,12 +126,10 @@ pub async fn display(
                     .file
                     .read_to_string(&mut contents)
                     .await
-                    .map_err(|e| {
-                        ErrorTemplate {
-                            state: state.0.clone().into(),
-                            code: StatusCode::INTERNAL_SERVER_ERROR,
-                            message: format!("error reading file contents: {}", e),
-                        }
+                    .map_err(|e| ErrorTemplate {
+                        state: state.0.clone().into(),
+                        code: StatusCode::INTERNAL_SERVER_ERROR,
+                        message: format!("error reading file contents: {}", e),
                     })?;
                 DisplayType::Text(contents)
             }
@@ -189,7 +174,8 @@ pub async fn raw(
             state: state.0.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: format!("error reading file size: {}", e),
-        })?.len();
+        })?
+        .len();
     event!(Level::DEBUG, size, "found size of upload file",);
 
     let stream = ReaderStream::new(upload.file);
