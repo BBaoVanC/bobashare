@@ -1,41 +1,28 @@
 # TODO
 
-- https://docs.rs/axum/0.6.0-rc.1/axum/index.html
+## What needs to be done
 
-- [ ] Add IP banning (requires saving in metadata)
-- [ ] Figure out file locking and concurrent safety
+### Frontend
 
-## Library
+- CSS (styling)
+- Need an upload page
+  - likely doesn't need any JS framework, unless there's something light
+- Syntax highlighting
+- Store delete keys in browser local storage so it's possible to delete uploads
+  - this should be checked on the display page too
+- API documentation page
 
-### File backend
+### Logging
+
+- Add https://docs.rs/console-subscriber/latest/console_subscriber/
+
+### Backend
 
 - If a file is missing a metadata entry, warning should be sent
 - Check for extraneous files, maybe in CLI
+- Add IP banning (requires saving in metadata)
+- Figure out file locking and concurrent safety
 
-#### Directory structure
+## Additional notes
 
-- `abc123xyz/`
-  - `abc123xyz`
-  - `metadata.json`
-
-## Web backend
-
-### URLs
-
-#### HTML -- pretty view
-
-Single file:
-
-- `/abc123xyz`
-
-#### Plaintext/binary -- raw view
-
-Single file:
-
-- `/raw/abc123xyz` - should return correct (original) filename
-
-### Static frontend
-
-- [ ] `/upload`
-
-### Full frontend single-page application (React?)
+- `size` doesn't need to be included on `/api/v1/info/:id` endpoint since it can be found by `HEAD /raw/:id`
