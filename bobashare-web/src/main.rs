@@ -7,11 +7,15 @@ use std::{
 use anyhow::Context;
 use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
-use bobashare_web::{api, static_routes, views, AppState};
+use bobashare_web::{
+    api, static_routes,
+    views::{self, ErrorResponse, ErrorTemplate},
+    AppState,
+};
 use chrono::Duration;
 use clap::Parser;
 use config::Config;
-use hyper::{Body, Request, Uri};
+use hyper::{Body, Request, StatusCode};
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
@@ -146,7 +150,13 @@ async fn main() -> anyhow::Result<()> {
         .nest("/api", api::router(Arc::clone(&state)))
         .merge(views::router(Arc::clone(&state)))
         .nest("/static", get(static_routes::handler))
-        .fallback(|| async { static_routes::handler(Uri::from_static("/404.html")).await })
+        .fallback(|| async {
+            ErrorResponse(ErrorTemplate {
+                code: StatusCode::NOT_FOUND,
+                message: "no route for the requested URL was found".into(),
+                state: state.into(),
+            })
+        })
         .layer(
             ServiceBuilder::new()
                 .set_x_request_id(MakeRequestUuid)

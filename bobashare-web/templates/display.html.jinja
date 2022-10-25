@@ -2,7 +2,7 @@
 
 {% block title %}{{ filename }} - {{ id }}{% endblock %}
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="/static/css/display.css" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
 {% endblock %}
 
 {% block main %}
@@ -23,23 +23,25 @@
                 {# TODO: make this checkbox work with JS #}
                 <input type="checkbox" id="wrap-text" name="wrap-text" value="Wrap text">
             </div>
-            <div class="download-button">Download</div>
+            <div class="download-button">
+                <a href="{{ download_url }}">Download</a>
+            </div>
         </div>
     </div>
     <div class="upload-content">
 
         {% match contents %}
-            {% when DisplayType::TooLarge with (url) %}
+            {% when DisplayType::TooLarge %}
                 <div class="upload-too-large">
-                    Upload is too large to be displayed. <a href="{{ url }}">Download</a> it instead.
+                    Upload is too large to be displayed. <a href="{{ download_url }}">Download</a> it instead.
                 </div>
             {% when DisplayType::Text with (data) %}
                 <div class="upload-display-plaintext">
                     <pre>{{ data }}</pre>
                 </div>
-            {% when DisplayType::Binary with (url) %}
+            {% when DisplayType::Binary %}
                 <div class="upload-binary">
-                    Upload cannot be displayed. <a href="{{ url }}">Download</a> it instead.
+                    Upload cannot be displayed. <a href="{{ download_url }}">Download</a> it instead.
                 </div>
         {% endmatch %}
     </div>

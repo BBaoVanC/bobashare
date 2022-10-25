@@ -17,8 +17,9 @@ use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
+use url::Url;
 
-use super::{filters, ErrorTemplate, TemplateState};
+use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
 use crate::AppState;
 
 /// Errors when trying to view/download an upload
@@ -69,12 +70,13 @@ pub struct DisplayTemplate {
     expiry: Option<Duration>,
     size: u64,
     contents: DisplayType,
+    download_url: Url,
 }
 #[derive(Debug)]
 pub enum DisplayType {
     Text(String),
-    Binary(String),
-    TooLarge(String),
+    Binary,
+    TooLarge,
 }
 
 /// Maximum file size that will be rendered
@@ -85,7 +87,7 @@ const MAX_DISPLAY_SIZE: u64 = 1024 * 1024;
 pub async fn display(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
-) -> Result<impl IntoResponse, ErrorTemplate> {
+) -> Result<impl IntoResponse, ErrorResponse> {
     let mut upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
             state: state.0.clone().into(),
@@ -110,13 +112,7 @@ pub async fn display(
         .len();
 
     let contents = if size > MAX_DISPLAY_SIZE {
-        DisplayType::TooLarge(
-            state
-                .base_url
-                .join(&upload.metadata.id)
-                .unwrap()
-                .to_string(),
-        )
+        DisplayType::TooLarge
     } else {
         let mimetype = upload.metadata.mimetype;
         match (mimetype.type_(), mimetype.subtype()) {
@@ -133,24 +129,19 @@ pub async fn display(
                     })?;
                 DisplayType::Text(contents)
             }
-            (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary(
-                state
-                    .base_url
-                    .join(&upload.metadata.id)
-                    .unwrap()
-                    .to_string(),
-            ),
+            (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary,
         }
     };
 
     event!(Level::DEBUG, "rendering upload template");
     Ok(DisplayTemplate {
-        state: state.0.into(),
+        download_url: state.raw_url.join(&upload.metadata.id).unwrap(),
         id: upload.metadata.id,
         filename: upload.metadata.filename,
         expiry: upload.metadata.expiry_date.map(|e| e - Utc::now()),
         size,
         contents,
+        state: state.0.into(),
     })
 }
 

@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use askama::Template;
+use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
 use hyper::StatusCode;
 use url::Url;
@@ -37,6 +38,18 @@ pub struct ErrorTemplate {
     pub state: TemplateState,
     pub code: StatusCode,
     pub message: String,
+}
+
+pub struct ErrorResponse(pub ErrorTemplate);
+impl From<ErrorTemplate> for ErrorResponse {
+    fn from(template: ErrorTemplate) -> Self {
+        Self(template)
+    }
+}
+impl IntoResponse for ErrorResponse {
+    fn into_response(self) -> askama_axum::Response {
+        (self.0.code, self.0).into_response()
+    }
 }
 
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
