@@ -1,5 +1,9 @@
 /* Main document formatting */
 body {
+    background-color: var(--background-0);
+    color: var(--text-0);
+    font-family: "Open Sans", "Noto Sans", sans-serif;
+
     max-width: 720px;
     margin: 20px;
 }
@@ -7,6 +11,13 @@ body {
     body {
         margin: 20px auto;
     }
+}
+a {
+    color: var(--link-0);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
 }
 
 /* Top formatting */

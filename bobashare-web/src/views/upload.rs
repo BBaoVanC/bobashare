@@ -10,7 +10,7 @@ use axum::{
     response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
-use chrono::{Duration, Utc};
+use chrono::{Duration, Utc, DateTime};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use syntect::html::highlighted_html_for_string;
@@ -67,7 +67,8 @@ pub struct DisplayTemplate {
     state: TemplateState,
     id: String,
     filename: String,
-    expiry: Option<Duration>,
+    expiry_date: Option<DateTime<Utc>>,
+    expiry_relative: Option<Duration>,
     size: u64,
     contents: DisplayType,
     download_url: Url,
@@ -159,7 +160,8 @@ pub async fn display(
         download_url: state.raw_url.join(&upload.metadata.id).unwrap(),
         id: upload.metadata.id,
         filename: upload.metadata.filename,
-        expiry: upload.metadata.expiry_date.map(|e| e - Utc::now()),
+        expiry_date: upload.metadata.expiry_date,
+        expiry_relative: upload.metadata.expiry_date.map(|e| e - Utc::now()),
         size,
         contents,
         state: state.0.into(),

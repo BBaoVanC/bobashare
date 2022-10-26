@@ -7,20 +7,28 @@
 
 {% block main %}
     {% let expiry_human %}
-    {% if let Some(e) = expiry %}
+    {% if let Some(e) = expiry_relative %}
         {% let expiry_human = e.clone()|humanduration %}
     {% else %}
         {% let expiry_human = String::from("never") %}
     {% endif %}
 
+    {% let expiry_exact %}
+    {% if let Some(e) = expiry_date %}
+        {% let expiry_exact = e.to_string() %}
+    {% else %}
+        {% let expiry_exact = String::from("never") %}
+    {% endif %}
+
     <div class="upload-titlebar">
         <div class="upload-filename">{{ filename }}</div>
         <div class="upload-titlebar-right">
-            <div class="upload-expiry">expires {{ expiry_human }}</div>
-            <div class="upload-size">{{ size|humansize }}</div>
+            <div class="upload-expiry" title="{{ expiry_exact }}">expires {{ expiry_human }}</div>
+            <div class="upload-size" title="{{ size }} bytes">{{ size|humansize }}</div>
             <div class="wrap-text-checkbox">
                 <label for="wrap-text">wrap</label>
                 {# TODO: make this checkbox work using JS #}
+                {# TODO: should this be checked by default? #}
                 <input type="checkbox" id="wrap-text" name="wrap-text" value="Wrap text">
             </div>
             <div class="download-button">
@@ -35,13 +43,13 @@
                 <div class="upload-too-large">
                     Upload is too large to be displayed. <a href="{{ download_url }}">Download</a> it instead.
                 </div>
-            {% when DisplayType::Text with (data) %}
-                <div class="upload-display-plaintext">
-                    {{ data|safe }}
-                </div>
             {% when DisplayType::Binary %}
                 <div class="upload-binary">
                     Upload cannot be displayed. <a href="{{ download_url }}">Download</a> it instead.
+                </div>
+            {% when DisplayType::Text with (data) %}
+                <div class="upload-display-plaintext">
+                    {{ data|safe }}
                 </div>
         {% endmatch %}
     </div>

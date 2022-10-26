@@ -13,6 +13,7 @@
   - this should be checked on the display page too
 - API documentation page
 - i18n (maybe using https://crates.io/crates/fluent)
+- Set proper headers for static files
 
 ### Logging
 
