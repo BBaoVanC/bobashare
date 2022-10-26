@@ -7,8 +7,8 @@
 
 {% block main %}
     {% let expiry_human %}
-    {% if expiry.is_some() %}
-        {% let expiry_human = expiry.unwrap()|humanduration %}
+    {% if let Some(e) = expiry %}
+        {% let expiry_human = e.clone()|humanduration %}
     {% else %}
         {% let expiry_human = String::from("never") %}
     {% endif %}
@@ -20,7 +20,7 @@
             <div class="upload-size">{{ size|humansize }}</div>
             <div class="wrap-text-checkbox">
                 <label for="wrap-text">wrap</label>
-                {# TODO: make this checkbox work with JS #}
+                {# TODO: make this checkbox work using JS #}
                 <input type="checkbox" id="wrap-text" name="wrap-text" value="Wrap text">
             </div>
             <div class="download-button">
@@ -28,8 +28,8 @@
             </div>
         </div>
     </div>
-    <div class="upload-content">
 
+    <div class="upload-content">
         {% match contents %}
             {% when DisplayType::TooLarge %}
                 <div class="upload-too-large">

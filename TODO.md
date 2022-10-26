@@ -11,6 +11,7 @@
 - Store delete keys in browser local storage so it's possible to delete uploads
   - this should be checked on the display page too
 - API documentation page
+- i18n (maybe using https://crates.io/crates/fluent)
 
 ### Logging
 
@@ -22,6 +23,10 @@
 - Check for extraneous files, maybe in CLI
 - Add IP banning (requires saving in metadata)
 - Figure out file locking and concurrent safety
+
+### Admin
+
+- Do everything
 
 ## Additional notes
 

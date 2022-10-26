@@ -6,12 +6,12 @@
 
         <title>{% block title %}{% endblock %} - bobashare</title>
 
-        {# TODO: see if single quotes are correct #}
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/colors.css").unwrap() }}' crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/bobashare.css").unwrap() }}' crossorigin="anonymous">
 
         {% block head %}{% endblock %}
     </head>
+
     <body>
         {% include "partials/top.html.jinja" %}
 
