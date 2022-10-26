@@ -37,7 +37,7 @@
                 </div>
             {% when DisplayType::Text with (data) %}
                 <div class="upload-display-plaintext">
-                    <pre>{{ data }}</pre>
+                    {{ data|safe }}
                 </div>
             {% when DisplayType::Binary %}
                 <div class="upload-binary">
