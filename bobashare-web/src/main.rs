@@ -132,7 +132,8 @@ async fn main() -> anyhow::Result<()> {
 
     let syntax_theme = ThemeSet::load_from_reader(&mut Cursor::new(include_bytes!(
         "../highlight/bobascheme-dark.tmTheme"
-    ))).unwrap();
+    )))
+    .unwrap();
 
     let state = Arc::new(AppState {
         backend,

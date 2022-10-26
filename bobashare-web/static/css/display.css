@@ -14,3 +14,7 @@
 .upload-content {
     overflow: auto;
 }
+.upload-content .upload-display-text.wrap-text pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}

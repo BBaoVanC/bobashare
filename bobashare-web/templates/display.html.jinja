@@ -3,6 +3,7 @@
 {% block title %}{{ filename }} - {{ id }}{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
+    <script src='{{ state.base_url.join("static/js/wrap_text.js").unwrap() }}' crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block main %}
@@ -25,11 +26,11 @@
         <div class="upload-titlebar-right">
             <div class="upload-expiry" title="{{ expiry_exact }}">expires {{ expiry_human }}</div>
             <div class="upload-size" title="{{ size }} bytes">{{ size|humansize }}</div>
-            <div class="wrap-text-checkbox">
+            <div class="upload-wrap-text-checkbox">
                 <label for="wrap-text">wrap</label>
                 {# TODO: make this checkbox work using JS #}
                 {# TODO: should this be checked by default? #}
-                <input type="checkbox" id="wrap-text" name="wrap-text" value="Wrap text">
+                <input type="checkbox" id="wrap-text-checkbox" name="wrap-text" value="Wrap text">
             </div>
             <div class="download-button">
                 <a href="{{ download_url }}">Download</a>
@@ -39,16 +40,16 @@
 
     <div class="upload-content">
         {% match contents %}
-            {% when DisplayType::TooLarge %}
-                <div class="upload-too-large">
-                    Upload is too large to be displayed. <a href="{{ download_url }}">Download</a> it instead.
-                </div>
             {% when DisplayType::Binary %}
                 <div class="upload-binary">
-                    Upload cannot be displayed. <a href="{{ download_url }}">Download</a> it instead.
+                    This type of file cannot be displayed. <a href="{{ download_url }}">Download</a> it instead.
+                </div>
+            {% when DisplayType::TooLarge %}
+                <div class="upload-too-large">
+                    File is too large to be displayed. <a href="{{ download_url }}">Download</a> it instead.
                 </div>
             {% when DisplayType::Text with (data) %}
-                <div class="upload-display-plaintext">
+                <div id="upload-display-text" class="upload-display-text">
                     {{ data|safe }}
                 </div>
         {% endmatch %}

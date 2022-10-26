@@ -10,7 +10,7 @@ use axum::{
     response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
-use chrono::{Duration, Utc, DateTime};
+use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use syntect::html::highlighted_html_for_string;
@@ -112,44 +112,46 @@ pub async fn display(
         })?
         .len();
 
-    let contents = if size > MAX_DISPLAY_SIZE {
-        DisplayType::TooLarge
-    } else {
+    let contents = {
         let mimetype = upload.metadata.mimetype;
         match (mimetype.type_(), mimetype.subtype()) {
             (mime::TEXT, _) => {
-                let extension = std::path::Path::new(&upload.metadata.filename)
-                    .extension()
-                    .and_then(|s| s.to_str())
-                    .unwrap_or("");
-                let syntax = state
-                    .syntax_set
-                    .find_syntax_by_extension(extension)
-                    .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
-                let mut contents = String::with_capacity(size.try_into().unwrap_or(usize::MAX));
-                upload
-                    .file
-                    .read_to_string(&mut contents)
-                    .await
+                if size > MAX_DISPLAY_SIZE {
+                    DisplayType::TooLarge
+                } else {
+                    let extension = std::path::Path::new(&upload.metadata.filename)
+                        .extension()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("");
+                    let syntax = state
+                        .syntax_set
+                        .find_syntax_by_extension(extension)
+                        .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
+                    let mut contents = String::with_capacity(size.try_into().unwrap_or(usize::MAX));
+                    upload
+                        .file
+                        .read_to_string(&mut contents)
+                        .await
+                        .map_err(|e| ErrorTemplate {
+                            state: state.0.clone().into(),
+                            code: StatusCode::INTERNAL_SERVER_ERROR,
+                            message: format!("error reading file contents: {}", e),
+                        })?;
+
+                    // TODO: CONTINUE HERE
+                    let contents = highlighted_html_for_string(
+                        &contents,
+                        &state.syntax_set,
+                        syntax,
+                        &state.syntax_theme,
+                    )
                     .map_err(|e| ErrorTemplate {
                         state: state.0.clone().into(),
                         code: StatusCode::INTERNAL_SERVER_ERROR,
-                        message: format!("error reading file contents: {}", e),
+                        message: format!("error highlighting file contents: {}", e),
                     })?;
-
-                // TODO: CONTINUE HERE
-                let contents = highlighted_html_for_string(
-                    &contents,
-                    &state.syntax_set,
-                    syntax,
-                    &state.syntax_theme,
-                )
-                .map_err(|e| ErrorTemplate {
-                    state: state.0.clone().into(),
-                    code: StatusCode::INTERNAL_SERVER_ERROR,
-                    message: format!("error highlighting file contents: {}", e),
-                })?;
-                DisplayType::Text(contents)
+                    DisplayType::Text(contents)
+                }
             }
             (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary,
         }
