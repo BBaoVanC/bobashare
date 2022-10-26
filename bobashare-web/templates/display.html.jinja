@@ -1,6 +1,7 @@
 {% extends "base.html.jinja" %}
 
 {% block title %}{{ filename }} - {{ id }}{% endblock %}
+{% block header_extra %}/{{ id }}{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
     <script src='{{ state.base_url.join("static/js/wrap_text.js").unwrap() }}' crossorigin="anonymous"></script>
@@ -24,17 +25,15 @@
     <div class="upload-titlebar">
         <div class="upload-filename">{{ filename }}</div>
         <div class="upload-titlebar-right">
-            <div class="upload-expiry" title="{{ expiry_exact }}">expires {{ expiry_human }}</div>
-            <div class="upload-size" title="{{ size }} bytes">{{ size|humansize }}</div>
+            <div class="upload-expiry" title='{{ expiry_exact }}'>expires {{ expiry_human }}</div>
+            <div class="upload-size" title='{{ size }} bytes'>{{ size|humansize }}</div>
             <div class="upload-wrap-text-checkbox">
                 <label for="wrap-text">wrap</label>
                 {# TODO: make this checkbox work using JS #}
                 {# TODO: should this be checked by default? #}
                 <input type="checkbox" id="wrap-text-checkbox" name="wrap-text" value="Wrap text">
             </div>
-            <div class="download-button">
-                <a href="{{ download_url }}">Download</a>
-            </div>
+            <a class="download-button" href='{{ download_url }}'>Download</a>
         </div>
     </div>
 
@@ -42,11 +41,11 @@
         {% match contents %}
             {% when DisplayType::Binary %}
                 <div class="upload-binary">
-                    This type of file cannot be displayed. <a href="{{ download_url }}">Download</a> it instead.
+                    This type of file cannot be displayed. <a href='{{ download_url }}'>Download</a> it instead.
                 </div>
             {% when DisplayType::TooLarge %}
                 <div class="upload-too-large">
-                    File is too large to be displayed. <a href="{{ download_url }}">Download</a> it instead.
+                    File is too large to be displayed. <a href='{{ download_url }}'>Download</a> it instead.
                 </div>
             {% when DisplayType::Text with (data) %}
                 <div id="upload-display-text" class="upload-display-text">

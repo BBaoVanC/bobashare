@@ -3,11 +3,18 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    background-color: var(--background-1);
+    /* padding: 5px 10px; */
 }
 .upload-titlebar > .upload-titlebar-right {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+}
+.upload-titlebar > .upload-filename, .upload-titlebar-right > * {
+    padding: 5px;
+}
+.upload-titlebar > .upload-filename:hover, .upload-titlebar-right > *:hover {
+    background-color: var(--background-2);
 }
 
 /* Wrap text checkbox */

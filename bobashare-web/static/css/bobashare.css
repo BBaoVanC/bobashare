@@ -3,9 +3,12 @@ body {
     background-color: var(--background-0);
     color: var(--text-0);
     font-family: "Open Sans", "Noto Sans", sans-serif;
-
     max-width: 720px;
     margin: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 @media (min-width: 760px) {
     body {
@@ -25,4 +28,11 @@ a:hover {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    font-size: 1.5rem;
+}
+.top header {
+    font-weight: bold;
+}
+.top header a {
+    color: var(--text-0);
 }
