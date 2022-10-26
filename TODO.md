@@ -8,6 +8,7 @@
 - Need an upload page
   - likely doesn't need any JS framework, unless there's something light
 - Syntax highlighting
+  - use `build.rs` to create syntax css file automatically?
 - Store delete keys in browser local storage so it's possible to delete uploads
   - this should be checked on the display page too
 - API documentation page

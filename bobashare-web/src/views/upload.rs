@@ -13,6 +13,7 @@ use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
+use syntect::html::highlighted_html_for_string;
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
@@ -31,21 +32,20 @@ pub enum ViewUploadError {
     /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
+impl From<OpenUploadError> for ViewUploadError {
+    fn from(err: OpenUploadError) -> Self {
+        match err {
+            OpenUploadError::NotFound(_) => Self::NotFound,
+            _ => Self::InternalServer(anyhow::Error::new(err).context("error opening upload")),
+        }
+    }
+}
 
 async fn open_upload<S: AsRef<str>>(
     state: &AppState,
     id: S,
 ) -> Result<UploadHandle, ViewUploadError> {
-    let upload = state
-        .backend
-        .open_upload(id.as_ref(), false)
-        .await
-        .map_err(|e| match e {
-            OpenUploadError::NotFound(_) => ViewUploadError::NotFound,
-            _ => ViewUploadError::InternalServer(
-                anyhow::Error::new(e).context("error opening upload"),
-            ),
-        })?;
+    let upload = state.backend.open_upload(id.as_ref(), false).await?;
 
     if upload.metadata.is_expired() {
         event!(Level::INFO, "upload is expired; it will be deleted");
@@ -117,6 +117,14 @@ pub async fn display(
         let mimetype = upload.metadata.mimetype;
         match (mimetype.type_(), mimetype.subtype()) {
             (mime::TEXT, _) => {
+                let extension = std::path::Path::new(&upload.metadata.filename)
+                    .extension()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("");
+                let syntax = state
+                    .syntax_set
+                    .find_syntax_by_extension(extension)
+                    .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
                 let mut contents = String::with_capacity(size.try_into().unwrap_or(usize::MAX));
                 upload
                     .file
@@ -127,6 +135,18 @@ pub async fn display(
                         code: StatusCode::INTERNAL_SERVER_ERROR,
                         message: format!("error reading file contents: {}", e),
                     })?;
+
+                // TODO: CONTINUE HERE
+                let contents = highlighted_html_for_string(
+                    &contents,
+                    &state.syntax_set,
+                    syntax,
+                    &state.syntax_theme,
+                ).map_err(|e| ErrorTemplate {
+                    state: state.0.clone().into(),
+                    code: StatusCode::INTERNAL_SERVER_ERROR,
+                    message: format!("error highlighting file contents: {}", e),
+                })?;
                 DisplayType::Text(contents)
             }
             (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary,

@@ -16,6 +16,7 @@ use chrono::Duration;
 use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
+use syntect::{parsing::SyntaxSet, highlighting::ThemeSet};
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
@@ -134,6 +135,9 @@ async fn main() -> anyhow::Result<()> {
         id_length,
         default_expiry,
         max_expiry,
+
+        syntax_set: SyntaxSet::load_defaults_newlines(),
+        syntax_theme: ThemeSet::load_defaults().themes["base16-ocean.dark"].clone(),
     });
 
     event!(Level::DEBUG,

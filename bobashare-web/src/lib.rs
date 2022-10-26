@@ -3,6 +3,7 @@
 
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
+use syntect::{highlighting::Theme, parsing::SyntaxSet};
 use url::Url;
 
 pub mod api;
@@ -24,6 +25,10 @@ pub struct AppState {
     pub default_expiry: Duration,
     /// maximum expiry time ([`None`] for no maximum)
     pub max_expiry: Option<Duration>,
+
+    // syntax highlighting
+    pub syntax_set: SyntaxSet,
+    pub syntax_theme: Theme,
 }
 
 /// Take the requested expiry, and make sure it's within the maximum expiry.
