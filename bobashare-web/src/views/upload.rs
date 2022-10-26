@@ -142,7 +142,8 @@ pub async fn display(
                     &state.syntax_set,
                     syntax,
                     &state.syntax_theme,
-                ).map_err(|e| ErrorTemplate {
+                )
+                .map_err(|e| ErrorTemplate {
                     state: state.0.clone().into(),
                     code: StatusCode::INTERNAL_SERVER_ERROR,
                     message: format!("error highlighting file contents: {}", e),
