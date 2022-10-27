@@ -2,6 +2,9 @@
 
 ## What needs to be done
 
+- more unit tests
+- integration tests
+
 ### Frontend
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
