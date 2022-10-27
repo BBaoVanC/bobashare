@@ -25,9 +25,18 @@
 /* Content */
 .upload-content-container {
     background-color: var(--background-1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 .upload-content-container > .upload-content {
+    display: inline-block;
+    margin: 0 auto;
     padding: 0.5em;
+}
+.upload-content-container > .upload-display-image img,
+.upload-content-container > .upload-display-image video {
+    max-height: 100vh;
 }
 .upload-content-container > .upload-display-text > pre {
     margin: 0;

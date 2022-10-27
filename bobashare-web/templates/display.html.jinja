@@ -54,7 +54,25 @@
                 </div>
             {% when DisplayType::Image %}
                 <div class="upload-content upload-display-image">
-                    <img src='{{ download_url }}' alt='{{ filename }}'>
+                    <a href='{{ raw_url }}'>
+                        <img src='{{ raw_url }}' alt='{{ filename }}'>
+                    </a>
+                </div>
+            {% when DisplayType::Video with (mimetype) %}
+                <div class="upload-content upload-display-video">
+                    <video controls preload="metadata">
+                        <source src='{{ raw_url }}' type='{{ mimetype }}'>
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% when DisplayType::Audio %}
+                <div class="upload-content upload-display-audio">
+                    <audio controls preload="metadata" src='{{ raw_url }}'>
+                        <a>
+                            Your browser does not support the audio tag;
+                            <a href='{{ raw_url }}'>download</a> the file instead.
+                        </a>
+                    </audio>
                 </div>
         {% endmatch %}
     </div>

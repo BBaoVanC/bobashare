@@ -6,13 +6,15 @@ use anyhow::Context;
 use askama::Template;
 use axum::{
     body::StreamBody,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
+use mime::Mime;
+use serde::{Deserialize, Deserializer};
 use syntect::html::highlighted_html_for_string;
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
@@ -71,12 +73,15 @@ pub struct DisplayTemplate {
     expiry_relative: Option<Duration>,
     size: u64,
     contents: DisplayType,
+    raw_url: Url,
     download_url: Url,
 }
 #[derive(Debug)]
 pub enum DisplayType {
     Text { highlighted: String },
     Image,
+    Video(Mime),
+    Audio,
     Other,
     TooLarge,
 }
@@ -157,14 +162,19 @@ pub async fn display(
                 }
             }
             (mime::IMAGE, _) => DisplayType::Image,
-            // (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Other,
+            (mime::VIDEO, _) => DisplayType::Video(mimetype),
+            (mime::AUDIO, _) => DisplayType::Audio,
             (_, _) => DisplayType::Other,
         }
     };
 
     event!(Level::DEBUG, "rendering upload template");
+    let raw_url = state.raw_url.join(&upload.metadata.id).unwrap();
+    let mut download_url = raw_url.clone();
+    download_url.set_query(Some("download"));
     Ok(DisplayTemplate {
-        download_url: state.raw_url.join(&upload.metadata.id).unwrap(),
+        raw_url,
+        download_url,
         id: upload.metadata.id,
         filename: upload.metadata.filename,
         expiry_date: upload.metadata.expiry_date,
@@ -175,11 +185,24 @@ pub async fn display(
     })
 }
 
+#[allow(unused_variables)]
+fn string_is_true<'de, D>(de: D) -> Result<bool, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(true)
+}
+#[derive(Debug, Deserialize)]
+pub struct RawParams {
+    #[serde(default, deserialize_with = "string_is_true")]
+    download: bool,
+}
 /// Download the raw upload file
 #[instrument(skip(state))]
 pub async fn raw(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
+    Query(RawParams { download }): Query<RawParams>,
 ) -> Result<impl IntoResponse, ErrorTemplate> {
     let upload = open_upload(&state, id).await.map_err(|e| ErrorTemplate {
         state: state.0.clone().into(),
@@ -216,7 +239,12 @@ pub async fn raw(
             (header::CONTENT_LENGTH, size.to_string()),
             (
                 header::CONTENT_DISPOSITION,
-                format!("attachment; filename=\"{}\"", upload.metadata.filename),
+                // if params.download {
+                if download {
+                    format!("attachment; filename=\"{}\"", upload.metadata.filename)
+                } else {
+                    format!("inline; filename=\"{}\"", upload.metadata.filename)
+                },
             ),
         ],
         body,

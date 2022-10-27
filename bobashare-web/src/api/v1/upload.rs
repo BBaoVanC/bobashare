@@ -239,8 +239,15 @@ pub async fn put(
         match chunk {
             Ok(ch) => match ch {
                 Some(c) => {
-                    event!(Level::TRACE, "writing chunk of {} bytes to file buffer", c.len());
-                    file_writer.write_all(&c).await.context("error writing to file")?;
+                    event!(
+                        Level::TRACE,
+                        "writing chunk of {} bytes to file buffer",
+                        c.len()
+                    );
+                    file_writer
+                        .write_all(&c)
+                        .await
+                        .context("error writing to file")?;
                 }
                 None => break,
             },
@@ -260,6 +267,10 @@ pub async fn put(
             }
         }
     }
+    file_writer
+        .flush()
+        .await
+        .context("error flushing file buffer")?;
 
     if should_guess_mimetype {
         let span = span!(Level::DEBUG, "guess_mimetype");

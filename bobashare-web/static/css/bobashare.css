@@ -1,19 +1,17 @@
 /* Main document formatting */
+html {
+    margin: 1em;
+}
 body {
     background-color: var(--background-0);
     color: var(--text-0);
     font-family: "Open Sans", "Noto Sans", sans-serif;
-    max-width: 720px;
-    margin: 20px;
+    max-width: fit-content;
+    margin: auto;
 
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-}
-@media (min-width: 760px) {
-    body {
-        margin: 20px auto;
-    }
 }
 a {
     color: var(--link-0);
