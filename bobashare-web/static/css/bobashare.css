@@ -8,7 +8,7 @@ body {
 
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.5em;
 }
 @media (min-width: 760px) {
     body {
@@ -30,9 +30,21 @@ a:hover {
     justify-content: space-between;
     font-size: 1.5rem;
 }
-.top header {
+.top > .navbar {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+.top > header {
     font-weight: bold;
 }
-.top header a {
+.top > header a {
     color: var(--text-0);
+}
+
+/* Main content formatting */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
 }

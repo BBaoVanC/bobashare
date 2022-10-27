@@ -5,15 +5,18 @@
 ### Frontend
 
 - CSS (styling)
+- Clean up classes in CSS (the `upload-display-whatever` ones)
 - Need an upload page
   - likely doesn't need any JS framework, unless there's something light
-- Syntax highlighting
-  - use `build.rs` to create syntax css file automatically?
+- Need a paste page (to easily paste & upload plaintext/code)
+- use `build.rs` to create syntax css file automatically?
 - Store delete keys in browser local storage so it's possible to delete uploads
-  - this should be checked on the display page too
+  - this should be checked on the display page too; add a delete button
 - API documentation page
 - i18n (maybe using https://crates.io/crates/fluent)
-- Set proper headers for static files
+- Set proper headers for `/static/` files
+- Add embeds for Twitter/Discord
+- Create a favicon
 
 ### Logging
 
@@ -30,7 +33,7 @@
 
 ### Admin
 
-- Do everything
+- TODO: everything
 
 ## Additional notes
 

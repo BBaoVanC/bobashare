@@ -75,13 +75,14 @@ pub struct DisplayTemplate {
 }
 #[derive(Debug)]
 pub enum DisplayType {
-    Text(String),
-    Binary,
+    Text { highlighted: String },
+    Image,
+    Other,
     TooLarge,
 }
 
 /// Maximum file size that will be rendered
-const MAX_DISPLAY_SIZE: u64 = 1024 * 1024;
+const MAX_DISPLAY_SIZE: u64 = 1024 * 1024; // 1 MiB
 
 /// Display an upload as HTML
 #[instrument(skip(state))]
@@ -150,10 +151,14 @@ pub async fn display(
                         code: StatusCode::INTERNAL_SERVER_ERROR,
                         message: format!("error highlighting file contents: {}", e),
                     })?;
-                    DisplayType::Text(contents)
+                    DisplayType::Text {
+                        highlighted: contents,
+                    }
                 }
             }
-            (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Binary,
+            (mime::IMAGE, _) => DisplayType::Image,
+            // (mime::APPLICATION, mime::OCTET_STREAM) | (_, _) => DisplayType::Other,
+            (_, _) => DisplayType::Other,
         }
     };
 

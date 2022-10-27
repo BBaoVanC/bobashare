@@ -2,26 +2,36 @@
 .upload-titlebar {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.25em;
     justify-content: space-between;
     background-color: var(--background-1);
-    /* padding: 5px 10px; */
 }
-.upload-titlebar > .upload-titlebar-right {
-    display: flex;
-    flex-direction: row;
-}
-.upload-titlebar > .upload-filename, .upload-titlebar-right > * {
-    padding: 5px;
-}
-.upload-titlebar > .upload-filename:hover, .upload-titlebar-right > *:hover {
-    background-color: var(--background-2);
+.upload-titlebar > .upload-filename,
+.upload-titlebar-right > * {
+    display: inline-block;
+    margin: 0 0.25em;
 }
 
 /* Wrap text checkbox */
-.upload-content {
+.upload-content-container > .upload-display-text pre {
     overflow: auto;
 }
-.upload-content .upload-display-text.wrap-text pre {
+.upload-content-container > .upload-display-text.wrap-text pre {
     word-wrap: break-word;
     white-space: pre-wrap;
 }
+
+/* Content */
+.upload-content-container {
+    background-color: var(--background-1);
+}
+.upload-content-container > .upload-content {
+    padding: 0.5em;
+}
+.upload-content-container > .upload-display-text > pre {
+    margin: 0;
+    padding: 0.5em;
+}
+
+/* TODO: FIT IMAGE TO SCREEN */

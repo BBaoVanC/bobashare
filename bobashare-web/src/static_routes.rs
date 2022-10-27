@@ -15,7 +15,7 @@ pub async fn handler(uri: Uri) -> impl IntoResponse {
 
     match Asset::get(path) {
         None => {
-            event!(Level::WARN, "file not found");
+            event!(Level::WARN, path, "file not found");
             (StatusCode::NOT_FOUND, "404 Not Found").into_response()
         }
         Some(f) => {
