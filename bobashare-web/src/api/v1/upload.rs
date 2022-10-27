@@ -15,7 +15,7 @@ use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use thiserror::Error;
-use tokio::io::AsyncWriteExt;
+use tokio::io::{AsyncWriteExt, BufWriter};
 use tracing::{event, instrument, span, Level};
 
 use super::ApiErrorExt;
@@ -233,17 +233,14 @@ pub async fn put(
         "created upload handle"
     );
 
+    let mut file_writer = BufWriter::new(&mut upload.file);
     loop {
         let chunk = body.try_next().await.context("error reading body");
         match chunk {
             Ok(ch) => match ch {
                 Some(c) => {
-                    event!(Level::TRACE, "writing chunk of {} bytes to file", c.len());
-                    upload
-                        .file
-                        .write_all(&c)
-                        .await
-                        .context("error writing to upload file")?;
+                    event!(Level::TRACE, "writing chunk of {} bytes to file buffer", c.len());
+                    file_writer.write_all(&c).await.context("error writing to file")?;
                 }
                 None => break,
             },
