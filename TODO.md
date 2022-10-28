@@ -22,6 +22,7 @@
 - Create a favicon
 - Need a better way to figure out what file type things are
   - Some mimetypes are under `application/`
+- Make bobascheme-light
 
 ### Logging
 
