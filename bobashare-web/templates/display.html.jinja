@@ -3,8 +3,7 @@
 {% block title %}{{ filename }} - {{ id }}{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/dist/syntax-dark.css").unwrap() }}' crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/dist/syntax-light.css").unwrap() }}' crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/dist/syntax.css").unwrap() }}' crossorigin="anonymous">
     {% if let DisplayType::Text{ highlighted: _ } = contents %}
         <script src='{{ state.base_url.join("static/js/wrap_text.js").unwrap() }}' crossorigin="anonymous"></script>
     {% endif %}

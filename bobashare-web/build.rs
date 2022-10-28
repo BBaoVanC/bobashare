@@ -20,12 +20,9 @@ fn main() -> anyhow::Result<()> {
     // make sure dist exists; it's gitignored so it's not in the repo
     fs::create_dir_all(&dist_root).context("error creating static/dist/ directory")?;
 
-    let dark_css_file = File::create(dist_root.join("syntax-dark.css"))
-        .context("error creating syntax-dark.css")?;
-    let mut dark_css_writer = BufWriter::new(dark_css_file);
-    let light_css_file = File::create(dist_root.join("syntax-light.css"))
-        .context("error creating syntax-light.css")?;
-    let mut light_css_writer = BufWriter::new(light_css_file);
+    let css_file = File::create(dist_root.join("syntax.css"))
+        .context("error creating syntax.css")?;
+    let mut css_writer = BufWriter::new(css_file);
 
     let mut theme_set = ThemeSet::load_defaults();
     theme_set.add_from_folder(root.join("highlight"))
@@ -34,34 +31,24 @@ fn main() -> anyhow::Result<()> {
         prefix: HIGHLIGHT_CLASS_PREFIX,
     };
 
+    writeln!(css_writer, "@media not (prefers-color-scheme: light) {{")?;
     writeln!(
-        dark_css_writer,
+        css_writer,
         "{}",
         css_for_theme_with_class_style(&theme_set.themes["bobascheme-dark"], class_style,)
             .context("error generating CSS for dark theme")?
-    )
-    .context("error writing dark theme CSS")?;
+    )?;
+    writeln!(css_writer, "}}")?;
 
-    writeln!(light_css_writer, "@media (prefers-color-scheme: light) {{")
-        .context("error writing media query to light theme CSS")?;
+    writeln!(css_writer, "@media (prefers-color-scheme: light) {{")?;
     writeln!(
-        light_css_writer,
+        css_writer,
         "{}",
         // TODO: make bobascheme-light
         css_for_theme_with_class_style(&theme_set.themes["InspiredGitHub"], class_style,)
             .context("error generating CSS for light theme")?
-    )
-    .context("error writing dark theme CSS")?;
-    writeln!(light_css_writer, "}}").context("error closing media query in light theme CSS")?;
-    /*
-    writeln!(
-        light_css_writer,
-        "{}",
-        css_for_theme_with_class_style(&theme_set.themes["bobascheme-light"], class_style,)
-            .context("error generating CSS for light theme")?
-    )
-    .context("error writing light theme CSS")?;
-    */
+    )?;
+    writeln!(css_writer, "}}")?;
 
     Ok(())
 }
