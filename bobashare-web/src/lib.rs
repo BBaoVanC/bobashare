@@ -1,8 +1,6 @@
 //! Webserver written with [`axum`] which provides a frontend and REST API for
 //! [`bobashare`]
 
-use std::sync::Arc;
-
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
 use syntect::{highlighting::Theme, parsing::SyntaxSet};
@@ -27,9 +25,6 @@ pub struct AppState {
     pub default_expiry: Duration,
     /// maximum expiry time ([`None`] for no maximum)
     pub max_expiry: Option<Duration>,
-
-    /// [`magic::Cookie`] for guessing mimetypes
-    pub magic_cookie: Arc<magic::Cookie>,
 
     // syntax highlighting
     pub syntax_set: SyntaxSet,

@@ -130,7 +130,6 @@ async fn main() -> anyhow::Result<()> {
     }
     .map(|d| Duration::from_std(d).unwrap());
 
-    let magic_cookie = magic::Cookie::open(magic::CookieFlags::ERROR | magic::CookieFlags::)
     let syntax_theme = ThemeSet::load_from_reader(&mut Cursor::new(include_bytes!(
         "../highlight/bobascheme-dark.tmTheme"
     )))
@@ -143,8 +142,6 @@ async fn main() -> anyhow::Result<()> {
         id_length,
         default_expiry,
         max_expiry,
-
-        magic_cookie,
 
         syntax_set: SyntaxSet::load_defaults_newlines(),
         syntax_theme,
