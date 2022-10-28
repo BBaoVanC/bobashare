@@ -69,15 +69,15 @@ async fn open_upload<S: AsRef<str>>(
 #[derive(Template)]
 #[template(path = "display.html.jinja")]
 pub struct DisplayTemplate {
-    state: TemplateState,
-    id: String,
-    filename: String,
-    expiry_date: Option<DateTime<Utc>>,
-    expiry_relative: Option<Duration>,
-    size: u64,
-    contents: DisplayType,
-    raw_url: Url,
-    download_url: Url,
+    pub state: TemplateState,
+    pub id: String,
+    pub filename: String,
+    pub expiry_date: Option<DateTime<Utc>>,
+    pub expiry_relative: Option<Duration>,
+    pub size: u64,
+    pub contents: DisplayType,
+    pub raw_url: Url,
+    pub download_url: Url,
 }
 #[derive(Debug)]
 pub enum DisplayType {

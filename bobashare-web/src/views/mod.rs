@@ -12,6 +12,7 @@ use crate::AppState;
 
 pub mod filters;
 pub mod display;
+pub mod upload;
 
 #[derive(Debug, Clone)]
 pub struct TemplateState {
@@ -54,6 +55,7 @@ impl IntoResponse for ErrorResponse {
 
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
+        .route("/", get(upload::paste))
         .route("/:id", get(display::display))
         .route("/raw/:id", get(display::raw))
 }
