@@ -27,7 +27,8 @@ fn main() -> anyhow::Result<()> {
         .context("error creating syntax-light.css")?;
     let mut light_css_writer = BufWriter::new(light_css_file);
 
-    let theme_set = ThemeSet::load_from_folder(root.join("highlight"))
+    let mut theme_set = ThemeSet::load_defaults();
+    theme_set.add_from_folder(root.join("highlight"))
         .context("error loading highligting themes")?;
     let class_style = ClassStyle::SpacedPrefixed {
         prefix: HIGHLIGHT_CLASS_PREFIX,
@@ -41,10 +42,16 @@ fn main() -> anyhow::Result<()> {
     )
     .context("error writing dark theme CSS")?;
 
-    // TODO: make bobascheme-light
     writeln!(light_css_writer, "@media (prefers-color-scheme: light) {{")
         .context("error writing media query to light theme CSS")?;
-    writeln!(light_css_writer, "/* TODO */").context("error writing light theme CSS")?;
+    writeln!(
+        light_css_writer,
+        "{}",
+        // TODO: make bobascheme-light
+        css_for_theme_with_class_style(&theme_set.themes["InspiredGitHub"], class_style,)
+            .context("error generating CSS for light theme")?
+    )
+    .context("error writing dark theme CSS")?;
     writeln!(light_css_writer, "}}").context("error closing media query in light theme CSS")?;
     /*
     writeln!(
