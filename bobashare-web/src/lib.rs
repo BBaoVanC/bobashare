@@ -28,7 +28,6 @@ pub struct AppState {
 
     // syntax highlighting
     pub syntax_set: SyntaxSet,
-    pub syntax_theme: Theme,
 }
 
 /// Take the requested expiry, and make sure it's within the maximum expiry.

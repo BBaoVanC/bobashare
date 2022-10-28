@@ -1,5 +1,4 @@
 use std::{
-    io::Cursor,
     net::SocketAddr,
     path::{Path, PathBuf},
     sync::Arc,
@@ -17,7 +16,7 @@ use chrono::Duration;
 use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
-use syntect::{highlighting::ThemeSet, parsing::SyntaxSet};
+use syntect::parsing::SyntaxSet;
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
@@ -130,11 +129,6 @@ async fn main() -> anyhow::Result<()> {
     }
     .map(|d| Duration::from_std(d).unwrap());
 
-    let syntax_theme = ThemeSet::load_from_reader(&mut Cursor::new(include_bytes!(
-        "../highlight/bobascheme-dark.tmTheme"
-    )))
-    .unwrap();
-
     let state = Arc::new(AppState {
         backend,
         base_url,
@@ -144,7 +138,6 @@ async fn main() -> anyhow::Result<()> {
         max_expiry,
 
         syntax_set: SyntaxSet::load_defaults_newlines(),
-        syntax_theme,
     });
 
     event!(Level::DEBUG,

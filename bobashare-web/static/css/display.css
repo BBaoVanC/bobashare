@@ -15,6 +15,7 @@
 
 /* Wrap text checkbox */
 .upload-content-container > .upload-display-text pre {
+    background: var(--background-0);
     overflow: auto;
 }
 .upload-content-container > .upload-display-text.wrap-text pre {

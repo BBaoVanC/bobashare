@@ -15,7 +15,10 @@ use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
 use serde::{Deserialize, Deserializer};
-use syntect::html::highlighted_html_for_string;
+use syntect::{
+    html::{ClassStyle, ClassedHTMLGenerator},
+    util::LinesWithEndings,
+};
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
@@ -88,6 +91,8 @@ pub enum DisplayType {
 
 /// Maximum file size that will be rendered
 const MAX_DISPLAY_SIZE: u64 = 1024 * 1024; // 1 MiB
+/// Prefix for CSS classes used for [`syntect`] highlighting
+const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
 
 /// Display an upload as HTML
 #[instrument(skip(state))]
@@ -144,21 +149,26 @@ pub async fn display(
                             message: format!("error reading file contents: {}", e),
                         })?;
 
-                    // TODO: CONTINUE HERE
-                    let contents = highlighted_html_for_string(
-                        &contents,
-                        &state.syntax_set,
-                        syntax,
-                        &state.syntax_theme,
-                    )
-                    .map_err(|e| ErrorTemplate {
-                        state: state.0.clone().into(),
-                        code: StatusCode::INTERNAL_SERVER_ERROR,
-                        message: format!("error highlighting file contents: {}", e),
-                    })?;
-                    DisplayType::Text {
-                        highlighted: contents,
-                    }
+                    let highlighted = {
+                        let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                            syntax,
+                            &state.syntax_set,
+                            ClassStyle::SpacedPrefixed {
+                                prefix: HIGHLIGHT_CLASS_PREFIX,
+                            },
+                        );
+                        for line in LinesWithEndings::from(&contents) {
+                            generator
+                                .parse_html_for_line_which_includes_newline(line)
+                                .map_err(|e| ErrorTemplate {
+                                    state: state.0.clone().into(),
+                                    code: StatusCode::INTERNAL_SERVER_ERROR,
+                                    message: format!("error highlighting file contents: {}", e),
+                                })?;
+                        }
+                        generator.finalize()
+                    };
+                    DisplayType::Text { highlighted }
                 }
             }
             (mime::IMAGE, _) => DisplayType::Image,
