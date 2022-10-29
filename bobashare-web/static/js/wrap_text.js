@@ -1,6 +1,6 @@
 window.onload = () => {
-    var checkbox = document.getElementById("wrap-text-checkbox");
-    var text_area = document.getElementById("upload-display-text")
+    const checkbox = document.getElementById("wrap-text-checkbox");
+    const text_area = document.getElementById("upload-display-text")
 
     function updateWrapText() {
         if (checkbox.checked) {
