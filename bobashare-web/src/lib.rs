@@ -3,7 +3,7 @@
 
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
-use syntect::{highlighting::Theme, parsing::SyntaxSet};
+use syntect::parsing::SyntaxSet;
 use url::Url;
 
 pub mod api;

@@ -27,6 +27,7 @@
 ### Logging
 
 - Add https://docs.rs/console-subscriber/latest/console_subscriber/
+- Instrument main `bobashare` library
 
 ### Backend
 
