@@ -5,6 +5,23 @@
 {% block main %}
     <div class="paste-form-container">
         <form class="paste-form">
+            <div class="paste-file">
+                <label for="paste-file">File</label>
+                <input type="file" id="paste-file" name="file" required>
+            </div>
+            <div class="paste-expiry">
+                <label for="paste-expiry">Expiry</label>
+                <select id="paste-expiry" name="expiry" required>
+                    {% for expiry in expiry_options %}
+                        <option value="{{ expiry.value }}" {% if expiry.default %}selected{% endif %}>{{ expiry.label }}</option>
+                    {% endfor %}
+                    {% if never_expiry_allowed %}
+                        <option value="0">Never</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="paste-submit">
+            </div>
         </form>
     </div>
 {% endblock %}

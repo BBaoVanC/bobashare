@@ -1,4 +1,7 @@
 /* Main document formatting */
+html {
+    margin: 0 1em;
+}
 body {
     background-color: var(--background-0);
     color: var(--text-0);

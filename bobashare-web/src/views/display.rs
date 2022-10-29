@@ -149,6 +149,7 @@ pub async fn display(
                             message: format!("error reading file contents: {}", e),
                         })?;
 
+                    event!(Level::DEBUG, "highlighting file with syntax {}", syntax.name);
                     let highlighted = {
                         let mut generator = ClassedHTMLGenerator::new_with_class_style(
                             syntax,

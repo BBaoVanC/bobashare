@@ -13,5 +13,7 @@ pub struct AboutTemplate {
 }
 
 pub async fn about(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    Ok(())
+    Ok(AboutTemplate {
+        state: state.0.into(),
+    })
 }
