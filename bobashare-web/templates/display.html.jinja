@@ -1,6 +1,6 @@
 {% extends "base.html.jinja" %}
 
-{% block title %}{{ filename }} - {{ id }}{% endblock %}
+{% block title %}{{ filename }}{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/dist/syntax.css").unwrap() }}' crossorigin="anonymous">

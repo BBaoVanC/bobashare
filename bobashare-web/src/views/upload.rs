@@ -1,12 +1,11 @@
 use std::sync::Arc;
 
 use askama::Template;
-use axum::{response::IntoResponse, extract::State};
+use axum::{extract::State, response::IntoResponse};
 use tracing::instrument;
 
-use crate::AppState;
-
 use super::{ErrorResponse, TemplateState};
+use crate::AppState;
 
 #[derive(Template)]
 #[template(path = "paste.html.jinja")]

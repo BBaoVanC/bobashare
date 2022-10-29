@@ -1,13 +1,10 @@
 /* Main document formatting */
-html {
-    margin: 1em;
-}
 body {
     background-color: var(--background-0);
     color: var(--text-0);
     font-family: "Open Sans", "Noto Sans", sans-serif;
     max-width: fit-content;
-    margin: auto;
+    margin: 1em auto;
 
     display: flex;
     flex-direction: column;
