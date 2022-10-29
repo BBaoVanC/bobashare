@@ -23,6 +23,7 @@
 - Need a better way to figure out what file type things are
   - Some mimetypes are under `application/`
 - Make bobascheme-light
+- Fix the horrors of the expiry dropdown logic in upload/paste pages
 
 ### Logging
 

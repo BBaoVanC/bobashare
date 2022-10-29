@@ -12,8 +12,11 @@
             <div class="paste-expiry">
                 <label for="paste-expiry">Expiry</label>
                 <select id="paste-expiry" name="expiry" required>
-                    {% for expiry in expiry_options %}
-                        <option value="{{ expiry.value }}" {% if expiry.default %}selected{% endif %}>{{ expiry.label }}</option>
+                    {% for opt in expiry_options %}
+                        {% let value = opt.0.num_seconds() %}
+                        {% let label = opt.0|roughduration %}
+                        {% let default = opt.1 %}
+                        <option value="{{ value }}s" {% if default %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                     {% if never_expiry_allowed %}
                         <option value="0">Never</option>
@@ -21,6 +24,7 @@
                 </select>
             </div>
             <div class="paste-submit">
+                <input type="submit" value="Create paste">
             </div>
         </form>
     </div>

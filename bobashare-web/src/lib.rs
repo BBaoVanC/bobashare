@@ -103,23 +103,24 @@ pub fn clamp_expiry(max_expiry: Option<Duration>, other: Option<Duration>) -> Op
 }
 
 // TODO: document
-pub fn iter_expiries() -> impl Iterator<Item = (Duration, &'static str, &'static str)> {
+pub fn iter_default_expiries() -> impl Iterator<Item = Duration> {
     [
-        (Duration::minutes(5), "5m", "5 minutes"),
-        (Duration::minutes(10), "10m", "10 minutes"),
-        (Duration::minutes(30), "30m", "30 minutes"),
-        (Duration::hours(1), "1h", "1 hour"),
-        (Duration::hours(2), "2h", "2 hours"),
-        (Duration::hours(6), "6h", "6 hours"),
-        (Duration::hours(12), "12h", "12 hours"),
-        (Duration::days(1), "1d", "1 day"),
-        (Duration::days(2), "2d", "2 days"),
-        (Duration::weeks(1), "1w", "1 week"),
-        (Duration::weeks(2), "2w", "2 weeks"),
-        (Duration::days(30), "1mon", "1 month"),
-        (Duration::days(60), "2mon", "2 months"),
-        (Duration::days(90), "3mon", "3 months"),
-        (Duration::days(180), "6mon", "6 months"),
-        (Duration::days(365), "1y", "1 year"),
-    ].into_iter()
+        Duration::minutes(5),
+        Duration::minutes(10),
+        Duration::minutes(30),
+        Duration::hours(1),
+        Duration::hours(2),
+        Duration::hours(6),
+        Duration::hours(12),
+        Duration::days(1),
+        Duration::days(2),
+        Duration::weeks(1),
+        Duration::weeks(2),
+        Duration::days(30),
+        Duration::days(60),
+        Duration::days(90),
+        Duration::days(180),
+        Duration::days(365),
+    ]
+    .into_iter()
 }

@@ -2,49 +2,41 @@ use std::sync::Arc;
 
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
+use chrono::Duration;
 use tracing::instrument;
 
-use super::{ErrorResponse, TemplateState};
-use crate::{iter_expiries, AppState};
+use super::{filters, ErrorResponse, TemplateState};
+use crate::{iter_default_expiries, AppState};
 
 #[derive(Template)]
 #[template(path = "paste.html.jinja")]
 pub struct PasteTemplate {
     pub state: TemplateState,
-    // value, label, default
-    pub expiry_options: Vec<ExpiryOption>,
+    // duration, default
+    pub expiry_options: Vec<(Duration, bool)>,
     pub never_expiry_allowed: bool,
-}
-#[derive(Debug, Clone)]
-pub struct ExpiryOption {
-    pub value: &'static str,
-    pub label: &'static str,
-    pub default: bool,
 }
 
 #[instrument(skip(state))]
 pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut expiry_options = iter_expiries()
+    // TODO: this is horrific
+    let mut expiry_options = iter_default_expiries()
         .take_while(|e| {
             if let Some(max) = state.max_expiry {
-                e.0 <= max
+                e <= &max
             } else {
                 true
             }
         })
-        .map(|(duration, value, label)| ExpiryOption {
-            value,
-            label,
-            // default: duration == state.default_expiry,
-            default: false,
-        })
-        .collect::<Vec<ExpiryOption>>();
+        .collect::<Vec<Duration>>();
+    expiry_options.push(state.default_expiry);
+    expiry_options.sort();
+    expiry_options.dedup();
 
-    expiry_options.push(ExpiryOption {
-        value: format!("{}s", state.default_expiry.num_seconds()),
-        default:
-    });
-
+    let expiry_options = expiry_options
+        .into_iter()
+        .map(|e| (e, e == state.default_expiry))
+        .collect();
 
     Ok(PasteTemplate {
         expiry_options,

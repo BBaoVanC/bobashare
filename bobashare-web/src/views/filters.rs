@@ -10,3 +10,8 @@ pub fn humanduration(duration: Duration) -> Result<String> {
 pub fn humansize(size: &u64) -> Result<String> {
     Ok(format_size(*size, humansize::BINARY))
 }
+
+// TODO: this reference is weird
+pub fn roughduration(duration: &Duration) -> Result<String> {
+    Ok(HumanTime::from(*duration).to_text_en(Accuracy::Rough, Tense::Present))
+}
