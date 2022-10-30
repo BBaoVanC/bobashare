@@ -22,7 +22,14 @@ pub async fn handler(uri: Uri) -> impl IntoResponse {
             let mimetype = mime_db::lookup(&path)
                 .map_or(mime::APPLICATION_OCTET_STREAM, |m| m.parse().unwrap());
             event!(Level::DEBUG, ?mimetype);
-            ([(header::CONTENT_TYPE, mimetype.to_string())], f.data).into_response()
+            (
+                [
+                    (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".to_string()),
+                    (header::CONTENT_TYPE, mimetype.to_string()),
+                ],
+                f.data,
+            )
+                .into_response()
         }
     }
 }

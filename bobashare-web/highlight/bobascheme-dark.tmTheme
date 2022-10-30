@@ -30,6 +30,8 @@
         <string>comment,punctuation.definition.comment</string>
         <key>settings</key>
         <dict>
+          <key>fontStyle</key>
+          <string>italic</string>
           <key>foreground</key>
           <string>#5e5e5e</string>
         </dict>
@@ -71,7 +73,7 @@
         <key>name</key>
         <string>Keyword, Storage</string>
         <key>scope</key>
-        <string>keyword,storage.type,storage.modifier,keyword.other.unit,keyword.other,keyword.control</string>
+        <string>keyword,storage.type,storage.modifier,keyword.other.unit,keyword.other,keyword.control,entity.name.type.lifetime,punctuation.definition.lifetime</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
@@ -82,7 +84,18 @@
         <key>name</key>
         <string>Operator, Misc</string>
         <key>scope</key>
-        <string>keyword.operator,constant.other.color,punctuation,meta.tag,punctuation.definition.tag,punctuation.separator.inheritance.php,punctuation.definition.tag.html,punctuation.definition.tag.begin.html,punctuation.definition.tag.end.html,punctuation.section.embedded,keyword.other.template,keyword.other.substitution</string>
+        <string>keyword.operator,constant.other.color,keyword.other.template,keyword.other.substitution</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#9f4b95</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Punctuation</string>
+        <key>scope</key>
+        <string>punctuation</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
@@ -107,6 +120,8 @@
         <string>entity.name.function,meta.function-call,variable.function,support.function,keyword.other.special-method</string>
         <key>settings</key>
         <dict>
+          <key>fontStyle</key>
+          <string/>
           <key>foreground</key>
           <string>#29757f</string>
         </dict>
@@ -135,9 +150,33 @@
       </dict>
       <dict>
         <key>name</key>
-        <string>Number, Constant, Function Argument, Tag Attribute, Embedded</string>
+        <string>Macros</string>
         <key>scope</key>
-        <string>constant.numeric,constant.language,support.constant,constant.character,constant.escape,variable.parameter</string>
+        <string>entity.name.function.macro</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#b04744</string>
+          <key>fontStyle</key>
+          <string>bold</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Attributes</string>
+        <key>scope</key>
+        <string>meta.attribute.rust,meta.attribute.rust punctuation,meta.attribute.rust keyword.operator</string>
+        <key>settings</key>
+        <dict>
+          <key>foreground</key>
+          <string>#b04744</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Number, Constant, Function Argument, Tag Attribute, Embedded, Escape</string>
+        <key>scope</key>
+        <string>constant.numeric,constant.language,support.constant,constant.character,constant.escape,constant.character.escape</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>
@@ -166,6 +205,17 @@
           <string>bold</string>
           <key>foreground</key>
           <string>#216dbf</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>name</key>
+        <string>Make lifetimes not bold</string>
+        <key>scope</key>
+        <string>entity.name.type.lifetime</string>
+        <key>settings</key>
+        <dict>
+          <key>fontStyle</key>
+          <string/>
         </dict>
       </dict>
       <dict>
@@ -339,17 +389,6 @@
         <string>Regular Expressions</string>
         <key>scope</key>
         <string>string.regexp</string>
-        <key>settings</key>
-        <dict>
-          <key>foreground</key>
-          <string>#89DDFF</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>name</key>
-        <string>Escape Characters</string>
-        <key>scope</key>
-        <string>constant.character.escape</string>
         <key>settings</key>
         <dict>
           <key>foreground</key>

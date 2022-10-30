@@ -1,1 +1,31 @@
 {% extends "base.html.jinja" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block main %}
+    <div class="upload-form-container">
+        <form class="upload-form">
+            <div class="upload-file">
+                <label for="upload-file">File</label>
+                <input type="file" id="upload-file" name="file" required>
+            </div>
+            <div class="upload-expiry">
+                <label for="upload-expiry">Expiry</label>
+                <select id="upload-expiry" name="expiry" required>
+                    {% for opt in expiry_options %}
+                        {% let value = opt.0.num_seconds() %}
+                        {% let label = opt.0|roughduration %}
+                        {% let default = opt.1 %}
+                        <option value="{{ value }}s" {% if default %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                    {% if never_expiry_allowed %}
+                        <option value="0">Never</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="upload-submit">
+                <input type="submit" value="Create upload">
+            </div>
+        </form>
+    </div>
+{% endblock %}

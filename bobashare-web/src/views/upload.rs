@@ -3,14 +3,14 @@ use std::sync::Arc;
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
 use chrono::Duration;
-use tracing::instrument;
+use tracing::{event, instrument, Level};
 
 use super::{filters, ErrorResponse, TemplateState};
 use crate::{iter_default_expiries, AppState};
 
 #[derive(Template)]
-#[template(path = "paste.html.jinja")]
-pub struct PasteTemplate {
+#[template(path = "upload.html.jinja")]
+pub struct UploadTemplate {
     pub state: TemplateState,
     // duration, default
     pub expiry_options: Vec<(Duration, bool)>,
@@ -18,7 +18,7 @@ pub struct PasteTemplate {
 }
 
 #[instrument(skip(state))]
-pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
     // TODO: this is horrific
     let mut expiry_options = iter_default_expiries()
         .take_while(|e| {
@@ -38,7 +38,7 @@ pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Err
         .map(|e| (e, e == state.default_expiry))
         .collect();
 
-    Ok(PasteTemplate {
+    Ok(UploadTemplate {
         expiry_options,
         never_expiry_allowed: state.max_expiry.is_none(),
         state: state.0.into(),

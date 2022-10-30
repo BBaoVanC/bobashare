@@ -57,7 +57,8 @@ impl IntoResponse for ErrorResponse {
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
         .route("/about/", get(about::about))
-        .route("/paste/", get(upload::paste))
+        .route("/", get(upload::upload))
+        // .route("/paste/", get(upload::paste))
         .route("/:id", get(display::display))
         .route("/raw/:id", get(display::raw))
 }
