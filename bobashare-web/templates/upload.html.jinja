@@ -49,10 +49,11 @@
 {% block main %}
     <div class="upload-form-container">
         <form id="upload-form" class="upload-form">
-            <div class="upload-file">
-                <label for="upload-file">File</label>
+            <label for="upload-file" class="upload-file-container">
+                <span class="drop-title">Drop files here</span>
+                or
                 <input type="file" id="upload-file" name="file" required>
-            </div>
+            </label>
             <div class="upload-expiry">
                 <label for="upload-expiry">Expiry</label>
                 <select id="upload-expiry" name="expiry" required>
