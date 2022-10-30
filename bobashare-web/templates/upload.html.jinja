@@ -47,15 +47,14 @@
 {% endblock %}
 
 {% block main %}
-    <div class="upload-form-container">
-        <form id="upload-form" class="upload-form">
-            <label for="upload-file" class="upload-file-container">
-                <span class="drop-title">Drop files here</span>
-                or
-                <input type="file" id="upload-file" name="file" required>
-            </label>
+    <form id="upload-form" class="upload-form">
+        <label for="upload-file" class="upload-file-container">
+            <span class="drop-title">Click or drop files here</span>
+            <input type="file" id="upload-file" name="file" required>
+        </label>
+        <div class="upload-form-right">
             <div class="upload-expiry">
-                <label for="upload-expiry">Expiry</label>
+                <label for="upload-expiry">Expires in</label>
                 <select id="upload-expiry" name="expiry" required>
                     {% for opt in expiry_options %}
                         {% let value = opt.0.num_seconds() %}
@@ -71,8 +70,8 @@
             <div class="upload-submit">
                 <input type="submit" value="Create upload">
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
     <div id="uploaded-files" class="uploaded-files">
         <div class="upload-file in-progress">
             <div class="upload-filename">in-progress.png</div>

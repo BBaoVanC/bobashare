@@ -4,7 +4,7 @@
  * https://github.com/BBaoVanC/bobatheme.
  */
 
- :root {
+:root {
     --background-0: #111111;  /* lch(5, 0, X) */
     --background-1: #212121;  /* lch(12.5, 0, X) */
     --background-2: #303030;  /* lch(20, 0, X) */
@@ -57,65 +57,55 @@
 }
 
 @media print, (prefers-color-scheme: light) {
-  :root {
-    --background-0: #f1f1f1;  /* lch(95, 0, X) */
-    --background-1: #dbdbdb;  /* lch(87.5, 0, X) */
-    --background-2: #c6c6c6;  /* lch(80, 0, X) */
-    --background-3: #b2b2b2;  /* lch(72.5, 0, X) */
+    :root {
+        --background-0: #f1f1f1;  /* lch(95, 0, X) */
+        --background-1: #dbdbdb;  /* lch(87.5, 0, X) */
+        --background-2: #c6c6c6;  /* lch(80, 0, X) */
+        --background-3: #b2b2b2;  /* lch(72.5, 0, X) */
 
-    --background-pink-1:      #f7d1dc;  /* lch(87.5, 15, 0) */
-    --background-red-1:       #f8d2ce;  /* lch(87.5, 15, 30) */
-    --background-orange-1:    #f1d6c3;  /* lch(87.5, 15, 60) */
-    --background-yellow-1:    #e4dbbf;  /* lch(87.5, 15, 90) */
-    --background-lime-1:      #d5dfc2;  /* lch(87.5, 15, 120) */
-    --background-green-1:     #c6e3cc;  /* lch(87.5, 15, 150) */
-    --background-turquoise-1: #bce4db;  /* lch(87.5, 15, 180) */
-    --background-teal-1:      #bae3e9;  /* lch(87.5, 15, 210) */
-    --background-cerulean-1:  #c2e0f4;  /* lch(87.5, 15, 240) */
-    --background-blue-1:      #d0dcf8;  /* lch(87.5, 15, 270) */
-    --background-purple-1:    #e1d7f4;  /* lch(87.5, 15, 300) */
-    --background-magenta-1:   #efd3ea;  /* lch(87.5, 15, 330) */
+        --background-pink-1:      #f7d1dc;  /* lch(87.5, 15, 0) */
+        --background-red-1:       #f8d2ce;  /* lch(87.5, 15, 30) */
+        --background-orange-1:    #f1d6c3;  /* lch(87.5, 15, 60) */
+        --background-yellow-1:    #e4dbbf;  /* lch(87.5, 15, 90) */
+        --background-lime-1:      #d5dfc2;  /* lch(87.5, 15, 120) */
+        --background-green-1:     #c6e3cc;  /* lch(87.5, 15, 150) */
+        --background-turquoise-1: #bce4db;  /* lch(87.5, 15, 180) */
+        --background-teal-1:      #bae3e9;  /* lch(87.5, 15, 210) */
+        --background-cerulean-1:  #c2e0f4;  /* lch(87.5, 15, 240) */
+        --background-blue-1:      #d0dcf8;  /* lch(87.5, 15, 270) */
+        --background-purple-1:    #e1d7f4;  /* lch(87.5, 15, 300) */
+        --background-magenta-1:   #efd3ea;  /* lch(87.5, 15, 330) */
 
-    --background-pink-2:      #fbb1c8;  /* lch(80, 30, 0) */
-    --background-red-2:       #fbb4ac;  /* lch(80, 30, 30) */
-    --background-orange-2:    #eebc97;  /* lch(80, 30, 60) */
-    --background-yellow-2:    #d6c58e;  /* lch(80, 30, 90) */
-    --background-lime-2:      #b8ce95;  /* lch(80, 30, 120) */
-    --background-green-2:     #9ad4a9;  /* lch(80, 30, 150) */
-    --background-turquoise-2: #81d6c5;  /* lch(80, 30, 180) */
-    --background-teal-2:      #7ad5e1;  /* lch(80, 30, 210) */
-    --background-cerulean-2:  #8cd0f6;  /* lch(80, 30, 240) */
-    --background-blue-2:      #adc8fe;  /* lch(80, 30, 270) */
-    --background-purple-2:    #d0bef7;  /* lch(80, 30, 300) */
-    --background-magenta-2:   #ecb5e3;  /* lch(80, 30, 330) */
+        --background-pink-2:      #fbb1c8;  /* lch(80, 30, 0) */
+        --background-red-2:       #fbb4ac;  /* lch(80, 30, 30) */
+        --background-orange-2:    #eebc97;  /* lch(80, 30, 60) */
+        --background-yellow-2:    #d6c58e;  /* lch(80, 30, 90) */
+        --background-lime-2:      #b8ce95;  /* lch(80, 30, 120) */
+        --background-green-2:     #9ad4a9;  /* lch(80, 30, 150) */
+        --background-turquoise-2: #81d6c5;  /* lch(80, 30, 180) */
+        --background-teal-2:      #7ad5e1;  /* lch(80, 30, 210) */
+        --background-cerulean-2:  #8cd0f6;  /* lch(80, 30, 240) */
+        --background-blue-2:      #adc8fe;  /* lch(80, 30, 270) */
+        --background-purple-2:    #d0bef7;  /* lch(80, 30, 300) */
+        --background-magenta-2:   #ecb5e3;  /* lch(80, 30, 330) */
 
-    --background-accent-1: var(--background-blue-1);
-    --background-accent-2: var(--background-blue-2);
+        --background-accent-1: var(--background-blue-1);
+        --background-accent-2: var(--background-blue-2);
 
-    --text-0: #262626;  /* lch(15, 0, X) */
-    --text-1: #262626;  /* lch(15, 0, X) */
-    --text-2: #262626;  /* lch(15, 0, X) */
-    --text-3: #171717;  /* lch(72.5, 0, X) */
+        --text-0: #262626;  /* lch(15, 0, X) */
+        --text-1: #262626;  /* lch(15, 0, X) */
+        --text-2: #262626;  /* lch(15, 0, X) */
+        --text-3: #171717;  /* lch(72.5, 0, X) */
 
-    --text-gray-0: #474747; /* lch(30, 0, X) */
-    --text-gray-1: #5e5e5e; /* lch(40, 0, X) */
+        --text-gray-0: #474747; /* lch(30, 0, X) */
+        --text-gray-1: #5e5e5e; /* lch(40, 0, X) */
 
-    --link-0: #2061a8; /* lch(40, 45, 270) */
+        --link-0: #2061a8; /* lch(40, 45, 270) */
 
-    --figure-border: #367acd; /* lch(50, 50, 270) */
+        --figure-border: #367acd; /* lch(50, 50, 270) */
 
-    --pagination-active-hover-text: white;
-    --pagination-active-background: #9fbaf0; /* lch(75, 30, 270) */
-    --pagination-active-hover-background: #6193e0; /* lch(60, 45, 270) */
-  }
-}
-
-.test {
-  background: var(--background-0);
-  display: flex;
-}
-
-#test {
-  background: var(--background-0);
-  display: flex;
+        --pagination-active-hover-text: white;
+        --pagination-active-background: #9fbaf0; /* lch(75, 30, 270) */
+        --pagination-active-hover-background: #6193e0; /* lch(60, 45, 270) */
+    }
 }

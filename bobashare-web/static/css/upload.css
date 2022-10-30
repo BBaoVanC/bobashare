@@ -1,5 +1,72 @@
 /* Form */
-/* TODO */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 1em;
+}
+.upload-form-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.upload-expiry > select,
+.upload-submit > input {
+    background-color: var(--background-1);
+    color: var(--text-0);
+    padding: 0.25em;
+    border-radius: 0.25em;
+    border: 0.125em solid var(--background-3);
+}
+.upload-expiry > select:hover,
+.upload-submit > input:hover {
+    background-color: var(--background-2);
+}
+.upload-submit > input:hover {
+    cursor: pointer;
+}
+
+/* Form file input */
+.upload-file-container {
+    position: relative;
+    min-width: 360px;
+    height: 180px;
+    background-color: var(--background-1);
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border: 0.125em dashed var(--text-gray-0);
+    z-index: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.upload-file-container:hover {
+    background-color: var(--background-2);
+}
+.upload-file-container > input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+
+    box-sizing: border-box;
+    padding: 2em;
+    text-align: center;
+    /* for some reason this is needed for Chromium */
+    text-align-last: center;
+}
+.upload-file-container > input[type="file"]::file-selector-button {
+    display: none;
+    text-align: center;
+}
+.upload-file-container > input[type="file"]:hover {
+    cursor: pointer;
+}
+
 
 /* the buttons are fake and use JS to trigger */
 .uploaded-files a:hover {
@@ -17,6 +84,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    gap: 0.5em;
 }
 .uploaded-files > .upload-file.in-progress > .upload-progress-right {
     display: flex;
@@ -55,6 +123,9 @@
 }
 
 /* Text styling */
+.uploaded-files > .upload-file.in-progress > .upload-filename {
+    font-style: italic;
+}
 .uploaded-files > .upload-file.deleted > .upload-filename {
     text-decoration: line-through;
 }

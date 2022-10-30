@@ -25,6 +25,7 @@ pub async fn handler(uri: Uri) -> impl IntoResponse {
             (
                 [
                     (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".to_string()),
+                    (header::CACHE_CONTROL, "no-cache".to_string()),
                     (header::CONTENT_TYPE, mimetype.to_string()),
                 ],
                 f.data,
