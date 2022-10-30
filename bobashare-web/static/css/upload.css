@@ -1,0 +1,60 @@
+/* the buttons are fake and use JS to trigger */
+.uploaded-files a:hover {
+    cursor: pointer;
+}
+
+.uploaded-files {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.uploaded-files > .upload-file {
+    padding: 0.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.uploaded-files > .upload-file.in-progress > .upload-progress-right {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25em;
+}
+
+/* Background colors */
+.uploaded-files > .upload-file.success {
+    background-color: var(--background-green-1);
+}
+.uploaded-files > .upload-file.deleted {
+    background-color: var(--background-red-1);
+}
+.uploaded-files > .upload-file.failed {
+    background-color: var(--background-red-1);
+}
+.uploaded-files > .upload-file.cancelled {
+    background-color: var(--background-red-1);
+}
+.uploaded-files > .upload-file.in-progress {
+    position: relative;
+    background-color: var(--background-1);
+}
+.uploaded-files > .upload-file.in-progress > * {
+    z-index: 1;
+}
+.uploaded-files > .upload-file.in-progress > .upload-progress-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: var(--background-blue-2);
+    z-index: 0;
+    transition: width 0.25s;
+}
+
+/* Text styling */
+.uploaded-files > .upload-file.deleted > .upload-filename {
+    text-decoration: line-through;
+}
+.uploaded-files > .upload-file.failed {
+    font-weight: bold;
+}

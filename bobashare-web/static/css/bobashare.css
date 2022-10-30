@@ -29,6 +29,7 @@ a:hover {
     font-size: 1.5rem;
 }
 .top > .navbar {
+    /* TODO: if width < 480px, make navbar on second line */
     display: flex;
     flex-direction: row;
     gap: 1em;

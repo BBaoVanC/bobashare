@@ -37,7 +37,8 @@
 }
 .upload-content-container > .upload-display-image img,
 .upload-content-container > .upload-display-image video {
-    max-height: 100vh;
+    /* TODO: should a maximum height be set so it's not taller than the entire window (for tall images) */
+    max-width: 100%;
 }
 .upload-content-container > .upload-display-text > pre {
     margin: 0;

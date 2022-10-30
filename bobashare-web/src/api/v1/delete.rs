@@ -73,6 +73,7 @@ impl IntoResponse for DeleteError {
 ///
 /// - 200 OK
 /// - JSON body created from [`DeleteResponse`]
+// TODO: should this return 204 No Content and empty body?
 #[instrument(skip(state))]
 pub async fn delete(
     state: State<Arc<AppState>>,

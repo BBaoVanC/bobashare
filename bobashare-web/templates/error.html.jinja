@@ -1,9 +1,13 @@
 {% extends "base.html.jinja" %}
 
 {% block title %}{{ code.as_u16() }}{% if let Some(reason) = code.canonical_reason() %} {{ reason }}{% endif %}{% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/error.css").unwrap() }}' crossorigin="anonymous">
+{% endblock %}
 
 {% block main %}
     <div class="error-message">
+        <h1>An error occurred :(</h1>
         <p>{{ message|capitalize }}</p>
     </div>
 {% endblock %}
