@@ -29,6 +29,7 @@ pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
         .route("/upload", put(upload::put))
         // TODO: create an endpoint for /upload/ that just says an error ("filename" not found)
         .route("/upload/:filename", put(upload::put))
+        // TODO: create an endpoint for /delete/ that just says an error ("id" not found)
         .route("/delete/:id", delete(delete::delete))
 }
 

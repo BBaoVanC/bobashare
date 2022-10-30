@@ -5,7 +5,7 @@ use std::sync::Arc;
 use anyhow::Context;
 use axum::{
     extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
-    headers::ContentType,
+    headers::{ContentLength, ContentType},
     response::{IntoResponse, Response},
     Json, TypedHeader,
 };
@@ -49,6 +49,8 @@ pub enum UploadError {
     AlreadyExists,
     /// error parsing `{name}` header
     ParseHeader { name: String, source: anyhow::Error },
+    /// file is too large ({size} > {max})
+    TooLarge { size: u64, max: u64 },
 
     /// upload was cancelled
     Cancelled(#[source] anyhow::Error),
@@ -59,7 +61,8 @@ pub enum UploadError {
 impl From<TypedHeaderRejection> for UploadError {
     fn from(rej: TypedHeaderRejection) -> Self {
         Self::ParseHeader {
-            name: rej.name().to_string(),
+            // name: rej.name().to_string(),
+            name: format!("abc {} abc", rej.name()),
             source: rej.into(),
         }
     }
@@ -69,6 +72,7 @@ impl IntoResponse for UploadError {
         let code = match self {
             Self::AlreadyExists => StatusCode::CONFLICT,
             Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
+            Self::TooLarge { size: _, max: _ } => StatusCode::PAYLOAD_TOO_LARGE,
             Self::Cancelled(_) => StatusCode::INTERNAL_SERVER_ERROR, // unused
             Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
@@ -133,9 +137,31 @@ pub async fn put(
     state: State<Arc<AppState>>,
     filename: Option<Path<String>>,
     WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
+    WithRejection(TypedHeader(content_length), _): WithRejection<
+        TypedHeader<ContentLength>,
+        UploadError,
+    >,
     headers: HeaderMap,
     mut body: BodyStream,
 ) -> Result<impl IntoResponse, UploadError> {
+    // hyper will automatically make sure the body is <= the content-length, so we
+    // can rely on it here
+    //
+    // also note that hyper seems to intercept the Content-Length header and return
+    // its own empty response instead of using WithRejection here TODO: test
+    // edge cases
+    if content_length.0 > state.max_file_size {
+        event!(
+            Level::INFO,
+            size = content_length.0,
+            max = state.max_file_size,
+            "file is too large"
+        );
+        return Err(UploadError::TooLarge {
+            size: content_length.0,
+            max: state.max_file_size,
+        });
+    }
     let id = generate_randomized_id(state.id_length);
     tracing::Span::current().record("id", &id);
     event!(Level::DEBUG, "generated random ID for upload");

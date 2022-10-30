@@ -25,6 +25,8 @@ pub struct AppState {
     pub default_expiry: Duration,
     /// maximum expiry time ([`None`] for no maximum)
     pub max_expiry: Option<Duration>,
+    /// maximum file size in bytes
+    pub max_file_size: u64,
 
     // syntax highlighting
     pub syntax_set: SyntaxSet,

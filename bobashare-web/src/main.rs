@@ -71,7 +71,8 @@ async fn main() -> anyhow::Result<()> {
         .set_default("base_url", "http://localhost:3000/").unwrap()
         .set_default("id_length", 8).unwrap()
         .set_default("default_expiry", "24h").unwrap()
-        .set_default("max_expiry", Some("30d")).unwrap();
+        .set_default("max_expiry", Some("30d")).unwrap()
+        .set_default("max_file_size", 1024 * 1024 * 1024).unwrap(); // 1 GiB
 
     if let Some(c) = cli.config {
         config = config.add_source(config::File::new(
@@ -128,6 +129,7 @@ async fn main() -> anyhow::Result<()> {
         exp => Some(duration_str::parse(exp).context("error parsing `max_expiry`")?),
     }
     .map(|d| Duration::from_std(d).unwrap());
+    let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
 
     let state = Arc::new(AppState {
         backend,
@@ -136,6 +138,7 @@ async fn main() -> anyhow::Result<()> {
         id_length,
         default_expiry,
         max_expiry,
+        max_file_size,
 
         syntax_set: SyntaxSet::load_defaults_newlines(),
     });
