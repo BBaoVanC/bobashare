@@ -61,7 +61,6 @@
 }
 .upload-file-container > input[type="file"]::file-selector-button {
     display: none;
-    text-align: center;
 }
 .upload-file-container > input[type="file"]:hover {
     cursor: pointer;

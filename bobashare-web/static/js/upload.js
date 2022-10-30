@@ -33,7 +33,7 @@ window.onload = () => {
 
         const req = new XMLHttpRequest();
         req.open("PUT", uploadEndpoint + file.name);
-        req.setRequestHeader("Content-Type", file.type);
+        req.setRequestHeader("Content-Type", file.type || "application/octet-stream");
         req.setRequestHeader("Bobashare-Expiry", expiryInput.value);
         req.responseType = "json";
         req.upload.onprogress = event => {
@@ -94,6 +94,7 @@ window.onload = () => {
                             filesDiv.replaceChild(deletedTmpl, successElem);
                         } else {
                             console.error(`delete of ${id} failed`, req);
+                            alert(`delete of ${id} failed: ` + req.responseText);
                         }
                     }
                 }

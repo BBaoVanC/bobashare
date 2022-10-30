@@ -12,6 +12,9 @@
     display: inline-block;
     margin: 0 0.25em;
 }
+.delete-button:hover {
+    cursor: pointer;
+}
 
 /* Wrap text checkbox */
 .upload-content-container > .upload-display-text pre {

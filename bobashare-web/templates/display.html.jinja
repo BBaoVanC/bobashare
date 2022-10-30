@@ -7,6 +7,15 @@
     {% if let DisplayType::Text{ highlighted: _ } = contents %}
         <script src='{{ state.base_url.join("static/js/wrap_text.js").unwrap() }}' crossorigin="anonymous"></script>
     {% endif %}
+    <script
+        id="delete-script-element"
+        data-upload-id='{{ id }}'
+        src='{{ state.base_url.join("static/js/display.js").unwrap() }}'
+        crossorigin="anonymous"></script>
+
+    <template id="delete-button-template">
+        <a class="delete-button">Delete</a>
+    </template>
 {% endblock %}
 
 {% block main %}
@@ -43,7 +52,7 @@
         {% match contents %}
             {% when DisplayType::Other %}
                 <div class="upload-content upload-binary">
-                    This type of file cannot be displayed. <a href='{{ download_url }}'>Download</a> it instead.
+                    This file of type <code>{{ mimetype }}</code> cannot be displayed. <a href='{{ download_url }}'>Download</a> it instead.
                 </div>
             {% when DisplayType::TooLarge %}
                 <div class="upload-content upload-too-large">

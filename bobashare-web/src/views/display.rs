@@ -75,6 +75,7 @@ pub struct DisplayTemplate {
     pub expiry_date: Option<DateTime<Utc>>,
     pub expiry_relative: Option<Duration>,
     pub size: u64,
+    pub mimetype: Mime,
     pub contents: DisplayType,
     pub raw_url: Url,
     pub download_url: Url,
@@ -124,7 +125,7 @@ pub async fn display(
         .len();
 
     let contents = {
-        let mimetype = upload.metadata.mimetype;
+        let mimetype = upload.metadata.mimetype.clone();
         match (mimetype.type_(), mimetype.subtype()) {
             (mime::TEXT, _) => {
                 if size > MAX_DISPLAY_SIZE {
@@ -195,6 +196,7 @@ pub async fn display(
         expiry_date: upload.metadata.expiry_date,
         expiry_relative: upload.metadata.expiry_date.map(|e| e - Utc::now()),
         size,
+        mimetype: upload.metadata.mimetype,
         contents,
         state: state.0.into(),
     })
