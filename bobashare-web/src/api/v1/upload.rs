@@ -4,10 +4,12 @@ use std::sync::Arc;
 
 use anyhow::Context;
 use axum::{
-    extract::{BodyStream, Path, State},
+    extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
+    headers::ContentType,
     response::{IntoResponse, Response},
-    Json,
+    Json, TypedHeader,
 };
+use axum_extra::extract::WithRejection;
 use bobashare::{generate_randomized_id, storage::file::CreateUploadError};
 use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
@@ -54,6 +56,14 @@ pub enum UploadError {
     /// internal server error
     InternalServer(#[from] anyhow::Error),
 }
+impl From<TypedHeaderRejection> for UploadError {
+    fn from(rej: TypedHeaderRejection) -> Self {
+        Self::ParseHeader {
+            name: rej.name().to_string(),
+            source: rej.into(),
+        }
+    }
+}
 impl IntoResponse for UploadError {
     fn into_response(self) -> Response {
         let code = match self {
@@ -88,9 +98,10 @@ impl IntoResponse for UploadError {
 ///
 /// ## Headers
 ///
-/// - `Content-Type` -- mimetype (optional) -- the mime type (file format) of
+/// - `Content-Type` (required) -- mimetype -- the mime type (file format) of
 ///   the file
-/// - `Bobashare-Expiry` -- number -- duration until the upload should expire
+/// - `Bobashare-Expiry` (optional) -- number -- duration until the upload
+///   should expire
 ///   - specify `0` for no expiry
 ///   - examples (see [`duration_str`] for more information):
 ///     - `1d` -- 1 day
@@ -100,8 +111,8 @@ impl IntoResponse for UploadError {
 ///
 /// [`duration_str`]: https://crates.io/crates/duration_str
 ///
-/// - `Bobashare-Delete-Key` -- string -- custom key to use for deleting the
-///   file later, instead of a randomly generated one
+/// - `Bobashare-Delete-Key` (optional) -- string -- custom key to use for
+///   deleting the file later, instead of a randomly generated one
 ///
 /// ## Body
 ///
@@ -121,6 +132,7 @@ impl IntoResponse for UploadError {
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Option<Path<String>>,
+    WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
     headers: HeaderMap,
     mut body: BodyStream,
 ) -> Result<impl IntoResponse, UploadError> {
@@ -128,23 +140,7 @@ pub async fn put(
     tracing::Span::current().record("id", &id);
     event!(Level::DEBUG, "generated random ID for upload");
 
-    let (should_guess_mimetype, mimetype) = match headers.get(header::CONTENT_TYPE) {
-        Some(v) => (
-            false,
-            std::str::from_utf8(v.as_bytes())
-                .map_err(|e| UploadError::ParseHeader {
-                    name: header::CONTENT_TYPE.to_string(),
-                    source: anyhow::Error::new(e).context("error converting to string"),
-                })?
-                .parse()
-                .map_err(|e| UploadError::ParseHeader {
-                    name: header::CONTENT_TYPE.to_string(),
-                    source: anyhow::Error::new(e).context("error converting to mimetype"),
-                })?,
-        ),
-        // we will guess this later, default to application/octet-stream for now
-        None => (true, mime::APPLICATION_OCTET_STREAM),
-    };
+    let mimetype = mimetype.into();
 
     let (filename_needs_extension, filename) = if let Some(n) = filename {
         event!(Level::DEBUG, filename = n.0);
@@ -271,26 +267,6 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing file buffer")?;
-
-    if should_guess_mimetype {
-        let span = span!(Level::DEBUG, "guess_mimetype");
-        let _enter = span.enter();
-        event!(
-            Level::DEBUG,
-            "guessing mimetype since it was not already provided"
-        );
-        if let Some(Ok(mt)) =
-            tree_magic_mini::from_filepath(&upload.file_path).map(|m| m.parse::<mime::Mime>())
-        {
-            event!(Level::DEBUG, mimetype = mt.to_string(), "guessed");
-            upload.metadata.mimetype = mt;
-        } else {
-            event!(
-                Level::DEBUG,
-                "error while guessing mimetype; it will not be changed"
-            );
-        }
-    }
 
     if filename_needs_extension {
         let span = span!(Level::DEBUG, "guess_extension");

@@ -41,6 +41,7 @@
 - Fix the mimetype and extension guessing
 
 - Maybe during startup, loop through all uploads and delete expired ones
+- https://github.com/pyrossh/rust-embed/issues/192
 
 ### Admin
 
