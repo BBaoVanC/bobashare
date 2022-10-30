@@ -26,6 +26,7 @@ a:hover {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    min-width: 360px;
 }
 .top > .navbar {
     /* TODO: if width < 480px, make navbar on second line */

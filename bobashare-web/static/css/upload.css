@@ -5,7 +5,7 @@
     gap: 0.5em;
     margin-bottom: 1em;
 }
-.upload-form-right {
+.upload-form-bottom {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -47,16 +47,13 @@
 }
 .upload-file-container > input[type="file"] {
     position: absolute;
-    left: 0;
-    top: 0;
     height: 100%;
     width: 100%;
     z-index: 1;
 
     box-sizing: border-box;
     padding: 2em;
-    text-align: center;
-    /* for some reason this is needed for Chromium */
+    /* for some reason this is needed instead of text-align, but only on Chromium */
     text-align-last: center;
 }
 .upload-file-container > input[type="file"]::file-selector-button {
