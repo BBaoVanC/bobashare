@@ -24,6 +24,7 @@ config = { version = "0.13.2", default-features = false, features = ["toml"] }
 displaydoc = "0.2.3"
 duration-str = { version = "0.4.0", default-features = false }
 futures-util = "0.3.24"
+hex = "0.4.3"
 humansize = "2.1.0"
 hyper = "0.14.20"
 # infer = { version = "0.9.0", default-features = false }
