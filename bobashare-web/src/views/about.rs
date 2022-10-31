@@ -3,9 +3,8 @@ use std::sync::Arc;
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
 
-use super::{ErrorResponse, TemplateState};
+use super::{filters, ErrorResponse, TemplateState};
 use crate::AppState;
-use super::filters;
 
 #[derive(Template)]
 #[template(path = "about.html.jinja")]
