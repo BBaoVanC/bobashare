@@ -26,7 +26,7 @@ use tracing::{event, instrument, Level};
 use url::Url;
 
 use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
-use crate::AppState;
+use crate::{AppState, HIGHLIGHT_CLASS_PREFIX};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -92,8 +92,6 @@ pub enum DisplayType {
 
 /// Maximum file size that will be rendered
 const MAX_DISPLAY_SIZE: u64 = 1024 * 1024; // 1 MiB
-/// Prefix for CSS classes used for [`syntect`] highlighting
-const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
 
 /// Display an upload as HTML
 #[instrument(skip(state))]

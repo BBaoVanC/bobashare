@@ -10,6 +10,9 @@ pub mod api;
 pub mod static_routes;
 pub mod views;
 
+/// Prefix for CSS classes used for [`syntect`] highlighting
+pub const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
+
 /// A struct that contains all the state and config for bobashare
 #[derive(Debug, Clone)]
 pub struct AppState {
