@@ -21,7 +21,7 @@
 {% block main %}
     {% let expiry_human %}
     {% if let Some(e) = expiry_relative %}
-        {% let expiry_human = e.clone()|humanduration %}
+        {% let expiry_human = e|humanduration %}
     {% else %}
         {% let expiry_human = String::from("never") %}
     {% endif %}
@@ -36,7 +36,7 @@
     <div class="upload-titlebar">
         <div class="upload-filename">{{ filename }}</div>
         <div class="upload-titlebar-right">
-            <div class="upload-expiry" title='{{ expiry_exact }}'>expires {{ expiry_human }}</div>
+            <div class="upload-expiry" title='{{ expiry_exact }}'>expires in {{ expiry_human }}</div>
             <div class="upload-size" title='{{ size }} bytes'>{{ size|humansize }}</div>
             {% if let DisplayType::Text{ highlighted: _ } = contents %}
                 <div class="upload-wrap-text-checkbox">

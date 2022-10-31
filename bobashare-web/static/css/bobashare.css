@@ -44,6 +44,15 @@ a:hover {
     color: var(--text-0);
 }
 
+/* Footer formatting */
+footer {
+    text-align: right;
+    font-size: 0.75em;
+}
+footer p {
+    margin: 0;
+}
+
 /* Main content formatting */
 main {
     display: flex;

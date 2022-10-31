@@ -33,6 +33,9 @@ pub struct AppState {
 
     // syntax highlighting
     pub syntax_set: SyntaxSet,
+
+    /// extra text to display in footer
+    pub extra_footer_text: Option<String>,
 }
 
 /// Take the requested expiry, and make sure it's within the maximum expiry.

@@ -3,7 +3,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-    margin-bottom: 1em;
 }
 .upload-form-bottom {
     display: flex;
@@ -73,6 +72,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.5em;
+}
+.uploaded-files:not(:empty) {
+    margin-top: 1em;
 }
 
 .uploaded-files > .upload-file {

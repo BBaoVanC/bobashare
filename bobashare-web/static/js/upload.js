@@ -102,6 +102,7 @@ window.onload = () => {
                 const failTmpl = fileFailTemplate.content.cloneNode(true);
                 failTmpl.querySelector(".upload-filename").innerText = file.name;
                 filesDiv.replaceChild(failTmpl, uploadElem);
+                alert(`upload of ${file.name} failed: ` + req.response.message);
             }
         }
         req.send(file);

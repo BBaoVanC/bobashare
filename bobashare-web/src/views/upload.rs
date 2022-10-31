@@ -19,6 +19,7 @@ pub struct UploadTemplate {
 
 #[instrument(skip(state))]
 pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+    event!(Level::DEBUG, "generating expiry options");
     // TODO: this is horrific
     let mut expiry_options = iter_default_expiries()
         .take_while(|e| {
@@ -38,6 +39,7 @@ pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Er
         .map(|e| (e, e == state.default_expiry))
         .collect();
 
+    event!(Level::DEBUG, "returning upload template");
     Ok(UploadTemplate {
         expiry_options,
         never_expiry_allowed: state.max_expiry.is_none(),

@@ -5,6 +5,11 @@
 - more unit tests
 - integration tests
 
+### Deployment
+
+- Dockerfile
+  - Example compose.yaml
+
 ### Frontend
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
@@ -15,15 +20,21 @@
 - Add embeds for Twitter/Discord
 - Create a favicon
 - Make bobascheme-light
-- Fix the horrors of the expiry dropdown logic in upload/paste pages
 - Make the uploaded files list on upload page persist between reloads
+- Fix the horrors of the expiry dropdown logic in upload/paste pages
 
-- far future: i18n (maybe using https://crates.io/crates/fluent)
+### Maybe
+
+- i18n (maybe using https://crates.io/crates/fluent)
+- animations
+  - such as when a file upload is created and the box appears on the upload page
+  - uploading progress bar
 
 ### Logging
 
 - Add https://docs.rs/console-subscriber/latest/console_subscriber/
 - Instrument main `bobashare` library
+- Make sure there's enough instrumentation in bobashare-web
 
 ### Backend
 

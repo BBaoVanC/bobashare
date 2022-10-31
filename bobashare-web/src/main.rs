@@ -72,7 +72,8 @@ async fn main() -> anyhow::Result<()> {
         .set_default("id_length", 8).unwrap()
         .set_default("default_expiry", "24h").unwrap()
         .set_default("max_expiry", Some("30d")).unwrap()
-        .set_default("max_file_size", 1024 * 1024 * 1024).unwrap(); // 1 GiB
+        .set_default("max_file_size", 1024 * 1024 * 1024).unwrap() // 1 GiB
+        .set_default("extra_footer_text", None::<String>).unwrap();
 
     if let Some(c) = cli.config {
         config = config.add_source(config::File::new(
@@ -130,6 +131,8 @@ async fn main() -> anyhow::Result<()> {
     }
     .map(|d| Duration::from_std(d).unwrap());
     let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
+    let extra_footer_text = config.get("extra_footer_text").unwrap();
+    // let extra_footer_text = config.get_string("extra_footer_text").unwrap();
 
     let state = Arc::new(AppState {
         backend,
@@ -141,6 +144,8 @@ async fn main() -> anyhow::Result<()> {
         max_file_size,
 
         syntax_set: SyntaxSet::load_defaults_newlines(),
+
+        extra_footer_text,
     });
 
     event!(Level::DEBUG,

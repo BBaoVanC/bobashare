@@ -17,7 +17,7 @@
                 <div class="upload-progress"></div>
                 <a class="upload-cancel">Cancel</a>
             </div>
-            <div class="upload-progress-bar" value="0" max="100"></div>
+            <div class="upload-progress-bar"></div>
         </div>
     </template>
     <template id="upload-success-template">
@@ -58,7 +58,7 @@
                 <select id="upload-expiry" name="expiry" required>
                     {% for opt in expiry_options %}
                         {% let value = opt.0.num_seconds() %}
-                        {% let label = opt.0|roughduration %}
+                        {% let label = opt.0|humanduration %}
                         {% let default = opt.1 %}
                         <option value="{{ value }}s" {% if default %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
