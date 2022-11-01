@@ -21,10 +21,13 @@ pub async fn handler(uri: Uri, if_none_match: Option<TypedHeader<IfNoneMatch>>) 
         Some(f) => {
             // TODO: logging
             let sha256 = hex::encode(f.metadata.sha256_hash());
-            if let Some(tag) = if_none_match {
-                let etag = format!("\"{}\"", sha256);
-                if tag.0.precondition_passes(&etag.parse().unwrap()) {
-                    return (StatusCode::NOT_MODIFIED, "").into_response();
+            // TODO: verify that this condition works properly in release
+            if cfg!(not(debug_assertions)) {
+                if let Some(tag) = if_none_match {
+                    let etag = format!("\"{}\"", sha256);
+                    if tag.0.precondition_passes(&etag.parse().unwrap()) {
+                        return (StatusCode::NOT_MODIFIED, "").into_response();
+                    }
                 }
             }
 
