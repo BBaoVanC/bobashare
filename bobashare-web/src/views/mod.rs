@@ -43,6 +43,11 @@ impl From<Arc<AppState>> for TemplateState {
         }
     }
 }
+impl TemplateState {
+    pub fn icon<S: AsRef<str>>(&self, name: S) -> Url {
+        self.base_url.join(&format!("static/svg/fa/{}.svg", name.as_ref())).unwrap()
+    }
+}
 
 #[derive(Template)]
 #[template(path = "error.html.jinja")]

@@ -54,6 +54,9 @@ window.onload = () => {
             req.onreadystatechange = null;
             req.abort();
         }
+        cancelElem.onkeypress = event => {
+            if (event.key === "Enter") cancelElem.click();
+        }
         req.onabort = () => {
             const cancelTmpl = fileCancelledTemplate.content.cloneNode(true);
             cancelTmpl.querySelector(".upload-filename").innerText = file.name;
@@ -98,10 +101,14 @@ window.onload = () => {
                         }
                     }
                 }
+                deleteLink.onkeypress = event => {
+                    if (event.key === "Enter") deleteLink.click();
+                }
             } else {
                 const failTmpl = fileFailTemplate.content.cloneNode(true);
                 failTmpl.querySelector(".upload-filename").innerText = file.name;
                 filesDiv.replaceChild(failTmpl, uploadElem);
+                console.error(`upload of ${file.name} failed`, req);
                 alert(`upload of ${file.name} failed: ` + req.response.message);
             }
         }

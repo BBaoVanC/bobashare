@@ -68,15 +68,19 @@
     cursor: pointer;
 }
 
+/* Upload list */
+.uploads-heading {
+    margin: 1em 0 0 0;
+    font-size: 1.25em;
+}
 .uploaded-files {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-}
-.uploaded-files:not(:empty) {
-    margin-top: 1em;
+    font-size: 0.75em;
 }
 
+/* Uploaded file */
 .uploaded-files > .upload-file {
     padding: 0.5em;
     display: flex;

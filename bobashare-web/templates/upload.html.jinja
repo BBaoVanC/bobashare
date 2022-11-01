@@ -15,7 +15,10 @@
             <div class="upload-filename"></div>
             <div class="upload-progress-right">
                 <div class="upload-progress"></div>
-                <a class="upload-cancel">Cancel</a>
+                <a class="upload-cancel" tabindex="0">
+                    {# <img src='{{ state.icon("xmark-solid") }}' alt="Cancel upload" /> #}
+                    Cancel
+                </a>
             </div>
             <div class="upload-progress-bar"></div>
         </div>
@@ -23,7 +26,10 @@
     <template id="upload-success-template">
         <div class="upload-file success">
             <a class="upload-filename" target="_blank"></a>
-            <a class="upload-delete">Delete</a>
+            <a class="upload-delete" tabindex="0">
+                {# <img src='{{ state.icon("trash-can") }}' alt="Delete upload" /> #}
+                Delete
+            </a>
         </div>
     </template>
     <template id="upload-deleted-template">
@@ -72,5 +78,37 @@
             </div>
         </div>
     </form>
-    <div id="uploaded-files" class="uploaded-files"></div>
+    <h2 class="uploads-heading">Uploads</h2>
+    <div id="uploaded-files" class="uploaded-files">
+        <div class="upload-file in-progress">
+            <div class="upload-filename">in-progress.png</div>
+            <div class="upload-progress-right">
+                <div class="upload-progress">25%</div>
+                <a class="upload-cancel" tabindex="0">
+                    {# <img src='{{ state.icon("xmark-solid") }}' alt="Cancel upload" /> #}
+                    Cancel
+                </a>
+            </div>
+            <div class="upload-progress-bar" style="width: 25%;"></div>
+        </div>
+        <div class="upload-file success">
+            <a class="upload-filename" target="_blank">success.png</a>
+            <a class="upload-delete" tabindex="0">
+                {# <img src='{{ state.icon("trash-can") }}' alt="Delete upload" /> #}
+                Delete
+            </a>
+        </div>
+        <div class="upload-file deleted">
+            <div class="upload-filename">deleted.png</div>
+            <div class="upload-deleted-text">Deleted</div>
+        </div>
+        <div class="upload-file cancelled">
+            <div class="upload-filename">cancelled.png</div>
+            <div class="upload-cancelled-text">Cancelled</div>
+        </div>
+        <div class="upload-file failed">
+            <div class="upload-filename">failed.png</div>
+            <div class="upload-failed-text">Failed</div>
+        </div>
+    </div>
 {% endblock %}

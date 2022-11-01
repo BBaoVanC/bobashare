@@ -59,3 +59,11 @@ main {
     flex-direction: column;
     gap: 0.5em;
 }
+
+/* Icons */
+.icon {
+    width: 1em;
+    height: 1em;
+    margin: 0 0.25em;
+    vertical-align: middle;
+}
