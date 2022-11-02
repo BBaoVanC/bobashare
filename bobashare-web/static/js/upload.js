@@ -13,8 +13,8 @@ window.onload = () => {
     const fileFailTemplate = document.getElementById("upload-fail-template");
 
     const fileInput = document.getElementById("upload-file");
-    const expiryInput = document.getElementById("upload-expiry");
-    // form.addEventListener("submit", event => {
+    const expiryNumInput = document.getElementById("upload-expiry-number");
+    const expiryUnitInput = document.getElementById("upload-expiry-unit");
     form.onsubmit = event => {
         event.preventDefault();
         const file = fileInput.files[0];
@@ -34,7 +34,7 @@ window.onload = () => {
         const req = new XMLHttpRequest();
         req.open("PUT", uploadEndpoint + file.name);
         req.setRequestHeader("Content-Type", file.type || "application/octet-stream");
-        req.setRequestHeader("Bobashare-Expiry", expiryInput.value);
+        req.setRequestHeader("Bobashare-Expiry", expiryNumInput.value + expiryUnitInput.value);
         req.responseType = "json";
         req.upload.onprogress = event => {
             // const progress = (event.loaded / event.total) * 100;

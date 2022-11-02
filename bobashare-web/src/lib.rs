@@ -109,26 +109,3 @@ pub fn clamp_expiry(max_expiry: Option<Duration>, other: Option<Duration>) -> Op
         },
     }
 }
-
-// TODO: document
-pub fn iter_default_expiries() -> impl Iterator<Item = Duration> {
-    [
-        Duration::minutes(5),
-        Duration::minutes(10),
-        Duration::minutes(30),
-        Duration::hours(1),
-        Duration::hours(2),
-        Duration::hours(6),
-        Duration::hours(12),
-        Duration::days(1),
-        Duration::days(2),
-        Duration::weeks(1),
-        Duration::weeks(2),
-        Duration::days(30),
-        Duration::days(60),
-        Duration::days(90),
-        Duration::days(180),
-        Duration::days(365),
-    ]
-    .into_iter()
-}

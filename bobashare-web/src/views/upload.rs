@@ -6,42 +6,85 @@ use chrono::Duration;
 use tracing::{event, instrument, Level};
 
 use super::{filters, ErrorResponse, TemplateState};
-use crate::{iter_default_expiries, AppState};
+use crate::{ AppState};
 
 #[derive(Template)]
 #[template(path = "upload.html.jinja")]
-pub struct UploadTemplate {
+pub struct UploadTemplate<'a> {
     pub state: TemplateState,
-    // duration, default
-    pub expiry_options: Vec<(Duration, bool)>,
+    // TODO: make this iterator and not vec
+    pub expiry_units: Vec<ExpiryUnit<'a>>,
     pub never_expiry_allowed: bool,
+}
+#[derive(Debug, Clone)]
+pub struct ExpiryUnit<'a> {
+    pub name: &'a str,
+    pub value: &'a str,
+    pub default: bool,
+    pub duration: Duration,
+}
+pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
+    [
+        ExpiryUnit {
+            name: "seconds",
+            value: "s",
+            default: false,
+            duration: Duration::seconds(1),
+        },
+        ExpiryUnit {
+            name: "minutes",
+            value: "m",
+            default: false,
+            duration: Duration::minutes(1),
+        },
+        ExpiryUnit {
+            name: "hours",
+            value: "h",
+            default: false,
+            duration: Duration::hours(1),
+        },
+        ExpiryUnit {
+            name: "days",
+            value: "d",
+            default: true,
+            duration: Duration::days(1),
+        },
+        ExpiryUnit {
+            name: "weeks",
+            value: "w",
+            default: false,
+            duration: Duration::days(7),
+        },
+        ExpiryUnit {
+            name: "months",
+            value: "mon",
+            default: false,
+            duration: Duration::days(30),
+        },
+        ExpiryUnit {
+            name: "years",
+            value: "y",
+            default: false,
+            duration: Duration::days(365)
+        },
+    ]
+    .into_iter()
 }
 
 #[instrument(skip(state))]
 pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
     event!(Level::DEBUG, "generating expiry options");
     // TODO: this is horrific
-    let mut expiry_options = iter_default_expiries()
-        .take_while(|e| {
-            if let Some(max) = state.max_expiry {
-                e <= &max
-            } else {
-                true
-            }
-        })
-        .collect::<Vec<Duration>>();
-    expiry_options.push(state.default_expiry);
-    expiry_options.sort();
-    expiry_options.dedup();
-
-    let expiry_options = expiry_options
-        .into_iter()
-        .map(|e| (e, e == state.default_expiry))
-        .collect();
 
     event!(Level::DEBUG, "returning upload template");
     Ok(UploadTemplate {
-        expiry_options,
+        expiry_units: iter_expiry_units().take_while(|e| {
+            if let Some(max) = state.max_expiry {
+                max >= e.duration
+            } else {
+                true
+            }
+        }).collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
         state: state.0.into(),
     })

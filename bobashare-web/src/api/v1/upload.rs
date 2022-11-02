@@ -215,6 +215,7 @@ pub async fn put(
                 )
             };
 
+            // TODO: should we return an error if expiry is too large instead?
             clamp_expiry(state.max_expiry, expiry)
         }
     };

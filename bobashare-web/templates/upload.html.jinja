@@ -15,10 +15,7 @@
             <div class="upload-filename"></div>
             <div class="upload-progress-right">
                 <div class="upload-progress"></div>
-                <a class="upload-cancel" tabindex="0">
-                    {# <img src='{{ state.icon("xmark-solid") }}' alt="Cancel upload" /> #}
-                    Cancel
-                </a>
+                <a class="upload-cancel" tabindex="0">Cancel</a>
             </div>
             <div class="upload-progress-bar"></div>
         </div>
@@ -26,10 +23,7 @@
     <template id="upload-success-template">
         <div class="upload-file success">
             <a class="upload-filename" target="_blank"></a>
-            <a class="upload-delete" tabindex="0">
-                {# <img src='{{ state.icon("trash-can") }}' alt="Delete upload" /> #}
-                Delete
-            </a>
+            <a class="upload-delete" tabindex="0">Delete</a>
         </div>
     </template>
     <template id="upload-deleted-template">
@@ -61,12 +55,10 @@
         <div class="upload-form-bottom">
             <div class="upload-expiry">
                 <label for="upload-expiry">Expires in</label>
-                <select id="upload-expiry" name="expiry" required>
-                    {% for opt in expiry_options %}
-                        {% let value = opt.0.num_seconds() %}
-                        {% let label = opt.0|humanduration %}
-                        {% let default = opt.1 %}
-                        <option value="{{ value }}s" {% if default %}selected{% endif %}>{{ label }}</option>
+                <input type="number" id="upload-expiry-number" value="1" required>
+                <select id="upload-expiry-unit" required>
+                    {% for opt in expiry_units %}
+                        <option value='{{ opt.value }}' {% if opt.default %}selected{% endif %}>{{ opt.name }}</option>
                     {% endfor %}
                     {% if never_expiry_allowed %}
                         <option value="0">Never</option>
@@ -74,7 +66,7 @@
                 </select>
             </div>
             <div class="upload-submit">
-                <input type="submit" value="Create upload">
+                <input type="submit" value="Upload">
             </div>
         </div>
     </form>
@@ -84,19 +76,13 @@
             <div class="upload-filename">in-progress.png</div>
             <div class="upload-progress-right">
                 <div class="upload-progress">25%</div>
-                <a class="upload-cancel" tabindex="0">
-                    {# <img src='{{ state.icon("xmark-solid") }}' alt="Cancel upload" /> #}
-                    Cancel
-                </a>
+                <a class="upload-cancel" tabindex="0">Cancel</a>
             </div>
             <div class="upload-progress-bar" style="width: 25%;"></div>
         </div>
         <div class="upload-file success">
             <a class="upload-filename" target="_blank">success.png</a>
-            <a class="upload-delete" tabindex="0">
-                {# <img src='{{ state.icon("trash-can") }}' alt="Delete upload" /> #}
-                Delete
-            </a>
+            <a class="upload-delete" tabindex="0">Delete</a>
         </div>
         <div class="upload-file deleted">
             <div class="upload-filename">deleted.png</div>
