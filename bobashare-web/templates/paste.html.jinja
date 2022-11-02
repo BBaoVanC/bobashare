@@ -1,0 +1,17 @@
+{% extends "base.html.jinja" %}
+
+{% block title %}Paste{% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/paste.css").unwrap() }}' crossorigin="anonymous">
+    <script
+        id="upload-script-element"
+        data-upload-api-endpoint='{{ state.base_url.join("api/v1/upload/").unwrap() }}'
+        data-delete-api-endpoint='{{ state.base_url.join("api/v1/delete/").unwrap() }}'
+        src='{{ state.base_url.join("static/js/paste.js").unwrap() }}'
+        crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block main %}
+<div></div>
+{# TODO #}
+{% endblock %}

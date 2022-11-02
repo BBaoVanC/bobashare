@@ -45,7 +45,9 @@ impl From<Arc<AppState>> for TemplateState {
 }
 impl TemplateState {
     pub fn icon<S: AsRef<str>>(&self, name: S) -> Url {
-        self.base_url.join(&format!("static/svg/fa/{}.svg", name.as_ref())).unwrap()
+        self.base_url
+            .join(&format!("static/svg/fa/{}.svg", name.as_ref()))
+            .unwrap()
     }
 }
 
@@ -73,7 +75,7 @@ pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
         .route("/about/", get(about::about))
         .route("/", get(upload::upload))
-        // .route("/paste/", get(upload::paste))
+        .route("/paste/", get(upload::paste))
         .route("/:id", get(display::display))
         .route("/raw/:id", get(display::raw))
 }

@@ -8,14 +8,6 @@ use tracing::{event, instrument, Level};
 use super::{filters, ErrorResponse, TemplateState};
 use crate::{ AppState};
 
-#[derive(Template)]
-#[template(path = "upload.html.jinja")]
-pub struct UploadTemplate<'a> {
-    pub state: TemplateState,
-    // TODO: make this iterator and not vec
-    pub expiry_units: Vec<ExpiryUnit<'a>>,
-    pub never_expiry_allowed: bool,
-}
 #[derive(Debug, Clone)]
 pub struct ExpiryUnit<'a> {
     pub name: &'a str,
@@ -71,13 +63,43 @@ pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
     .into_iter()
 }
 
+#[derive(Template)]
+#[template(path = "upload.html.jinja")]
+pub struct UploadTemplate<'a> {
+    pub state: TemplateState,
+    // TODO: make this iterator and not vec
+    pub expiry_units: Vec<ExpiryUnit<'a>>,
+    pub never_expiry_allowed: bool,
+}
+
 #[instrument(skip(state))]
 pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    event!(Level::DEBUG, "generating expiry options");
-    // TODO: this is horrific
-
     event!(Level::DEBUG, "returning upload template");
     Ok(UploadTemplate {
+        expiry_units: iter_expiry_units().take_while(|e| {
+            if let Some(max) = state.max_expiry {
+                max >= e.duration
+            } else {
+                true
+            }
+        }).collect(),
+        // tODO: make never expiry work
+        never_expiry_allowed: state.max_expiry.is_none(),
+        state: state.0.into(),
+    })
+}
+
+#[derive(Template)]
+pub struct PasteTemplate<'a> {
+    pub state: TemplateState,
+    pub expiry_units: Vec<ExpiryUnit<'a>>,
+    pub never_expiry_allowed: bool,
+}
+
+#[instrument(skip(state))]
+pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+    event!(Level::DEBUG, "returning paste template");
+    Ok(PasteTemplate {
         expiry_units: iter_expiry_units().take_while(|e| {
             if let Some(max) = state.max_expiry {
                 max >= e.duration
