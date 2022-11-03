@@ -90,6 +90,7 @@ pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Er
 }
 
 #[derive(Template)]
+#[template(path = "paste.html.jinja")]
 pub struct PasteTemplate<'a> {
     pub state: TemplateState,
     pub expiry_units: Vec<ExpiryUnit<'a>>,
