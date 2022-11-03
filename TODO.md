@@ -1,9 +1,11 @@
 # TODO
 
-## What needs to be done
+## Testing
 
 - more unit tests
 - integration tests
+- make tests to run JS/CSS linters and compatibility checkers
+- run JS/HTML/CSS format checkers
 
 ### Deployment
 
