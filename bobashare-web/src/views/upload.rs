@@ -83,7 +83,7 @@ pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Er
                 true
             }
         }).collect(),
-        // tODO: make never expiry work
+        // TODO: make never expiry work
         never_expiry_allowed: state.max_expiry.is_none(),
         state: state.0.into(),
     })
