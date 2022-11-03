@@ -7,8 +7,8 @@
 
 ### Deployment
 
-- Dockerfile
-  - Example compose.yaml
+- Graceful shutdown with SIGTERM
+- Make `docker stop` work
 
 ### Frontend
 
