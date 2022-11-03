@@ -20,6 +20,7 @@
 - Create a favicon
 - Make bobascheme-light
 - Make the uploaded files list on upload page persist between reloads
+- Support changing default expiry unit (and guess intelligently too if not set)
 
 #### Maybe
 
