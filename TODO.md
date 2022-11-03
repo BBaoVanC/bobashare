@@ -15,15 +15,11 @@
 ### Frontend
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
-- Need a paste page (to easily paste & upload plaintext/code)
 - API documentation page
-- Set proper headers for `/static/` files
-  - maybe read file metadata to find modified date
 - Add embeds for Twitter/Discord
 - Create a favicon
 - Make bobascheme-light
 - Make the uploaded files list on upload page persist between reloads
-- Fix the horrors of the expiry dropdown logic in upload/paste pages
 
 #### Maybe
 
@@ -37,7 +33,7 @@
 ![light](https://cdn.discordapp.com/attachments/1018368926494769314/1036779113245057064/Desktop_-_1.png)
 ![dark](https://cdn.discordapp.com/attachments/1018368926494769314/1036779113597382779/Desktop_-_2.png)
 
-- find better way to show selected upload file
+- find better way to show selected upload filename
 - use fontawesome icons (maybe svgs)
   - icon to show that successful upload filename is a link
 - brighter/more contrast in-progress & successful upload background
