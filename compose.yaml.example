@@ -2,6 +2,8 @@ services:
   bobashare:
     build: .
     restart: always
+    environment:
+      - APP_BASE_URL=http://localhost:3000/
     volumes:
       - ./storage:/data
     ports:
