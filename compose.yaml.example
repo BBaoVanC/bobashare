@@ -1,6 +1,7 @@
 services:
   bobashare:
     build: .
+    restart: always
     volumes:
       - ./storage:/data
     ports:
