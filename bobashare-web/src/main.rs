@@ -17,6 +17,7 @@ use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
 use syntect::parsing::SyntaxSet;
+use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
@@ -195,8 +196,34 @@ async fn main() -> anyhow::Result<()> {
         .unwrap()
         .parse()
         .context("error parsing `listen_addr`")?;
-    event!(Level::INFO, "Listening on http://{}", listen_addr);
-    axum::Server::bind(&listen_addr).serve(app).await?;
+    event!(Level::INFO, "listening on http://{}", listen_addr);
+    axum::Server::bind(&listen_addr)
+        .serve(app)
+        .with_graceful_shutdown(async {
+            let ctrl_c = async {
+                signal::ctrl_c()
+                    .await
+                    .expect("failed to install ctrl-c handler")
+            };
+
+            #[cfg(unix)]
+            let terminate = async {
+                signal::unix::signal(signal::unix::SignalKind::terminate())
+                    .expect("failed to install SIGTERM handler")
+                    .recv()
+                    .await;
+            };
+            #[cfg(not_unix)]
+            let terminate = std::future::pending::<()>();
+
+            tokio::select! {
+                _ = ctrl_c => {},
+                _ = terminate => {},
+            }
+
+            event!(Level::INFO, "signal received, shutting down");
+        })
+        .await?;
 
     Ok(())
 }
