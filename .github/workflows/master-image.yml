@@ -18,6 +18,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v3
         with:
-          tags: ghcr.io/BBaoVanC/bobashare:master
+          tags: ghcr.io/bbaovanc/bobashare:master
           push: true
 
