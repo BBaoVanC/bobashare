@@ -68,6 +68,7 @@ window.onload = () => {
             }
 
             if (req.status >= 200 && req.status < 300) {
+                fileInput.value = null;
                 const successTmpl = fileSuccessTemplate.content.cloneNode(true);
                 successTmpl.querySelector(".upload-filename").innerText = file.name;
                 successTmpl.querySelector(".upload-filename").href = req.response.url;
