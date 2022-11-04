@@ -9,23 +9,36 @@
     flex-direction: row;
     justify-content: space-between;
 }
+.paste-expiry > input[type="number"],
 .upload-expiry > input[type="number"] {
     width: 3em;
 }
-.upload-expiry > select,
-.upload-expiry > input,
-.upload-submit > input {
+#paste-textarea,
+.paste-form select,
+.paste-form input:not([type="file"]),
+.upload-form select,
+.upload-form input:not([type="file"]) {
     background-color: var(--background-1);
     color: var(--text-0);
     padding: 0.25em;
     border-radius: 0.25em;
     border: 0.125em solid var(--background-3);
 }
-.upload-expiry > select:hover,
-.upload-expiry > input:hover,
-.upload-submit > input:hover {
+#paste-textarea:hover,
+.paste-form select:hover,
+.paste-form input:hover:not([type="file"]),
+.upload-form select:hover,
+.upload-form input:hover:not([type="file"]) {
     background-color: var(--background-2);
 }
+#paste-textarea:active,
+.paste-form select:active,
+.paste-form input:active:not([type="file"]),
+.upload-form select:active,
+.upload-form input:active:not([type="file"]) {
+    background-color: var(--background-3);
+}
+.paste-submit > input:hover,
 .upload-submit > input:hover {
     cursor: pointer;
 }
@@ -65,6 +78,36 @@
 }
 .upload-file-container > input[type="file"]:hover {
     cursor: pointer;
+}
+
+/* Paste form */
+.paste-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+}
+.paste-form > .paste-info {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.25em;
+    justify-content: space-between;
+    background-color: var(--background-1);
+    gap: 0.5em;
+}
+.paste-info > .paste-info-right {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25em;
+}
+.paste-filename > #paste-extension {
+    width: 4em;
+}
+#paste-textarea {
+    box-sizing: border-box;
+    /* TODO: make this wider, but only if not larger than screen */
+    width: 100%;
+    height: 90vh;
 }
 
 
