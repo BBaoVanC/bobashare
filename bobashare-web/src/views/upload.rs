@@ -6,7 +6,7 @@ use chrono::Duration;
 use tracing::{event, instrument, Level};
 
 use super::{filters, ErrorResponse, TemplateState};
-use crate::{ AppState};
+use crate::AppState;
 
 #[derive(Debug, Clone)]
 pub struct ExpiryUnit<'a> {
@@ -57,7 +57,7 @@ pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
             name: "years",
             value: "y",
             default: false,
-            duration: Duration::days(365)
+            duration: Duration::days(365),
         },
     ]
     .into_iter()
@@ -76,13 +76,15 @@ pub struct UploadTemplate<'a> {
 pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
     event!(Level::DEBUG, "returning upload template");
     Ok(UploadTemplate {
-        expiry_units: iter_expiry_units().take_while(|e| {
-            if let Some(max) = state.max_expiry {
-                max >= e.duration
-            } else {
-                true
-            }
-        }).collect(),
+        expiry_units: iter_expiry_units()
+            .take_while(|e| {
+                if let Some(max) = state.max_expiry {
+                    max >= e.duration
+                } else {
+                    true
+                }
+            })
+            .collect(),
         // TODO: make never expiry work
         never_expiry_allowed: state.max_expiry.is_none(),
         state: state.0.into(),
@@ -101,13 +103,15 @@ pub struct PasteTemplate<'a> {
 pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
     event!(Level::DEBUG, "returning paste template");
     Ok(PasteTemplate {
-        expiry_units: iter_expiry_units().take_while(|e| {
-            if let Some(max) = state.max_expiry {
-                max >= e.duration
-            } else {
-                true
-            }
-        }).collect(),
+        expiry_units: iter_expiry_units()
+            .take_while(|e| {
+                if let Some(max) = state.max_expiry {
+                    max >= e.duration
+                } else {
+                    true
+                }
+            })
+            .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
         state: state.0.into(),
     })

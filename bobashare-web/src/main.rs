@@ -17,7 +17,6 @@ use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
 use syntect::parsing::SyntaxSet;
-use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,

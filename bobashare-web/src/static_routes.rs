@@ -1,5 +1,5 @@
 /// Handler to serve static files
-use axum::{response::IntoResponse, TypedHeader, headers::IfNoneMatch};
+use axum::{headers::IfNoneMatch, response::IntoResponse, TypedHeader};
 use hyper::{header, StatusCode, Uri};
 use rust_embed::RustEmbed;
 use tracing::{event, instrument, Level};
@@ -9,7 +9,10 @@ use tracing::{event, instrument, Level};
 struct Asset;
 
 #[instrument]
-pub async fn handler(uri: Uri, if_none_match: Option<TypedHeader<IfNoneMatch>>) -> impl IntoResponse {
+pub async fn handler(
+    uri: Uri,
+    if_none_match: Option<TypedHeader<IfNoneMatch>>,
+) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');
     event!(Level::DEBUG, ?path);
 
@@ -31,7 +34,7 @@ pub async fn handler(uri: Uri, if_none_match: Option<TypedHeader<IfNoneMatch>>) 
                 }
             }
 
-            let mimetype = mime_db::lookup(&path)
+            let mimetype = mime_db::lookup(path)
                 .map_or(mime::APPLICATION_OCTET_STREAM, |m| m.parse().unwrap());
             event!(Level::DEBUG, ?sha256, ?mimetype);
             (
