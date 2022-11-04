@@ -1,4 +1,6 @@
 window.onload = () => {
+    wrapTextHandler();
+
     const deleteScriptElem = document.getElementById("delete-script-element");
     const uploadId = deleteScriptElem.getAttribute("data-upload-id");
 
@@ -26,4 +28,26 @@ window.onload = () => {
         }
         titlebarRight.appendChild(tmpl);
     }
+}
+
+const wrapTextHandler = () => {
+    const checkbox = document.getElementById("wrap-text-checkbox");
+    if (checkbox == null) {
+        return;
+    }
+
+    const textarea = document.getElementById("upload-display-text")
+    const updateWrapText = () => {
+        if (checkbox.checked) {
+            textarea.classList.add("wrap-text");
+        } else {
+            textarea.classList.remove("wrap-text");
+        }
+    }
+    checkbox.addEventListener('change', () => {
+        updateWrapText();
+    });
+
+    // update on page load
+    updateWrapText();
 }

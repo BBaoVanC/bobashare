@@ -1773,20 +1773,17 @@ checksum = "20518fe4a4c9acf048008599e464deb21beeae3d3578418951a189c235a7a9a8"
 [[package]]
 name = "syntect"
 version = "5.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6c454c27d9d7d9a84c7803aaa3c50cd088d2906fe3c6e42da3209aa623576a8"
+source = "git+https://github.com/BBaoVanC/syntect?branch=fix-underline-css#a5ae4ec69b519e12de9587be88ebb7d5ea1ca802"
 dependencies = [
  "bincode",
  "bitflags",
  "flate2",
  "fnv",
- "lazy_static",
  "once_cell",
  "onig",
  "plist",
  "regex-syntax",
  "serde",
- "serde_derive",
  "serde_json",
  "thiserror",
  "walkdir",

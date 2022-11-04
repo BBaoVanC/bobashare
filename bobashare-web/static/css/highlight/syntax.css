@@ -112,7 +112,7 @@ font-weight: bold;
  color: #89ddff;
 }
 .hl-*url*, .hl-*link*, .hl-*uri* {
-font-style: underline;
+text-decoration: underline;
 }
 .hl-tag.hl-decorator.hl-js .hl-entity.hl-name.hl-tag.hl-js, .hl-tag.hl-decorator.hl-js .hl-punctuation.hl-definition.hl-tag.hl-js {
  color: #82aaff;
@@ -144,14 +144,14 @@ font-weight: bold;
 font-weight: bold;
 }
 .hl-markup.hl-underline {
-font-style: underline;
+text-decoration: underline;
 }
 .hl-markup.hl-quote {
 font-style: italic;
 }
 .hl-string.hl-other.hl-link.hl-title.hl-markdown {
  color: #3a94fb;
-font-style: underline;
+text-decoration: underline;
 }
 .hl-markup.hl-underline.hl-link.hl-markdown, .hl-markup.hl-underline.hl-link.hl-image.hl-markdown {
  color: #167a42;
