@@ -13,7 +13,16 @@
     </head>
 
     <body>
-        {% include "partials/top.html.jinja" %}
+        <div class="top">
+            <header>
+                <a href='{{ state.base_url }}'>bobashare</a>
+            </header>
+            <nav class="navbar">
+                <a class="navbar-item" href='{{ state.base_url.join("about/").unwrap() }}'>About</a>
+                <a class="navbar-item" href='{{ state.base_url }}'>Upload</a>
+                <a class="navbar-item" href='{{ state.base_url.join("paste/").unwrap() }}'>Paste</a>
+            </nav>
+        </div>
 
         <main>
             {% block main %}{% endblock %}
@@ -21,6 +30,17 @@
     </body>
 
     <footer>
-        {% include "partials/footer.html.jinja" %}
+        <p>
+            Limits: {{ state.max_file_size|humansize }} file size,
+            {% if let Some(e) = state.max_expiry %}
+                <span title='{{ e.num_seconds() }} seconds'>{{ e|humanduration }}</span> expiry
+            {% endif %}
+        </p>
+        {% if let Some(s) = state.extra_footer_text %}
+            <p>{{ s|safe }}</p>
+        {% endif %}
+        <p>
+            <a href="https://github.com/BBaoVanC/bobashare" target="_blank">bobashare</a>
+        </p>
     </footer>
 </html>

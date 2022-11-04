@@ -7,11 +7,6 @@
 - make tests to run JS/CSS linters and compatibility checkers
 - run JS/HTML/CSS format checkers
 
-### Deployment
-
-- Graceful shutdown with SIGTERM
-- Make `docker stop` work
-
 ### Frontend
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
