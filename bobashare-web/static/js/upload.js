@@ -17,8 +17,6 @@ window.onload = () => {
     const expiryUnitInput = document.getElementById("upload-expiry-unit");
     form.onsubmit = event => {
         event.preventDefault();
-        fileInput.value = null;
-
         const file = fileInput.files[0];
 
         const tmpl = fileProgressTemplate.content.cloneNode(true);
@@ -115,5 +113,6 @@ window.onload = () => {
             }
         }
         req.send(file);
+        fileInput.value = null;
     }
 }
