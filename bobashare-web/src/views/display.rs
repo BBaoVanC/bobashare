@@ -11,6 +11,7 @@ use axum::{
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
+use comrak::{ComrakPlugins, markdown_to_html_with_plugins, ComrakOptions};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
@@ -83,6 +84,7 @@ pub struct DisplayTemplate {
 #[derive(Debug)]
 pub enum DisplayType {
     Text { highlighted: String },
+    Markdown { highlighted: String, displayed: String },
     Image,
     Video,
     Audio,
@@ -125,7 +127,7 @@ pub async fn display(
     let contents = {
         let mimetype = upload.metadata.mimetype.clone();
         match (mimetype.type_(), mimetype.subtype()) {
-            (mime::TEXT, _) => {
+            (mime::TEXT, _) | (mime::APPLICATION, mime::JSON) => {
                 if size > MAX_DISPLAY_SIZE {
                     DisplayType::TooLarge
                 } else {
@@ -172,7 +174,16 @@ pub async fn display(
                         }
                         generator.finalize()
                     };
-                    DisplayType::Text { highlighted }
+
+                    if extension.eq_ignore_ascii_case("md") {
+                        let options = ComrakOptions::default();
+                        let mut plugins = ComrakPlugins::default();
+                        // plugins.render.codefence_syntax_highlighter = Some();
+                        let displayed = markdown_to_html_with_plugins(&contents, &options, &plugins);
+                        DisplayType::Markdown{ highlighted, displayed }
+                    } else {
+                        DisplayType::Text { highlighted }
+                    }
                 }
             }
             (mime::IMAGE, _) => DisplayType::Image,

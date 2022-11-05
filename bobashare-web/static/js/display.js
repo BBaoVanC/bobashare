@@ -1,5 +1,6 @@
 window.onload = () => {
     wrapTextHandler();
+    markdownPreviewHandler();
 
     const deleteScriptElem = document.getElementById("delete-script-element");
     const uploadId = deleteScriptElem.getAttribute("data-upload-id");
@@ -50,4 +51,25 @@ const wrapTextHandler = () => {
 
     // update on page load
     updateWrapText();
+}
+
+const markdownPreviewHandler = () => {
+    const markdownContainer = document.querySelector(".upload-display-markdown-container");
+    if (markdownContainer == null) {
+        return;
+    }
+
+    const renderedTab = document.getElementById("markdown-tab-rendered");
+    const sourceTab = document.getElementById("markdown-tab-source");
+
+    renderedTab.onclick = () => {
+        renderedTab.classList.add("active");
+        sourceTab.classList.remove("active");
+        markdownContainer.classList.add("rendered");
+    }
+    sourceTab.onclick = () => {
+        sourceTab.classList.add("active");
+        renderedTab.classList.remove("active");
+        markdownContainer.classList.remove("rendered");
+    }
 }

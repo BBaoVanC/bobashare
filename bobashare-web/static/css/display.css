@@ -17,11 +17,11 @@
 }
 
 /* Wrap text checkbox */
-.upload-content-container > .upload-display-text pre {
+.upload-display-text pre {
     background: var(--background-0);
     overflow: auto;
 }
-.upload-content-container > .upload-display-text.wrap-text pre {
+.upload-display-text.wrap-text pre {
     word-wrap: break-word;
     white-space: pre-wrap;
 }
@@ -30,23 +30,59 @@
 .upload-content-container {
     background-color: var(--background-1);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
 }
-.upload-content-container > .upload-content {
+.upload-content-container .upload-content {
     display: inline-block;
     margin: 0 auto;
     padding: 0.5em;
     overflow: hidden;
 }
-.upload-content-container > .upload-display-image img,
-.upload-content-container > .upload-display-video video {
+.upload-content-container .upload-display-image img,
+.upload-content-container .upload-display-video video {
     /* TODO: should a maximum height be set so it's not taller than the entire window (for tall images) */
     max-width: 100%;
 }
-.upload-content-container > .upload-display-text > pre {
+.upload-content-container .upload-display-text > pre {
     margin: 0;
     padding: 0.5em;
 }
 
-/* TODO: FIT IMAGE TO SCREEN */
+/* Markdown */
+.upload-display-markdown {
+    max-width: 900px;
+}
+
+/* Markdown tabs */
+.markdown-toggle-tabs {
+    background-color: var(--background-0);
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    box-sizing: border-box;
+    width: 100%;
+}
+.markdown-toggle-tabs .markdown-tab {
+    padding: 0.5em 1em;
+}
+.markdown-toggle-tabs .markdown-tab.active {
+    background-color: var(--background-1);
+}
+.markdown-toggle-tabs .markdown-tab:hover {
+    cursor: pointer;
+    background-color: var(--background-2);
+}
+.upload-display-markdown-container:not(.rendered) > .upload-display-markdown {
+    display: none;
+}
+.upload-display-markdown-container:not(.rendered) > .upload-display-text {
+    display: block;
+}
+.upload-display-markdown-container.rendered > .upload-display-markdown {
+    display: block;
+}
+.upload-display-markdown-container.rendered > .upload-display-text {
+    display: none;
+}
