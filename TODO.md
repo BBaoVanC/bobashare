@@ -11,7 +11,6 @@
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
 - API documentation page
-- Add embeds for Twitter/Discord
 - Create a favicon
 - Make bobascheme-light
 - Make the uploaded files list on upload page persist between reloads
@@ -54,6 +53,7 @@
 
 - Maybe during startup, loop through all uploads and delete expired ones
 - https://github.com/pyrossh/rust-embed/issues/192
+- Grafana/Prometheus exporter
 
 ### Admin
 

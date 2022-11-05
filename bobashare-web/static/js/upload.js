@@ -2,6 +2,7 @@ window.onload = () => {
     const uploadScriptElem = document.getElementById("upload-script-element");
     const uploadEndpoint = uploadScriptElem.getAttribute("data-upload-api-endpoint");
     const deleteEndpoint = uploadScriptElem.getAttribute("data-delete-api-endpoint");
+    const infoEndpoint = uploadScriptElem.getAttribute("data-info-api-endpoint");
 
     const form = document.getElementById("upload-form");
     const filesDiv = document.getElementById("uploaded-files");
@@ -11,10 +12,67 @@ window.onload = () => {
     const fileDeletedTemplate = document.getElementById("upload-deleted-template");
     const fileCancelledTemplate = document.getElementById("upload-cancelled-template");
     const fileFailTemplate = document.getElementById("upload-fail-template");
+    const filePlaceholderTemplate = document.getElementById("upload-placeholder-template");
 
     const fileInput = document.getElementById("upload-file");
     const expiryNumInput = document.getElementById("upload-expiry-number");
     const expiryUnitInput = document.getElementById("upload-expiry-unit");
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const deleteKey = localStorage.getItem(key);
+        const id = key.replace(/-delete-key$/, "");
+        const tmpl = filePlaceholderTemplate.content.cloneNode(true);
+        tmpl.querySelector(".upload-id").innerText = id;
+        filesDiv.appendChild(tmpl);
+        const placeholderElem = filesDiv.lastElementChild;
+
+        const req = new XMLHttpRequest();
+        req.open("GET", infoEndpoint + id);
+        req.responseType = "json";
+        req.onreadystatechange = () => {
+            if (req.readyState != XMLHttpRequest.DONE) {
+                return;
+            }
+            if (req.status == 404) {
+                localStorage.removeItem(key);
+                placeholderElem.remove();
+                return;
+            }
+            if (req.status >= 200 && req.status < 300) {
+                const tmpl = fileSuccessTemplate.content.cloneNode(true);
+                const filename = req.response.filename;
+                tmpl.querySelector(".upload-filename").innerText = filename;
+                tmpl.querySelector(".upload-filename").href = req.response.url;
+                tmpl.querySelector(".upload-delete").onclick = () => {
+                    // TODO: deduplicate this code
+                    const req = new XMLHttpRequest();
+                    req.open("DELETE", deleteEndpoint + id);
+                    req.onreadystatechange = () => {
+                        if (req.readyState !== XMLHttpRequest.DONE) {
+                            return;
+                        }
+                        if (req.status >= 200 && req.status < 300) {
+                            const deletedTmpl = fileDeletedTemplate.content.cloneNode(true);
+                            deletedTmpl.querySelector(".upload-filename").innerText = filename;
+                            console.log("successElem", successElem);
+                            filesDiv.replaceChild(deletedTmpl, successElem);
+                            localStorage.removeItem(key);
+                        } else {
+                            console.error(`delete of ${id} failed`, req);
+                            alert(`delete of ${id} failed: ` + req.responseText);
+                        }
+                    }
+                    req.send(deleteKey);
+                }
+                filesDiv.replaceChild(tmpl, placeholderElem);
+                // TODO: this isnt working
+                const successElem = filesDiv.lastElementChild;
+            }
+        }
+        req.send();
+    }
+
     form.onsubmit = event => {
         event.preventDefault();
         const file = fileInput.files[0];
@@ -86,7 +144,6 @@ window.onload = () => {
                 deleteLink.onclick = () => {
                     const req = new XMLHttpRequest();
                     req.open("DELETE", deleteEndpoint + id);
-                    req.send(deleteKey);
                     req.onreadystatechange = () => {
                         if (req.readyState !== XMLHttpRequest.DONE) {
                             return;
@@ -100,6 +157,7 @@ window.onload = () => {
                             alert(`delete of ${id} failed: ` + req.responseText);
                         }
                     }
+                    req.send(deleteKey);
                 }
                 deleteLink.onkeypress = event => {
                     if (event.key === "Enter") deleteLink.click();
