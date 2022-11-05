@@ -2,6 +2,9 @@
 
 {% block title %}{{ code.as_u16() }}{% if let Some(reason) = code.canonical_reason() %} {{ reason }}{% endif %}{% endblock %}
 {% block head %}
+    <meta property="og:title" content='{{ code.as_u16() }}{% if let Some(reason) = code.canonical_reason() %} {{ reason }}{% endif %}'>
+    <meta name="twitter:title" content='{{ code.as_u16() }}{% if let Some(reason) = code.canonical_reason() %} {{ reason }}{% endif %}'>
+
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/error.css").unwrap() }}' crossorigin="anonymous">
 {% endblock %}
 

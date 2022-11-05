@@ -2,6 +2,32 @@
 
 {% block title %}{{ filename }}{% endblock %}
 {% block head %}
+    <meta name="robots" content="noindex">
+
+    <meta property="og:title" content='{{ filename }} ({{ size|humansize }})'>
+    <meta name="twitter:title" content='{{ filename }} ({{ size|humansize }})'>
+
+    {% match contents %}
+        {% when DisplayType::Image %}
+            <meta property="og:image" content='{{ raw_url }}'>
+            <meta property="og:image:type" content='{{ mimetype }}'>
+            <meta name="twitter:image" content='{{ raw_url }}'>
+            <meta name="twitter:card" content="summary_large_image">
+        {% when DisplayType::Video %}
+            {# <meta property="og:type" content="video.other"> #}
+            <meta property="og:video" content='{{ raw_url }}'>
+            <meta property="og:video:type" content='{{ mimetype }}'>
+            <meta name="twitter:card" content="player">
+            <meta name="twitter:player" content='{{ raw_url }}'>
+        {% when DisplayType::Audio %}
+            <meta property="og:audio" content='{{ raw_url }}'>
+            <meta property="og:audio:type" content='{{ mimetype }}'>
+            <meta name="twitter:card" content="player">
+            <meta name="twitter:player" content='{{ raw_url }}'>
+        {% else %}
+            <meta property="og:type" content="website">
+    {% endmatch %}
+
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/display.css").unwrap() }}' crossorigin="anonymous">
     {% if let DisplayType::Text{ highlighted: _ } = contents %}
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/highlight/syntax.css").unwrap() }}' crossorigin="anonymous">
@@ -68,11 +94,12 @@
                         <img src='{{ raw_url }}' alt='{{ filename }}'>
                     </a>
                 </div>
-            {% when DisplayType::Video with (mimetype) %}
+            {% when DisplayType::Video %}
                 <div class="upload-content upload-display-video">
                     <video controls preload="metadata">
                         <source src='{{ raw_url }}' type='{{ mimetype }}'>
                         Your browser does not support the video tag.
+                        <a href='{{ download_url }}'>Download it instead</a>.
                     </video>
                 </div>
             {% when DisplayType::Audio %}

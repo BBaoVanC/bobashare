@@ -2,6 +2,9 @@
 
 {% block title %}Paste{% endblock %}
 {% block head %}
+    <meta property="og:title" content="Paste">
+    <meta name="twitter:title" content="Paste">
+
     <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/upload.css").unwrap() }}' crossorigin="anonymous">
     <script
         id="paste-script-element"
@@ -17,7 +20,7 @@
             <div class="paste-filename">
                 <input type="text" id="paste-filename" placeholder="filename" required>
                 .
-                <input type="text" id="paste-extension" placeholder="txt" required>
+                <input type="text" id="paste-extension" value="txt" required>
             </div>
             <div class="paste-info-right">
                 <div class="paste-expiry">

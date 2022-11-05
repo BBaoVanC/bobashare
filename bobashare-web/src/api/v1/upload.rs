@@ -148,8 +148,9 @@ pub async fn put(
     // can rely on it here
     //
     // also note that hyper seems to intercept the Content-Length header and return
-    // its own empty response instead of using WithRejection here TODO: test
-    // edge cases
+    // its own empty response instead of using WithRejection here
+    //
+    // TODO: test edge cases
     if content_length.0 > state.max_file_size {
         event!(
             Level::INFO,

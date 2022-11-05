@@ -84,7 +84,7 @@ pub struct DisplayTemplate {
 pub enum DisplayType {
     Text { highlighted: String },
     Image,
-    Video(Mime),
+    Video,
     Audio,
     Other,
     TooLarge,
@@ -176,7 +176,7 @@ pub async fn display(
                 }
             }
             (mime::IMAGE, _) => DisplayType::Image,
-            (mime::VIDEO, _) => DisplayType::Video(mimetype),
+            (mime::VIDEO, _) => DisplayType::Video,
             (mime::AUDIO, _) => DisplayType::Audio,
             (_, _) => DisplayType::Other,
         }
