@@ -127,7 +127,7 @@
                     <video controls preload="metadata">
                         <source src='{{ raw_url }}' type='{{ mimetype }}'>
                         Your browser does not support the video tag.
-                        <a href='{{ download_url }}'>Download it instead</a>.
+                        <a href='{{ download_url }}'>Download</a> it instead.
                     </video>
                 </div>
             {% when DisplayType::Audio %}
@@ -135,9 +135,16 @@
                     <audio controls preload="metadata" src='{{ raw_url }}'>
                         <a>
                             Your browser does not support the audio tag;
-                            <a href='{{ raw_url }}'>download</a> the file instead.
+                            <a href='{{ download_url }}'>Download</a> it instead.
                         </a>
                     </audio>
+                </div>
+            {% when DisplayType::Pdf %}
+                <div class="upload-content upload-display-pdf">
+                    <object data='{{ raw_url }}' type='{{ mimetype }}'>
+                        Your browser does not support previewing PDFs;
+                        <a href='{{ download_url }}'>Download</a> it instead.
+                    </object>
                 </div>
         {% endmatch %}
     </div>

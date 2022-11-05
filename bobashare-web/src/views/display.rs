@@ -88,6 +88,7 @@ pub enum DisplayType {
     Image,
     Video,
     Audio,
+    Pdf,
     Other,
     TooLarge,
 }
@@ -189,6 +190,7 @@ pub async fn display(
             (mime::IMAGE, _) => DisplayType::Image,
             (mime::VIDEO, _) => DisplayType::Video,
             (mime::AUDIO, _) => DisplayType::Audio,
+            (mime::APPLICATION, mime::PDF) => DisplayType::Pdf,
             (_, _) => DisplayType::Other,
         }
     };

@@ -49,6 +49,15 @@
     padding: 0.5em;
 }
 
+.upload-display-pdf,
+.upload-display-pdf > object {
+    box-sizing: border-box;
+    width: 100%;
+}
+.upload-display-pdf > object {
+    height: 90vh;
+}
+
 /* Markdown */
 .upload-display-markdown {
     max-width: 900px;
