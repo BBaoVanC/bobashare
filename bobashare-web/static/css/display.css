@@ -37,9 +37,10 @@
     display: inline-block;
     margin: 0 auto;
     padding: 0.5em;
+    overflow: hidden;
 }
 .upload-content-container > .upload-display-image img,
-.upload-content-container > .upload-display-image video {
+.upload-content-container > .upload-display-video video {
     /* TODO: should a maximum height be set so it's not taller than the entire window (for tall images) */
     max-width: 100%;
 }
