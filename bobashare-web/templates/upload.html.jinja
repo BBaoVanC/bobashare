@@ -10,7 +10,6 @@
         id="upload-script-element"
         data-upload-api-endpoint='{{ state.base_url.join("api/v1/upload/").unwrap() }}'
         data-delete-api-endpoint='{{ state.base_url.join("api/v1/delete/").unwrap() }}'
-        data-info-api-endpoint='{{ state.base_url.join("api/v1/info/").unwrap() }}'
         src='{{ state.base_url.join("static/js/upload.js").unwrap() }}'
         crossorigin="anonymous"></script>
 
@@ -46,14 +45,6 @@
         <div class="upload-file failed">
             <div class="upload-filename"></div>
             <div class="upload-failed-text">Failed</div>
-        </div>
-    </template>
-    <template id="upload-placeholder-template">
-        <div class="upload-file upload-placeholder">
-            <div class="upload-id"></div>
-            <div class="upload-placeholder-text">
-                Checking upload info...
-            </div>
         </div>
     </template>
 {% endblock %}
