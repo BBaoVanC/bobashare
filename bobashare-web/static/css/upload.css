@@ -46,7 +46,6 @@
 /* Form file input */
 .upload-file-container {
     position: relative;
-    min-width: 360px;
     height: 180px;
     background-color: var(--background-1);
     padding: 0.5em;
@@ -61,6 +60,9 @@
 }
 .upload-file-container:hover {
     background-color: var(--background-2);
+}
+.upload-file-container:active {
+    background-color: var(--background-3);
 }
 .upload-file-container > input[type="file"] {
     position: absolute;
@@ -85,6 +87,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.25em;
+    /* horizontal margin is 1em on each side */
+    min-width: min(720px, var(--max-vw));
 }
 .paste-form > .paste-info {
     display: flex;
@@ -103,7 +107,10 @@
 .paste-filename > #paste-extension {
     width: 4em;
 }
-#paste-textarea {
+.paste-filename > #paste-filename {
+    max-width: 12em;
+}
+.paste-content > #paste-textarea {
     box-sizing: border-box;
     /* TODO: make this wider, but only if not larger than screen */
     width: 100%;

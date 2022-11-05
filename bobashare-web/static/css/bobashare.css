@@ -1,3 +1,8 @@
+:root {
+    /* horizontal margin is 1em on each side */
+    --max-vw: 100vw - 2em;
+}
+
 /* Main document formatting */
 html {
     margin: 0 1em;
@@ -26,14 +31,16 @@ a:hover {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    min-width: 360px;
+    flex-wrap: wrap;
+    column-gap: 1em;
+    /* horizontal margin is 1em on each side */
+    min-width: min(360px, var(--max-vw));
 }
 .top > .navbar {
-    /* TODO: if width < 480px, make navbar on second line */
     display: flex;
     flex-direction: row;
     gap: 1em;
-    /* for some reason it looks misaligned without this */
+    /* for some reason it looks misaligned vertically without this */
     margin: auto 0;
 }
 .top > header {
