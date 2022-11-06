@@ -4,7 +4,7 @@ window.onload = () => {
     const deleteEndpoint = uploadScriptElem.getAttribute("data-delete-api-endpoint");
 
     const form = document.getElementById("upload-form");
-    const filesDiv = document.getElementById("uploaded-files");
+    const filesDiv = document.getElementById("uploads-container");
 
     const fileProgressTemplate = document.getElementById("upload-progress-template");
     const fileSuccessTemplate = document.getElementById("upload-success-template");
@@ -15,6 +15,16 @@ window.onload = () => {
     const fileInput = document.getElementById("upload-file");
     const expiryNumInput = document.getElementById("upload-expiry-number");
     const expiryUnitInput = document.getElementById("upload-expiry-unit");
+    expiryUnitInput.onchange = () => {
+        if (expiryUnitInput.value == "never") {
+            expiryNumInput.style.display = "none";
+        } else {
+            expiryNumInput.style.display = "inline-block";
+        }
+    }
+    /* if the user previously selected never before the event was registered */
+    expiryUnitInput.onchange();
+
     form.onsubmit = event => {
         event.preventDefault();
         const file = fileInput.files[0];

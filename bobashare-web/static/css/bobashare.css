@@ -25,6 +25,11 @@ a {
 a:hover {
     text-decoration: underline;
 }
+/* for links that are triggered with JS */
+input[type="submit"]:hover,
+a:not([href]):hover {
+    cursor: pointer;
+}
 
 /* Top formatting */
 .top {
@@ -39,7 +44,8 @@ a:hover {
 .top > .navbar {
     display: flex;
     flex-direction: row;
-    gap: 1em;
+    flex-wrap: wrap;
+    column-gap: 1em;
     /* for some reason it looks misaligned vertically without this */
     margin: auto 0;
 }

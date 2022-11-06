@@ -50,30 +50,28 @@
 {% endblock %}
 
 {% block main %}
-    <form id="upload-form" class="upload-form">
+    <form id="upload-form">
         <label for="upload-file" class="upload-file-container">
             <span class="drop-title">Click or drop files here</span>
             <input type="file" id="upload-file" name="file" required>
         </label>
         <div class="upload-form-bottom">
-            <div class="upload-expiry">
-                <label for="upload-expiry">Expires in</label>
+            {# <fieldset> is really awkward #}
+            <div class="upload-expiry-container">
+                <label>Expires in</label>
                 <input type="number" id="upload-expiry-number" value="1" required>
                 <select id="upload-expiry-unit" required>
                     {% for opt in expiry_units %}
                         <option value='{{ opt.value }}' {% if opt.default %}selected{% endif %}>{{ opt.name }}</option>
                     {% endfor %}
                     {% if never_expiry_allowed %}
-                        <option value="0">Never</option>
+                        <option value="never">never</option>
                     {% endif %}
                 </select>
             </div>
-            <div class="upload-submit">
-                <input type="submit" value="Upload">
-            </div>
+            <input type="submit" id="upload-submit" value="Upload">
         </div>
     </form>
     <h2 class="uploads-heading">Uploads</h2>
-    <div id="uploaded-files" class="uploaded-files">
-    </div>
+    <div id="uploads-container"></div>
 {% endblock %}

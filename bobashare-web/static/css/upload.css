@@ -1,5 +1,5 @@
 /* Form */
-.upload-form {
+#upload-form {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
@@ -8,39 +8,34 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+    row-gap: 0.25em;
 }
-.paste-expiry > input[type="number"],
-.upload-expiry > input[type="number"] {
+#upload-submit {
+    /* prevent from growing vertically when flexbox does */
+    align-self: start;
+}
+input[type="number"]#upload-expiry-number,
+input[type="number"]#paste-expiry-number {
     width: 3em;
 }
 #paste-textarea,
-.paste-form select,
-.paste-form input:not([type="file"]),
-.upload-form select,
-.upload-form input:not([type="file"]) {
+select,
+input:not([type="file"]) {
     background-color: var(--background-1);
     color: var(--text-0);
     padding: 0.25em;
     border-radius: 0.25em;
     border: 0.125em solid var(--background-3);
 }
-#paste-textarea:hover,
-.paste-form select:hover,
-.paste-form input:hover:not([type="file"]),
-.upload-form select:hover,
-.upload-form input:hover:not([type="file"]) {
+select:hover,
+input[type="submit"]:hover {
     background-color: var(--background-2);
 }
-#paste-textarea:active,
-.paste-form select:active,
-.paste-form input:active:not([type="file"]),
-.upload-form select:active,
-.upload-form input:active:not([type="file"]) {
+select:active,
+input[type="submit"]:active:not([type="file"]) {
     background-color: var(--background-3);
-}
-.paste-submit > input:hover,
-.upload-submit > input:hover {
-    cursor: pointer;
 }
 
 /* Form file input */
@@ -83,14 +78,14 @@
 }
 
 /* Paste form */
-.paste-form {
+#paste-form {
     display: flex;
     flex-direction: column;
     gap: 0.25em;
     /* horizontal margin is 1em on each side */
     min-width: min(720px, var(--max-vw));
 }
-.paste-form > .paste-info {
+#paste-form > .paste-info {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -99,28 +94,23 @@
     background-color: var(--background-1);
     gap: 0.5em;
 }
-.paste-info > .paste-info-right {
+#paste-form > .paste-info > .paste-info-right {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap-reverse;
     gap: 0.25em;
 }
-.paste-filename > #paste-extension {
-    width: 4em;
-}
-.paste-filename > #paste-filename {
+#paste-filename {
     max-width: 12em;
 }
-.paste-content > #paste-textarea {
+#paste-extension {
+    width: 4em;
+}
+#paste-textarea {
     box-sizing: border-box;
     /* TODO: make this wider, but only if not larger than screen */
     width: 100%;
     height: 90vh;
-}
-
-
-/* the buttons are fake and use JS to trigger */
-.uploaded-files a:hover {
-    cursor: pointer;
 }
 
 /* Upload list */
@@ -128,53 +118,56 @@
     margin: 1em 0 0 0;
     font-size: 1.25em;
 }
-.uploaded-files {
+#uploads-container {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
     font-size: 0.75em;
 }
+#uploads-container:empty::before {
+    content: "None yet!";
+}
 
 /* Uploaded file */
-.uploaded-files > .upload-file {
+#uploads-container > .upload-file {
     padding: 0.5em;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     gap: 0.5em;
 }
-.uploaded-files > .upload-file > .upload-filename {
+#uploads-container > .upload-file > .upload-filename {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.uploaded-files > .upload-file.in-progress > .upload-progress-right {
+#uploads-container > .upload-file.in-progress > .upload-progress-right {
     display: flex;
     flex-direction: row;
     gap: 0.25em;
 }
 
 /* Background colors */
-.uploaded-files > .upload-file.success {
+#uploads-container > .upload-file.success {
     background-color: var(--background-green-1);
 }
-.uploaded-files > .upload-file.deleted {
+#uploads-container > .upload-file.deleted {
     background-color: var(--background-red-1);
 }
-.uploaded-files > .upload-file.failed {
+#uploads-container > .upload-file.failed {
     background-color: var(--background-red-1);
 }
-.uploaded-files > .upload-file.cancelled {
+#uploads-container > .upload-file.cancelled {
     background-color: var(--background-red-1);
 }
-.uploaded-files > .upload-file.in-progress {
+#uploads-container > .upload-file.in-progress {
     position: relative;
     background-color: var(--background-1);
 }
-.uploaded-files > .upload-file.in-progress > * {
+#uploads-container > .upload-file.in-progress > * {
     z-index: 1;
 }
-.uploaded-files > .upload-file.in-progress > .upload-progress-bar {
+#uploads-container > .upload-file.in-progress > .upload-progress-bar {
     position: absolute;
     left: 0;
     top: 0;
@@ -185,12 +178,12 @@
 }
 
 /* Text styling */
-.uploaded-files > .upload-file.in-progress > .upload-filename {
+#uploads-container > .upload-file.in-progress > .upload-filename {
     font-style: italic;
 }
-.uploaded-files > .upload-file.deleted > .upload-filename {
+#uploads-container > .upload-file.deleted > .upload-filename {
     text-decoration: line-through;
 }
-.uploaded-files > .upload-file.failed {
+#uploads-container > .upload-file.failed {
     font-weight: bold;
 }

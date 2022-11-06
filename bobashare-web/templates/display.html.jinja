@@ -93,11 +93,17 @@
         {% match contents %}
             {% when DisplayType::Other %}
                 <div class="upload-content upload-binary">
-                    This file of type <code>{{ mimetype }}</code> cannot be displayed. <a href='{{ download_url }}'>Download</a> it instead.
+                    <p>
+                        This file of type <code>{{ mimetype }}</code> cannot be displayed.
+                        <a href='{{ download_url }}'>Download</a> it instead.
+                    </p>
                 </div>
             {% when DisplayType::TooLarge %}
                 <div class="upload-content upload-too-large">
-                    File is too large to be displayed. <a href='{{ download_url }}'>Download</a> it instead.
+                    <p>
+                        File is too large to be displayed.
+                        <a href='{{ download_url }}'>Download</a> it instead.
+                    </p>
                 </div>
             {% when DisplayType::Text with { highlighted } %}
                 <div id="upload-display-text" class="upload-content upload-display-text">

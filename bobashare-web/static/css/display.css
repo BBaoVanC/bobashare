@@ -8,12 +8,9 @@
     background-color: var(--background-1);
 }
 .upload-titlebar > .upload-filename,
-.upload-titlebar-right > * {
+.upload-titlebar > .upload-titlebar-right > * {
     display: inline-block;
     margin: 0 0.25em;
-}
-.delete-button:hover {
-    cursor: pointer;
 }
 
 /* Wrap text checkbox */
@@ -29,26 +26,37 @@
 /* Content */
 .upload-content-container {
     background-color: var(--background-1);
+    padding: 0.5em;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.upload-content-container .upload-content {
-    display: inline-block;
-    margin: 0 auto;
-    padding: 0.5em;
-    overflow: hidden;
+.upload-content {
+    display: flex;
+    max-width: 100%;
+}
+.upload-content.upload-binary,
+.upload-content.upload-too-large {
+    text-align: center;
+}
+.upload-content.upload-binary > p,
+.upload-content.upload-too-large > p {
+    margin: 0;
+}
+.upload-display-image > a {
+    /* prevent there being some weird space on the bottom border */
+    font-size: 0;
 }
 .upload-content-container .upload-display-image img,
 .upload-content-container .upload-display-video video {
     /* TODO: should a maximum height be set so it's not taller than the entire window (for tall images) */
     max-width: 100%;
 }
-.upload-content-container .upload-display-text > pre {
+.upload-display-text > pre {
     margin: 0;
     padding: 0.5em;
+    overflow: auto;
 }
-
 .upload-display-pdf,
 .upload-display-pdf > object {
     box-sizing: border-box;
@@ -57,10 +65,18 @@
 .upload-display-pdf > object {
     height: 90vh;
 }
-
-/* Markdown */
+.upload-display-markdown-container {
+    max-width: 100%;
+}
 .upload-display-markdown {
     max-width: 900px;
+    margin: 0 0.5em;
+}
+.upload-display-markdown > :first-child {
+    margin-top: 0.25em;
+}
+.upload-display-markdown > :last-child {
+    margin-bottom: 0.25em;
 }
 
 /* Markdown tabs */
@@ -80,7 +96,6 @@
     background-color: var(--background-1);
 }
 .markdown-toggle-tabs .markdown-tab:hover {
-    cursor: pointer;
     background-color: var(--background-2);
 }
 .upload-display-markdown-container:not(.rendered) > .upload-display-markdown {

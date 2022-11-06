@@ -10,7 +10,17 @@ window.onload = () => {
     const extensionInput = document.getElementById("paste-extension");
     const expiryNumInput = document.getElementById("paste-expiry-number");
     const expiryUnitInput = document.getElementById("paste-expiry-unit");
-    const submitButton = document.querySelector(".paste-submit");
+    const submitButton = document.getElementById("paste-submit");
+    expiryUnitInput.onchange = () => {
+        if (expiryUnitInput.value == "never") {
+            expiryNumInput.style.display = "none";
+        } else {
+            expiryNumInput.style.display = "inline-block";
+        }
+    }
+    /* if the user previously selected never before the event was registered */
+    expiryUnitInput.onchange();
+
     form.onsubmit = event => {
         event.preventDefault()
         submitButton.disabled = true;
