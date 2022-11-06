@@ -78,6 +78,10 @@
 .upload-display-markdown > :last-child {
     margin-bottom: 0.25em;
 }
+.upload-display-markdown pre.highlight {
+    background-color: var(--background-0);
+    padding: 0.5em;
+}
 
 /* Markdown tabs */
 .markdown-toggle-tabs {

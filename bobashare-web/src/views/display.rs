@@ -11,7 +11,7 @@ use axum::{
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
-use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins};
+use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins, ComrakRenderPlugins};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
@@ -26,7 +26,7 @@ use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 use url::Url;
 
-use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
+use super::{filters, ErrorResponse, ErrorTemplate, SyntectHighlighter, TemplateState};
 use crate::{AppState, HIGHLIGHT_CLASS_PREFIX};
 
 /// Errors when trying to view/download an upload
@@ -161,13 +161,14 @@ pub async fn display(
                         "highlighting file with syntax {}",
                         syntax.name
                     );
+                    let class_style = ClassStyle::SpacedPrefixed {
+                        prefix: HIGHLIGHT_CLASS_PREFIX,
+                    };
                     let highlighted = {
                         let mut generator = ClassedHTMLGenerator::new_with_class_style(
                             syntax,
                             &state.syntax_set,
-                            ClassStyle::SpacedPrefixed {
-                                prefix: HIGHLIGHT_CLASS_PREFIX,
-                            },
+                            class_style,
                         );
                         for line in LinesWithEndings::from(&contents) {
                             generator
@@ -182,9 +183,14 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
-                        // TODO: set up code block syntax highlighting
+                        let highlighter =
+                            SyntectHighlighter::new(state.syntax_set.clone(), class_style);
+                        let plugins = ComrakPlugins {
+                            render: ComrakRenderPlugins {
+                                codefence_syntax_highlighter: Some(&highlighter),
+                            },
+                        };
                         let options = ComrakOptions::default();
-                        let plugins = ComrakPlugins::default();
                         let displayed =
                             markdown_to_html_with_plugins(&contents, &options, &plugins);
                         DisplayType::Markdown {
