@@ -11,7 +11,7 @@ use axum::{
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
-use comrak::{ComrakPlugins, markdown_to_html_with_plugins, ComrakOptions};
+use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
@@ -83,8 +83,13 @@ pub struct DisplayTemplate {
 }
 #[derive(Debug)]
 pub enum DisplayType {
-    Text { highlighted: String },
-    Markdown { highlighted: String, displayed: String },
+    Text {
+        highlighted: String,
+    },
+    Markdown {
+        highlighted: String,
+        displayed: String,
+    },
     Image,
     Video,
     Audio,
@@ -177,11 +182,15 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
+                        // TODO: set up code block syntax highlighting
                         let options = ComrakOptions::default();
-                        let mut plugins = ComrakPlugins::default();
-                        // plugins.render.codefence_syntax_highlighter = Some();
-                        let displayed = markdown_to_html_with_plugins(&contents, &options, &plugins);
-                        DisplayType::Markdown{ highlighted, displayed }
+                        let plugins = ComrakPlugins::default();
+                        let displayed =
+                            markdown_to_html_with_plugins(&contents, &options, &plugins);
+                        DisplayType::Markdown {
+                            highlighted,
+                            displayed,
+                        }
                     } else {
                         DisplayType::Text { highlighted }
                     }
