@@ -123,6 +123,7 @@ input[type="submit"]:active:not([type="file"]) {
     flex-direction: column;
     gap: 0.5em;
     font-size: 0.75em;
+    max-width: 360px;
 }
 #uploads-container:empty::before {
     content: "None yet!";

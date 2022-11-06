@@ -4,8 +4,15 @@
 {% block head %}
     <meta name="robots" content="noindex">
 
-    <meta property="og:title" content='{{ filename }} ({{ size|humansize }})'>
-    <meta name="twitter:title" content='{{ filename }} ({{ size|humansize }})'>
+    {% let filename_truncated %}
+    {% if filename.len() > 50 %}
+        {% let filename_truncated = format!("{:.50}\u{2026}", self.filename) %}
+    {% else %}
+        {% let filename_truncated = filename.clone() %}
+    {% endif %}
+
+    <meta property="og:title" content='{{ filename_truncated }} ({{ size|humansize }})'>
+    <meta name="twitter:title" content='{{ filename_truncated }} ({{ size|humansize }})'>
 
     {% match contents %}
         {% when DisplayType::Image %}
@@ -35,13 +42,6 @@
     {% else if let DisplayType::Markdown{ highlighted: _, displayed: _ } = contents %}
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/highlight/syntax.css").unwrap() }}' crossorigin="anonymous">
     {% endif %}
-    {# {% match contents %}
-        {% when DisplayType::Text{ highlighted: _ } %}
-            <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/highlight/syntax.css").unwrap() }}' crossorigin="anonymous">
-        {% when DisplayType::Markdown{ highlighted: _, displayed: _ } %}
-            <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/highlight/syntax.css").unwrap() }}' crossorigin="anonymous">
-        {% else %}
-    {% endmatch %} #}
 
     <script
         id="delete-script-element"
