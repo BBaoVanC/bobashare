@@ -1,6 +1,6 @@
 /// Handler to serve static files
-use axum::{headers::IfNoneMatch, response::IntoResponse, TypedHeader};
-use hyper::{header, StatusCode, Uri};
+use axum::response::IntoResponse;
+use hyper::{header, HeaderMap, StatusCode, Uri};
 use rust_embed::RustEmbed;
 use tracing::{event, instrument, Level};
 
@@ -9,10 +9,7 @@ use tracing::{event, instrument, Level};
 struct Asset;
 
 #[instrument]
-pub async fn handler(
-    uri: Uri,
-    if_none_match: Option<TypedHeader<IfNoneMatch>>,
-) -> impl IntoResponse {
+pub async fn handler(uri: Uri, headers: HeaderMap) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');
     event!(Level::DEBUG, ?path);
 
@@ -22,13 +19,16 @@ pub async fn handler(
             (StatusCode::NOT_FOUND, "404 Not Found").into_response()
         }
         Some(f) => {
-            // TODO: logging
             let sha256 = hex::encode(f.metadata.sha256_hash());
-            // TODO: verify that this condition works properly in release
+            event!(Level::TRACE, sha256);
             if cfg!(not(debug_assertions)) {
-                if let Some(tag) = if_none_match {
-                    let etag = format!("\"{}\"", sha256);
-                    if tag.0.precondition_passes(&etag.parse().unwrap()) {
+                if let Some(tag) = headers.get(header::IF_NONE_MATCH) {
+                    event!(Level::TRACE, ?tag);
+                    // XXX: cool, a new let-else
+                    let Ok(tag) = tag.to_str() else {
+                        return (StatusCode::BAD_REQUEST, "invalid ETag").into_response();
+                    };
+                    if tag == sha256 {
                         return (StatusCode::NOT_MODIFIED, "").into_response();
                     }
                 }
