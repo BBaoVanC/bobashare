@@ -17,6 +17,7 @@
 - Support changing default expiry unit (and guess intelligently too if not set)
 - Replace comrak with pulldown-cmark
   - https://github.com/raphlinus/pulldown-cmark/issues/167
+- Change docs to private and binary (not library)
 
 #### Maybe
 
