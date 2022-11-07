@@ -8,7 +8,7 @@ use tracing::{event, instrument, Level};
 #[folder = "static/"]
 struct Asset;
 
-#[instrument]
+#[instrument(skip(headers), fields(if_none_match = ?headers.get(header::IF_NONE_MATCH)))]
 pub async fn handler(uri: Uri, headers: HeaderMap) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');
     event!(Level::DEBUG, ?path);
@@ -42,7 +42,7 @@ pub async fn handler(uri: Uri, headers: HeaderMap) -> impl IntoResponse {
                     (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*".to_string()),
                     (header::CACHE_CONTROL, "no-cache".to_string()),
                     (header::CONTENT_TYPE, mimetype.to_string()),
-                    (header::ETAG, hex::encode(f.metadata.sha256_hash())),
+                    (header::ETAG, sha256),
                 ],
                 f.data,
             )
