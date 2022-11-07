@@ -10,17 +10,16 @@
 ### Frontend
 
 - Clean up classes in CSS (the `upload-display-whatever` ones)
+  - especially the markdown display ones
 - API documentation page
 - Create a favicon
 - Make bobascheme-light
-- Make the uploaded files list on upload page persist between reloads
 - Support changing default expiry unit (and guess intelligently too if not set)
-- Replace comrak with pulldown-cmark
-  - https://github.com/raphlinus/pulldown-cmark/issues/167
 - Change docs to private and binary (not library)
 
 #### Maybe
 
+- Make the uploaded files list on upload page persist between reloads
 - i18n (maybe using https://crates.io/crates/fluent)
 - animations
   - such as when a file upload is created and the box appears on the upload page

@@ -74,6 +74,7 @@
 .upload-display-markdown {
     max-width: 900px;
     margin: 0 0.5em;
+    width: unset;
 }
 .upload-display-markdown > :first-child {
     margin-top: 0.25em;

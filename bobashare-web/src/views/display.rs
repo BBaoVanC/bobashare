@@ -177,19 +177,9 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
-                        {
-                            let parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS);
-                            event!(Level::DEBUG, "showing parse");
-                            for event in parser {
-                                event!(Level::DEBUG, ?event);
-                            }
-                            event!(Level::DEBUG, "end of parse");
-                        }
-
-                        let mut parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS);
+                        let mut parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS).peekable();
                         let mut output = Vec::new();
                         while let Some(event) = parser.next() {
-                            output.push(Event::Html(format!("<!-- {:?} -->", event).into()));
                             match event {
                                 Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
                                     output.push(Event::Html("<pre class=\"highlight\">".into()));
@@ -204,22 +194,25 @@ pub async fn display(
                                         &state.syntax_set,
                                         CLASS_STYLE,
                                     );
-                                    while let Some(Event::Text(t)) = parser.next() {
+
+                                    // peek so we don't consume the end tag
+                                    // TODO: figure out if take_while() can do this better
+                                    while let Some(Event::Text(t)) = parser.peek() {
                                         generator
-                                            .parse_html_for_line_which_includes_newline(&t)
+                                            .parse_html_for_line_which_includes_newline(t)
                                             .map_err(|e| ErrorTemplate {
                                                 state: state.0.clone().into(),
                                                 code: StatusCode::INTERNAL_SERVER_ERROR,
                                                 message: format!(
-                                                    "error highlighting fenced code block: {}",
+                                                    "error highlighting markdown fenced code block: {}",
                                                     e
                                                 ),
                                             })?;
+                                        parser.next();
                                     }
                                     output.push(Event::Html(generator.finalize().into()));
                                 }
-                                Event::End(Tag::CodeBlock(_)) => {
-                                    output.push(Event::Text("ENDED!!".into()));
+                                Event::End(Tag::CodeBlock(CodeBlockKind::Fenced(_))) => {
                                     output.push(Event::Html("</pre>".into()));
                                 }
                                 e => output.push(e),

@@ -6,6 +6,7 @@
 
     {% let filename_truncated %}
     {% if filename.len() > 50 %}
+        {# U+2026 is ellipses (three dots) #}
         {% let filename_truncated = format!("{:.50}\u{2026}", self.filename) %}
     {% else %}
         {% let filename_truncated = filename.clone() %}
