@@ -28,6 +28,8 @@ input:not([type="file"]) {
     padding: 0.25em;
     border-radius: 0.25em;
     border: 0.125em solid var(--background-3);
+    /* TODO */
+    /* appearance: ; */
 }
 select:hover,
 input[type="submit"]:hover {
@@ -107,6 +109,7 @@ input[type="submit"]:active:not([type="file"]) {
     width: 4em;
 }
 #paste-textarea {
+    font-family: monospace;
     box-sizing: border-box;
     /* TODO: make this wider, but only if not larger than screen */
     width: 100%;
