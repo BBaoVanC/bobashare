@@ -7,13 +7,13 @@ use super::{filters, ErrorResponse, TemplateState};
 use crate::AppState;
 
 #[derive(Template)]
-#[template(path = "about.html.jinja")]
-pub struct AboutTemplate {
+#[template(path = "api.html.jinja")]
+pub struct ApiTemplate {
     pub state: TemplateState,
 }
 
-pub async fn about(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    Ok(AboutTemplate {
+pub async fn api(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+    Ok(ApiTemplate {
         state: state.0.into(),
     })
 }

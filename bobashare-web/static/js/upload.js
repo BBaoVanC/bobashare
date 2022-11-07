@@ -13,6 +13,11 @@ window.onload = () => {
     const fileFailTemplate = document.getElementById("upload-fail-template");
 
     const fileInput = document.getElementById("upload-file");
+    const dropTitle = document.getElementById("drop-title");
+    fileInput.onchange = () => {
+        dropTitle.innerText = fileInput.files[0].name;
+    }
+
     const expiryNumInput = document.getElementById("upload-expiry-number");
     const expiryUnitInput = document.getElementById("upload-expiry-unit");
     expiryUnitInput.onchange = () => {

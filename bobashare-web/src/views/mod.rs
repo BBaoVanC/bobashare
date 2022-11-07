@@ -11,7 +11,7 @@ use url::Url;
 
 use crate::AppState;
 
-pub mod about;
+pub mod api;
 pub mod display;
 pub mod filters;
 pub mod upload;
@@ -73,7 +73,7 @@ impl IntoResponse for ErrorResponse {
 
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
-        .route("/about/", get(about::about))
+        .route("/API/", get(api::api))
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
         .route("/:id", get(display::display))

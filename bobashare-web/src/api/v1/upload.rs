@@ -18,7 +18,7 @@ use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use thiserror::Error;
 use tokio::io::{AsyncWriteExt, BufWriter};
-use tracing::{event, instrument, span, Level};
+use tracing::{event, instrument, Level};
 
 use super::ApiErrorExt;
 use crate::{clamp_expiry, AppState};
@@ -94,8 +94,7 @@ impl IntoResponse for UploadError {
 ///
 /// # Request
 ///
-/// 1. `PUT /api/v1/upload`
-/// 2. `PUT /api/v1/upload/:filename`
+/// `PUT /api/v1/upload/:filename`
 ///
 /// NOTE: The first URL will use the randomized upload ID as the filename.
 ///
@@ -134,7 +133,7 @@ impl IntoResponse for UploadError {
 #[instrument(skip(state, filename, headers, body), fields(id))]
 pub async fn put(
     state: State<Arc<AppState>>,
-    filename: Option<Path<String>>,
+    filename: Path<String>,
     WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
     WithRejection(TypedHeader(content_length), _): WithRejection<
         TypedHeader<ContentLength>,
@@ -165,18 +164,6 @@ pub async fn put(
     event!(Level::DEBUG, "generated random ID for upload");
 
     let mimetype = mimetype.into();
-
-    let (filename_needs_extension, filename) = if let Some(n) = filename {
-        event!(Level::DEBUG, filename = n.0);
-        (false, n.0)
-    } else {
-        event!(
-            Level::DEBUG,
-            filename = id,
-            "extension will be guessed later",
-        );
-        (true, id.clone())
-    };
 
     let expiry = match headers.get("Bobashare-Expiry") {
         // if header not found, use default expiry
@@ -292,24 +279,6 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing file buffer")?;
-
-    if filename_needs_extension {
-        let span = span!(Level::DEBUG, "guess_extension");
-        let _enter = span.enter();
-        event!(
-            Level::DEBUG,
-            "guessing file extension since the filename was not provided in request"
-        );
-        if let Some(ext) = mime_db::extension(&upload.metadata.mimetype) {
-            event!(Level::DEBUG, extension = ext, "guessed");
-            upload.metadata.filename += &format!(".{}", ext);
-        } else {
-            event!(
-                Level::DEBUG,
-                "no extension could be guessed; will not be added"
-            );
-        }
-    }
 
     let metadata = upload
         .flush()

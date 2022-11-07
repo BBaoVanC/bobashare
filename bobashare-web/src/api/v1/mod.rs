@@ -26,7 +26,6 @@ pub mod upload;
 pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
     Router::with_state(state)
         .route("/info/:id", get(info::info))
-        .route("/upload", put(upload::put))
         .route("/upload/:filename", put(upload::put))
         .route("/delete/:id", delete(delete::delete))
 }

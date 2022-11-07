@@ -62,7 +62,7 @@ impl IntoResponse for InfoError {
 ///
 /// # Request
 ///
-/// - `GET /api/v1/info/:id`
+/// `GET /api/v1/info/:id`
 ///
 /// # Response
 ///

@@ -28,8 +28,6 @@ input:not([type="file"]) {
     padding: 0.25em;
     border-radius: 0.25em;
     border: 0.125em solid var(--background-3);
-    /* TODO */
-    /* appearance: ; */
 }
 select:hover,
 input[type="submit"]:hover {
@@ -62,6 +60,8 @@ input[type="submit"]:active:not([type="file"]) {
     background-color: var(--background-3);
 }
 .upload-file-container > input[type="file"] {
+    visibility: hidden;
+
     position: absolute;
     height: 100%;
     width: 100%;
@@ -72,11 +72,14 @@ input[type="submit"]:active:not([type="file"]) {
     /* for some reason this is needed instead of text-align, but only on Chromium */
     text-align-last: center;
 }
-.upload-file-container > input[type="file"]::file-selector-button {
-    display: none;
-}
-.upload-file-container > input[type="file"]:hover {
+.upload-file-container:hover {
     cursor: pointer;
+}
+#drop-title {
+    max-width: 320px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 /* Paste form */
