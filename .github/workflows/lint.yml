@@ -1,0 +1,24 @@
+name: CI checks for every commit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    name: Lint
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+      - name: Clippy
+        run: cargo clippy
+      - name: Test
+        run: cargo test

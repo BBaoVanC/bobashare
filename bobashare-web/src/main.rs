@@ -155,6 +155,8 @@ async fn main() -> anyhow::Result<()> {
         id_length = %state.id_length,
         default_expiry = %state.default_expiry,
         max_expiry = %state.max_expiry.map_or_else(|| String::from("never"), |e| e.to_string()),
+        max_file_size = %state.max_file_size,
+        extra_footer_text = ?state.extra_footer_text,
         "generated state from config"
     );
 
