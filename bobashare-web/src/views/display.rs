@@ -11,23 +11,20 @@ use axum::{
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
-use comrak::{markdown_to_html_with_plugins, ComrakOptions, ComrakPlugins, ComrakRenderPlugins};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
+use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Parser, Tag};
 use serde::{Deserialize, Deserializer};
-use syntect::{
-    html::{ClassStyle, ClassedHTMLGenerator},
-    util::LinesWithEndings,
-};
+use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 use url::Url;
 
-use super::{filters, ErrorResponse, ErrorTemplate, SyntectHighlighter, TemplateState};
-use crate::{AppState, HIGHLIGHT_CLASS_PREFIX};
+use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
+use crate::{AppState, CLASS_STYLE, MARKDOWN_OPTIONS};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -161,14 +158,11 @@ pub async fn display(
                         "highlighting file with syntax {}",
                         syntax.name
                     );
-                    let class_style = ClassStyle::SpacedPrefixed {
-                        prefix: HIGHLIGHT_CLASS_PREFIX,
-                    };
                     let highlighted = {
                         let mut generator = ClassedHTMLGenerator::new_with_class_style(
                             syntax,
                             &state.syntax_set,
-                            class_style,
+                            CLASS_STYLE,
                         );
                         for line in LinesWithEndings::from(&contents) {
                             generator
@@ -183,16 +177,58 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
-                        let highlighter =
-                            SyntectHighlighter::new(state.syntax_set.clone(), class_style);
-                        let plugins = ComrakPlugins {
-                            render: ComrakRenderPlugins {
-                                codefence_syntax_highlighter: Some(&highlighter),
-                            },
-                        };
-                        let options = ComrakOptions::default();
-                        let displayed =
-                            markdown_to_html_with_plugins(&contents, &options, &plugins);
+                        {
+                            let parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS);
+                            event!(Level::DEBUG, "showing parse");
+                            for event in parser {
+                                event!(Level::DEBUG, ?event);
+                            }
+                            event!(Level::DEBUG, "end of parse");
+                        }
+
+                        let mut parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS);
+                        let mut output = Vec::new();
+                        while let Some(event) = parser.next() {
+                            output.push(Event::Html(format!("<!-- {:?} -->", event).into()));
+                            match event {
+                                Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
+                                    output.push(Event::Html("<pre class=\"highlight\">".into()));
+                                    let syntax = state
+                                        .syntax_set
+                                        .find_syntax_by_token(&token)
+                                        .unwrap_or_else(|| {
+                                            state.syntax_set.find_syntax_plain_text()
+                                        });
+                                    let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                                        syntax,
+                                        &state.syntax_set,
+                                        CLASS_STYLE,
+                                    );
+                                    while let Some(Event::Text(t)) = parser.next() {
+                                        generator
+                                            .parse_html_for_line_which_includes_newline(&t)
+                                            .map_err(|e| ErrorTemplate {
+                                                state: state.0.clone().into(),
+                                                code: StatusCode::INTERNAL_SERVER_ERROR,
+                                                message: format!(
+                                                    "error highlighting fenced code block: {}",
+                                                    e
+                                                ),
+                                            })?;
+                                    }
+                                    output.push(Event::Html(generator.finalize().into()));
+                                }
+                                Event::End(Tag::CodeBlock(_)) => {
+                                    output.push(Event::Text("ENDED!!".into()));
+                                    output.push(Event::Html("</pre>".into()));
+                                }
+                                e => output.push(e),
+                            }
+                        }
+
+                        let mut displayed = String::with_capacity(contents.len() * 3 / 2);
+                        push_html(&mut displayed, output.into_iter());
+
                         DisplayType::Markdown {
                             highlighted,
                             displayed,

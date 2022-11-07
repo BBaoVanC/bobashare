@@ -3,7 +3,8 @@
 
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
-use syntect::parsing::SyntaxSet;
+use pulldown_cmark::Options;
+use syntect::{html::ClassStyle, parsing::SyntaxSet};
 use url::Url;
 
 pub mod api;
@@ -12,6 +13,13 @@ pub mod views;
 
 /// Prefix for CSS classes used for [`syntect`] highlighting
 pub const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
+/// [`ClassStyle`] used for [`syntect`] highlighting
+pub const CLASS_STYLE: ClassStyle = ClassStyle::SpacedPrefixed {
+    prefix: HIGHLIGHT_CLASS_PREFIX,
+};
+
+/// Options used for [`pulldown_cmark`] rendering
+pub const MARKDOWN_OPTIONS: Options = Options::all();
 
 /// A struct that contains all the state and config for bobashare
 #[derive(Debug, Clone)]
