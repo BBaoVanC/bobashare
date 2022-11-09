@@ -26,6 +26,7 @@ use tower_http::{
 use tracing::{event, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(Debug, Clone, Parser)]
 struct Cli {
@@ -161,6 +162,13 @@ async fn main() -> anyhow::Result<()> {
     );
 
     let app = Router::with_state(Arc::clone(&state))
+        .merge(SwaggerUi::new("/swagger-ui/*tail").urls(
+            [
+                (
+                    utoipa_swagger_ui::Url::new()
+                )
+            ]
+        ))
         .nest("/api", api::router(Arc::clone(&state)))
         .merge(views::router(Arc::clone(&state)))
         .nest("/static", get(static_routes::handler))
