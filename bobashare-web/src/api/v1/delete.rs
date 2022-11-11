@@ -73,16 +73,23 @@ impl IntoResponse for DeleteError {
 ///
 /// - 200 OK
 /// - JSON body created from [`DeleteResponse`]
-// TODO: should this return 204 No Content and empty body?
 #[instrument(skip(state))]
 #[utoipa::path(
     context_path = "/api/v1",
     delete,
     path = "/delete/{id}",
+    params(
+        ("id" = String, Path, description = "ID of the upload to delete", example = "Hk6Shy0Q"),
+    ),
+    request_body(content = String, description = "`delete_key` for the upload"),
     responses(
-        (status = 200, description = "TODO")
+        (status = 200, body = DeleteResponse, description = "deleted successfully"),
+        (status = 404, body = DeleteError, description = "upload not found"),
+        (status = 403, body = DeleteError, description = "incorrect delete key"),
+        (status = 500, body = DeleteError, description = "internal server error"),
     )
 )]
+// TODO: should this return 204 No Content and empty body?
 pub async fn delete(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
