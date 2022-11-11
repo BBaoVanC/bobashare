@@ -10,12 +10,17 @@ use axum::{
 use hyper::StatusCode;
 use serde_json::json;
 use tracing::{event, Level};
+use utoipa::OpenApi;
 
 use crate::AppState;
 
 pub mod delete;
 pub mod info;
 pub mod upload;
+
+#[derive(OpenApi)]
+#[openapi(paths(info::info, upload::put, delete::delete,))]
+pub struct ApiDocV1;
 
 /// Routes under `/api/v1/`
 ///

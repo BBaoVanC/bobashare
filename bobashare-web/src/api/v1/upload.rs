@@ -131,6 +131,14 @@ impl IntoResponse for UploadError {
 // TODO: tracing needs an `ok` instead of `ret` to log just the Ok and not the Err, but workaround
 // can be done to log manually
 #[instrument(skip(state, filename, headers, body), fields(id))]
+#[utoipa::path(
+    context_path = "/api/v1",
+    put,
+    path = "/upload/{filename}",
+    responses(
+        (status = 200, description = "TODO")
+    )
+)]
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Path<String>,

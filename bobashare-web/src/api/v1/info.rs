@@ -71,6 +71,14 @@ impl IntoResponse for InfoError {
 /// - 200 OK
 /// - JSON body created from [`InfoResponse`]
 #[instrument(skip(state))]
+#[utoipa::path(
+    context_path = "/api/v1",
+    get,
+    path = "/info/{id}",
+    responses(
+        (status = 200, description = "TODO")
+    ),
+)]
 pub async fn info(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,

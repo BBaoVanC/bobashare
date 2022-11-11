@@ -75,6 +75,14 @@ impl IntoResponse for DeleteError {
 /// - JSON body created from [`DeleteResponse`]
 // TODO: should this return 204 No Content and empty body?
 #[instrument(skip(state))]
+#[utoipa::path(
+    context_path = "/api/v1",
+    delete,
+    path = "/delete/{id}",
+    responses(
+        (status = 200, description = "TODO")
+    )
+)]
 pub async fn delete(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,

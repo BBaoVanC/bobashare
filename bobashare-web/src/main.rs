@@ -5,10 +5,11 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{self, routing::get, Router};
+use axum::{self, response::Redirect, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
-    api, static_routes,
+    api::{self, v1::ApiDocV1},
+    static_routes,
     views::{self, ErrorResponse, ErrorTemplate},
     AppState,
 };
@@ -26,6 +27,8 @@ use tower_http::{
 use tracing::{event, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::{SwaggerUi, Url as UtoipaUrl};
 
 #[derive(Debug, Clone, Parser)]
 struct Cli {
@@ -160,10 +163,33 @@ async fn main() -> anyhow::Result<()> {
         "generated state from config"
     );
 
+    // TODO: make this less bad
+    let swagger_root = Arc::new(
+        state
+            .base_url
+            .join("swagger-ui/index.html")
+            .unwrap()
+            .to_string(),
+    );
+    let swagger_root_1 = swagger_root.clone();
+    let swagger_root_2 = swagger_root.clone();
+
     let app = Router::with_state(Arc::clone(&state))
+        .route(
+            "/swagger-ui/",
+            get(|| async move { Redirect::permanent(&swagger_root_1) }),
+        )
+        .route(
+            "/swagger-ui",
+            get(|| async move { Redirect::permanent(&swagger_root_2) }),
+        )
+        .merge(SwaggerUi::new("/swagger-ui/*tail").urls(vec![(
+            UtoipaUrl::with_primary("v1", "/api/v1/openapi.json", true),
+            ApiDocV1::openapi(),
+        )]))
         .nest("/api", api::router(Arc::clone(&state)))
         .merge(views::router(Arc::clone(&state)))
-        .nest("/static", get(static_routes::handler))
+        .nest_service("/static", get(static_routes::handler))
         .fallback(|| async {
             ErrorResponse(ErrorTemplate {
                 code: StatusCode::NOT_FOUND,
