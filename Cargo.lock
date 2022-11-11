@@ -2238,6 +2238,7 @@ dependencies = [
 [[package]]
 name = "utoipa"
 version = "2.3.0"
+source = "git+https://github.com/BBaoVanC/utoipa?branch=axum-0.6#464bcb870c28158f4b9d621ac9e78b081cd6a883"
 dependencies = [
  "indexmap",
  "serde",
@@ -2248,6 +2249,7 @@ dependencies = [
 [[package]]
 name = "utoipa-gen"
 version = "2.3.0"
+source = "git+https://github.com/BBaoVanC/utoipa?branch=axum-0.6#464bcb870c28158f4b9d621ac9e78b081cd6a883"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -2258,6 +2260,7 @@ dependencies = [
 [[package]]
 name = "utoipa-swagger-ui"
 version = "2.0.1"
+source = "git+https://github.com/BBaoVanC/utoipa?branch=axum-0.6#464bcb870c28158f4b9d621ac9e78b081cd6a883"
 dependencies = [
  "axum",
  "mime_guess",
