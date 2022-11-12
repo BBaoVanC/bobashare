@@ -14,7 +14,7 @@ default-run = "bobashare-web"
 anyhow = "1.0.65"
 askama = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6", features = ["with-axum"] }
 askama_axum = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6" }
-axum = { version = "0.6.0-rc.2", features = ["headers", "multipart"] }
+axum = { version = "0.6.0-rc.2", features = ["headers"] }
 axum-extra = "0.4.0-rc.1"
 bobashare = { version = "0.1.0", path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
@@ -46,7 +46,7 @@ tower-http = { version = "0.3.4", features = ["trace", "request-id", "fs"] }
 tracing = "0.1.36"
 tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 url = "2.3.1"
-utoipa = { git = "https://github.com/BBaoVanC/utoipa", branch = "axum-0.6", features = ["axum_extras"] }
+utoipa = { git = "https://github.com/BBaoVanC/utoipa", branch = "axum-0.6", features = ["axum_extras", "json"] }
 utoipa-swagger-ui = { git = "https://github.com/BBaoVanC/utoipa", branch = "axum-0.6", features = ["axum"] }
 #utoipa = { path = "../../utoipa/utoipa",  features = ["axum_extras"] }
 #utoipa-swagger-ui = { path = "../../utoipa/utoipa-swagger-ui",  features = ["axum"] }

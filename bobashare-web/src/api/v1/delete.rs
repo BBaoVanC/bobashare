@@ -13,27 +13,30 @@ use hyper::StatusCode;
 use serde::Serialize;
 use thiserror::Error;
 use tracing::{event, instrument, Level};
+use utoipa::ToSchema;
 
 use super::ApiErrorExt;
 use crate::AppState;
 
 /// API response after deleting an upload successfully
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct DeleteResponse {
     /// The ID of the deleted upload
+    #[schema(example = "Hk6Shy0Q")]
     pub id: String,
 }
 
 /// Errors that could occur when deleting an upload
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Error, Display, ToSchema)]
 pub enum DeleteError {
     /// an upload at the specified id was not found
+    #[schema(title = "NotFound")]
     NotFound,
     /// incorrect delete key
     IncorrectKey,
 
     /// internal server error
-    InternalServer(#[from] anyhow::Error),
+    InternalServer(#[from] #[schema(value_type = Object)] anyhow::Error),
 }
 impl From<DeleteUploadError> for DeleteError {
     fn from(err: DeleteUploadError) -> Self {
@@ -53,35 +56,22 @@ impl IntoResponse for DeleteError {
         self.into_response_with_code(code)
     }
 }
+// impl ToResponse for DeleteError {
+//     fn response() -> (String, utoipa::openapi::Response) {
+
+//     }
+// }
 
 /// Delete an upload
-///
-/// # Request
-///
-/// `DELETE /api/v1/delete/:filename`
-///
-/// ## Body
-///
-/// Should contain the key used to delete the upload (`delete_key` in
-/// [`UploadResponse`]).
-///
-/// [`UploadResponse`]: super::upload::UploadResponse::delete_key
-///
-/// # Response
-///
-/// ## Success
-///
-/// - 200 OK
-/// - JSON body created from [`DeleteResponse`]
 #[instrument(skip(state))]
 #[utoipa::path(
-    context_path = "/api/v1",
     delete,
+    context_path = "/api/v1",
     path = "/delete/{id}",
     params(
         ("id" = String, Path, description = "ID of the upload to delete", example = "Hk6Shy0Q"),
     ),
-    request_body(content = String, description = "`delete_key` for the upload"),
+    request_body(content = inline(String), description = "`delete_key` of the upload"),
     responses(
         (status = 200, body = DeleteResponse, description = "deleted successfully"),
         (status = 404, body = DeleteError, description = "upload not found"),

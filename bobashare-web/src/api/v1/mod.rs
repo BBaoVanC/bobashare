@@ -19,7 +19,12 @@ pub mod info;
 pub mod upload;
 
 #[derive(OpenApi)]
-#[openapi(paths(delete::delete, info::info, upload::put))]
+#[openapi(paths(delete::delete, info::info, upload::put), components(
+    schemas(
+        delete::DeleteResponse,
+        delete::DeleteError,
+    )
+))]
 pub struct ApiDocV1;
 
 /// Routes under `/api/v1/`
