@@ -5,7 +5,7 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{self, response::Redirect, routing::get, Router};
+use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
     api::{self, v1::ApiDocV1},
@@ -163,27 +163,8 @@ async fn main() -> anyhow::Result<()> {
         "generated state from config"
     );
 
-    // TODO: make this less bad
-    let swagger_root = Arc::new(
-        state
-            .base_url
-            .join("swagger-ui/index.html")
-            .unwrap()
-            .to_string(),
-    );
-    let swagger_root_1 = swagger_root.clone();
-    let swagger_root_2 = swagger_root.clone();
-
     let app = Router::with_state(Arc::clone(&state))
-        .route(
-            "/swagger-ui/",
-            get(|| async move { Redirect::permanent(&swagger_root_1) }),
-        )
-        .route(
-            "/swagger-ui",
-            get(|| async move { Redirect::permanent(&swagger_root_2) }),
-        )
-        .merge(SwaggerUi::new("/swagger-ui/*tail").urls(vec![(
+        .merge(SwaggerUi::new("/swagger-ui/").urls(vec![(
             UtoipaUrl::with_primary("v1", "/api/v1/openapi.json", true),
             ApiDocV1::openapi(),
         )]))
