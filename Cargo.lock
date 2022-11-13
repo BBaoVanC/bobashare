@@ -183,6 +183,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-macros"
+version = "0.3.0-rc.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "414ca6cd8cbe767411488373833ebd9d07a6b470d841250d8d2b8bd69769ca0e"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -262,6 +274,7 @@ dependencies = [
  "askama_axum",
  "axum",
  "axum-extra",
+ "axum-macros",
  "bobashare",
  "chrono",
  "chrono-humanize",

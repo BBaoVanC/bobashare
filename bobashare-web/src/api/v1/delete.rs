@@ -1,10 +1,10 @@
 //! API to delete an upload
 
-use std::{error::Error, sync::Arc};
+use std::{error::Error as StdError, sync::Arc};
 
 use axum::{
     extract::{Path, State},
-    response::{IntoResponse, Response},
+    response::IntoResponse,
     Json,
 };
 use bobashare::storage::file::{DeleteUploadError, OpenUploadError};
@@ -14,6 +14,7 @@ use serde::Serialize;
 use tracing::{event, instrument, Level};
 use utoipa::ToSchema;
 
+use super::ApiError;
 use crate::AppState;
 
 /// the upload was deleted successfully
@@ -33,52 +34,33 @@ pub enum DeleteError {
     /// incorrect delete key
     IncorrectKey,
 
-    /// internal server error: {reason}
+    /// internal server error: {source}
     InternalServer {
-        reason: String,
         #[serde(skip)]
-        extra_context: Box<dyn Error>,
+        source: Box<dyn StdError>,
     },
 }
+impl StdError for DeleteError {}
 impl From<DeleteUploadError> for DeleteError {
     fn from(err: DeleteUploadError) -> Self {
         match err {
             DeleteUploadError::NotFound => Self::NotFound,
-            e => Self::InternalServer {
-                reason: e.to_string(),
-                extra_context: e.into(),
-            },
+            e => Self::InternalServer { source: e.into() },
         }
     }
 }
-impl From<Box<dyn Error>> for DeleteError {
-    fn from(err: Box<dyn Error>) -> Self {
-        Self::InternalServer {
-            reason: err.to_string(),
-            extra_context: err,
-        }
-    }
-}
-impl IntoResponse for DeleteError {
-    fn into_response(self) -> Response {
-        let code = match self {
-            Self::NotFound => StatusCode::NOT_FOUND,
-            Self::IncorrectKey => StatusCode::FORBIDDEN,
-            Self::InternalServer {
-                reason: _,
-                extra_context: _,
-            } => StatusCode::INTERNAL_SERVER_ERROR,
+impl From<DeleteError> for ApiError {
+    fn from(err: DeleteError) -> Self {
+        let code = match err {
+            DeleteError::NotFound => StatusCode::NOT_FOUND,
+            DeleteError::IncorrectKey => StatusCode::FORBIDDEN,
+            DeleteError::InternalServer { source: _ } => StatusCode::INTERNAL_SERVER_ERROR,
         };
-
-        if code.is_server_error() {
-            event!(Level::ERROR, status = code.as_u16(), error = ?self);
-        } else if code.is_client_error() {
-            event!(Level::WARN, status = code.as_u16(), error = ?self);
-        } else {
-            event!(Level::INFO, status = code.as_u16(), error = ?self);
+        Self {
+            code,
+            message: err.to_string(),
+            source: Some(err.into()),
         }
-
-        (code, Json(self)).into_response()
     }
 }
 
@@ -95,20 +77,19 @@ impl IntoResponse for DeleteError {
     responses(
         (status = 200, body = DeleteResponse, description = "the upload was deleted successfully",
         ),
-        (status = 404, body = DeleteError, description = "the upload was not found",
+        (status = 404, body = ApiError, description = "the upload was not found",
             example = json!({
-                "error": "NotFound",
+                "message": "an upload at the specified id was not found",
             }),
         ),
-        (status = 403, body = DeleteError, description = "incorrect delete key provided",
+        (status = 403, body = ApiError, description = "incorrect delete key provided",
             example = json!({
-                "error": "IncorrectKey",
+                "message": "incorrect delete key",
             }),
         ),
-        (status = 500, body = DeleteError, description = "internal server error",
+        (status = 500, body = ApiError, description = "internal server error",
             example = json!({
-                "error": "InternalServer",
-                "reason": "some error message",
+                "message": "internal server error: error deleting upload file",
             }),
         ),
     )
@@ -118,7 +99,7 @@ pub async fn delete(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
     key: String,
-) -> Result<impl IntoResponse, DeleteError> {
+) -> Result<impl IntoResponse, ApiError> {
     let key = key.trim();
     event!(Level::DEBUG, "reading upload metadata");
     let metadata = state
@@ -127,23 +108,31 @@ pub async fn delete(
         .await
         .map_err(|e| match e {
             OpenUploadError::NotFound(_) => DeleteError::NotFound,
-            e => (Box::new(e) as Box<dyn Error>).into(),
+            e => DeleteError::InternalServer { source: e.into() },
         })?;
     if metadata.is_expired() {
         event!(
             Level::INFO,
             "upload was already expired anyway, deleting and sending NotFound response"
         );
-        state.backend.delete_upload(&id).await?;
-        return Err(DeleteError::NotFound);
+        state
+            .backend
+            .delete_upload(&id)
+            .await
+            .map_err(DeleteError::from)?;
+        return Err(DeleteError::NotFound.into());
     }
     if metadata.delete_key != key {
         event!(Level::INFO, "provided delete key was incorrect");
-        return Err(DeleteError::IncorrectKey);
+        return Err(DeleteError::IncorrectKey.into());
     }
 
     event!(Level::DEBUG, "delete key was correct; deleting upload");
-    state.backend.delete_upload(&id).await?;
+    state
+        .backend
+        .delete_upload(&id)
+        .await
+        .map_err(DeleteError::from)?;
 
     event!(Level::INFO, id, "successfully deleted upload");
     Ok(Json(DeleteResponse { id }))

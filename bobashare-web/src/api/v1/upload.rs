@@ -1,12 +1,12 @@
 //! API to create an upload
 
-use std::sync::Arc;
+use std::{error::Error as StdError, sync::Arc};
 
 use anyhow::Context;
 use axum::{
     extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
     headers::{ContentLength, ContentType},
-    response::{IntoResponse, Response},
+    response::IntoResponse,
     Json, TypedHeader,
 };
 use axum_extra::extract::WithRejection;
@@ -16,76 +16,78 @@ use displaydoc::Display;
 use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
-use thiserror::Error;
 use tokio::io::{AsyncWriteExt, BufWriter};
 use tracing::{event, instrument, Level};
+use utoipa::ToSchema;
 
-use super::ApiErrorExt;
+use super::ApiError;
 use crate::{clamp_expiry, AppState};
 
 /// The JSON API response after uploading a file
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, ToSchema)]
 pub struct UploadResponse {
     /// ID of the upload (used in URL)
+    #[schema(example = "Hk6Shy0Q")]
     pub id: String,
     /// url to the upload
+    #[schema(example = "http://localhost:3000/Hk6Shy0Q")]
     pub url: String,
     /// direct url to download the raw uploaded file
+    #[schema(example = "http://localhost:3000/raw/Hk6Shy0Q")]
     pub direct_url: String,
     /// the name of the file
+    #[schema(example = "example.txt")]
     pub filename: String,
     /// the MIME type of the uploaded file
+    #[schema(example = "text/plain")]
     pub mimetype: String,
     /// expiration date in RFC 3339 format, null if the upload never expires
+    #[schema(example = "2022-11-13T23:20:09.008416131Z", value_type = String, format = DateTime, nullable)]
     pub expiry_date: Option<DateTime<Utc>>,
     /// key to delete the upload later before it's expired
+    #[schema(example = "oM7Yb7N78cAcc7nDOhoo3fHWEl1OphQD")]
     pub delete_key: String,
 }
 
 /// Errors that could occur during upload
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Display, Serialize)]
 pub enum UploadError {
     /// an upload already exists with the same id
     AlreadyExists,
-    /// error parsing `{name}` header
-    ParseHeader { name: String, source: anyhow::Error },
+    // /// error parsing `{name}` header
+    // ParseHeader {
+    //     name: String,
+    //     #[serde(skip)]
+    //     source: Box<dyn StdError>,
+    // },
     /// file is too large ({size} > {max})
     TooLarge { size: u64, max: u64 },
 
     /// upload was cancelled
-    Cancelled(#[source] anyhow::Error),
+    Cancelled(#[serde(skip)] Box<dyn StdError>),
 
     /// internal server error
-    InternalServer(#[from] anyhow::Error),
+    InternalServer(#[serde(skip)] Box<dyn StdError>),
 }
-impl From<TypedHeaderRejection> for UploadError {
-    fn from(rej: TypedHeaderRejection) -> Self {
-        Self::ParseHeader {
-            name: rej.name().to_string(),
-            source: rej.into(),
-        }
+impl StdError for UploadError {}
+impl From<anyhow::Error> for UploadError {
+    fn from(e: anyhow::Error) -> Self {
+        Self::InternalServer(e.into())
     }
 }
-impl IntoResponse for UploadError {
-    fn into_response(self) -> Response {
-        let code = match self {
-            Self::AlreadyExists => StatusCode::CONFLICT,
-            Self::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
-            Self::TooLarge { size: _, max: _ } => StatusCode::PAYLOAD_TOO_LARGE,
-            Self::Cancelled(_) => StatusCode::INTERNAL_SERVER_ERROR, // unused
-            Self::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
+impl From<UploadError> for ApiError {
+    fn from(err: UploadError) -> Self {
+        let code = match err {
+            UploadError::AlreadyExists => StatusCode::CONFLICT,
+            // UploadError::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
+            UploadError::TooLarge { size: _, max: _ } => StatusCode::PAYLOAD_TOO_LARGE,
+            UploadError::Cancelled(_) => StatusCode::from_u16(499).unwrap(), // unused
+            UploadError::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
-
-        if let Self::Cancelled(_) = self {
-            let error = anyhow::Error::new(self);
-            event!(
-                Level::INFO,
-                error = format!("{:#}", error),
-                "returning empty response to cancelled upload"
-            );
-            ().into_response()
-        } else {
-            self.into_response_with_code(code)
+        Self {
+            code,
+            message: err.to_string(),
+            source: Some(err.into()),
         }
     }
 }
@@ -139,17 +141,18 @@ impl IntoResponse for UploadError {
         (status = 200, description = "TODO")
     )
 )]
+// #[axum_macros::debug_handler]
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Path<String>,
-    WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
+    WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, ApiError>,
     WithRejection(TypedHeader(content_length), _): WithRejection<
         TypedHeader<ContentLength>,
-        UploadError,
+        ApiError,
     >,
     headers: HeaderMap,
     mut body: BodyStream,
-) -> Result<impl IntoResponse, UploadError> {
+) -> Result<impl IntoResponse, ApiError> {
     // hyper will automatically make sure the body is <= the content-length, so we
     // can rely on it here
     //
@@ -165,7 +168,8 @@ pub async fn put(
         return Err(UploadError::TooLarge {
             size: content_length.0,
             max: state.max_file_size,
-        });
+        }
+        .into());
     }
     let id = generate_randomized_id(state.id_length);
     tracing::Span::current().record("id", &id);
@@ -186,7 +190,9 @@ pub async fn put(
         Some(e) => {
             let expiry = e.to_str().map_err(|e| UploadError::ParseHeader {
                 name: String::from("Bobashare-Expiry"),
-                source: anyhow::Error::new(e).context("error converting to string"),
+                source: anyhow::Error::new(e)
+                    .context("error converting to string")
+                    .into(),
             })?;
 
             event!(Level::DEBUG, "`Bobashare-Expiry` header says {}", expiry);
@@ -198,12 +204,14 @@ pub async fn put(
                     Duration::from_std(duration_str::parse(expiry).map_err(|e| {
                         UploadError::ParseHeader {
                             name: String::from("Bobashare-Expiry"),
-                            source: e.context("error parsing duration string"),
+                            source: e.context("error parsing duration string").into(),
                         }
                     })?)
                     .map_err(|e| UploadError::ParseHeader {
                         name: String::from("Bobashare-Expiry"),
-                        source: anyhow::Error::new(e).context("error converting duration"),
+                        source: anyhow::Error::new(e)
+                            .context("error converting duration")
+                            .into(),
                     })?,
                 )
             };
@@ -219,7 +227,9 @@ pub async fn put(
         .map(|k| {
             k.to_str().map_err(|e| UploadError::ParseHeader {
                 name: String::from("Bobashare-Delete-Key"),
-                source: anyhow::Error::new(e).context("error converting to string"),
+                source: anyhow::Error::new(e)
+                    .context("error converting to string")
+                    .into(),
             })
         })
         .transpose()?
@@ -239,7 +249,9 @@ pub async fn put(
                 UploadError::AlreadyExists
             } else {
                 UploadError::InternalServer(
-                    anyhow::Error::new(e).context("error while initializing upload"),
+                    anyhow::Error::new(e)
+                        .context("error while initializing upload")
+                        .into(),
                 )
             }
         })?;
@@ -263,7 +275,8 @@ pub async fn put(
                     file_writer
                         .write_all(&c)
                         .await
-                        .context("error writing to file")?;
+                        .context("error writing to file")
+                        .map_err(UploadError::from)?;
                 }
                 None => break,
             },
@@ -272,26 +285,30 @@ pub async fn put(
                 upload
                     .flush()
                     .await
-                    .context("error flushing cancelled upload before deletion")?;
+                    .context("error flushing cancelled upload before deletion")
+                    .map_err(UploadError::from)?;
                 state
                     .backend
                     .delete_upload(id)
                     .await
-                    .context("error deleting cancelled upload")?;
+                    .context("error deleting cancelled upload")
+                    .map_err(UploadError::from)?;
                 event!(Level::INFO, "upload was deleted successfully");
-                return Err(UploadError::Cancelled(e));
+                return Err(UploadError::Cancelled(e.into()).into());
             }
         }
     }
     file_writer
         .flush()
         .await
-        .context("error flushing file buffer")?;
+        .context("error flushing file buffer")
+        .map_err(UploadError::from)?;
 
     let metadata = upload
         .flush()
         .await
-        .context("error flushing upload metadata to disk")?;
+        .context("error flushing upload metadata to disk")
+        .map_err(|e| UploadError::InternalServer(e.into()))?;
     event!(Level::DEBUG, "flushed upload metadata to disk");
 
     // SAFETY: this shouldn't fail because `metadata.id` should be valid in a URL
