@@ -1,6 +1,6 @@
 //! API to get metadata about an upload
 
-use std::{error::Error as StdError, sync::Arc};
+use std::sync::Arc;
 
 use axum::{
     extract::{Path, State},
@@ -9,8 +9,6 @@ use axum::{
 };
 use bobashare::storage::file::OpenUploadError;
 use chrono::{DateTime, Utc};
-use displaydoc::Display;
-use hyper::StatusCode;
 use serde::Serialize;
 use tracing::{event, instrument, Level};
 use utoipa::ToSchema;
@@ -43,33 +41,6 @@ pub struct InfoResponse {
     #[schema(example = "2022-11-13T23:20:09.008416131Z", value_type = String, format = DateTime, nullable)]
     pub expiry_date: Option<DateTime<Utc>>,
     // don't accidentally send `delete_key` lol
-}
-
-/// Errors when querying info about an upload
-#[derive(Debug, Display, Serialize)]
-pub enum InfoError {
-    /// an upload at the specified id was not found
-    NotFound,
-
-    /// internal server error: {source}
-    InternalServer {
-        #[serde(skip)]
-        source: Box<dyn StdError>,
-    },
-}
-impl StdError for InfoError {}
-impl From<InfoError> for ApiError {
-    fn from(err: InfoError) -> Self {
-        let code = match err {
-            InfoError::NotFound => StatusCode::NOT_FOUND,
-            InfoError::InternalServer { source: _ } => StatusCode::INTERNAL_SERVER_ERROR,
-        };
-        Self {
-            code,
-            message: err.to_string(),
-            source: Some(err.into()),
-        }
-    }
 }
 
 #[instrument(skip(state))]
@@ -111,8 +82,8 @@ pub async fn info(
         .read_upload_metadata(&id)
         .await
         .map_err(|e| match e {
-            OpenUploadError::NotFound(_) => InfoError::NotFound,
-            e => InfoError::InternalServer { source: e.into() },
+            OpenUploadError::NotFound(_) => ApiError::NotFound,
+            e => ApiError::InternalServer { source: e.into() },
         })?;
 
     let url = state.base_url.join(&id).unwrap().to_string();

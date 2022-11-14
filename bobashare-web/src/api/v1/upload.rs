@@ -1,10 +1,10 @@
 //! API to create an upload
 
-use std::{error::Error as StdError, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::Context;
 use axum::{
-    extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
+    extract::{BodyStream, Path, State},
     headers::{ContentLength, ContentType},
     response::IntoResponse,
     Json, TypedHeader,
@@ -12,7 +12,6 @@ use axum::{
 use axum_extra::extract::WithRejection;
 use bobashare::{generate_randomized_id, storage::file::CreateUploadError};
 use chrono::{DateTime, Duration, Utc};
-use displaydoc::Display;
 use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
@@ -47,49 +46,6 @@ pub struct UploadResponse {
     /// key to delete the upload later before it's expired
     #[schema(example = "oM7Yb7N78cAcc7nDOhoo3fHWEl1OphQD")]
     pub delete_key: String,
-}
-
-/// Errors that could occur during upload
-#[derive(Debug, Display, Serialize)]
-pub enum UploadError {
-    /// an upload already exists with the same id
-    AlreadyExists,
-    // /// error parsing `{name}` header
-    // ParseHeader {
-    //     name: String,
-    //     #[serde(skip)]
-    //     source: Box<dyn StdError>,
-    // },
-    /// file is too large ({size} > {max})
-    TooLarge { size: u64, max: u64 },
-
-    /// upload was cancelled
-    Cancelled(#[serde(skip)] Box<dyn StdError>),
-
-    /// internal server error
-    InternalServer(#[serde(skip)] Box<dyn StdError>),
-}
-impl StdError for UploadError {}
-impl From<anyhow::Error> for UploadError {
-    fn from(e: anyhow::Error) -> Self {
-        Self::InternalServer(e.into())
-    }
-}
-impl From<UploadError> for ApiError {
-    fn from(err: UploadError) -> Self {
-        let code = match err {
-            UploadError::AlreadyExists => StatusCode::CONFLICT,
-            // UploadError::ParseHeader { name: _, source: _ } => StatusCode::BAD_REQUEST,
-            UploadError::TooLarge { size: _, max: _ } => StatusCode::PAYLOAD_TOO_LARGE,
-            UploadError::Cancelled(_) => StatusCode::from_u16(499).unwrap(), // unused
-            UploadError::InternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        };
-        Self {
-            code,
-            message: err.to_string(),
-            source: Some(err.into()),
-        }
-    }
 }
 
 /// Create an upload
@@ -141,7 +97,7 @@ impl From<UploadError> for ApiError {
         (status = 200, description = "TODO")
     )
 )]
-// #[axum_macros::debug_handler]
+#[axum_macros::debug_handler]
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Path<String>,
@@ -165,11 +121,10 @@ pub async fn put(
             max = state.max_file_size,
             "file is too large"
         );
-        return Err(UploadError::TooLarge {
+        return Err(ApiError::TooLarge {
             size: content_length.0,
             max: state.max_file_size,
-        }
-        .into());
+        });
     }
     let id = generate_randomized_id(state.id_length);
     tracing::Span::current().record("id", &id);
@@ -188,7 +143,7 @@ pub async fn put(
         }
         // otherwise, clamp the requested expiry to the max
         Some(e) => {
-            let expiry = e.to_str().map_err(|e| UploadError::ParseHeader {
+            let expiry = e.to_str().map_err(|e| ApiError::InvalidHeader {
                 name: String::from("Bobashare-Expiry"),
                 source: anyhow::Error::new(e)
                     .context("error converting to string")
@@ -202,12 +157,12 @@ pub async fn put(
             } else {
                 Some(
                     Duration::from_std(duration_str::parse(expiry).map_err(|e| {
-                        UploadError::ParseHeader {
+                        ApiError::InvalidHeader {
                             name: String::from("Bobashare-Expiry"),
                             source: e.context("error parsing duration string").into(),
                         }
                     })?)
-                    .map_err(|e| UploadError::ParseHeader {
+                    .map_err(|e| ApiError::InvalidHeader {
                         name: String::from("Bobashare-Expiry"),
                         source: anyhow::Error::new(e)
                             .context("error converting duration")
@@ -225,7 +180,7 @@ pub async fn put(
     let delete_key = headers
         .get("Bobashare-Delete-Key")
         .map(|k| {
-            k.to_str().map_err(|e| UploadError::ParseHeader {
+            k.to_str().map_err(|e| ApiError::InvalidHeader {
                 name: String::from("Bobashare-Delete-Key"),
                 source: anyhow::Error::new(e)
                     .context("error converting to string")
@@ -246,13 +201,9 @@ pub async fn put(
         .await
         .map_err(|e| {
             if let CreateUploadError::AlreadyExists = e {
-                UploadError::AlreadyExists
+                ApiError::AlreadyExists
             } else {
-                UploadError::InternalServer(
-                    anyhow::Error::new(e)
-                        .context("error while initializing upload")
-                        .into(),
-                )
+                ApiError::InternalServer { source: e.into() }
             }
         })?;
     event!(
@@ -276,7 +227,7 @@ pub async fn put(
                         .write_all(&c)
                         .await
                         .context("error writing to file")
-                        .map_err(UploadError::from)?;
+                        .map_err(|e| ApiError::InternalServer { source: e.into() })?;
                 }
                 None => break,
             },
@@ -286,15 +237,15 @@ pub async fn put(
                     .flush()
                     .await
                     .context("error flushing cancelled upload before deletion")
-                    .map_err(UploadError::from)?;
+                    .map_err(|e| ApiError::InternalServer { source: e.into() })?;
                 state
                     .backend
                     .delete_upload(id)
                     .await
                     .context("error deleting cancelled upload")
-                    .map_err(UploadError::from)?;
+                    .map_err(|e| ApiError::InternalServer { source: e.into() })?;
                 event!(Level::INFO, "upload was deleted successfully");
-                return Err(UploadError::Cancelled(e.into()).into());
+                return Err(ApiError::Cancelled);
             }
         }
     }
@@ -302,13 +253,13 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing file buffer")
-        .map_err(UploadError::from)?;
+        .map_err(|e| ApiError::InternalServer { source: e.into() })?;
 
     let metadata = upload
         .flush()
         .await
         .context("error flushing upload metadata to disk")
-        .map_err(|e| UploadError::InternalServer(e.into()))?;
+        .map_err(|e| ApiError::InternalServer { source: e.into() })?;
     event!(Level::DEBUG, "flushed upload metadata to disk");
 
     // SAFETY: this shouldn't fail because `metadata.id` should be valid in a URL

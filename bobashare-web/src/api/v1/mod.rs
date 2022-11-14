@@ -3,9 +3,10 @@
 use std::{error::Error as StdError, sync::Arc};
 
 use axum::{
+    extract::rejection::TypedHeaderRejection,
     response::{IntoResponse, Response},
     routing::{delete, get, put},
-    Json, Router, extract::rejection::TypedHeaderRejection,
+    Json, Router,
 };
 use displaydoc::Display;
 use hyper::StatusCode;
@@ -34,38 +35,73 @@ pub struct ApiDocV1;
 
 /// an error response from the API
 #[derive(Debug, Display, Serialize, ToSchema)]
-pub struct ApiError {
-    /// error message to be returned
-    #[schema(example = "an upload at the specified id was not found")]
-    pub message: String,
+// #[derive(Debug, Display, SerializeDisplay, ToSchema)]
+// #[serde(tag = "error", content = "message")]
+#[non_exhaustive]
+pub enum ApiError {
+    /// an upload at the specified id was not found
+    NotFound,
+    /// error parsing `{name}` header: {source}
+    InvalidHeader {
+        /// name of the header
+        name: String,
+        #[serde(skip)]
+        source: Box<dyn StdError + Send + Sync>,
+    },
+    /// incorrect delete key
+    IncorrectKey,
+    /// file is too large ({size} > {max})
+    TooLarge {
+        /// size of the file
+        size: u64,
+        /// maximum size of the file
+        max: u64,
+    },
+    /// the upload was cancelled
+    Cancelled,
+    /// an upload at the specified id already exists
+    AlreadyExists,
 
-    /// status code to respond with
-    #[serde(skip)]
-    pub code: StatusCode,
-    /// for logging purposes
-    #[serde(skip)]
-    pub source: Option<Box<dyn StdError>>,
+    /// internal server error: {source}
+    InternalServer {
+        #[serde(skip)]
+        source: Box<dyn StdError + Send + Sync>,
+    },
 }
 impl From<TypedHeaderRejection> for ApiError {
     fn from(rej: TypedHeaderRejection) -> Self {
-        Self {
-            code: StatusCode::BAD_REQUEST,
-            message: format!("error parsing `{}` header: {}", rej.name(), rej),
-            source: Some(rej.into()),
+        Self::InvalidHeader {
+            name: rej.name().to_string(),
+            source: rej.into(),
         }
     }
 }
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
-        if self.code.is_server_error() {
-            event!(Level::ERROR, status = self.code.as_u16(), error = ?self.source);
-        } else if self.code.is_client_error() {
-            event!(Level::WARN, status = self.code.as_u16(), error = ?self.source);
+        let code = match self {
+            Self::NotFound => StatusCode::NOT_FOUND,
+            Self::InvalidHeader { .. } => StatusCode::BAD_REQUEST,
+            Self::IncorrectKey => StatusCode::FORBIDDEN,
+            Self::TooLarge { .. } => StatusCode::PAYLOAD_TOO_LARGE,
+            Self::Cancelled => StatusCode::from_u16(499).unwrap(),
+            Self::AlreadyExists => StatusCode::CONFLICT,
+
+            Self::InternalServer { source: _ } => StatusCode::INTERNAL_SERVER_ERROR,
+        };
+
+        if code.is_server_error() {
+            event!(Level::ERROR, status = code.as_u16(), error = ?self);
+        } else if code.is_client_error() {
+            event!(Level::WARN, status = code.as_u16(), error = ?self);
         } else {
-            event!(Level::INFO, status = self.code.as_u16(), error = ?self.source);
+            event!(Level::INFO, status = code.as_u16(), error = ?self);
         }
 
-        (self.code, Json(self)).into_response()
+        (
+            code,
+            Json(json!({"error": self, "message": self.to_string()})),
+        )
+            .into_response()
     }
 }
 
