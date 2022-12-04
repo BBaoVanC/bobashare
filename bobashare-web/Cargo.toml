@@ -12,8 +12,8 @@ default-run = "bobashare-web"
 
 [dependencies]
 anyhow = "1.0.65"
-askama = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6", features = ["with-axum"] }
-askama_axum = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6" }
+askama = { git = "https://github.com/djc/askama", features = ["with-axum"] }
+askama_axum = { git = "https://github.com/djc/askama" }
 axum = { version = "0.6.0-rc.2", features = ["headers"] }
 axum-extra = "0.4.0-rc.1"
 axum-macros = "0.3.0-rc.2"
