@@ -71,8 +71,8 @@ impl IntoResponse for ErrorResponse {
     }
 }
 
-pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
-    Router::with_state(state)
+pub fn router() -> Router<Arc<AppState>> {
+    Router::new()
         .route("/API/", get(api::api))
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))

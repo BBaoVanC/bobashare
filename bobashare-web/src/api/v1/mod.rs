@@ -23,8 +23,8 @@ pub mod upload;
 /// - `/api/v1/upload`: [`upload::put`]
 /// - `/api/v1/upload/:filename`: [`upload::put`]
 /// - `/api/v1/delete/:id`: [`delete::delete`]
-pub fn router(state: Arc<AppState>) -> Router<Arc<AppState>> {
-    Router::with_state(state)
+pub fn router() -> Router<Arc<AppState>> {
+    Router::new()
         .route("/info/:id", get(info::info))
         .route("/upload/:filename", put(upload::put))
         .route("/delete/:id", delete(delete::delete))

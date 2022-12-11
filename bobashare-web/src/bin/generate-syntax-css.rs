@@ -27,7 +27,10 @@ fn main() -> anyhow::Result<()> {
         prefix: HIGHLIGHT_CLASS_PREFIX,
     };
 
-    writeln!(css_writer, "@media not all and (prefers-color-scheme: light) {{")?;
+    writeln!(
+        css_writer,
+        "@media not all and (prefers-color-scheme: light) {{"
+    )?;
     writeln!(
         css_writer,
         "{}",

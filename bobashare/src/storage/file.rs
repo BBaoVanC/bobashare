@@ -1,6 +1,6 @@
 //! A backend where uploads are stored as files on disk
 
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 
 use chrono::{prelude::*, Duration};
 use displaydoc::Display;
@@ -12,7 +12,7 @@ use rand::{
 use thiserror::Error;
 use tokio::{
     fs::{self, OpenOptions},
-    io::{self, AsyncReadExt},
+    io::{self, AsyncReadExt, BufReader},
 };
 
 use super::{handle::UploadHandle, upload::Upload};
@@ -255,4 +255,62 @@ impl FileBackend {
 
         Ok(())
     }
+}
+
+impl FileBackend {
+    /// Returns a list of the uploads that were deleted
+    ///
+    /// Reasons an upload might be cleaned up:
+    ///
+    /// - it's expired
+    /// - it's missing the file that the metadata.json points to
+    ///
+    /// TODO: could add locking and then delete empty/invalid metadata.json that's missing a lock
+    pub async fn cleanup(&self) -> Result<Vec<CleanupError>, CleanupError> {
+        while let Some(entry) = fs::read_dir(&self.path)
+            .await
+            .map_err(CleanupError::ReadDir)?
+            .next_entry()
+            .await
+            .map_err(CleanupError::NextEntry)?
+        {
+
+        }
+
+        todo!()
+    }
+}
+
+/// Errors when running a cleanup task
+#[derive(Debug, Error, Display)]
+pub enum CleanupError {
+    /// error reading directory
+    ReadDir(#[source] io::Error),
+    /// error reading next directory entry
+    NextEntry(#[source] io::Error),
+    /// failed to open metadata file
+    OpenMetadata(#[source] io::Error),
+    /// failed to deserialize metadata
+    DeserializeMetadata(#[source] serde_json::Error),
+}
+pub struct CleanupUpload {
+    pub id: String,
+    pub reason: CleanupReason,
+}
+#[derive(Debug, Display, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CleanupReason {
+    /// the upload has expired
+    Expired,
+}
+pub async fn cleanup_upload<P: AsRef<Path>>(path: P) -> Result<CleanupUpload, CleanupError> {
+    let metadata_path = path.as_ref().join("metadata.json");
+    let metadata_file = fs::File::open(&metadata_path)
+        .await
+        .map_err(CleanupError::OpenMetadata)?;
+    let metadata_str = String::new();
+    metadata_file.read_to_end(&mut metadata_str).await?;
+    let metadata: UploadMetadata = serde_json::from_str(&metadata_str)
+        .map_err(CleanupError::DeserializeMetadata)?;
+
+    todo!()
 }

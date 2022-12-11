@@ -12,17 +12,17 @@ default-run = "bobashare-web"
 
 [dependencies]
 anyhow = "1.0.65"
-askama = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6", features = ["with-axum"] }
-askama_axum = { git = "https://github.com/BBaoVanC/askama", branch = "axum0.6" }
-axum = { version = "0.6.0-rc.2", features = ["headers", "multipart"] }
-axum-extra = "0.4.0-rc.1"
+askama = { git = "https://github.com/djc/askama", features = ["with-axum"] }
+askama_axum = { git = "https://github.com/djc/askama" }
+axum = { version = "0.6.0", features = ["headers", "multipart"] }
+axum-extra = "0.4.0"
 bobashare = { version = "0.1.0", path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
 chrono-humanize = "0.2.2"
 clap = { version = "4.0.12", features = ["derive"] }
 config = { version = "0.13.2", default-features = false, features = ["toml"] }
 displaydoc = "0.2.3"
-duration-str = { version = "0.4.0", default-features = false }
+duration-str = { version = "0.5.0", default-features = false }
 futures-util = "0.3.24"
 hex = "0.4.3"
 humansize = "2.1.0"

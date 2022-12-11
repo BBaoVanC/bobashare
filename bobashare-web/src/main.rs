@@ -160,15 +160,16 @@ async fn main() -> anyhow::Result<()> {
         "generated state from config"
     );
 
-    let app = Router::with_state(Arc::clone(&state))
-        .nest("/api", api::router(Arc::clone(&state)))
-        .merge(views::router(Arc::clone(&state)))
-        .nest("/static", get(static_routes::handler))
+    let state2 = state.clone();
+    let app = Router::new()
+        .nest("/api", api::router())
+        .merge(views::router())
+        .nest_service("/static", get(static_routes::handler))
         .fallback(|| async {
             ErrorResponse(ErrorTemplate {
                 code: StatusCode::NOT_FOUND,
                 message: "no route for the requested URL was found".into(),
-                state: state.into(),
+                state: state2.into(),
             })
         })
         .layer(
@@ -190,6 +191,7 @@ async fn main() -> anyhow::Result<()> {
                 )
                 .propagate_x_request_id(),
         )
+        .with_state(state)
         .into_make_service();
 
     let listen_addr: SocketAddr = config

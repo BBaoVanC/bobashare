@@ -190,7 +190,7 @@ pub async fn put(
                     Duration::from_std(duration_str::parse(expiry).map_err(|e| {
                         UploadError::ParseHeader {
                             name: String::from("Bobashare-Expiry"),
-                            source: e.context("error parsing duration string"),
+                            source: anyhow::Error::new(e).context("error parsing duration string"),
                         }
                     })?)
                     .map_err(|e| UploadError::ParseHeader {
