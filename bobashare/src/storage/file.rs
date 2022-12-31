@@ -1,6 +1,6 @@
 //! A backend where uploads are stored as files on disk
 
-use std::path::{PathBuf, Path};
+use std::path::{Path, PathBuf};
 
 use chrono::{prelude::*, Duration};
 use displaydoc::Display;
@@ -265,7 +265,8 @@ impl FileBackend {
     /// - it's expired
     /// - it's missing the file that the metadata.json points to
     ///
-    /// TODO: could add locking and then delete empty/invalid metadata.json that's missing a lock
+    /// TODO: could add locking and then delete empty/invalid metadata.json
+    /// that's missing a lock
     pub async fn cleanup(&self) -> Result<Vec<CleanupError>, CleanupError> {
         while let Some(entry) = fs::read_dir(&self.path)
             .await
@@ -273,9 +274,7 @@ impl FileBackend {
             .next_entry()
             .await
             .map_err(CleanupError::NextEntry)?
-        {
-
-        }
+        {}
 
         todo!()
     }
@@ -309,8 +308,8 @@ pub async fn cleanup_upload<P: AsRef<Path>>(path: P) -> Result<CleanupUpload, Cl
         .map_err(CleanupError::OpenMetadata)?;
     let metadata_str = String::new();
     metadata_file.read_to_end(&mut metadata_str).await?;
-    let metadata: UploadMetadata = serde_json::from_str(&metadata_str)
-        .map_err(CleanupError::DeserializeMetadata)?;
+    let metadata: UploadMetadata =
+        serde_json::from_str(&metadata_str).map_err(CleanupError::DeserializeMetadata)?;
 
     todo!()
 }
