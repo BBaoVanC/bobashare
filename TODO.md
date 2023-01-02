@@ -16,6 +16,7 @@
 - Make bobascheme-light
 - Support changing default expiry unit (and guess intelligently too if not set)
 - Change docs to private and binary (not library)
+- Paste image to upload
 
 #### Maybe
 
