@@ -1794,7 +1794,7 @@ checksum = "20518fe4a4c9acf048008599e464deb21beeae3d3578418951a189c235a7a9a8"
 [[package]]
 name = "syntect"
 version = "5.0.0"
-source = "git+https://github.com/BBaoVanC/syntect?branch=fix-underline-css#a5ae4ec69b519e12de9587be88ebb7d5ea1ca802"
+source = "git+https://github.com/trishume/syntect#c61ce60c72d67ad4e3dd06d60ff3b13ef4d2698c"
 dependencies = [
  "bincode",
  "bitflags",

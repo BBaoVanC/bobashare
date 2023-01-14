@@ -37,7 +37,7 @@ serde-error = "0.1.2"
 serde_json = "1.0.85"
 # serde_with = "2.0.1"
 # syntect = "5.0.0"
-syntect = { git = "https://github.com/BBaoVanC/syntect", branch = "fix-underline-css" }
+syntect = { git = "https://github.com/trishume/syntect" }
 thiserror = "1.0.35"
 tokio = { version = "1.21.1", features = ["full"] }
 tokio-util = { version = "0.7.4", features = ["io"] }
