@@ -10,7 +10,7 @@ fn deserialize_upload_with_expiry() {
     )
     .unwrap();
 
-    assert_eq!(output, constants::example_upload_with_expiry());
+    assert_eq!(output.0, constants::example_upload_with_expiry());
 }
 
 #[test]
@@ -21,5 +21,5 @@ fn deserialize_upload_no_expiry() {
     )
     .unwrap();
 
-    assert_eq!(output, constants::example_upload_no_expiry());
+    assert_eq!(output.0, constants::example_upload_no_expiry());
 }

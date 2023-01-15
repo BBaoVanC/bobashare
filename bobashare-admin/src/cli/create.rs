@@ -38,7 +38,7 @@ pub(crate) enum NameOptions {
     },
 }
 
-#[instrument]
+#[instrument(skip(backend))]
 pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> anyhow::Result<()> {
     let expiry = args.expiry.map(|e| Duration::days(e.into()));
     let name = match args.name {

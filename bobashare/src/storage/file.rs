@@ -1,6 +1,6 @@
 //! A backend where uploads are stored as files on disk
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
 use displaydoc::Display;
@@ -12,8 +12,9 @@ use rand::{
 use thiserror::Error;
 use tokio::{
     fs::{self, OpenOptions},
-    io::{self, AsyncReadExt, BufReader},
+    io::{self, AsyncReadExt},
 };
+use tracing::{event, instrument, Level};
 
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
@@ -175,10 +176,10 @@ impl FileBackend {
             id.as_ref().to_string(),
             serde_json::from_str(&metadata)?,
         )?;
-        Ok(metadata)
+        // TODO: if metadata.1 (was migrated), save new migrated metadata
+        Ok(metadata.0)
     }
-    // TODO: some method to only read upload metadata instead of needing to grab an
-    // UploadHandle with write disabled
+
     /// does not check if the upload is expired, do that yourself
     pub async fn open_upload<S: AsRef<str>>(
         &self,
@@ -213,7 +214,7 @@ impl FileBackend {
 
         Ok(UploadHandle {
             path,
-            metadata,
+            metadata: metadata.0,
             metadata_file,
             file,
             file_path,
@@ -257,59 +258,144 @@ impl FileBackend {
     }
 }
 
-impl FileBackend {
-    /// Returns a list of the uploads that were deleted
-    ///
-    /// Reasons an upload might be cleaned up:
-    ///
-    /// - it's expired
-    /// - it's missing the file that the metadata.json points to
-    ///
-    /// TODO: could add locking and then delete empty/invalid metadata.json
-    /// that's missing a lock
-    pub async fn cleanup(&self) -> Result<Vec<CleanupError>, CleanupError> {
-        while let Some(entry) = fs::read_dir(&self.path)
-            .await
-            .map_err(CleanupError::ReadDir)?
-            .next_entry()
-            .await
-            .map_err(CleanupError::NextEntry)?
-        {}
+/// Critical errors when validating an upload that mean we can't determine
+/// whether it's valid or not
+#[derive(Debug, Error, Display)]
+pub enum ValidateError {
+    /// failed to open metadata file
+    OpenMetadata(#[source] io::Error),
+    /// failed to migrate metadata
+    MigrateMetadata(#[from] MigrateError),
+}
+#[derive(Debug, Display)]
+pub enum ValidateResult {
+    /// the upload is valid
+    Valid,
+    /// the upload is invalid and should be deleted
+    Invalid(InvalidReason),
+}
+/// Reasons why an upload might be invalid and need to be deleted
+#[derive(Debug, Error, Display)]
+pub enum InvalidReason {
+    /// the upload has expired
+    Expired,
 
-        todo!()
+    /// the upload is missing metadata.json
+    MissingMetadata(#[source] io::Error),
+    /// the upload metadata isn't valid or cannot be deserialized
+    InvalidMetadata(#[from] serde_json::Error),
+
+    /// the upload is missing a file
+    MissingFile,
+}
+impl From<InvalidReason> for Result<ValidateResult, ValidateError> {
+    fn from(val: InvalidReason) -> Self {
+        Ok(ValidateResult::Invalid(val))
+    }
+}
+/// Checks if an upload is valid or if it should be cleaned up
+///
+/// Checks:
+///
+/// 1. check if there is an upload file
+/// 2. check if there is a metadata file
+/// 3. check if the metadata file is valid (meaning: can be deserialized)
+/// 4. migrate the metadata if needed
+/// 5. check if the upload has expired
+impl FileBackend {
+    pub async fn validate_upload<S: AsRef<str>>(
+        &self,
+        id: S,
+    ) -> Result<ValidateResult, ValidateError> {
+        // ^ we're gonna have an ugly Ok() layer for actual valid/invalid :skull:
+        let id = id.as_ref();
+
+        // 1. check if there is an upload file
+        let file_path = self.get_upload_file_path(id);
+        if !file_path.exists() {
+            return InvalidReason::MissingFile.into();
+        }
+
+        // 2, 3, 4. check if there is a metadata file and if it's valid
+        let metadata = match self.read_upload_metadata(id).await {
+            Ok(m) => m,
+            Err(err) => match err {
+                OpenUploadError::NotFound(e) => return InvalidReason::MissingMetadata(e).into(),
+                OpenUploadError::OpenFile(_) => unreachable!(),
+                OpenUploadError::ReadMetadata(e) => return Err(ValidateError::OpenMetadata(e)),
+                OpenUploadError::MigrateMetadata(e) => {
+                    return Err(ValidateError::MigrateMetadata(e))
+                }
+                OpenUploadError::DeserializeMetadata(e) => {
+                    return InvalidReason::InvalidMetadata(e).into()
+                }
+            },
+        };
+
+        // 5. check if the upload is expired
+        if metadata.is_expired() {
+            return InvalidReason::Expired.into();
+        }
+
+        Ok(ValidateResult::Valid)
     }
 }
 
-/// Errors when running a cleanup task
+/// Errors when running a repository cleanup task
 #[derive(Debug, Error, Display)]
 pub enum CleanupError {
     /// error reading directory
     ReadDir(#[source] io::Error),
     /// error reading next directory entry
     NextEntry(#[source] io::Error),
-    /// failed to open metadata file
-    OpenMetadata(#[source] io::Error),
-    /// failed to deserialize metadata
-    DeserializeMetadata(#[source] serde_json::Error),
 }
-pub struct CleanupUpload {
-    pub id: String,
-    pub reason: CleanupReason,
-}
-#[derive(Debug, Display, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum CleanupReason {
-    /// the upload has expired
-    Expired,
-}
-pub async fn cleanup_upload<P: AsRef<Path>>(path: P) -> Result<CleanupUpload, CleanupError> {
-    let metadata_path = path.as_ref().join("metadata.json");
-    let metadata_file = fs::File::open(&metadata_path)
-        .await
-        .map_err(CleanupError::OpenMetadata)?;
-    let metadata_str = String::new();
-    metadata_file.read_to_end(&mut metadata_str).await?;
-    let metadata: UploadMetadata =
-        serde_json::from_str(&metadata_str).map_err(CleanupError::DeserializeMetadata)?;
+impl FileBackend {
+    /// Validate all the uploads in the repository and return a list of ones to
+    /// be deleted
+    ///
+    /// See [`FileBackend::validate_upload`] for the checks that are performed
+    // TODO: could add locking and then delete empty/invalid metadata.json
+    // that's missing a lock
+    #[instrument(skip(self))]
+    pub async fn cleanup(&self) -> Result<(), CleanupError> {
+        let mut delete_queue = Vec::new();
+        let mut read_dir = fs::read_dir(&self.path).await.map_err(CleanupError::ReadDir)?;
+        while let Some(entry) = read_dir.next_entry().await.map_err(CleanupError::NextEntry)?
+        {
+            let span = tracing::span!(Level::DEBUG, "validate", name = ?entry.file_name());
+            let _guard = span.enter();
 
-    todo!()
+            let Some(id) = entry.file_name().to_str().map(ToString::to_string) else {
+                event!(Level::WARN, "invalid file name");
+                continue;
+            };
+
+            match self.validate_upload(&id).await {
+                Ok(res) => match res {
+                    ValidateResult::Valid => event!(Level::DEBUG, "valid"),
+                    ValidateResult::Invalid(reason) => {
+                        event!(Level::DEBUG, "will delete: {reason}");
+                        delete_queue.push(id);
+                    }
+                },
+                Err(err) => {
+                    event!(Level::ERROR, "error validating: {err}");
+                }
+            }
+        }
+
+        return Ok(());
+
+        for id in delete_queue {
+            let span = tracing::span!(Level::INFO, "delete", id = ?id);
+            let _guard = span.enter();
+            // TODO: some way to return a list of failed deletes
+            event!(Level::INFO, id, "deleting");
+            if let Err(err) = fs::remove_dir_all(self.get_upload_path(&id)).await {
+                event!(Level::ERROR, id, "error deleting: {err}");
+            }
+        }
+
+        Ok(())
+    }
 }

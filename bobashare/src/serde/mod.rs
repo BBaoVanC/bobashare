@@ -54,23 +54,31 @@ pub enum MigrateError {
 impl UploadMetadata {
     // TODO: maybe migrating should be a separate task and it should immediately
     // error if not already migrated
+    // TODO: why isn't this an instance method
+    /// Convert [`UploadMetadata`] into an [`Upload`], migrating it if needed
+    ///
+    /// Returns a tuple on success containing the migrated upload and whether it
+    /// was migrated (or if it was already the latest version)
     pub fn into_migrated_upload(
         id: String,
         metadata: UploadMetadata,
-    ) -> Result<Upload, MigrateError> {
+    ) -> Result<(Upload, bool), MigrateError> {
         Ok(match metadata {
             // latest
-            Self::V1(data) => Upload {
-                id,
-                filename: data.filename,
-                mimetype: data
-                    .mimetype
-                    .parse::<Mime>()
-                    .map_err(MigrateErrorV1::from)?,
-                creation_date: data.creation_date,
-                expiry_date: data.expiry_date,
-                delete_key: data.delete_key,
-            },
+            Self::V1(data) => (
+                Upload {
+                    id,
+                    filename: data.filename,
+                    mimetype: data
+                        .mimetype
+                        .parse::<Mime>()
+                        .map_err(MigrateErrorV1::from)?,
+                    creation_date: data.creation_date,
+                    expiry_date: data.expiry_date,
+                    delete_key: data.delete_key,
+                },
+                false, // already latest
+            ),
         })
     }
 }
