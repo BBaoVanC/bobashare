@@ -8,7 +8,10 @@ use std::{io, path::PathBuf};
 
 use displaydoc::Display;
 use thiserror::Error;
-use tokio::{fs::File, io::AsyncWriteExt};
+use tokio::{
+    fs::{self, File},
+    io::AsyncWriteExt,
+};
 
 use super::upload::Upload;
 use crate::serde::UploadMetadata;
@@ -27,10 +30,11 @@ pub struct UploadHandle {
     pub file_path: PathBuf,
     // marked pub(super) so it can be constructed by [`super::file`] methods
     pub(super) metadata_file: File,
+    pub(super) lock_path: PathBuf,
 }
 /// Errors when flushing the upload metadata to disk
 #[derive(Debug, Error, Display)]
-pub enum SerializeMetadataError {
+pub enum FlushUploadError {
     /// error while serializing with serde_json
     Serialize(#[from] serde_json::Error),
     /// error writing metadata to file
@@ -40,11 +44,14 @@ pub enum SerializeMetadataError {
     FlushMetadata(#[source] io::Error),
     /// error flushing upload file to disk
     FlushFile(#[source] io::Error),
+
+    /// error removing lock file
+    RemoveLock(#[source] io::Error),
 }
 impl UploadHandle {
     /// Consume the handle, gracefully close the uploaded file, and flush the
     /// metadata to disk.
-    pub async fn flush(mut self) -> Result<Upload, SerializeMetadataError> {
+    pub async fn flush(mut self) -> Result<Upload, FlushUploadError> {
         self.metadata_file
             .write_all(
                 // TODO: get rid of self.metadata.clone()
@@ -52,16 +59,20 @@ impl UploadHandle {
                     .as_bytes(),
             )
             .await
-            .map_err(SerializeMetadataError::WriteMetadata)?;
+            .map_err(FlushUploadError::WriteMetadata)?;
         self.metadata_file
             .flush()
             .await
-            .map_err(SerializeMetadataError::FlushMetadata)?;
+            .map_err(FlushUploadError::FlushMetadata)?;
 
         self.file
             .flush()
             .await
-            .map_err(SerializeMetadataError::FlushFile)?;
+            .map_err(FlushUploadError::FlushFile)?;
+
+        fs::remove_file(&self.lock_path)
+            .await
+            .map_err(FlushUploadError::RemoveLock)?;
 
         Ok(self.metadata)
     }

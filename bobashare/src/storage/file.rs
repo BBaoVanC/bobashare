@@ -14,7 +14,7 @@ use tokio::{
     fs::{self, OpenOptions},
     io::{self, AsyncReadExt},
 };
-use tracing::{event, instrument, Level, Instrument};
+use tracing::{event, instrument, Instrument, Level};
 
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
@@ -64,6 +64,10 @@ impl FileBackend {
     fn get_upload_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
         self.path.join(id.as_ref())
     }
+    /// Get the path to the `metadata.lock` file
+    fn get_lock_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
+        self.get_upload_path(id.as_ref()).join("metadata.lock")
+    }
     /// Get the path to the `metadata.json` of the upload
     fn get_metadata_path<S: AsRef<str>>(&self, id: S) -> PathBuf {
         self.get_upload_path(id.as_ref()).join("metadata.json")
@@ -81,6 +85,8 @@ pub enum CreateUploadError {
     AlreadyExists,
     /// error creating parent directory for the upload
     CreateDirectory(#[source] io::Error),
+    /// error creating lock file
+    CreateLockFile(#[source] io::Error),
     /// error creating metadata file
     CreateMetadataFile(#[source] io::Error),
     /// error creating file for upload contents
@@ -103,6 +109,15 @@ impl FileBackend {
             io::ErrorKind::AlreadyExists => CreateUploadError::AlreadyExists,
             _ => CreateUploadError::CreateDirectory(e),
         })?;
+
+        let lock_path = self.get_lock_path(id.as_ref());
+        let lock_file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&lock_path)
+            .await
+            .map_err(CreateUploadError::CreateLockFile)?;
+        drop(lock_file);
 
         let metadata_path = self.get_metadata_path(id.as_ref());
         let metadata_file = OpenOptions::new()
@@ -134,6 +149,7 @@ impl FileBackend {
             file,
             file_path,
             metadata_file,
+            lock_path,
         })
     }
 }
@@ -143,6 +159,8 @@ impl FileBackend {
 pub enum OpenUploadError {
     /// the upload was not found
     NotFound(#[source] io::Error),
+    /// the upload is locked
+    Locked,
 
     /// error while reading metadata file
     ReadMetadata(#[source] io::Error),
@@ -159,6 +177,11 @@ impl FileBackend {
         &self,
         id: S,
     ) -> Result<Upload, OpenUploadError> {
+        let lock_path = self.get_lock_path(id.as_ref());
+        if fs::metadata(lock_path).await.is_ok() {
+            return Err(OpenUploadError::Locked);
+        }
+
         let metadata_path = self.get_metadata_path(id.as_ref());
         let mut metadata_file = OpenOptions::new()
             .read(true)
@@ -186,6 +209,11 @@ impl FileBackend {
         id: S,
         write: bool,
     ) -> Result<UploadHandle, OpenUploadError> {
+        let lock_path = self.get_lock_path(id.as_ref());
+        if fs::metadata(&lock_path).await.is_ok() {
+            return Err(OpenUploadError::Locked);
+        }
+
         let path = self.get_upload_path(id.as_ref());
         let mut open_options = OpenOptions::new();
         open_options.read(true).create(false).write(write);
@@ -218,6 +246,7 @@ impl FileBackend {
             metadata_file,
             file,
             file_path,
+            lock_path,
         })
     }
 }
@@ -271,6 +300,8 @@ pub enum ValidateError {
 pub enum ValidateResult {
     /// the upload is valid
     Valid,
+    /// the upload is locked
+    Locked,
     /// the upload is invalid and should be deleted
     Invalid(InvalidReason),
 }
@@ -279,6 +310,8 @@ pub enum ValidateResult {
 pub enum InvalidReason {
     /// the upload has expired
     Expired,
+    /// the upload is locked
+    Locked,
 
     /// the upload is missing metadata.json
     MissingMetadata(#[source] io::Error),
@@ -299,9 +332,10 @@ impl From<InvalidReason> for Result<ValidateResult, ValidateError> {
 ///
 /// 1. check if there is an upload file
 /// 2. check if there is a metadata file
-/// 3. check if the metadata file is valid (meaning: can be deserialized)
-/// 4. migrate the metadata if needed
-/// 5. check if the upload has expired
+/// 3. make sure the file isn't locked
+/// 4. check if the metadata file is valid (meaning: can be deserialized)
+/// 5. migrate the metadata if needed
+/// 6. check if the upload has expired
 ///
 /// TODO: what should we do if it's a file and not a directory?
 impl FileBackend {
@@ -318,11 +352,13 @@ impl FileBackend {
             return InvalidReason::MissingFile.into();
         }
 
-        // 2, 3, 4. check if there is a metadata file and if it's valid
+        // 2, 3, 4, 5. check if there is a metadata file and if it's valid, and that
+        // there's no lock file
         let metadata = match self.read_upload_metadata(id).await {
             Ok(m) => m,
             Err(err) => match err {
                 OpenUploadError::NotFound(e) => return InvalidReason::MissingMetadata(e).into(),
+                OpenUploadError::Locked => return Ok(ValidateResult::Locked),
                 OpenUploadError::OpenFile(_) => unreachable!(),
                 OpenUploadError::ReadMetadata(e) => return Err(ValidateError::OpenMetadata(e)),
                 OpenUploadError::MigrateMetadata(e) => {
@@ -334,7 +370,7 @@ impl FileBackend {
             },
         };
 
-        // 5. check if the upload is expired
+        // 6. check if the upload is expired
         if metadata.is_expired() {
             return InvalidReason::Expired.into();
         }
@@ -356,13 +392,16 @@ impl FileBackend {
     /// be deleted
     ///
     /// See [`FileBackend::validate_upload`] for the checks that are performed
-    // TODO: could add locking and then delete empty/invalid metadata.json
-    // that's missing a lock
     #[instrument(skip(self))]
     pub async fn cleanup(&self) -> Result<(), CleanupError> {
         let mut delete_queue = Vec::new();
-        let mut read_dir = fs::read_dir(&self.path).await.map_err(CleanupError::ReadDir)?;
-        while let Some(entry) = read_dir.next_entry().await.map_err(CleanupError::NextEntry)?
+        let mut read_dir = fs::read_dir(&self.path)
+            .await
+            .map_err(CleanupError::ReadDir)?;
+        while let Some(entry) = read_dir
+            .next_entry()
+            .await
+            .map_err(CleanupError::NextEntry)?
         {
             let span = tracing::span!(Level::DEBUG, "validate", name = ?entry.file_name());
             async {
@@ -374,6 +413,7 @@ impl FileBackend {
                 match self.validate_upload(&id).await {
                     Ok(res) => match res {
                         ValidateResult::Valid => event!(Level::DEBUG, "valid"),
+                        ValidateResult::Locked => event!(Level::INFO, "locked"),
                         ValidateResult::Invalid(reason) => {
                             event!(Level::DEBUG, "will delete: {reason}");
                             delete_queue.push(id);
@@ -383,7 +423,9 @@ impl FileBackend {
                         event!(Level::ERROR, "error validating: {err}");
                     }
                 }
-            }.instrument(span).await;
+            }
+            .instrument(span)
+            .await;
         }
 
         for id in delete_queue {
@@ -394,7 +436,9 @@ impl FileBackend {
                 if let Err(err) = fs::remove_dir_all(self.get_upload_path(&id)).await {
                     event!(Level::ERROR, id, "error deleting: {err}");
                 }
-            }.instrument(span).await
+            }
+            .instrument(span)
+            .await
         }
 
         Ok(())

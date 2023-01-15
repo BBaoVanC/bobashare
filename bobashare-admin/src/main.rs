@@ -41,10 +41,10 @@ async fn main() -> anyhow::Result<()> {
     match cli.command {
         Command::CreateUpload(args) => {
             cli::create::create_upload(backend, args).await?;
-        },
+        }
         Command::Cleanup(args) => {
             cli::cleanup::cleanup(backend, args).await?;
-        },
+        }
     };
 
     Ok(())

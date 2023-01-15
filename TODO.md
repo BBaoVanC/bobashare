@@ -1,11 +1,16 @@
 # TODO
 
+## CI
+
+- make warnings fail lint
+
 ## Testing
 
 - more unit tests
 - integration tests
 - make tests to run JS/CSS linters and compatibility checkers
 - run JS/HTML/CSS format checkers
+- test locking
 
 ### Frontend
 
@@ -17,6 +22,8 @@
 - Support changing default expiry unit (and guess intelligently too if not set)
 - Change docs to private and binary (not library)
 - Paste image to upload
+
+- `build.rs` to generate syntax CSS, and also make sure to properly rebuild on the right dependency files (the syntax source)
 
 #### Maybe
 
@@ -53,6 +60,8 @@
 - Figure out file locking and concurrency safety
 - Add `#[non_exhaustive]` to every Error enum (and maybe other enums)
 - Derive `Debug` and `Clone` for as many types as possible
+
+- SIGTERM handler to remove lock files
 
 - Maybe during startup, loop through all uploads and delete expired ones
 - https://github.com/pyrossh/rust-embed/issues/192

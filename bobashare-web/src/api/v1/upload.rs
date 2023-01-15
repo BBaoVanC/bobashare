@@ -242,6 +242,7 @@ pub async fn put(
     );
 
     let mut file_writer = BufWriter::new(&mut upload.file);
+    event!(Level::DEBUG, "streaming file to disk");
     loop {
         let chunk = body.try_next().await.context("error reading body");
         match chunk {
