@@ -14,7 +14,7 @@ use tokio::{
     fs::{self, OpenOptions},
     io::{self, AsyncReadExt},
 };
-use tracing::{event, instrument, Level};
+use tracing::{event, instrument, Level, Instrument};
 
 use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
@@ -302,6 +302,8 @@ impl From<InvalidReason> for Result<ValidateResult, ValidateError> {
 /// 3. check if the metadata file is valid (meaning: can be deserialized)
 /// 4. migrate the metadata if needed
 /// 5. check if the upload has expired
+///
+/// TODO: what should we do if it's a file and not a directory?
 impl FileBackend {
     pub async fn validate_upload<S: AsRef<str>>(
         &self,
@@ -363,37 +365,36 @@ impl FileBackend {
         while let Some(entry) = read_dir.next_entry().await.map_err(CleanupError::NextEntry)?
         {
             let span = tracing::span!(Level::DEBUG, "validate", name = ?entry.file_name());
-            let _guard = span.enter();
+            async {
+                let Some(id) = entry.file_name().to_str().map(ToString::to_string) else {
+                    event!(Level::WARN, "invalid file name");
+                    return;
+                };
 
-            let Some(id) = entry.file_name().to_str().map(ToString::to_string) else {
-                event!(Level::WARN, "invalid file name");
-                continue;
-            };
-
-            match self.validate_upload(&id).await {
-                Ok(res) => match res {
-                    ValidateResult::Valid => event!(Level::DEBUG, "valid"),
-                    ValidateResult::Invalid(reason) => {
-                        event!(Level::DEBUG, "will delete: {reason}");
-                        delete_queue.push(id);
+                match self.validate_upload(&id).await {
+                    Ok(res) => match res {
+                        ValidateResult::Valid => event!(Level::DEBUG, "valid"),
+                        ValidateResult::Invalid(reason) => {
+                            event!(Level::DEBUG, "will delete: {reason}");
+                            delete_queue.push(id);
+                        }
+                    },
+                    Err(err) => {
+                        event!(Level::ERROR, "error validating: {err}");
                     }
-                },
-                Err(err) => {
-                    event!(Level::ERROR, "error validating: {err}");
                 }
-            }
+            }.instrument(span).await;
         }
-
-        return Ok(());
 
         for id in delete_queue {
             let span = tracing::span!(Level::INFO, "delete", id = ?id);
-            let _guard = span.enter();
             // TODO: some way to return a list of failed deletes
-            event!(Level::INFO, id, "deleting");
-            if let Err(err) = fs::remove_dir_all(self.get_upload_path(&id)).await {
-                event!(Level::ERROR, id, "error deleting: {err}");
-            }
+            async {
+                event!(Level::INFO, id, "deleting");
+                if let Err(err) = fs::remove_dir_all(self.get_upload_path(&id)).await {
+                    event!(Level::ERROR, id, "error deleting: {err}");
+                }
+            }.instrument(span).await
         }
 
         Ok(())
