@@ -57,7 +57,6 @@
 - If a file is missing a metadata entry, warning should be sent
 - Check for extraneous files, maybe in CLI
 - Add IP banning (requires saving in metadata)
-- Figure out file locking and concurrency safety
 - Add `#[non_exhaustive]` to every Error enum (and maybe other enums)
 - Derive `Debug` and `Clone` for as many types as possible
 
