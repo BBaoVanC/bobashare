@@ -17,13 +17,14 @@ use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
 use syntect::parsing::SyntaxSet;
+use tokio::{signal, sync::broadcast, time::sleep};
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
     trace::{DefaultOnRequest, DefaultOnResponse, TraceLayer},
     ServiceBuilderExt,
 };
-use tracing::{event, Level, Instrument};
+use tracing::{event, Instrument, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 
@@ -68,6 +69,7 @@ async fn main() -> anyhow::Result<()> {
     let mut config = Config::builder()
         .set_default("listen_addr", "127.0.0.1:3000").unwrap()
         .set_default("backend_path", "storage/").unwrap()
+        .set_default("cleanup_interval", "1h").unwrap()
         .set_default("base_url", "http://localhost:3000/").unwrap()
         .set_default("id_length", 8).unwrap()
         .set_default("default_expiry", "24h").unwrap()
@@ -113,6 +115,8 @@ async fn main() -> anyhow::Result<()> {
 
     let backend =
         FileBackend::new(PathBuf::from(config.get_string("backend_path").unwrap())).await?;
+    let cleanup_interval = duration_str::parse(&config.get_string("cleanup_interval").unwrap())
+        .context("error parsing `cleanup_interval`")?;
     let base_url: Url = config
         .get_string("base_url")
         .unwrap()
@@ -132,10 +136,10 @@ async fn main() -> anyhow::Result<()> {
     .map(|d| Duration::from_std(d).unwrap());
     let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
     let extra_footer_text = config.get("extra_footer_text").unwrap();
-    // let extra_footer_text = config.get_string("extra_footer_text").unwrap();
 
     let state = Arc::new(AppState {
         backend,
+        cleanup_interval,
         base_url,
         raw_url,
         id_length,
@@ -146,6 +150,8 @@ async fn main() -> anyhow::Result<()> {
         syntax_set: SyntaxSet::load_defaults_newlines(),
 
         extra_footer_text,
+
+        shutdown_tx: broadcast::channel(8).0,
     });
 
     event!(Level::DEBUG,
@@ -200,25 +206,92 @@ async fn main() -> anyhow::Result<()> {
         .parse()
         .context("error parsing `listen_addr`")?;
     event!(Level::INFO, "listening on http://{}", listen_addr);
-    let server_task = tokio::spawn(axum::Server::try_bind(&listen_addr).context("error binding to listen_addr")?.serve(app));
-    // axum::Server::try_bind(&listen_addr).context("error binding to listen_addr")?.serve(app).await?;
+    let server_span = tracing::span!(Level::INFO, "server");
+    let server_exec = axum::Server::try_bind(&listen_addr)
+        .context("error binding to listen_addr")?
+        .serve(app)
+        .with_graceful_shutdown(async {
+            state.shutdown_tx.subscribe().recv().await.unwrap();
+            event!(Level::INFO, "received shutdown signal");
+        })
+        .instrument(server_span);
 
     let cleanup_span = tracing::span!(Level::INFO, "bg_cleanup");
-    let state2 = state.clone();
-    let cleanup_task = tokio::spawn(async move {
+    let cleanup_exec = async {
+        let mut shutdown_rx = state.shutdown_tx.subscribe();
         loop {
             event!(Level::DEBUG, "sleeping before next cleanup task");
-            // tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await; // 1 hour
-            tokio::time::sleep(std::time::Duration::from_secs(10)).await; // 1 hour
-            event!(Level::INFO, "running cleanup");
-            if let Err(e) = state2.backend.cleanup().await {
-                event!(Level::ERROR, ?e, "error during cleanup task");
+            tokio::select! {
+                _ = shutdown_rx.recv() => {
+                    event!(Level::INFO, "received shutdown signal");
+                    break;
+                },
+                // TODO: change to 1 hour
+                // TODO: make configurable
+                _ = sleep(state.cleanup_interval) => {}
             }
-            event!(Level::INFO, "cleanup done");
-        }
-    }.instrument(cleanup_span));
 
-    tokio::join!(server_task, cleanup_task);
+            event!(Level::INFO, "running cleanup");
+            tokio::select! {
+                r = state.backend.cleanup() => {
+                    if r.is_err() {
+                        event!(Level::ERROR, ?r, "error during cleanup task");
+                    } else {
+                        event!(Level::INFO, "cleanup done");
+                    }
+                },
+                _ = shutdown_rx.recv() => {
+                    event!(Level::INFO, "received shutdown signal, waiting 10 seconds for cleanup to finish, send another signal to force shutdown");
+                    shutdown_rx.recv().await.unwrap();
+                    event!(Level::INFO, "received second shutdown signal, forcing shutdown");
+                    break;
+                }
+            }
+        }
+    }
+    .instrument(cleanup_span);
+
+    let shutdown_span = tracing::span!(Level::INFO, "shutdown_handler");
+    // needed since the shutdown task might outlive main (supposedly?)
+    let state2 = state.clone();
+    // use a loop and spawn a task so we can keep receiving signals and sending
+    // shutdowns
+    tokio::spawn(
+        async move {
+            loop {
+                let ctrl_c = async {
+                    signal::ctrl_c()
+                        .await
+                        .expect("failed to install CTRL+C signal handler");
+                };
+
+                #[cfg(unix)]
+                let terminate = async {
+                    signal::unix::signal(signal::unix::SignalKind::terminate())
+                        .expect("failed to install SIGTERM signal handler")
+                        .recv()
+                        .await;
+                };
+                #[cfg(not(unix))]
+                let terminate = std::future::pending::<()>();
+
+                tokio::select! {
+                    _ = ctrl_c => {
+                        event!(Level::INFO, "received CTRL+C");
+                    }
+                    _ = terminate => {
+                        event!(Level::INFO, "received SIGTERM");
+                    }
+                }
+                state2.shutdown_tx.send(()).unwrap();
+            }
+        }
+        .instrument(shutdown_span),
+    );
+
+    // start everything
+    let join_results = tokio::join!(server_exec, cleanup_exec);
+    join_results.0.context("error running server")?; // handle error in axum server
 
     Ok(())
 }

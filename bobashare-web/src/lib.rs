@@ -1,10 +1,13 @@
 //! Webserver written with [`axum`] which provides a frontend and REST API for
 //! [`bobashare`]
 
+use std::time::Duration as StdDuration;
+
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
 use pulldown_cmark::Options;
 use syntect::{html::ClassStyle, parsing::SyntaxSet};
+use tokio::sync::broadcast;
 use url::Url;
 
 pub mod api;
@@ -26,6 +29,8 @@ pub const MARKDOWN_OPTIONS: Options = Options::all();
 pub struct AppState {
     /// storage backend
     pub backend: FileBackend,
+    /// how often between each cleanup
+    pub cleanup_interval: StdDuration,
     /// base URL (ex. `http://localhost:3000/`)
     pub base_url: Url,
     /// base URL for downloading raw upload files (ex. `http://localhost:3000/raw/`)
@@ -44,6 +49,9 @@ pub struct AppState {
 
     /// extra text to display in footer
     pub extra_footer_text: Option<String>,
+
+    /// graceful shutdown channel
+    pub shutdown_tx: broadcast::Sender<()>,
 }
 
 /// Take the requested expiry, and make sure it's within the maximum expiry.
