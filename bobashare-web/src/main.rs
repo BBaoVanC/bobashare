@@ -23,7 +23,7 @@ use tower_http::{
     trace::{DefaultOnRequest, DefaultOnResponse, TraceLayer},
     ServiceBuilderExt,
 };
-use tracing::{event, Level};
+use tracing::{event, Level, Instrument};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 
@@ -191,7 +191,7 @@ async fn main() -> anyhow::Result<()> {
                 )
                 .propagate_x_request_id(),
         )
-        .with_state(state)
+        .with_state(state.clone())
         .into_make_service();
 
     let listen_addr: SocketAddr = config
@@ -200,7 +200,25 @@ async fn main() -> anyhow::Result<()> {
         .parse()
         .context("error parsing `listen_addr`")?;
     event!(Level::INFO, "listening on http://{}", listen_addr);
-    axum::Server::bind(&listen_addr).serve(app).await?;
+    let server_task = tokio::spawn(axum::Server::try_bind(&listen_addr).context("error binding to listen_addr")?.serve(app));
+    // axum::Server::try_bind(&listen_addr).context("error binding to listen_addr")?.serve(app).await?;
+
+    let cleanup_span = tracing::span!(Level::INFO, "bg_cleanup");
+    let state2 = state.clone();
+    let cleanup_task = tokio::spawn(async move {
+        loop {
+            event!(Level::DEBUG, "sleeping before next cleanup task");
+            // tokio::time::sleep(std::time::Duration::from_secs(60 * 60)).await; // 1 hour
+            tokio::time::sleep(std::time::Duration::from_secs(10)).await; // 1 hour
+            event!(Level::INFO, "running cleanup");
+            if let Err(e) = state2.backend.cleanup().await {
+                event!(Level::ERROR, ?e, "error during cleanup task");
+            }
+            event!(Level::INFO, "cleanup done");
+        }
+    }.instrument(cleanup_span));
+
+    tokio::join!(server_task, cleanup_task);
 
     Ok(())
 }
