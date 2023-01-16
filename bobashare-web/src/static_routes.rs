@@ -34,8 +34,7 @@ pub async fn handler(uri: Uri, headers: HeaderMap) -> impl IntoResponse {
                 }
             }
 
-            let mimetype = mime_db::lookup(path)
-                .map_or(mime::APPLICATION_OCTET_STREAM, |m| m.parse().unwrap());
+            let mimetype = f.metadata.mimetype();
             event!(Level::DEBUG, ?sha256, ?mimetype);
             (
                 [
