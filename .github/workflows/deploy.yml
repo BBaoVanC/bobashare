@@ -21,34 +21,46 @@ jobs:
           tags: ghcr.io/bbaovanc/bobashare:latest
           push: true
 
-  # release:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os:
-  #         - ubuntu-latest
-  #         - macos-latest
-  #         - windows-latest
-  #   name: Draft release
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install toolchain
-  #       run: |
-  #         rustup set auto-self-update disable
-  #         rustup toolchain install stable --profile minimal
-  #     - name: Build
-  #       run: cargo build --release --locked
-  #     - name: Read release notes from annotated tag
-  #       run: 'echo "$(git tag -l --format="%(contents:body)" $GITHUB_REF_NAME)" > RELEASE_NOTES'
-  #     - name: Draft release
-  #       uses: softprops/action-gh-release@v0.1.15
-  #       with:
-  #         draft: true
-  #         body_path: RELEASE_NOTES
-  #         files: |
-  #           target/release/bobashare-admin
-  #           target/release/bobashare-web
-  #           # windows is silly
-  #           target/release/bobashare-admin.exe
-  #           target/release/bobashare-web.exe
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - {os: "ubuntu-latest", target: "x86_64-unknown-linux-gnu"}
+          - {os: "ubuntu-latest", target: "x86_64-unknown-linux-musl"}
+          - {os: "ubuntu-latest", target: "i686-unknown-linux-gnu"}
+          - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
+          - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
+          - {os: "windows-latest", target: "i686-pc-windows-gnu"}
+          - {os: "windows-latest", target: "i686-pc-windows-msvc"}
+          - {os: "macos-latest", target: "x86_64-apple-darwin"}
+    name: Draft release
+    runs-on: ${{ matrix.build.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install toolchain
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+          rustup target add ${{ matrix.build.target }}
+      - name: Build
+        run: cargo build --release --locked
+      - name: Rename binaries (Unix)
+        if: ${{ matrix.build.os == "ubuntu-latest" || matrix.build.os == "macos-latest" }}
+        run: |
+          mv target/release/bobashare-admin target/release/bobashare-admin-${{ matrix.build.target }}
+          mv target/release/bobashare-web target/release/bobashare-web-${{ matrix.build.target }}
+      - name: Rename binaries (Windows)
+        if: ${{ matrix.build.os == "windows-latest" }}
+        run: |
+          mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ matrix.build.target }}.exe
+          mv target/release/bobashare-web.exe target/release/bobashare-web-${{ matrix.build.target }}.exe
+      - name: Draft release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          draft: true
+          files: |
+            target/release/bobashare-admin-*
+            target/release/bobashare-web-*
+            target/release/bobashare-admin-*.exe
+            target/release/bobashare-web-*.exe
