@@ -37,9 +37,8 @@ jobs:
         run: |
           rustup set auto-self-update disable
           rustup toolchain install nightly --profile minimal
-          rustup component add rustfmt
       - uses: Swatinem/rust-cache@v2
-      - run: cargo fmt --all --check
+      - run: cargo +nightly fmt --all --check
 
   docker:
     name: Build master Docker image
