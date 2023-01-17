@@ -50,7 +50,7 @@ pub struct AppState {
     /// extra text to display in footer
     pub extra_footer_text: Option<String>,
 
-    /// channel to broadcast shutdown to all requests -- after two signals
+    /// channel to broadcast shutdown -- will force all uploads to stop
     pub shutdown_tx: broadcast::Sender<()>,
 }
 

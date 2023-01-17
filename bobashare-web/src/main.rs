@@ -153,8 +153,6 @@ async fn main() -> anyhow::Result<()> {
 
         shutdown_tx: broadcast::channel(4).0,
     });
-    // shutdown channel for the main tasks (server, cleanup)
-    let main_shutdown_tx = broadcast::channel::<()>(4).0;
 
     event!(Level::DEBUG,
         backend = ?state.backend,
@@ -213,20 +211,14 @@ async fn main() -> anyhow::Result<()> {
         .context("error binding to listen_addr")?
         .serve(app)
         .with_graceful_shutdown(async {
-            main_shutdown_tx.subscribe().recv().await.unwrap();
-            event!(Level::WARN, "received shutdown signal, but waiting for current requests to finish; \
-                send another signal to quit all requests immediately");
-            main_shutdown_tx.subscribe().recv().await.unwrap();
-            event!(Level::INFO, "received second shutdown signal, quitting all requests immediately");
-            if let Err(e) = state.shutdown_tx.send(()) {
-                event!(Level::ERROR, ?e, "error sending shutdown signal to active requests");
-            };
+            state.shutdown_tx.subscribe().recv().await.unwrap();
+            event!(Level::INFO, "received shutdown signal, quitting axum server");
         })
         .instrument(server_span);
 
     let cleanup_span = tracing::span!(Level::INFO, "bg_cleanup");
     let cleanup_exec = async {
-        let mut shutdown_rx = main_shutdown_tx.subscribe();
+        let mut shutdown_rx = state.shutdown_tx.subscribe();
         loop {
             event!(Level::INFO, "running cleanup");
             tokio::select! {
@@ -238,9 +230,7 @@ async fn main() -> anyhow::Result<()> {
                     }
                 },
                 _ = shutdown_rx.recv() => {
-                    event!(Level::WARN, "received shutdown signal, send another signal to force the cleanup task to exit");
-                    shutdown_rx.recv().await.unwrap();
-                    event!(Level::INFO, "received second shutdown signal, forcing shutdown");
+                    event!(Level::INFO, "received shutdown signal, stopping cleanup");
                     break;
                 }
             }
@@ -251,8 +241,6 @@ async fn main() -> anyhow::Result<()> {
                     event!(Level::INFO, "received shutdown signal");
                     break;
                 },
-                // TODO: change to 1 hour
-                // TODO: make configurable
                 _ = sleep(state.cleanup_interval) => {}
             }
 
@@ -262,9 +250,9 @@ async fn main() -> anyhow::Result<()> {
 
     let shutdown_span = tracing::span!(Level::INFO, "shutdown_handler");
     // needed since the shutdown task might outlive main (supposedly?)
+    let state2 = state.clone();
     // use a loop and spawn a task so we can keep receiving signals and sending
     // shutdowns
-    let main_shutdown_tx_clone = main_shutdown_tx.clone();
     tokio::spawn(
         async move {
             loop {
@@ -292,7 +280,10 @@ async fn main() -> anyhow::Result<()> {
                         event!(Level::INFO, "received SIGTERM");
                     }
                 }
-                main_shutdown_tx_clone.send(()).unwrap();
+
+                if let Err(e) = state2.shutdown_tx.send(()) {
+                    event!(Level::ERROR, ?e, "error sending shutdown signal");
+                };
             }
         }
         .instrument(shutdown_span),

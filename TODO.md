@@ -59,8 +59,10 @@
 - Add IP banning (requires saving in metadata)
 - Add `#[non_exhaustive]` to every Error enum (and maybe other enums)
 - Derive `Debug` and `Clone` for as many types as possible
+- Make a system to delete expired uploads immediately as they expire instead of waiting until cleanup task
+- Way to serve static files directly via webserver instead of through bobashare
+- Maybe SIGINT shouldn't terminate all active uploads instantly
 
-- Maybe during startup, loop through all uploads and delete expired ones
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
 
