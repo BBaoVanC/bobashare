@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Return `204 No Content` in `/api/v1/delete/:id` endpoint
+
 ### Removed
 
 - Unfinished API documentation page that was accidentally left in from development

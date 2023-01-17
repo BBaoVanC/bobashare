@@ -5,24 +5,15 @@ use std::sync::Arc;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
-    Json,
 };
 use bobashare::storage::file::{DeleteUploadError, OpenUploadError};
 use displaydoc::Display;
 use hyper::StatusCode;
-use serde::Serialize;
 use thiserror::Error;
 use tracing::{event, instrument, Level};
 
 use super::ApiErrorExt;
 use crate::AppState;
-
-/// API response after deleting an upload successfully
-#[derive(Debug, Clone, Serialize)]
-pub struct DeleteResponse {
-    /// The ID of the deleted upload
-    pub id: String,
-}
 
 /// Errors that could occur when deleting an upload
 #[derive(Debug, Error, Display)]
@@ -58,7 +49,7 @@ impl IntoResponse for DeleteError {
 ///
 /// # Request
 ///
-/// `DELETE /api/v1/delete/:filename`
+/// `DELETE /api/v1/delete/:id`
 ///
 /// ## Body
 ///
@@ -71,9 +62,7 @@ impl IntoResponse for DeleteError {
 ///
 /// ## Success
 ///
-/// - 200 OK
-/// - JSON body created from [`DeleteResponse`]
-// TODO: should this return 204 No Content and empty body?
+/// - 204 No Content
 #[instrument(skip(state))]
 pub async fn delete(
     state: State<Arc<AppState>>,
@@ -109,5 +98,5 @@ pub async fn delete(
     state.backend.delete_upload(&id).await?;
 
     event!(Level::INFO, id, "successfully deleted upload");
-    Ok(Json(DeleteResponse { id }))
+    Ok(StatusCode::NO_CONTENT)
 }
