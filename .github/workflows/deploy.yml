@@ -1,6 +1,7 @@
 name: Deploy
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -46,12 +47,12 @@ jobs:
       - name: Build
         run: cargo build --release --locked
       - name: Rename binaries (Unix)
-        if: ${{ matrix.build.os == "ubuntu-latest" || matrix.build.os == "macos-latest" }}
+        if: ${{ matrix.build.os == 'ubuntu-latest' || matrix.build.os == 'macos-latest' }}
         run: |
           mv target/release/bobashare-admin target/release/bobashare-admin-${{ matrix.build.target }}
           mv target/release/bobashare-web target/release/bobashare-web-${{ matrix.build.target }}
       - name: Rename binaries (Windows)
-        if: ${{ matrix.build.os == "windows-latest" }}
+        if: ${{ matrix.build.os == 'windows-latest' }}
         run: |
           mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ matrix.build.target }}.exe
           mv target/release/bobashare-web.exe target/release/bobashare-web-${{ matrix.build.target }}.exe
