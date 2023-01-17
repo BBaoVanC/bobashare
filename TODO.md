@@ -1,9 +1,5 @@
 # TODO
 
-## CI
-
-- make warnings fail lint
-
 ## Testing
 
 - more unit tests
@@ -44,7 +40,7 @@
 - brighter/more contrast in-progress & successful upload background
 - retry button for failed upload
 - support multiple files
-- make percentage come after the bar
+- make percentage come after the bar (follow the right edge of it)
 
 ### Logging
 
@@ -60,6 +56,7 @@
 - Make a system to delete expired uploads immediately as they expire instead of waiting until cleanup task
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
+- Check if file is plaintext and if it is, ignore provided mimetype
 
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
