@@ -7,12 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### BREAKING
-
-- Change v1 upload format to v0
-
 ### Changed
 
+- **BREAKING**: Rename v1 upload format to v0
 - Return `204 No Content` in `/api/v1/delete/:id` endpoint
 
 ### Removed
