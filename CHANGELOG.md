@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING**: Rename v1 upload format to v0
 - Return `204 No Content` in `/api/v1/delete/:id` endpoint
+- `UploadMetadata::into_migrated_upload` is now a method (rather than associated function)
 
 ### Removed
 

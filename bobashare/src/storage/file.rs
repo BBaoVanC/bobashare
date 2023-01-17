@@ -195,10 +195,8 @@ impl FileBackend {
             .read_to_string(&mut metadata)
             .await
             .map_err(OpenUploadError::ReadMetadata)?;
-        let metadata = UploadMetadata::into_migrated_upload(
-            id.as_ref().to_string(),
-            serde_json::from_str(&metadata)?,
-        )?;
+        let metadata: UploadMetadata = serde_json::from_str(&metadata)?;
+        let metadata = metadata.into_migrated_upload(id.as_ref().to_string())?;
         // TODO: if metadata.1 (was migrated), save new migrated metadata
         Ok(metadata.0)
     }
@@ -235,10 +233,8 @@ impl FileBackend {
             .read_to_string(&mut metadata)
             .await
             .map_err(OpenUploadError::ReadMetadata)?;
-        let metadata = UploadMetadata::into_migrated_upload(
-            id.as_ref().to_string(),
-            serde_json::from_str(&metadata)?,
-        )?;
+        let metadata: UploadMetadata = serde_json::from_str(&metadata)?;
+        let metadata = metadata.into_migrated_upload(id.as_ref().to_string())?;
 
         Ok(UploadHandle {
             path,

@@ -56,16 +56,12 @@ pub enum MigrateError {
 impl UploadMetadata {
     // TODO: maybe migrating should be a separate task and it should immediately
     // error if not already migrated
-    // TODO: why isn't this an instance method
     /// Convert [`UploadMetadata`] into an [`Upload`], migrating it if needed
     ///
     /// Returns a tuple on success containing the migrated upload and whether it
     /// was migrated (or if it was already the latest version)
-    pub fn into_migrated_upload(
-        id: String,
-        metadata: UploadMetadata,
-    ) -> Result<(Upload, bool), MigrateError> {
-        Ok(match metadata {
+    pub fn into_migrated_upload(self, id: String) -> Result<(Upload, bool), MigrateError> {
+        Ok(match self {
             // latest
             Self::V0(data) => (
                 Upload {
