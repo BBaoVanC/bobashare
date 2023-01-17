@@ -60,8 +60,6 @@
 - Add `#[non_exhaustive]` to every Error enum (and maybe other enums)
 - Derive `Debug` and `Clone` for as many types as possible
 
-- SIGTERM handler to remove lock files
-
 - Maybe during startup, loop through all uploads and delete expired ones
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter

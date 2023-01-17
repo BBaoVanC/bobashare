@@ -76,4 +76,15 @@ impl UploadHandle {
 
         Ok(self.metadata)
     }
+
+    /// Consume the handle, and just delete the lock file. Note that an invalid
+    /// upload will be left behind until the next cleanup task.
+    ///
+    /// This is useful for handling a graceful shutdown.
+    ///
+    /// Also note that this is not done async because [`Drop`] can't be async
+    /// yet.
+    pub async fn drop_lock(self) -> Result<(), io::Error> {
+        fs::remove_file(&self.lock_path).await
+    }
 }

@@ -243,24 +243,36 @@ pub async fn put(
 
     let mut file_writer = BufWriter::new(&mut upload.file);
     event!(Level::DEBUG, "streaming file to disk");
-    loop {
-        let chunk = body.try_next().await.context("error reading body");
-        match chunk {
-            Ok(ch) => match ch {
-                Some(c) => {
-                    event!(
-                        Level::TRACE,
-                        "writing chunk of {} bytes to file buffer",
-                        c.len()
-                    );
-                    file_writer
-                        .write_all(&c)
-                        .await
-                        .context("error writing to file")?;
+    let stream_file_task = async {
+        loop {
+            let chunk = body.try_next().await.context("error reading body");
+            match chunk {
+                Ok(ch) => match ch {
+                    Some(c) => {
+                        event!(
+                            Level::TRACE,
+                            "writing chunk of {} bytes to file buffer",
+                            c.len()
+                        );
+                        file_writer
+                            .write_all(&c)
+                            .await
+                            .context("error writing to file")?;
+                    }
+                    None => break,
+                },
+                Err(e) => {
+                    return Err(UploadError::Cancelled(e));
                 }
-                None => break,
-            },
-            Err(e) => {
+            }
+        }
+        Ok(())
+    };
+
+    let mut shutdown_rx = state.shutdown_tx.subscribe();
+    tokio::select! {
+        res = stream_file_task => {
+            if let Err(e) = res {
                 event!(Level::INFO, "upload was cancelled; it will be deleted");
                 upload
                     .flush()
@@ -272,10 +284,16 @@ pub async fn put(
                     .await
                     .context("error deleting cancelled upload")?;
                 event!(Level::INFO, "upload was deleted successfully");
-                return Err(UploadError::Cancelled(e));
+                return Err(e);
             }
+        },
+        _ = shutdown_rx.recv() => {
+            event!(Level::INFO, "server is shutting down; deleting lock");
+            upload.drop_lock().await.context("error deleting lock of cancelled upload")?;
+            return Err(UploadError::InternalServer(anyhow::anyhow!("server is shutting down")));
         }
-    }
+    };
+
     file_writer
         .flush()
         .await
