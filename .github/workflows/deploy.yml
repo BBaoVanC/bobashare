@@ -63,5 +63,3 @@ jobs:
           files: |
             target/release/bobashare-admin-*
             target/release/bobashare-web-*
-            target/release/bobashare-admin-*.exe
-            target/release/bobashare-web-*.exe
