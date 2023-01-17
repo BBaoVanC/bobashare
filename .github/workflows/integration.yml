@@ -28,6 +28,19 @@ jobs:
       - name: Test
         run: cargo test
 
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install toolchain
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install nightly --profile minimal
+          rustup component add rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+
   docker:
     name: Build master Docker image
     runs-on: ubuntu-latest
