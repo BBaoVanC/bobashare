@@ -1,7 +1,7 @@
 FROM rust:1.66.0 as builder
 WORKDIR /usr/src/bobashare
 COPY . .
-RUN cargo build --release
+RUN cargo build --release --locked
 
 FROM debian:bullseye
 RUN apt-get update \
