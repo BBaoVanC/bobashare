@@ -1,11 +1,12 @@
 [package]
 name = "bobashare-web"
-version = "0.1.0"
-authors = ["BBaoVanC <bbaovanc@bbaovanc.com>"]
-edition = "2021"
-description = "Simple ephemeral file sharing service"
-repository = "https://github.com/BBaoVanC/bobashare"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
 default-run = "bobashare-web"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

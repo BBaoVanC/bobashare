@@ -1,7 +1,15 @@
 [workspace]
-
 members = [
     "bobashare", # the backend
     "bobashare-admin", # admin CLI
     "bobashare-web", # backend webserver
 ]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["BBaoVanC <bbaovanc@bbaovanc.com>"]
+edition = "2021"
+description = "Simple ephemeral file sharing service"
+homepage = "https://share.boba.best"
+repository = "https://github.com/BBaoVanC/bobashare"
+license = "MIT"
