@@ -5,29 +5,29 @@ use mime::Mime;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use self::v1::UploadV1;
+use self::v0::UploadV0;
 use super::storage::upload::Upload;
 
 #[cfg(test)]
 mod tests;
 
-pub mod v1;
+pub mod v0;
 
 /// The latest upload metadata version
-pub type LatestUploadMetadata = UploadV1;
+pub type LatestUploadMetadata = UploadV0;
 
 /// All the versions of upload metadata
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(tag = "version")]
 #[non_exhaustive]
 pub enum UploadMetadata {
-    #[serde(rename = "1")]
-    V1(UploadV1),
+    #[serde(rename = "0")]
+    V0(UploadV0),
 }
 impl UploadMetadata {
     /// Convert an upload into the latest metadata version
     pub fn from_upload(upload: Upload) -> Self {
-        Self::V1(LatestUploadMetadata {
+        Self::V0(LatestUploadMetadata {
             filename: upload.filename,
             mimetype: upload.mimetype.to_string(),
             creation_date: upload.creation_date,
@@ -37,9 +37,9 @@ impl UploadMetadata {
     }
 }
 
-/// Errors when migrating from [`UploadV1`]
+/// Errors when migrating from [`UploadV0`]
 #[derive(Debug, Error, Display)]
-pub enum MigrateErrorV1 {
+pub enum MigrateErrorV0 {
     /// error parsing `mimetype` field
     ParseMime(#[from] mime::FromStrError),
 }
@@ -48,8 +48,10 @@ pub enum MigrateErrorV1 {
 #[derive(Debug, Error, Display)]
 #[non_exhaustive]
 pub enum MigrateError {
-    /// error migrating from V1
-    V1(#[from] MigrateErrorV1),
+    /// error migrating from V0
+    // TODO: should we say this from perspective of migrating FROM 0 to X
+    // or migrating TO X from 0
+    V0(#[from] MigrateErrorV0),
 }
 impl UploadMetadata {
     // TODO: maybe migrating should be a separate task and it should immediately
@@ -65,14 +67,14 @@ impl UploadMetadata {
     ) -> Result<(Upload, bool), MigrateError> {
         Ok(match metadata {
             // latest
-            Self::V1(data) => (
+            Self::V0(data) => (
                 Upload {
                     id,
                     filename: data.filename,
                     mimetype: data
                         .mimetype
                         .parse::<Mime>()
-                        .map_err(MigrateErrorV1::from)?,
+                        .map_err(MigrateErrorV0::from)?,
                     creation_date: data.creation_date,
                     expiry_date: data.expiry_date,
                     delete_key: data.delete_key,

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [`Upload`]: crate::storage::upload::Upload
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
-pub struct UploadV1 {
+pub struct UploadV0 {
     /// name of the uploaded file
     pub filename: String,
     /// MIME type of the uploaded file
