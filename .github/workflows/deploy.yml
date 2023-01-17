@@ -21,34 +21,34 @@ jobs:
           tags: ghcr.io/bbaovanc/bobashare:latest
           push: true
 
-  release:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-    name: Draft release
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install toolchain
-        run: |
-          rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
-      - name: Build
-        run: cargo build --release --locked
-      - name: Read release notes from annotated tag
-        run: 'echo "$(git tag -l --format="%(contents:body)" $GITHUB_REF_NAME)" > RELEASE_NOTES'
-      - name: Draft release
-        uses: softprops/action-gh-release@v0.1.15
-        with:
-          draft: true
-          body_path: RELEASE_NOTES
-          files: |
-            target/release/bobashare-admin
-            target/release/bobashare-web
-            # windows is silly
-            target/release/bobashare-admin.exe
-            target/release/bobashare-web.exe
+  # release:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os:
+  #         - ubuntu-latest
+  #         - macos-latest
+  #         - windows-latest
+  #   name: Draft release
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Install toolchain
+  #       run: |
+  #         rustup set auto-self-update disable
+  #         rustup toolchain install stable --profile minimal
+  #     - name: Build
+  #       run: cargo build --release --locked
+  #     - name: Read release notes from annotated tag
+  #       run: 'echo "$(git tag -l --format="%(contents:body)" $GITHUB_REF_NAME)" > RELEASE_NOTES'
+  #     - name: Draft release
+  #       uses: softprops/action-gh-release@v0.1.15
+  #       with:
+  #         draft: true
+  #         body_path: RELEASE_NOTES
+  #         files: |
+  #           target/release/bobashare-admin
+  #           target/release/bobashare-web
+  #           # windows is silly
+  #           target/release/bobashare-admin.exe
+  #           target/release/bobashare-web.exe
