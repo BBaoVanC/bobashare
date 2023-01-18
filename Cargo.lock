@@ -1315,7 +1315,7 @@ checksum = "456c603be3e8d448b072f410900c09faf164fbce2d480456f50eea6e25f9c848"
 [[package]]
 name = "rust-embed"
 version = "6.4.2"
-source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#8d4838e1069bb7944cbe90271086e2b59fda73e6"
+source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#227c4e0947c7d41d42af69685b66c3f93f578836"
 dependencies = [
  "rust-embed-impl",
  "rust-embed-utils",
@@ -1325,7 +1325,7 @@ dependencies = [
 [[package]]
 name = "rust-embed-impl"
 version = "6.3.1"
-source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#8d4838e1069bb7944cbe90271086e2b59fda73e6"
+source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#227c4e0947c7d41d42af69685b66c3f93f578836"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1337,7 +1337,7 @@ dependencies = [
 [[package]]
 name = "rust-embed-utils"
 version = "7.3.0"
-source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#8d4838e1069bb7944cbe90271086e2b59fda73e6"
+source = "git+https://github.com/BBaoVanC/rust-embed?branch=static-mime-guess#227c4e0947c7d41d42af69685b66c3f93f578836"
 dependencies = [
  "mime_guess",
  "sha2",
