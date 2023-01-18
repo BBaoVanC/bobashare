@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently.
+
 ### Updates
 
 - Update `rust-embed`: https://github.com/BBaoVanC/rust-embed/commit/227c4e0947c7d41d42af69685b66c3f93f578836
