@@ -18,12 +18,19 @@
 - Support changing default expiry unit (and guess intelligently too if not set)
 - Change docs to private and binary (not library)
 - Paste image to upload
+- Drop file to upload
+- Use a custom library to replace `duration-str` (maybe `humansize` too but that one is OK as far as I can see so maybe not)
 
 - `build.rs` to generate syntax CSS, and also make sure to properly rebuild on the right dependency files (the syntax source)
 
 #### Maybe
 
 - Make the uploaded files list on upload page persist between reloads
+- Replace the single-file upload form at the top with automatically creating a "pending" upload entry
+  - this would add multi-file support
+  - each pending upload would have its own submit and possibly even expiry selection
+  - MAYBE MAYBE: start uploading first, select expiry and stuff later (while it's uploading)
+
 - i18n (maybe using https://crates.io/crates/fluent)
 - animations
   - such as when a file upload is created and the box appears on the upload page
@@ -39,7 +46,6 @@
   - icon to show that successful upload filename is a link
 - brighter/more contrast in-progress & successful upload background
 - retry button for failed upload
-- support multiple files
 - make percentage come after the bar (follow the right edge of it)
 
 ### Logging
@@ -57,7 +63,8 @@
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
 - Check if file is plaintext and if it is, ignore provided mimetype
-- Better handling of unknown metadata version
+- Better handling of unknown metadata version -- don't just delete
+  - maybe custom handler for deserializing into `UploadMetadata`
 
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
