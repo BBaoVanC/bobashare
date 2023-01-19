@@ -127,9 +127,6 @@ impl IntoResponse for UploadError {
 /// - 201 Created
 /// - `Location` header containing the URL of the upload
 /// - JSON body created from [`UploadResponse`]
-// TODO (outdated): https://github.com/tokio-rs/tracing/pull/2335
-// TODO: tracing needs an `ok` instead of `ret` to log just the Ok and not the Err, but workaround
-// can be done to log manually
 #[instrument(skip(state, filename, headers, body), fields(id))]
 pub async fn put(
     state: State<Arc<AppState>>,
