@@ -1,5 +1,7 @@
 # TODO
 
+- make the error messages include the correct variables to be displayed well so we don't have to loop through the sources
+
 ## Testing
 
 - more unit tests
