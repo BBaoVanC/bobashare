@@ -7,6 +7,7 @@ use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
 use chrono::Duration;
 use hyper::StatusCode;
+use tracing::{event, Level};
 use url::Url;
 
 use crate::AppState;
@@ -66,6 +67,16 @@ impl From<ErrorTemplate> for ErrorResponse {
 }
 impl IntoResponse for ErrorResponse {
     fn into_response(self) -> askama_axum::Response {
+        let code = self.0.code;
+        let error_msg = &self.0.message;
+        if code.is_server_error() {
+            event!(Level::ERROR, status = code.as_u16(), error = error_msg);
+        } else if code.is_client_error() {
+            event!(Level::WARN, status = code.as_u16(), error = error_msg);
+        } else {
+            event!(Level::INFO, status = code.as_u16(), error = error_msg);
+        }
+
         (self.0.code, self.0).into_response()
     }
 }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Log a message when ErrorResponse is return from a view
+
 ### Fixed
 
 - Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently.
