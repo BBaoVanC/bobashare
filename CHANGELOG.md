@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Log a message when ErrorResponse is return from a view
 
+### Changed
+
+- Make `Content-Type` header optional and override it if the file is valid UTF-8
+
 ### Fixed
 
 - Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently.

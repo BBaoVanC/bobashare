@@ -1,11 +1,11 @@
 //! API to create an upload
 
-use std::sync::Arc;
+use std::{io::SeekFrom, sync::Arc};
 
 use anyhow::Context;
 use axum::{
     extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
-    headers::{ContentLength, ContentType},
+    headers::ContentLength,
     response::{IntoResponse, Response},
     Json, TypedHeader,
 };
@@ -17,8 +17,8 @@ use futures_util::TryStreamExt;
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use thiserror::Error;
-use tokio::io::{AsyncWriteExt, BufWriter};
-use tracing::{event, instrument, Level};
+use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt, BufWriter};
+use tracing::{event, instrument, Instrument, Level};
 
 use super::ApiErrorExt;
 use crate::{clamp_expiry, AppState};
@@ -100,8 +100,8 @@ impl IntoResponse for UploadError {
 ///
 /// ## Headers
 ///
-/// - `Content-Type` (required) -- mimetype -- the mime type (file format) of
-///   the file
+/// - `Content-Type` (optional) -- mimetype -- the mime type (file format) of
+///   the file. Note that it will be ignored if the file is plaintext.
 /// - `Bobashare-Expiry` (optional) -- number -- duration until the upload
 ///   should expire
 ///   - specify `0` for no expiry
@@ -131,7 +131,6 @@ impl IntoResponse for UploadError {
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Path<String>,
-    WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
     WithRejection(TypedHeader(content_length), _): WithRejection<
         TypedHeader<ContentLength>,
         UploadError,
@@ -160,7 +159,32 @@ pub async fn put(
     tracing::Span::current().record("id", &id);
     event!(Level::DEBUG, "generated random ID for upload");
 
-    let mimetype = mimetype.into();
+    let mimetype = match headers.get(header::CONTENT_TYPE) {
+        None => {
+            event!(Level::DEBUG, "no `Content-Type` header provided, using octet stream. plaintext will be detected later");
+            mime::APPLICATION_OCTET_STREAM
+        }
+        Some(m) => {
+            let mimetype = std::str::from_utf8(m.as_bytes())
+                .map_err(|e| UploadError::ParseHeader {
+                    name: header::CONTENT_TYPE.to_string(),
+                    source: anyhow::Error::new(e).context("error converting to string"),
+                })?
+                .parse()
+                .map_err(|e| UploadError::ParseHeader {
+                    name: header::CONTENT_TYPE.to_string(),
+                    source: anyhow::Error::new(e).context("error converting to mimetype"),
+                })?;
+
+            event!(
+                Level::DEBUG,
+                "`Content-Type` header says {}. plaintext will be detected later",
+                mimetype
+            );
+
+            mimetype
+        }
+    };
 
     let expiry = match headers.get("Bobashare-Expiry") {
         // if header not found, use default expiry
@@ -295,6 +319,31 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing file buffer")?;
+
+    let detect_plaintext_span = tracing::span!(Level::INFO, "detect_plaintext");
+    async {
+        tracing::event!(Level::INFO, "detecting whether the upload is plaintext");
+        let upload = &mut upload;
+        if let Err(err) = upload.file.seek(SeekFrom::Start(0)).await {
+            tracing::event!(Level::ERROR, ?err, "error seeking to beginning of file");
+            return;
+        };
+        let mut buf = [0; 1024];
+        if let Err(err) = upload.file.read(&mut buf).await {
+            tracing::event!(Level::ERROR, ?err, "error reading first 1024 bytes of file");
+            return;
+        };
+
+        // TODO: would be nice to support other text encodings
+        if std::str::from_utf8(&buf).is_ok() {
+            tracing::event!(Level::INFO, "upload is plaintext");
+            upload.metadata.mimetype = mime::TEXT_PLAIN_UTF_8;
+        } else {
+            tracing::event!(Level::INFO, "upload is not plaintext");
+        }
+    }
+    .instrument(detect_plaintext_span)
+    .await;
 
     let metadata = upload
         .flush()
