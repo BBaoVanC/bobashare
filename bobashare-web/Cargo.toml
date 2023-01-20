@@ -19,7 +19,6 @@ axum = { version = "0.6.0", features = ["headers", "multipart"] }
 axum-extra = "0.4.0"
 bobashare = { path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
-chrono-humanize = "0.2.2"
 clap = { version = "4.0.12", features = ["derive"] }
 config = { version = "0.13.2", default-features = false, features = ["toml"] }
 displaydoc = "0.2.3"

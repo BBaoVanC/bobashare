@@ -21,7 +21,6 @@
 - Change docs to private and binary (not library)
 - Paste image to upload
 - Drop file to upload
-- Use a custom library to replace `duration-str` (maybe `humansize` too but that one is OK as far as I can see so maybe not)
 
 - `build.rs` to generate syntax CSS, and also make sure to properly rebuild on the right dependency files (the syntax source)
 

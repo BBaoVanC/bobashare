@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Override `Content-Type` header if the file is valid UTF-8 (plaintext)
+- Replace `chrono-humanize` dependency with simple logic for English durations
+  - See `bobashare_web::views::filters::humanduration`
 
 ### Fixed
 
