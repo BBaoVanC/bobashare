@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Make `Content-Type` header optional and override it if the file is valid UTF-8
+- Override `Content-Type` header if the file is valid UTF-8 (plaintext)
 
 ### Fixed
 

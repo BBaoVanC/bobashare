@@ -5,7 +5,7 @@ use std::{io::SeekFrom, sync::Arc};
 use anyhow::Context;
 use axum::{
     extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
-    headers::ContentLength,
+    headers::{ContentLength, ContentType},
     response::{IntoResponse, Response},
     Json, TypedHeader,
 };
@@ -100,7 +100,7 @@ impl IntoResponse for UploadError {
 ///
 /// ## Headers
 ///
-/// - `Content-Type` (optional) -- mimetype -- the mime type (file format) of
+/// - `Content-Type` (required) -- mimetype -- the mime type (file format) of
 ///   the file. Note that it will be ignored if the file is plaintext.
 /// - `Bobashare-Expiry` (optional) -- number -- duration until the upload
 ///   should expire
@@ -131,6 +131,7 @@ impl IntoResponse for UploadError {
 pub async fn put(
     state: State<Arc<AppState>>,
     filename: Path<String>,
+    WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
     WithRejection(TypedHeader(content_length), _): WithRejection<
         TypedHeader<ContentLength>,
         UploadError,
@@ -159,32 +160,7 @@ pub async fn put(
     tracing::Span::current().record("id", &id);
     event!(Level::DEBUG, "generated random ID for upload");
 
-    let mimetype = match headers.get(header::CONTENT_TYPE) {
-        None => {
-            event!(Level::DEBUG, "no `Content-Type` header provided, using octet stream. plaintext will be detected later");
-            mime::APPLICATION_OCTET_STREAM
-        }
-        Some(m) => {
-            let mimetype = std::str::from_utf8(m.as_bytes())
-                .map_err(|e| UploadError::ParseHeader {
-                    name: header::CONTENT_TYPE.to_string(),
-                    source: anyhow::Error::new(e).context("error converting to string"),
-                })?
-                .parse()
-                .map_err(|e| UploadError::ParseHeader {
-                    name: header::CONTENT_TYPE.to_string(),
-                    source: anyhow::Error::new(e).context("error converting to mimetype"),
-                })?;
-
-            event!(
-                Level::DEBUG,
-                "`Content-Type` header says {}. plaintext will be detected later",
-                mimetype
-            );
-
-            mimetype
-        }
-    };
+    let mimetype = mimetype.into();
 
     let expiry = match headers.get("Bobashare-Expiry") {
         // if header not found, use default expiry

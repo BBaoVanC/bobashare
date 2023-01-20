@@ -64,7 +64,6 @@
 - Make a system to delete expired uploads immediately as they expire instead of waiting until cleanup task
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
-- Check if file is plaintext and if it is, ignore provided mimetype
 - Better handling of unknown metadata version -- don't just delete
   - maybe custom handler for deserializing into `UploadMetadata`
 
