@@ -61,10 +61,11 @@ jobs:
         run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
+          rustup component add clippy
           rustup target add ${{ matrix.build.target }}
       - name: Check
         run: |
-          cargo clippy -- -D warnings
+          cargo clippy --locked -- -D warnings
           cargo clippy --release --locked -D warnings
       - name: Build
         run: |
