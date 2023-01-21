@@ -7,19 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.1] - 2022-01-21
+
 ### Added
 
-- Log a message when ErrorResponse is return from a view
+- Log a message when ErrorResponse is return from a view (24424bd5acf564de36c07e17839552f3c171b1fb)
 
 ### Changed
 
-- Override `Content-Type` header if the file is valid UTF-8 (plaintext)
-- Replace `chrono-humanize` dependency with simple logic for English durations
+- Override `Content-Type` header if the file is valid UTF-8 (plaintext) (5f382f692cc63989ab0ccfc437251315b589f7cb and 900fae603c35129521a4f5ec60bacca61675f32d)
+- Replace `chrono-humanize` dependency with simple logic for English durations (04b90eb2069d16bbbd84a35b615bf5942409e3c9 and 4d6f3dc43978082093771d724a92ec41f52428ca)
   - See `bobashare_web::views::filters::humanduration`
 
 ### Fixed
 
-- Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently.
+- Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently. (7cc7197ff1c042a369d88836d2c04f3c85e5b5db)
 
 ## [v0.2.0] - 2022-01-17
 
@@ -39,5 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The first release.
 
 [unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..HEAD
+[v0.2.1]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..v0.2.1
 [v0.2.0]: https://github.com/BBaoVanC/bobashare/compare/v0.1.0..v0.2.0
 [v0.1.0]: https://github.com/BBaoVanC/bobashare/releases/tag/v0.1.0
