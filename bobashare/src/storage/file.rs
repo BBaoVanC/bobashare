@@ -384,8 +384,8 @@ pub enum CleanupError {
     NextEntry(#[source] io::Error),
 }
 impl FileBackend {
-    /// Validate all the uploads in the repository and return a list of ones to
-    /// be deleted
+    /// Validate all the uploads in the repository and delete ones that are
+    /// invalid.
     ///
     /// See [`FileBackend::validate_upload`] for the checks that are performed
     #[instrument(skip(self))]
