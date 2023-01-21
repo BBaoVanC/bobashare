@@ -39,6 +39,12 @@ jobs:
     runs-on: ${{ matrix.build.os }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get version name
+        id: version
+        run: |
+          echo "VERSION=$(git describe --tags --dirty)" > $GITHUB_OUTPUT
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
@@ -49,13 +55,13 @@ jobs:
       - name: Rename binaries (Unix)
         if: ${{ matrix.build.os == 'ubuntu-latest' || matrix.build.os == 'macos-latest' }}
         run: |
-          mv target/release/bobashare-admin target/release/bobashare-admin-${{ matrix.build.target }}
-          mv target/release/bobashare-web target/release/bobashare-web-${{ matrix.build.target }}
+          mv target/release/bobashare-admin target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          mv target/release/bobashare-web target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
       - name: Rename binaries (Windows)
         if: ${{ matrix.build.os == 'windows-latest' }}
         run: |
-          mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ matrix.build.target }}.exe
-          mv target/release/bobashare-web.exe target/release/bobashare-web-${{ matrix.build.target }}.exe
+          mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
+          mv target/release/bobashare-web.exe target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
       - name: Draft release
         uses: softprops/action-gh-release@v0.1.15
         with:
