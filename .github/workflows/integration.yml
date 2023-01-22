@@ -13,8 +13,7 @@ jobs:
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
-          rustup toolchain install nightly --profile minimal
-          rustup component add rustfmt --toolchain nightly
+          rustup toolchain install nightly
       - uses: Swatinem/rust-cache@v2
       - run: cargo +nightly fmt --all --check
 
@@ -60,13 +59,13 @@ jobs:
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
-          rustup component add clippy
+          rustup toolchain install stable
+          rustup toolchain install nightly # for clippy
           rustup target add ${{ matrix.build.target }}
       - name: Check
         run: |
-          cargo clippy --locked -- -D warnings
-          cargo clippy --release --locked -D warnings
+          cargo +nightly clippy --locked -- -D warnings
+          cargo +nightly clippy --release --locked -D warnings
       - name: Build
         run: |
           cargo build --locked
