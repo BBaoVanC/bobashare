@@ -54,6 +54,8 @@ jobs:
           fetch-depth: 0
       - name: Get version name
         id: version
+        # thanks windows
+        shell: bash
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
       - name: Install toolchain
