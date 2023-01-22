@@ -68,6 +68,7 @@ jobs:
           cargo +nightly clippy --locked -- -D warnings
           cargo +nightly clippy --release --locked -- -D warnings
       - name: Build
+        if: always()
         run: |
           cargo build --locked
           cargo build --release --locked
