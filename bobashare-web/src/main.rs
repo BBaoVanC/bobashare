@@ -52,7 +52,7 @@ fn validate_config_path(s: &str) -> Result<PathBuf, String> {
     let path = Path::new(s);
     let ext = path.extension().ok_or("Path doesn't have an extension")?;
     if !ext.eq_ignore_ascii_case("toml") {
-        return Err(format!("Extension is `{:?}` (expected `toml`)", ext));
+        return Err(format!("Extension is `{ext:?}` (expected `toml`)"));
     }
 
     // we're just doing cli parsing, no need for async yet
@@ -103,7 +103,7 @@ async fn main() -> anyhow::Result<()> {
                     1 => "info,bobashare=debug,tower_http=debug",
                     2 => "debug",
                     3 => "debug,bobashare=trace",
-                    i => panic!("cli.verbose == {} (out of range)", i),
+                    i => panic!("cli.verbose == {i} (out of range)"),
                 }
                 .into()
             }),

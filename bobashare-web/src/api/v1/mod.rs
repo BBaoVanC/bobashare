@@ -40,7 +40,7 @@ pub trait ApiErrorExt: Error + Sized + Send + Sync + 'static {
 
         let mut err_buf = self.source();
         while let Some(e) = err_buf {
-            error_msg += &format!(": {}", e);
+            error_msg += &format!(": {e}");
             err_buf = e.source();
         }
 

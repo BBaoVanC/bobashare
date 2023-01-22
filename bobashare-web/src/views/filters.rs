@@ -18,7 +18,7 @@ pub fn humanduration(duration: &Duration) -> Result<String> {
         return Ok(format!("{} days", duration.num_days()));
     }
     // I think most people would assume a month is about 30 days
-    return Ok(format!("{} months", duration.num_days() / 30));
+    Ok(format!("{} months", duration.num_days() / 30))
     // probably no point going past months
 }
 

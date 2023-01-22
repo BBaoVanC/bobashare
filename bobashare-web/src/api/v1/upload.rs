@@ -80,7 +80,7 @@ impl IntoResponse for UploadError {
             let error = anyhow::Error::new(self);
             event!(
                 Level::INFO,
-                error = format!("{:#}", error),
+                error = format!("{error:#}"),
                 "returning empty response to cancelled upload"
             );
             ().into_response()
@@ -234,7 +234,7 @@ pub async fn put(
         })?;
     event!(
         Level::TRACE,
-        upload = format!("{:?}", upload),
+        upload = format!("{upload:?}"),
         "created upload handle"
     );
 

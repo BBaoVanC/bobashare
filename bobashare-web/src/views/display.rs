@@ -123,7 +123,7 @@ pub async fn display(
         .map_err(|e| ErrorTemplate {
             state: state.0.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
-            message: format!("error reading file size: {}", e),
+            message: format!("error reading file size: {e}"),
         })?
         .len();
 
@@ -150,7 +150,7 @@ pub async fn display(
                         .map_err(|e| ErrorTemplate {
                             state: state.0.clone().into(),
                             code: StatusCode::INTERNAL_SERVER_ERROR,
-                            message: format!("error reading file contents: {}", e),
+                            message: format!("error reading file contents: {e}"),
                         })?;
 
                     event!(
@@ -170,7 +170,7 @@ pub async fn display(
                                 .map_err(|e| ErrorTemplate {
                                     state: state.0.clone().into(),
                                     code: StatusCode::INTERNAL_SERVER_ERROR,
-                                    message: format!("error highlighting file contents: {}", e),
+                                    message: format!("error highlighting file contents: {e}"),
                                 })?;
                         }
                         generator.finalize()
@@ -204,8 +204,7 @@ pub async fn display(
                                                 state: state.0.clone().into(),
                                                 code: StatusCode::INTERNAL_SERVER_ERROR,
                                                 message: format!(
-                                                    "error highlighting markdown fenced code block: {}",
-                                                    e
+                                                    "error highlighting markdown fenced code block: {e}",
                                                 ),
                                             })?;
                                         parser.next();
@@ -289,7 +288,7 @@ pub async fn raw(
         .map_err(|e| ErrorTemplate {
             state: state.0.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
-            message: format!("error reading file size: {}", e),
+            message: format!("error reading file size: {e}"),
         })?
         .len();
     event!(Level::DEBUG, size, "found size of upload file",);
