@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Display version of bobashare (from `Cargo.toml`) on footer
+
 ### Fixed
 
 - Better keyboard support on JS-powered links (delete/cancel upload buttons)

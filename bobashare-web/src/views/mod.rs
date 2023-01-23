@@ -18,6 +18,7 @@ pub mod upload;
 
 #[derive(Debug, Clone)]
 pub struct TemplateState {
+    version: &'static str,
     base_url: Url,
     max_file_size: u64,
     max_expiry: Option<Duration>,
@@ -26,6 +27,7 @@ pub struct TemplateState {
 impl From<&AppState> for TemplateState {
     fn from(state: &AppState) -> Self {
         Self {
+            version: env!("CARGO_PKG_VERSION"),
             base_url: state.base_url.clone(),
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
@@ -36,6 +38,7 @@ impl From<&AppState> for TemplateState {
 impl From<Arc<AppState>> for TemplateState {
     fn from(state: Arc<AppState>) -> Self {
         Self {
+            version: env!("CARGO_PKG_VERSION"),
             base_url: state.base_url.clone(),
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
