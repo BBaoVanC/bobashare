@@ -18,15 +18,15 @@
             <div class="upload-filename"></div>
             <div class="upload-progress-right">
                 <div class="upload-progress"></div>
-                <a class="upload-cancel" tabindex="0">Cancel</a>
+                <a href="javascript:void(0)" class="upload-cancel">Cancel</a>
             </div>
             <div class="upload-progress-bar"></div>
         </div>
     </template>
     <template id="upload-success-template">
         <div class="upload-file success">
-            <a class="upload-filename" target="_blank"></a>
-            <a class="upload-delete" tabindex="0">Delete</a>
+            <a class="upload-filename" target="_blank"></a> {# will be given an href by JS #}
+            <a href="javascript:void(0)" class="upload-delete">Delete</a>
         </div>
     </template>
     <template id="upload-deleted-template">

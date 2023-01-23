@@ -69,9 +69,6 @@ window.onload = () => {
             req.onreadystatechange = null;
             req.abort();
         }
-        cancelElem.onkeypress = event => {
-            if (event.key === "Enter") cancelElem.click();
-        }
         req.onabort = () => {
             const cancelTmpl = fileCancelledTemplate.content.cloneNode(true);
             cancelTmpl.querySelector(".upload-filename").innerText = file.name;
@@ -115,9 +112,6 @@ window.onload = () => {
                             alert(`delete of ${id} failed: ` + req.responseText);
                         }
                     }
-                }
-                deleteLink.onkeypress = event => {
-                    if (event.key === "Enter") deleteLink.click();
                 }
             } else {
                 const failTmpl = fileFailTemplate.content.cloneNode(true);

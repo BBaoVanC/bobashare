@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Better keyboard support on JS-powered links (delete/cancel upload buttons)
+  - rather than make the `keypress` event trigger the `click` event, just set an `href` and `click` magically works
+
 ## [v0.2.1] - 2022-01-21
 
 ### Added
