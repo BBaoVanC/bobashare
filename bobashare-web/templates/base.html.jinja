@@ -33,9 +33,10 @@
 
     <footer>
         <p>
-            Limits: {{ state.max_file_size|humansize }} file size,
+            Limits:
+            <span title='{{ state.max_file_size }} bytes'>{{ state.max_file_size|humansize }} file size,</span>
             {% if let Some(e) = state.max_expiry %}
-                <span title='{{ e.num_seconds() }} seconds'>{{ e|humanduration }}</span> expiry
+                <span title='{{ e.num_seconds() }} seconds'>{{ e|humanduration }} expiry</span>
             {% endif %}
         </p>
         {% if let Some(s) = state.extra_footer_text %}

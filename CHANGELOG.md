@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Display version of bobashare (from `Cargo.toml`) on footer
+- Hover tooltip for limits in footer (file size in bytes, max expiry in seconds)
 
 ### Fixed
 
