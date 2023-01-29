@@ -31,5 +31,6 @@ pub(crate) fn example_upload_with_expiry() -> Upload {
     upload
 }
 
+pub(crate) const EXAMPLE_UNKNOWN_VERSION: &str = r#"{"version":"-1"}"#;
 pub(crate) const EXAMPLE_UPLOADV0_NO_EXPIRY_SERIALIZED: &str = r#"{"version":"0","filename":"code.py","mimetype":"text/x-python","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":null,"delete_key":"jasdflyhdas87nmgc7gf7342gcir874g23"}"#;
 pub(crate) const EXAMPLE_UPLOADV0_WITH_EXPIRY_SERIALIZED: &str = r#"{"version":"0","filename":"code.py","mimetype":"text/x-python","creation_date":"2022-08-29T01:02:19.824375631Z","expiry_date":"2022-09-02T01:02:19.824375631Z","delete_key":"jasdflyhdas87nmgc7gf7342gcir874g23"}"#;

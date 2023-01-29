@@ -23,6 +23,9 @@ pub type LatestUploadMetadata = UploadV0;
 pub enum UploadMetadata {
     #[serde(rename = "0")]
     V0(UploadV0),
+
+    #[serde(other)]
+    Unknown,
 }
 impl UploadMetadata {
     /// Convert an upload into the latest metadata version
@@ -52,6 +55,9 @@ pub enum MigrateError {
     // TODO: should we say this from perspective of migrating FROM 0 to X
     // or migrating TO X from 0
     V0(#[from] MigrateErrorV0),
+
+    /// unknown upload version
+    UnknownVersion,
 }
 impl UploadMetadata {
     // TODO: maybe migrating should be a separate task and it should immediately
@@ -62,6 +68,8 @@ impl UploadMetadata {
     /// was migrated (or if it was already the latest version)
     pub fn into_migrated_upload(self, id: String) -> Result<(Upload, bool), MigrateError> {
         Ok(match self {
+            Self::Unknown => return Err(MigrateError::UnknownVersion),
+
             // latest
             Self::V0(data) => (
                 Upload {

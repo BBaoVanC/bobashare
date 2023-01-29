@@ -63,8 +63,6 @@
 - Make a system to delete expired uploads immediately as they expire instead of waiting until cleanup task
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
-- Better handling of unknown metadata version -- don't just delete
-  - maybe custom handler for deserializing into `UploadMetadata`
 
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
