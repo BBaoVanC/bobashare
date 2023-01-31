@@ -7,17 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.2] - 2022-01-31
+
 ### Added
 
-- Display version of bobashare (from `Cargo.toml`) on footer
-- Hover tooltip for limits in footer (file size in bytes, max expiry in seconds)
+- Display version of bobashare (from `Cargo.toml`) on footer ([9d646d1])
+- Hover tooltip for limits in footer (file size in bytes, max expiry in seconds) ([24af218])
 
 ### Fixed
 
-- Better keyboard support on JS-powered links (delete/cancel upload buttons)
+- Better keyboard support on JS-powered links (delete/cancel upload buttons) ([cfc2818])
   - rather than make the `keypress` event trigger the `click` event, just set an `href` and `click` magically works
-- Properly pluralize human durations (if 1 of the unit)
-- Return an error when cleaning up an upload with unknown metadata version instead of deleting it
+- Properly pluralize human durations (if 1 of the unit) ([113e257])
+- Return an error when cleaning up an upload with unknown metadata version instead of deleting it ([f29996c])
+
+[9d646d1]: https://github.com/BBaoVanC/bobashare/commit/9d646d1d0c1ceccd341c92fbc2fd04359710efc2
+[24af218]: https://github.com/BBaoVanC/bobashare/commit/24af218e0f26be758a0ca917a1d9d71f436f9373
+[cfc2818]: https://github.com/BBaoVanC/bobashare/commit/cfc2818747bccfcc4462d8805f9c8760abfa3338
+[113e257]: https://github.com/BBaoVanC/bobashare/commit/113e257d479b750ca605075ba08759dbc7fb6e9e
+[f29996c]: https://github.com/BBaoVanC/bobashare/commit/f29996cd69fc98401afd40e924a253fc3ce6fd7f
 
 ## [v0.2.1] - 2022-01-21
 
@@ -52,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.2..HEAD
+[v0.2.2]: https://github.com/BBaoVanC/bobashare/compare/v0.2.1..v0.2.2
 [v0.2.1]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..v0.2.1
 [v0.2.0]: https://github.com/BBaoVanC/bobashare/compare/v0.1.0..v0.2.0
 [v0.1.0]: https://github.com/BBaoVanC/bobashare/releases/tag/v0.1.0

@@ -191,7 +191,7 @@ dependencies = [
 
 [[package]]
 name = "bobashare"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "chrono",
  "displaydoc",
@@ -207,7 +207,7 @@ dependencies = [
 
 [[package]]
 name = "bobashare-admin"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "anyhow",
  "bobashare",
@@ -221,7 +221,7 @@ dependencies = [
 
 [[package]]
 name = "bobashare-web"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "anyhow",
  "askama",
