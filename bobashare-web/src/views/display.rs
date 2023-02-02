@@ -275,10 +275,17 @@ pub async fn raw(
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
 ) -> Result<impl IntoResponse, ErrorTemplate> {
-    let upload = open_upload(&state, id).await.map_err(|e| ErrorTemplate {
-        state: state.0.clone().into(),
-        code: StatusCode::INTERNAL_SERVER_ERROR,
-        message: e.to_string(),
+    let upload = open_upload(&state, id).await.map_err(|e| match e {
+        ViewUploadError::NotFound => ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::NOT_FOUND,
+            message: e.to_string(),
+        },
+        ViewUploadError::InternalServer(_) => ErrorTemplate {
+            state: state.0.clone().into(),
+            code: StatusCode::INTERNAL_SERVER_ERROR,
+            message: e.to_string(),
+        },
     })?;
 
     let size = upload

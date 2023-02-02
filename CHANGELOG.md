@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Return 404 instead of 500 on `/raw/:id` when upload can't be found
+
 ## [v0.2.2] - 2022-01-31
 
 ### Added
