@@ -274,7 +274,7 @@ pub async fn raw(
     state: State<Arc<AppState>>,
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
-) -> Result<impl IntoResponse, ErrorTemplate> {
+) -> Result<impl IntoResponse, ErrorResponse> {
     let upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
             state: state.0.clone().into(),
