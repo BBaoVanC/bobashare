@@ -16,7 +16,7 @@ anyhow = "1.0.65"
 askama = { git = "https://github.com/djc/askama", features = ["with-axum"] }
 askama_axum = { git = "https://github.com/djc/askama" }
 axum = { version = "0.6.0", features = ["headers", "multipart"] }
-axum-extra = "0.4.0"
+axum-extra = "0.5.0"
 bobashare = { path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
 clap = { version = "4.0.12", features = ["derive"] }
