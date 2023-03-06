@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.3] - 2022-03-06
+
 ### Fixed
 
 - Return 404 instead of 500 on `/raw/:id` when upload can't be found
@@ -64,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.2..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.3..HEAD
+[v0.2.3]: https://github.com/BBaoVanC/bobashare/compare/v0.2.2..v0.2.3
 [v0.2.2]: https://github.com/BBaoVanC/bobashare/compare/v0.2.1..v0.2.2
 [v0.2.1]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..v0.2.1
 [v0.2.0]: https://github.com/BBaoVanC/bobashare/compare/v0.1.0..v0.2.0
