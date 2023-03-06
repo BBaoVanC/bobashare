@@ -32,7 +32,8 @@ checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 [[package]]
 name = "askama"
 version = "0.12.0"
-source = "git+https://github.com/djc/askama#077ba18bf95832e042157db6284d50460f56ab3e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47cbc3cf73fa8d9833727bbee4835ba5c421a0d65b72daf9a7b5d0e0f9cfb57e"
 dependencies = [
  "askama_derive",
  "askama_escape",
@@ -44,7 +45,8 @@ dependencies = [
 [[package]]
 name = "askama_axum"
 version = "0.3.0"
-source = "git+https://github.com/djc/askama#077ba18bf95832e042157db6284d50460f56ab3e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07b336dea26a2eb67f04e1134385721f794b654a870ce5146d2fcb69ea39c3a4"
 dependencies = [
  "askama",
  "axum-core",
@@ -54,7 +56,8 @@ dependencies = [
 [[package]]
 name = "askama_derive"
 version = "0.12.0"
-source = "git+https://github.com/djc/askama#077ba18bf95832e042157db6284d50460f56ab3e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e80b5ad1afe82872b7aa3e9de9b206ecb85584aa324f0f60fa4c903ce935936b"
 dependencies = [
  "basic-toml",
  "mime",
@@ -69,7 +72,8 @@ dependencies = [
 [[package]]
 name = "askama_escape"
 version = "0.10.3"
-source = "git+https://github.com/djc/askama#077ba18bf95832e042157db6284d50460f56ab3e"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "619743e34b5ba4e9703bba34deac3427c72507c7159f5fd030aea8cac0cfe341"
 
 [[package]]
 name = "async-trait"
@@ -1326,7 +1330,8 @@ checksum = "456c603be3e8d448b072f410900c09faf164fbce2d480456f50eea6e25f9c848"
 [[package]]
 name = "rust-embed"
 version = "6.6.0"
-source = "git+https://github.com/pyrossh/rust-embed#fe35dbdc8373817ea84e4962db18ad37e48b1522"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb133b9a38b5543fad3807fb2028ea47c5f2b566f4f5e28a11902f1a358348b6"
 dependencies = [
  "rust-embed-impl",
  "rust-embed-utils",
@@ -1336,7 +1341,8 @@ dependencies = [
 [[package]]
 name = "rust-embed-impl"
 version = "6.5.0"
-source = "git+https://github.com/pyrossh/rust-embed#fe35dbdc8373817ea84e4962db18ad37e48b1522"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d4e0f0ced47ded9a68374ac145edd65a6c1fa13a96447b873660b2a568a0fd7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1348,7 +1354,8 @@ dependencies = [
 [[package]]
 name = "rust-embed-utils"
 version = "7.5.0"
-source = "git+https://github.com/pyrossh/rust-embed#fe35dbdc8373817ea84e4962db18ad37e48b1522"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "512b0ab6853f7e14e3c8754acb43d6f748bb9ced66aa5915a6553ac8213f7731"
 dependencies = [
  "mime_guess",
  "sha2",
