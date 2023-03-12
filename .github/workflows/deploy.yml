@@ -1,5 +1,8 @@
 name: Deploy
 
+env:
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
 on:
   workflow_dispatch:
   push:

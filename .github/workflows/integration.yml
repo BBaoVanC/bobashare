@@ -1,5 +1,8 @@
 name: CI checks for every commit
 
+env:
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
 on:
   push:
   pull_request:
