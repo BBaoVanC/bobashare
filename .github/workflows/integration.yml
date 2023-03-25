@@ -70,8 +70,8 @@ jobs:
           rustup component add clippy --toolchain nightly
       - name: Check
         run: |
-          cargo +nightly clippy --locked -- -D warnings
-          cargo +nightly clippy --release --locked -- -D warnings
+          cargo clippy --locked -- -D warnings
+          cargo clippy --release --locked -- -D warnings
       - name: Build
         if: always()
         run: |
