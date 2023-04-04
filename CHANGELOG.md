@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v0.2.3] - 2022-03-06
+## [v0.2.4] - 2023-04-04
+
+- Upgrade all dependencies
+
+## [v0.2.3] - 2023-03-06
 
 ### Fixed
 
 - Return 404 instead of 500 on `/raw/:id` when upload can't be found
 
-## [v0.2.2] - 2022-01-31
+## [v0.2.2] - 2023-01-31
 
 ### Added
 
@@ -33,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [113e257]: https://github.com/BBaoVanC/bobashare/commit/113e257d479b750ca605075ba08759dbc7fb6e9e
 [f29996c]: https://github.com/BBaoVanC/bobashare/commit/f29996cd69fc98401afd40e924a253fc3ce6fd7f
 
-## [v0.2.1] - 2022-01-21
+## [v0.2.1] - 2023-01-21
 
 ### Added
 
@@ -49,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Change upload page text from "Click or drop files here" to "Click to select files" because you cannot actually drop files currently. (7cc7197ff1c042a369d88836d2c04f3c85e5b5db)
 
-## [v0.2.0] - 2022-01-17
+## [v0.2.0] - 2023-01-17
 
 ### Changed
 
@@ -62,11 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unfinished API documentation page that was accidentally left in from development
 
-## [v0.1.0] - 2022-01-17
+## [v0.1.0] - 2023-01-17
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.3..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.4..HEAD
+[v0.2.4]: https://github.com/BBaoVanC/bobashare/compare/v0.2.3..v0.2.4
 [v0.2.3]: https://github.com/BBaoVanC/bobashare/compare/v0.2.2..v0.2.3
 [v0.2.2]: https://github.com/BBaoVanC/bobashare/compare/v0.2.1..v0.2.2
 [v0.2.1]: https://github.com/BBaoVanC/bobashare/compare/v0.2.0..v0.2.1
