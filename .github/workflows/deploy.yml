@@ -25,7 +25,19 @@ jobs:
           tags: ghcr.io/bbaovanc/bobashare:latest
           push: true
 
+  create-empty-release:
+    name: Create empty draft release
+    runs-on: ubuntu-latest
+    steps:
+      # create the release once, first
+      # otherwise two releases could finish building simultaneously and create two of the new release
+      - name: Draft release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          draft: true
+
   release:
+    needs: create-empty-release
     strategy:
       fail-fast: false
       matrix:
