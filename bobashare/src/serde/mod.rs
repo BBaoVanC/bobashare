@@ -1,9 +1,8 @@
 //! Methods to serialize [`Upload`]s using [`serde_json`]
 
-use displaydoc::Display;
 use mime::Mime;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
+use snafu::Snafu;
 
 use self::v0::UploadV0;
 use super::storage::upload::Upload;
@@ -41,10 +40,10 @@ impl UploadMetadata {
 }
 
 /// Errors when migrating from [`UploadV0`]
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Snafu)]
 pub enum MigrateErrorV0 {
     /// error parsing `mimetype` field
-    ParseMime(#[from] mime::FromStrError),
+    ParseMime,
 }
 
 /// Errors that could occur while migrating an upload (during deserialization)

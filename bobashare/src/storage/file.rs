@@ -3,13 +3,12 @@
 use std::path::PathBuf;
 
 use chrono::{prelude::*, Duration};
-use displaydoc::Display;
 use mime::Mime;
 use rand::{
     distributions::{Alphanumeric, DistString},
     thread_rng,
 };
-use thiserror::Error;
+use snafu::{ensure, ResultExt, Snafu};
 use tokio::{
     fs::{self, OpenOptions},
     io::{self, AsyncReadExt},
@@ -20,14 +19,15 @@ use super::{handle::UploadHandle, upload::Upload};
 use crate::serde::{MigrateError, UploadMetadata};
 
 /// Errors when creating a new [`FileBackend`]
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Snafu)]
 pub enum NewBackendError {
-    /// the file `{0}` is not a directory
-    NotADirectory(PathBuf),
+    /// file at the path is not a directory
+    #[snafu(display("file at `{}` is not a directory", path.display()))]
+    NotADirectory { path: PathBuf },
     /// error creating directory for file backend
-    CreateDirectory(#[source] io::Error),
+    CreateDirectory,
     /// error checking if backend path is directory
-    ReadMetadata(#[source] io::Error),
+    ReadMetadata { source: io::Error },
 }
 
 /// A directory on disk which is used to store uploads
@@ -41,18 +41,19 @@ impl FileBackend {
     pub async fn new(path: PathBuf) -> Result<Self, NewBackendError> {
         if let Err(e) = fs::create_dir(&path).await {
             // ignore AlreadyExists; propagate all other errors
-            if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(NewBackendError::CreateDirectory(e));
-            }
+            ensure!(
+                e.kind() != io::ErrorKind::AlreadyExists,
+                CreateDirectorySnafu
+            );
         }
 
-        if !fs::metadata(&path)
-            .await
-            .map_err(NewBackendError::ReadMetadata)?
-            .is_dir()
-        {
-            return Err(NewBackendError::NotADirectory(path));
-        }
+        ensure!(
+            fs::metadata(&path)
+                .await
+                .context(ReadMetadataSnafu)?
+                .is_dir(),
+            NotADirectorySnafu { path }
+        );
 
         // this should not fail because we already verified that the path exists
         let path = fs::canonicalize(path).await.unwrap();
@@ -79,18 +80,18 @@ impl FileBackend {
 }
 
 /// Errors when creating an upload in a file backend
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Snafu)]
 pub enum CreateUploadError {
     /// an upload with the requested name already exists
     AlreadyExists,
     /// error creating parent directory for the upload
-    CreateDirectory(#[source] io::Error),
+    CreateDirectory { source: io::Error },
     /// error creating lock file
-    CreateLockFile(#[source] io::Error),
+    CreateLockFile { source: io::Error },
     /// error creating metadata file
-    CreateMetadataFile(#[source] io::Error),
+    CreateMetadataFile { source: io::Error },
     /// error creating file for upload contents
-    CreateUploadFile(#[source] io::Error),
+    CreateUploadFile { source: io::Error },
 }
 impl FileBackend {
     pub async fn create_upload<S: AsRef<str>>(
