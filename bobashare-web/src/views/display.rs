@@ -2,7 +2,6 @@
 
 use std::sync::Arc;
 
-use anyhow::Context;
 use askama::Template;
 use axum::{
     body::StreamBody,
@@ -11,13 +10,12 @@ use axum::{
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
 use chrono::{DateTime, Duration, Utc};
-use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
 use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Parser, Tag};
 use serde::{Deserialize, Deserializer};
+use snafu::{Snafu, ResultExt};
 use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
-use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
@@ -27,19 +25,22 @@ use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
 use crate::{AppState, CLASS_STYLE, MARKDOWN_OPTIONS};
 
 /// Errors when trying to view/download an upload
-#[derive(Debug, Error, Display)]
+#[derive(Debug, Snafu)]
 pub enum ViewUploadError {
     /// an upload at the specified id was not found
     NotFound,
 
     /// internal server error
-    InternalServer(#[from] anyhow::Error),
+    #[snafu(whatever)]
+    InternalServer{
+        message: String,
+        source: Option<Box<dyn std::error::Error>> },
 }
 impl From<OpenUploadError> for ViewUploadError {
     fn from(err: OpenUploadError) -> Self {
         match err {
             OpenUploadError::NotFound(_) => Self::NotFound,
-            _ => Self::InternalServer(anyhow::Error::new(err).context("error opening upload")),
+            _ => Self::InternalServer { message: err.to_string(), source: Some(Box::new(err)) },
         }
     }
 }
@@ -57,7 +58,7 @@ async fn open_upload<S: AsRef<str>>(
             .backend
             .delete_upload(id.as_ref())
             .await
-            .context("error deleting expired upload")?;
+            .whatever_context("error deleting expired upload")?;
         return Err(ViewUploadError::NotFound);
     }
 
