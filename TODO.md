@@ -63,6 +63,7 @@
 - Make a system to delete expired uploads immediately as they expire instead of waiting until cleanup task
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
+- Use an in-memory structure for upload locking instead of `.lock` file
 
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
