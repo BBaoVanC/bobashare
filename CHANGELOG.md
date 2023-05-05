@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.6] - 2023-05-05
+
+- Upgrade dependencies
+
 ## [v0.2.5] - 2023-04-11
 
 - Upgrade dependencies :: see axum 0.6.13 to 0.6.14
@@ -74,8 +78,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.5..HEAD
-[v0.2.4]: https://github.com/BBaoVanC/bobashare/compare/v0.2.4..v0.2.5
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..HEAD
+[v0.2.6]: https://github.com/BBaoVanC/bobashare/compare/v0.2.5..v0.2.6
+[v0.2.5]: https://github.com/BBaoVanC/bobashare/compare/v0.2.4..v0.2.5
 [v0.2.4]: https://github.com/BBaoVanC/bobashare/compare/v0.2.3..v0.2.4
 [v0.2.3]: https://github.com/BBaoVanC/bobashare/compare/v0.2.2..v0.2.3
 [v0.2.2]: https://github.com/BBaoVanC/bobashare/compare/v0.2.1..v0.2.2
