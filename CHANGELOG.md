@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.7] - 2023-09-18
+
+- Upgrade dependencies
+
 ## [v0.2.6] - 2023-05-05
 
 - Upgrade dependencies
@@ -78,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..HEAD
+[v0.2.7]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..v0.2.7
 [v0.2.6]: https://github.com/BBaoVanC/bobashare/compare/v0.2.5..v0.2.6
 [v0.2.5]: https://github.com/BBaoVanC/bobashare/compare/v0.2.4..v0.2.5
 [v0.2.4]: https://github.com/BBaoVanC/bobashare/compare/v0.2.3..v0.2.4
