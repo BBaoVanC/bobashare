@@ -3,7 +3,7 @@ WORKDIR /usr/src/bobashare
 COPY . .
 RUN cargo build --release --locked
 
-FROM debian:bullseye
+FROM debian:bookworm
 RUN apt-get update \
     && apt-get install tini \
     && rm -rf /var/lib/apt/lists/* \

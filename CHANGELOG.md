@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.8] - 2023-09-18
+
+- Fix Docker image by upgrading Debian
+
 ## [v0.2.7] - 2023-09-18
 
 - Upgrade dependencies
@@ -82,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..HEAD
+[v0.2.8]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..v0.2.8
 [v0.2.7]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..v0.2.7
 [v0.2.6]: https://github.com/BBaoVanC/bobashare/compare/v0.2.5..v0.2.6
 [v0.2.5]: https://github.com/BBaoVanC/bobashare/compare/v0.2.4..v0.2.5
