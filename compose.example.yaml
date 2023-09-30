@@ -1,5 +1,6 @@
 services:
   bobashare:
+    #image: ghcr.io/bbaovanc/bobashare:latest
     build: .
     restart: always
     environment:
