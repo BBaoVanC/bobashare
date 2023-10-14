@@ -72,6 +72,11 @@
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
 
+#### Renames to do for a backwards-incompatible update
+
+- `backend_path` should be `storage_path`
+- the `APP_` prefix for env vars should be `BOBASHARE_`
+
 ### Admin
 
 - TODO: everything
