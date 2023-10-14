@@ -1,0 +1,9 @@
+# listen_addr = "127.0.0.1:3000"
+# backend_path = "storage/"
+# cleanup_interval = "1h"
+# base_url = "http://localhost:3000/"
+# id_length = 8
+# default_expiry = "24h"
+# max_expiry = "30d" # can be never
+# max_file_size = "1073741824"
+# extra_footer_text = "Demo footer text"

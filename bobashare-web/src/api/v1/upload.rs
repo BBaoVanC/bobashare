@@ -114,7 +114,7 @@ impl IntoResponse for UploadError {
 /// [`duration_str`]: https://crates.io/crates/duration_str
 ///
 /// - `Bobashare-Delete-Key` (optional) -- string -- custom key to use for
-///   deleting the file later, instead of a randomly generated one
+///   deleting the file later; if not provided, one will be randomly generated
 ///
 /// ## Body
 ///
