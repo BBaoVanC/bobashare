@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add rustdoc via GitHub Pages
+- Add basic documentation
+
 ## [v0.2.8] - 2023-09-18
 
 - Fix Docker image by upgrading Debian
