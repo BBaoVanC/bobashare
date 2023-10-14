@@ -21,6 +21,7 @@
 - Change docs to private and binary (not library)
 - Paste image to upload
 - Drop file to upload
+- Automatically expire old uploads from local storage
 
 - `build.rs` to generate syntax CSS, and also make sure to properly rebuild on the right dependency files (the syntax source)
 
@@ -64,6 +65,9 @@
 - Way to serve static files directly via webserver instead of through bobashare
 - Maybe SIGINT shouldn't terminate all active uploads instantly
 - Use an in-memory structure for upload locking instead of `.lock` file
+
+- Possibly support multiple files in a single upload
+  - or at the bare minimum, previewing individual files of a zip
 
 - https://github.com/pyrossh/rust-embed/issues/192
 - Grafana/Prometheus exporter
