@@ -1,7 +1,0 @@
-/target
-
-# path to store files while testing the program
-/storage
-/*/storage
-
-compose.yaml

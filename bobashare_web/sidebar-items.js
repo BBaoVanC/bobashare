@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CLASS_STYLE","HIGHLIGHT_CLASS_PREFIX","MARKDOWN_OPTIONS"],"fn":["clamp_expiry"],"mod":["api","static_routes","views"],"struct":["AppState"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UploadError"],"fn":["put"],"struct":["UploadResponse"]};

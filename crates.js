@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["bobashare","bobashare_admin","bobashare_web","generate_syntax_css"];
