@@ -1,24 +1,28 @@
 name: Deploy rustdoc to GitHub Pages
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+#permissions:
+#  contents: read
+#  pages: write
+#  id-token: write
+#
+#concurrency:
+#  group: pages
+#  cancel-in-progress: false
 
 env:
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 on:
   push:
+    branches: [ master ]
     #tags:
     #  - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Install toolchain
@@ -26,29 +30,46 @@ jobs:
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
       - uses: actions/checkout@v3
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
       - name: Build rustdoc
         run: cargo doc --no-deps
-      - name: Fix permissions
-        # see https://github.com/actions/upload-pages-artifact#example-permissions-fix-for-linux
-        run: |
-          chmod -c -R +rX "_site/" | while read line; do
-            echo "::warning title=Invalid file permissions automatically fixed::$line"
-          done
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: ./target/doc
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
 
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Install toolchain
+#        run: |
+#          rustup set auto-self-update disable
+#          rustup toolchain install stable --profile minimal
+#      - uses: actions/checkout@v3
+#      - name: Setup Pages
+#        id: pages
+#        uses: actions/configure-pages@v3
+#      - name: Build rustdoc
+#        run: cargo doc --no-deps
+#      - name: Fix permissions
+#        # see https://github.com/actions/upload-pages-artifact#example-permissions-fix-for-linux
+#        run: |
+#          chmod -c -R +rX "_site/" | while read line; do
+#            echo "::warning title=Invalid file permissions automatically fixed::$line"
+#          done
+#      - name: Upload artifact
+#        uses: actions/upload-pages-artifact@v2
+#        with:
+#          path: ./target/doc
+#
+#  deploy:
+#    runs-on: ubuntu-latest
+#    environment:
+#      name: github-pages
+#      url: ${{ steps.deployment.outputs.page_url }}
+#    needs: build
+#    steps:
+#      - name: Deploy to GitHub Pages
+#        id: deployment
+#        uses: actions/deploy-pages@v2
