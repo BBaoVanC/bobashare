@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.9] - 2024-03-09
+
 - Add rustdoc via GitHub Pages
 - Add basic documentation
+- Upgrade dependencies
 
 ## [v0.2.8] - 2023-09-18
 
@@ -89,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.9..HEAD
+[v0.2.9]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..v0.2.9
 [v0.2.8]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..v0.2.8
 [v0.2.7]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..v0.2.7
 [v0.2.6]: https://github.com/BBaoVanC/bobashare/compare/v0.2.5..v0.2.6
