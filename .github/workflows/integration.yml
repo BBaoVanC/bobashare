@@ -12,7 +12,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
@@ -25,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/login-action@v2
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v3
+      - uses: docker/build-push-action@v5
         with:
           tags: ghcr.io/bbaovanc/bobashare:master
           push: true
@@ -52,7 +52,7 @@ jobs:
     name: Build
     runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get version name
@@ -82,7 +82,7 @@ jobs:
           cargo test --locked
           cargo test --release --locked
       - name: Upload debug artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debug-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
@@ -91,7 +91,7 @@ jobs:
             target/debug/bobashare-admin.exe
             target/debug/bobashare-web.exe
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |

@@ -14,13 +14,13 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/login-action@v2
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v3
+      - uses: docker/build-push-action@v5
         with:
           tags: ghcr.io/bbaovanc/bobashare:latest
           push: true
@@ -32,7 +32,7 @@ jobs:
       # create the release once, first
       # otherwise two releases could finish building simultaneously and create two of the new release
       - name: Draft release
-        uses: softprops/action-gh-release@v0.1.15
+        uses: softprops/action-gh-release@v2.0.1
         with:
           draft: true
 
@@ -53,7 +53,7 @@ jobs:
     name: Draft release
     runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get version name
@@ -80,7 +80,7 @@ jobs:
           mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
           mv target/release/bobashare-web.exe target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
       - name: Draft release
-        uses: softprops/action-gh-release@v0.1.15
+        uses: softprops/action-gh-release@v2.0.1
         with:
           draft: true
           files: |
