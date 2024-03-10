@@ -1,5 +1,8 @@
 use std::{
-    future::IntoFuture, net::SocketAddr, path::{Path, PathBuf}, sync::Arc
+    future::IntoFuture,
+    net::SocketAddr,
+    path::{Path, PathBuf},
+    sync::Arc,
 };
 
 use anyhow::Context;
@@ -205,7 +208,9 @@ async fn main() -> anyhow::Result<()> {
         .context("error parsing `listen_addr`")?;
     event!(Level::INFO, "listening on http://{}", listen_addr);
     let server_span = tracing::span!(Level::INFO, "server");
-    let listener = TcpListener::bind(listen_addr).await.context("error binding to listen_addr")?;
+    let listener = TcpListener::bind(listen_addr)
+        .await
+        .context("error binding to listen_addr")?;
     // https://discord.com/channels/442252698964721669/448238009733742612/1216242726920654859
     let server_shutdown_tx = state.shutdown_tx.clone();
     let server_exec = axum::serve(listener, app)

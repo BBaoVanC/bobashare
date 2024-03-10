@@ -64,7 +64,8 @@ mod tests {
     }
     fn test_upload_not_expired() -> Upload {
         let mut upload = test_upload_expired();
-        upload.expiry_date = Some(upload.expiry_date.unwrap() + TimeDelta::try_weeks(52000).unwrap());
+        upload.expiry_date =
+            Some(upload.expiry_date.unwrap() + TimeDelta::try_weeks(52000).unwrap());
         upload
     }
 
