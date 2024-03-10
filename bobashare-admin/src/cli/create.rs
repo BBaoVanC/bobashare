@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use anyhow::{anyhow, Context};
 use bobashare::{generate_randomized_id, storage::file::FileBackend};
-use chrono::Duration;
+use chrono::TimeDelta;
 use clap::{Args, Subcommand};
 use tokio::{
     fs::File,
@@ -40,7 +40,7 @@ pub(crate) enum NameOptions {
 
 #[instrument(skip(backend))]
 pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> anyhow::Result<()> {
-    let expiry = args.expiry.map(|e| Duration::days(e.into()));
+    let expiry = args.expiry.map(|e| TimeDelta::try_days(e.into()).unwrap());
     let name = match args.name {
         // TODO: handle already existing name
         NameOptions::Name { name } => name,

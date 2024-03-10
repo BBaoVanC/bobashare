@@ -33,7 +33,7 @@ impl Upload {
 
 #[cfg(test)]
 mod tests {
-    use chrono::Duration;
+    use chrono::TimeDelta;
 
     use super::*;
 
@@ -64,7 +64,7 @@ mod tests {
     }
     fn test_upload_not_expired() -> Upload {
         let mut upload = test_upload_expired();
-        upload.expiry_date = Some(upload.expiry_date.unwrap() + Duration::weeks(52000));
+        upload.expiry_date = Some(upload.expiry_date.unwrap() + TimeDelta::try_weeks(52000).unwrap());
         upload
     }
 

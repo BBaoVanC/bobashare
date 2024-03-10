@@ -1,5 +1,5 @@
 use askama::Result;
-use chrono::Duration;
+use chrono::TimeDelta;
 use humansize::format_size;
 
 fn pluralize(input: &str, count: i64) -> String {
@@ -11,22 +11,22 @@ fn pluralize(input: &str, count: i64) -> String {
 }
 
 // TODO: this would be nice and easy to test
-pub fn humanduration(duration: &Duration) -> Result<String> {
+pub fn humanduration(duration: &TimeDelta) -> Result<String> {
     let duration = *duration;
-    if duration < Duration::minutes(1) {
+    if duration < TimeDelta::try_minutes(1).unwrap() {
         let seconds = duration.num_seconds();
         return Ok(format!("{} {}", seconds, pluralize("second", seconds)));
     }
-    if duration < Duration::hours(1) {
+    if duration < TimeDelta::try_hours(1).unwrap() {
         let minutes = duration.num_minutes();
         return Ok(format!("{} {}", minutes, pluralize("minute", minutes)));
     }
-    if duration < Duration::days(1) {
+    if duration < TimeDelta::try_days(1).unwrap() {
         let hours = duration.num_hours();
         return Ok(format!("{} {}", hours, pluralize("hour", hours)));
     }
     // using weeks is dumb, let's use days up until a month
-    if duration < Duration::days(30) {
+    if duration < TimeDelta::try_days(30).unwrap() {
         let days = duration.num_days();
         return Ok(format!("{} {}", days, pluralize("day", days)));
     }

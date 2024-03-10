@@ -12,7 +12,7 @@ use bobashare_web::{
     views::{self, ErrorResponse, ErrorTemplate},
     AppState,
 };
-use chrono::Duration;
+use chrono::TimeDelta;
 use clap::Parser;
 use config::Config;
 use hyper::{Body, Request, StatusCode};
@@ -124,7 +124,7 @@ async fn main() -> anyhow::Result<()> {
         .context("error parsing `base_url`")?;
     let raw_url = base_url.join("raw/").unwrap();
     let id_length = config.get_int("id_length").unwrap().try_into().unwrap();
-    let default_expiry = Duration::from_std(
+    let default_expiry = TimeDelta::from_std(
         duration_str::parse(&config.get_string("default_expiry").unwrap())
             .context("error parsing `default_expiry`")?,
     )
@@ -133,7 +133,7 @@ async fn main() -> anyhow::Result<()> {
         "never" => None,
         exp => Some(duration_str::parse(exp).context("error parsing `max_expiry`")?),
     }
-    .map(|d| Duration::from_std(d).unwrap());
+    .map(|d| TimeDelta::from_std(d).unwrap());
     let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
     let extra_footer_text = config.get("extra_footer_text").unwrap();
 

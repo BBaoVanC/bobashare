@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, TimeDelta, Utc};
 
 use crate::storage::upload::Upload;
 
@@ -12,7 +12,7 @@ pub(crate) fn creation_date() -> DateTime<Utc> {
         .unwrap()
 }
 pub(crate) fn expiry_date() -> DateTime<Utc> {
-    creation_date() + Duration::days(4)
+    creation_date() + TimeDelta::try_days(4).unwrap()
 }
 
 pub(crate) fn example_upload_no_expiry() -> Upload {

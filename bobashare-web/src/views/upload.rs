@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
-use chrono::Duration;
+use chrono::TimeDelta;
 use tracing::{event, instrument, Level};
 
 use super::{filters, ErrorResponse, TemplateState};
@@ -13,7 +13,7 @@ pub struct ExpiryUnit<'a> {
     pub name: &'a str,
     pub value: &'a str,
     pub default: bool,
-    pub duration: Duration,
+    pub duration: TimeDelta,
 }
 pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
     [
@@ -21,43 +21,43 @@ pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
             name: "seconds",
             value: "s",
             default: false,
-            duration: Duration::seconds(1),
+            duration: TimeDelta::try_seconds(1).unwrap(),
         },
         ExpiryUnit {
             name: "minutes",
             value: "m",
             default: false,
-            duration: Duration::minutes(1),
+            duration: TimeDelta::try_minutes(1).unwrap(),
         },
         ExpiryUnit {
             name: "hours",
             value: "h",
             default: false,
-            duration: Duration::hours(1),
+            duration: TimeDelta::try_hours(1).unwrap(),
         },
         ExpiryUnit {
             name: "days",
             value: "d",
             default: true,
-            duration: Duration::days(1),
+            duration: TimeDelta::try_days(1).unwrap(),
         },
         ExpiryUnit {
             name: "weeks",
             value: "w",
             default: false,
-            duration: Duration::days(7),
+            duration: TimeDelta::try_days(7).unwrap(),
         },
         ExpiryUnit {
             name: "months",
             value: "mon",
             default: false,
-            duration: Duration::days(30),
+            duration: TimeDelta::try_days(30).unwrap(),
         },
         ExpiryUnit {
             name: "years",
             value: "y",
             default: false,
-            duration: Duration::days(365),
+            duration: TimeDelta::try_days(365).unwrap(),
         },
     ]
     .into_iter()
