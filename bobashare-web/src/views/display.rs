@@ -14,7 +14,7 @@ use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
-use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Parser, Tag};
+use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Parser, Tag, TagEnd};
 use serde::{Deserialize, Deserializer};
 use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
 use thiserror::Error;
@@ -211,7 +211,7 @@ pub async fn display(
                                     }
                                     output.push(Event::Html(generator.finalize().into()));
                                 }
-                                Event::End(Tag::CodeBlock(CodeBlockKind::Fenced(_))) => {
+                                Event::End(TagEnd::CodeBlock) => {
                                     output.push(Event::Html("</pre>".into()));
                                 }
                                 e => output.push(e),
