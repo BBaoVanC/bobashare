@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/api/v1/upload.rs`."><title>upload.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../bobashare_web/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/api/v1/upload.rs`."><title>upload.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -357,22 +358,25 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! API to create an upload
 
 </span><span class="kw">use </span>std::{io::SeekFrom, sync::Arc};
 
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>axum::{
-    extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
-    headers::{ContentLength, ContentType},
+    body::Body,
+    extract::{Path, State},
     response::{IntoResponse, Response},
-    Json, TypedHeader,
+    Json,
 };
-<span class="kw">use </span>axum_extra::extract::WithRejection;
+<span class="kw">use </span>axum_extra::{extract::WithRejection, typed_header::TypedHeaderRejection, TypedHeader};
 <span class="kw">use </span>bobashare::{generate_randomized_id, storage::file::CreateUploadError};
 <span class="kw">use </span>chrono::{DateTime, Duration, Utc};
 <span class="kw">use </span>displaydoc::Display;
 <span class="kw">use </span>futures_util::TryStreamExt;
+<span class="kw">use </span>headers::{ContentLength, ContentType};
 <span class="kw">use </span>hyper::{header, HeaderMap, StatusCode};
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>thiserror::Error;
@@ -397,7 +401,7 @@
     </span><span class="kw">pub </span>mimetype: String,
     <span class="doccomment">/// expiration date in RFC 3339 format, null if the upload never expires
     </span><span class="kw">pub </span>expiry_date: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
-    <span class="doccomment">/// key to delete the upload later before it&#39;s expired
+    <span class="doccomment">/// key to delete the upload later before it's expired
     </span><span class="kw">pub </span>delete_key: String,
 }
 
@@ -439,8 +443,8 @@
             <span class="kw">let </span>error = anyhow::Error::new(<span class="self">self</span>);
             <span class="macro">event!</span>(
                 Level::INFO,
-                error = <span class="macro">format!</span>(<span class="string">&quot;{error:#}&quot;</span>),
-                <span class="string">&quot;returning empty response to cancelled upload&quot;
+                error = <span class="macro">format!</span>(<span class="string">"{error:#}"</span>),
+                <span class="string">"returning empty response to cancelled upload"
             </span>);
             ().into_response()
         } <span class="kw">else </span>{
@@ -473,7 +477,7 @@
 /// [`duration_str`]: https://crates.io/crates/duration_str
 ///
 /// - `Bobashare-Delete-Key` (optional) -- string -- custom key to use for
-///   deleting the file later, instead of a randomly generated one
+///   deleting the file later; if not provided, one will be randomly generated
 ///
 /// ## Body
 ///
@@ -496,7 +500,7 @@
         UploadError,
     &gt;,
     headers: HeaderMap,
-    <span class="kw-2">mut </span>body: BodyStream,
+    body: Body,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>IntoResponse, UploadError&gt; {
     <span class="comment">// hyper will automatically make sure the body is &lt;= the content-length, so we
     // can rely on it here
@@ -508,7 +512,7 @@
             Level::INFO,
             size = content_length.<span class="number">0</span>,
             max = state.max_file_size,
-            <span class="string">&quot;file is too large&quot;
+            <span class="string">"file is too large"
         </span>);
         <span class="kw">return </span><span class="prelude-val">Err</span>(UploadError::TooLarge {
             size: content_length.<span class="number">0</span>,
@@ -516,42 +520,42 @@
         });
     }
     <span class="kw">let </span>id = generate_randomized_id(state.id_length);
-    tracing::Span::current().record(<span class="string">&quot;id&quot;</span>, <span class="kw-2">&amp;</span>id);
-    <span class="macro">event!</span>(Level::DEBUG, <span class="string">&quot;generated random ID for upload&quot;</span>);
+    tracing::Span::current().record(<span class="string">"id"</span>, <span class="kw-2">&amp;</span>id);
+    <span class="macro">event!</span>(Level::DEBUG, <span class="string">"generated random ID for upload"</span>);
 
     <span class="kw">let </span>mimetype = mimetype.into();
 
-    <span class="kw">let </span>expiry = <span class="kw">match </span>headers.get(<span class="string">&quot;Bobashare-Expiry&quot;</span>) {
+    <span class="kw">let </span>expiry = <span class="kw">match </span>headers.get(<span class="string">"Bobashare-Expiry"</span>) {
         <span class="comment">// if header not found, use default expiry
         </span><span class="prelude-val">None </span>=&gt; {
             <span class="macro">event!</span>(
                 Level::DEBUG,
-                <span class="string">&quot;`Bobashare-Expiry` header not provided, using default&quot;
+                <span class="string">"`Bobashare-Expiry` header not provided, using default"
             </span>);
             <span class="prelude-val">Some</span>(state.default_expiry)
         }
         <span class="comment">// otherwise, clamp the requested expiry to the max
         </span><span class="prelude-val">Some</span>(e) =&gt; {
             <span class="kw">let </span>expiry = e.to_str().map_err(|e| UploadError::ParseHeader {
-                name: String::from(<span class="string">&quot;Bobashare-Expiry&quot;</span>),
-                source: anyhow::Error::new(e).context(<span class="string">&quot;error converting to string&quot;</span>),
+                name: String::from(<span class="string">"Bobashare-Expiry"</span>),
+                source: anyhow::Error::new(e).context(<span class="string">"error converting to string"</span>),
             })<span class="question-mark">?</span>;
 
-            <span class="macro">event!</span>(Level::DEBUG, <span class="string">&quot;`Bobashare-Expiry` header says {}&quot;</span>, expiry);
+            <span class="macro">event!</span>(Level::DEBUG, <span class="string">"`Bobashare-Expiry` header says {}"</span>, expiry);
 
-            <span class="kw">let </span>expiry = <span class="kw">if </span>expiry == <span class="string">&quot;never&quot; </span>{
+            <span class="kw">let </span>expiry = <span class="kw">if </span>expiry == <span class="string">"never" </span>{
                 <span class="prelude-val">None
             </span>} <span class="kw">else </span>{
                 <span class="prelude-val">Some</span>(
                     Duration::from_std(duration_str::parse(expiry).map_err(|e| {
                         UploadError::ParseHeader {
-                            name: String::from(<span class="string">&quot;Bobashare-Expiry&quot;</span>),
-                            source: anyhow::Error::new(e).context(<span class="string">&quot;error parsing duration string&quot;</span>),
+                            name: String::from(<span class="string">"Bobashare-Expiry"</span>),
+                            source: anyhow::Error::new(e).context(<span class="string">"error parsing duration string"</span>),
                         }
                     })<span class="question-mark">?</span>)
                     .map_err(|e| UploadError::ParseHeader {
-                        name: String::from(<span class="string">&quot;Bobashare-Expiry&quot;</span>),
-                        source: anyhow::Error::new(e).context(<span class="string">&quot;error converting duration&quot;</span>),
+                        name: String::from(<span class="string">"Bobashare-Expiry"</span>),
+                        source: anyhow::Error::new(e).context(<span class="string">"error converting duration"</span>),
                     })<span class="question-mark">?</span>,
                 )
             };
@@ -560,22 +564,22 @@
             </span>clamp_expiry(state.max_expiry, expiry)
         }
     };
-    <span class="macro">event!</span>(Level::DEBUG, expiry = %expiry.map_or_else(|| String::from(<span class="string">&quot;never&quot;</span>), |e| e.to_string()));
+    <span class="macro">event!</span>(Level::DEBUG, expiry = %expiry.map_or_else(|| String::from(<span class="string">"never"</span>), |e| e.to_string()));
 
     <span class="kw">let </span>delete_key = headers
-        .get(<span class="string">&quot;Bobashare-Delete-Key&quot;</span>)
+        .get(<span class="string">"Bobashare-Delete-Key"</span>)
         .map(|k| {
             k.to_str().map_err(|e| UploadError::ParseHeader {
-                name: String::from(<span class="string">&quot;Bobashare-Delete-Key&quot;</span>),
-                source: anyhow::Error::new(e).context(<span class="string">&quot;error converting to string&quot;</span>),
+                name: String::from(<span class="string">"Bobashare-Delete-Key"</span>),
+                source: anyhow::Error::new(e).context(<span class="string">"error converting to string"</span>),
             })
         })
         .transpose()<span class="question-mark">?
         </span>.map(ToString::to_string);
     <span class="kw">if </span>delete_key.is_some() {
-        <span class="macro">event!</span>(Level::DEBUG, delete_key, <span class="string">&quot;custom delete key was provided&quot;</span>);
+        <span class="macro">event!</span>(Level::DEBUG, delete_key, <span class="string">"custom delete key was provided"</span>);
     } <span class="kw">else </span>{
-        <span class="macro">event!</span>(Level::DEBUG, <span class="string">&quot;delete_key will be randomly generated&quot;</span>);
+        <span class="macro">event!</span>(Level::DEBUG, <span class="string">"delete_key will be randomly generated"</span>);
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>upload = state
@@ -587,33 +591,34 @@
                 UploadError::AlreadyExists
             } <span class="kw">else </span>{
                 UploadError::InternalServer(
-                    anyhow::Error::new(e).context(<span class="string">&quot;error while initializing upload&quot;</span>),
+                    anyhow::Error::new(e).context(<span class="string">"error while initializing upload"</span>),
                 )
             }
         })<span class="question-mark">?</span>;
     <span class="macro">event!</span>(
         Level::TRACE,
-        upload = <span class="macro">format!</span>(<span class="string">&quot;{upload:?}&quot;</span>),
-        <span class="string">&quot;created upload handle&quot;
+        upload = <span class="macro">format!</span>(<span class="string">"{upload:?}"</span>),
+        <span class="string">"created upload handle"
     </span>);
 
     <span class="kw">let </span><span class="kw-2">mut </span>file_writer = BufWriter::new(<span class="kw-2">&amp;mut </span>upload.file);
-    <span class="macro">event!</span>(Level::DEBUG, <span class="string">&quot;streaming file to disk&quot;</span>);
+    <span class="macro">event!</span>(Level::DEBUG, <span class="string">"streaming file to disk"</span>);
     <span class="kw">let </span>stream_file_task = <span class="kw">async </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>body = body.into_data_stream();
         <span class="kw">loop </span>{
-            <span class="kw">let </span>chunk = body.try_next().<span class="kw">await</span>.context(<span class="string">&quot;error reading body&quot;</span>);
+            <span class="kw">let </span>chunk = body.try_next().<span class="kw">await</span>.context(<span class="string">"error reading body"</span>);
             <span class="kw">match </span>chunk {
                 <span class="prelude-val">Ok</span>(ch) =&gt; <span class="kw">match </span>ch {
                     <span class="prelude-val">Some</span>(c) =&gt; {
                         <span class="macro">event!</span>(
                             Level::TRACE,
-                            <span class="string">&quot;writing chunk of {} bytes to file buffer&quot;</span>,
+                            <span class="string">"writing chunk of {} bytes to file buffer"</span>,
                             c.len()
                         );
                         file_writer
                             .write_all(<span class="kw-2">&amp;</span>c)
                             .<span class="kw">await
-                            </span>.context(<span class="string">&quot;error writing to file&quot;</span>)<span class="question-mark">?</span>;
+                            </span>.context(<span class="string">"error writing to file"</span>)<span class="question-mark">?</span>;
                     }
                     <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
                 },
@@ -629,52 +634,52 @@
     <span class="macro">tokio::select! </span>{
         res = stream_file_task =&gt; {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = res {
-                <span class="macro">event!</span>(Level::INFO, <span class="string">&quot;upload was cancelled; it will be deleted&quot;</span>);
+                <span class="macro">event!</span>(Level::INFO, <span class="string">"upload was cancelled; it will be deleted"</span>);
                 upload
                     .flush()
                     .<span class="kw">await
-                    </span>.context(<span class="string">&quot;error flushing cancelled upload before deletion&quot;</span>)<span class="question-mark">?</span>;
+                    </span>.context(<span class="string">"error flushing cancelled upload before deletion"</span>)<span class="question-mark">?</span>;
                 state
                     .backend
                     .delete_upload(id)
                     .<span class="kw">await
-                    </span>.context(<span class="string">&quot;error deleting cancelled upload&quot;</span>)<span class="question-mark">?</span>;
-                <span class="macro">event!</span>(Level::INFO, <span class="string">&quot;upload was deleted successfully&quot;</span>);
+                    </span>.context(<span class="string">"error deleting cancelled upload"</span>)<span class="question-mark">?</span>;
+                <span class="macro">event!</span>(Level::INFO, <span class="string">"upload was deleted successfully"</span>);
                 <span class="kw">return </span><span class="prelude-val">Err</span>(e);
             }
         },
         <span class="kw">_ </span>= shutdown_rx.recv() =&gt; {
-            <span class="macro">event!</span>(Level::INFO, <span class="string">&quot;server is shutting down; deleting lock&quot;</span>);
-            upload.drop_lock().<span class="kw">await</span>.context(<span class="string">&quot;error deleting lock of cancelled upload&quot;</span>)<span class="question-mark">?</span>;
-            <span class="kw">return </span><span class="prelude-val">Err</span>(UploadError::InternalServer(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;server is shutting down&quot;</span>)));
+            <span class="macro">event!</span>(Level::INFO, <span class="string">"server is shutting down; deleting lock"</span>);
+            upload.drop_lock().<span class="kw">await</span>.context(<span class="string">"error deleting lock of cancelled upload"</span>)<span class="question-mark">?</span>;
+            <span class="kw">return </span><span class="prelude-val">Err</span>(UploadError::InternalServer(<span class="macro">anyhow::anyhow!</span>(<span class="string">"server is shutting down"</span>)));
         }
     };
 
     file_writer
         .flush()
         .<span class="kw">await
-        </span>.context(<span class="string">&quot;error flushing file buffer&quot;</span>)<span class="question-mark">?</span>;
+        </span>.context(<span class="string">"error flushing file buffer"</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>detect_plaintext_span = <span class="macro">tracing::span!</span>(Level::INFO, <span class="string">&quot;detect_plaintext&quot;</span>);
+    <span class="kw">let </span>detect_plaintext_span = <span class="macro">tracing::span!</span>(Level::INFO, <span class="string">"detect_plaintext"</span>);
     <span class="kw">async </span>{
-        <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">&quot;detecting whether the upload is plaintext&quot;</span>);
+        <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">"detecting whether the upload is plaintext"</span>);
         <span class="kw">let </span>upload = <span class="kw-2">&amp;mut </span>upload;
         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = upload.file.seek(SeekFrom::Start(<span class="number">0</span>)).<span class="kw">await </span>{
-            <span class="macro">tracing::event!</span>(Level::ERROR, <span class="question-mark">?</span>err, <span class="string">&quot;error seeking to beginning of file&quot;</span>);
+            <span class="macro">tracing::event!</span>(Level::ERROR, <span class="question-mark">?</span>err, <span class="string">"error seeking to beginning of file"</span>);
             <span class="kw">return</span>;
         };
         <span class="kw">let </span><span class="kw-2">mut </span>buf = [<span class="number">0</span>; <span class="number">1024</span>];
         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = upload.file.read(<span class="kw-2">&amp;mut </span>buf).<span class="kw">await </span>{
-            <span class="macro">tracing::event!</span>(Level::ERROR, <span class="question-mark">?</span>err, <span class="string">&quot;error reading first 1024 bytes of file&quot;</span>);
+            <span class="macro">tracing::event!</span>(Level::ERROR, <span class="question-mark">?</span>err, <span class="string">"error reading first 1024 bytes of file"</span>);
             <span class="kw">return</span>;
         };
 
         <span class="comment">// TODO: would be nice to support other text encodings
         </span><span class="kw">if </span>std::str::from_utf8(<span class="kw-2">&amp;</span>buf).is_ok() {
-            <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">&quot;upload is plaintext&quot;</span>);
+            <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">"upload is plaintext"</span>);
             upload.metadata.mimetype = mime::TEXT_PLAIN_UTF_8;
         } <span class="kw">else </span>{
-            <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">&quot;upload is not plaintext&quot;</span>);
+            <span class="macro">tracing::event!</span>(Level::INFO, <span class="string">"upload is not plaintext"</span>);
         }
     }
     .instrument(detect_plaintext_span)
@@ -683,10 +688,10 @@
     <span class="kw">let </span>metadata = upload
         .flush()
         .<span class="kw">await
-        </span>.context(<span class="string">&quot;error flushing upload metadata to disk&quot;</span>)<span class="question-mark">?</span>;
-    <span class="macro">event!</span>(Level::DEBUG, <span class="string">&quot;flushed upload metadata to disk&quot;</span>);
+        </span>.context(<span class="string">"error flushing upload metadata to disk"</span>)<span class="question-mark">?</span>;
+    <span class="macro">event!</span>(Level::DEBUG, <span class="string">"flushed upload metadata to disk"</span>);
 
-    <span class="comment">// SAFETY: this shouldn&#39;t fail because `metadata.id` should be valid in a URL
+    <span class="comment">// SAFETY: this shouldn't fail because `metadata.id` should be valid in a URL
     </span><span class="kw">let </span>url = state.base_url.join(<span class="kw-2">&amp;</span>metadata.id).unwrap().to_string();
     <span class="kw">let </span>direct_url = state.raw_url.join(<span class="kw-2">&amp;</span>metadata.id).unwrap().to_string();
     <span class="macro">event!</span>(
@@ -696,8 +701,8 @@
         mimetype = %metadata.mimetype,
         expiry = %metadata
             .expiry_date
-            .map_or_else(|| String::from(<span class="string">&quot;never&quot;</span>), |e| e.to_string()),
-        <span class="string">&quot;successfully created upload&quot;
+            .map_or_else(|| String::from(<span class="string">"never"</span>), |e| e.to_string()),
+        <span class="string">"successfully created upload"
     </span>);
     <span class="prelude-val">Ok</span>((
         StatusCode::CREATED,
