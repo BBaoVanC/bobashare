@@ -1,7 +1,5 @@
 use std::{
-    net::SocketAddr,
-    path::{Path, PathBuf},
-    sync::Arc,
+    future::IntoFuture, net::SocketAddr, path::{Path, PathBuf}, sync::Arc
 };
 
 use anyhow::Context;
@@ -15,9 +13,9 @@ use bobashare_web::{
 use chrono::TimeDelta;
 use clap::Parser;
 use config::Config;
-use hyper::{Body, Request, StatusCode};
+use hyper::{Request, StatusCode};
 use syntect::parsing::SyntaxSet;
-use tokio::{signal, sync::broadcast, time::sleep};
+use tokio::{net::TcpListener, signal, sync::broadcast, time::sleep};
 use tower::ServiceBuilder;
 use tower_http::{
     request_id::MakeRequestUuid,
@@ -183,7 +181,7 @@ async fn main() -> anyhow::Result<()> {
                 .set_x_request_id(MakeRequestUuid)
                 .layer(
                     TraceLayer::new_for_http()
-                        .make_span_with(|request: &Request<Body>| {
+                        .make_span_with(|request: &Request<_>| {
                             tracing::span!(
                                 Level::INFO,
                                 "request",
@@ -207,16 +205,18 @@ async fn main() -> anyhow::Result<()> {
         .context("error parsing `listen_addr`")?;
     event!(Level::INFO, "listening on http://{}", listen_addr);
     let server_span = tracing::span!(Level::INFO, "server");
-    let server_exec = axum::Server::try_bind(&listen_addr)
-        .context("error binding to listen_addr")?
-        .serve(app)
-        .with_graceful_shutdown(async {
-            state.shutdown_tx.subscribe().recv().await.unwrap();
+    let listener = TcpListener::bind(listen_addr).await.context("error binding to listen_addr")?;
+    // https://discord.com/channels/442252698964721669/448238009733742612/1216242726920654859
+    let server_shutdown_tx = state.shutdown_tx.clone();
+    let server_exec = axum::serve(listener, app)
+        .with_graceful_shutdown(async move {
+            server_shutdown_tx.subscribe().recv().await.unwrap();
             event!(
                 Level::INFO,
                 "received shutdown signal, quitting axum server"
             );
         })
+        .into_future()
         .instrument(server_span);
 
     let cleanup_span = tracing::span!(Level::INFO, "bg_cleanup");

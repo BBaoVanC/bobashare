@@ -5,7 +5,7 @@ use std::sync::Arc;
 use anyhow::Context;
 use askama::Template;
 use axum::{
-    body::StreamBody,
+    body::Body,
     extract::{Path, Query, State},
     response::IntoResponse,
 };
@@ -300,8 +300,7 @@ pub async fn raw(
         .len();
     event!(Level::DEBUG, size, "found size of upload file",);
 
-    let stream = ReaderStream::new(upload.file);
-    let body = StreamBody::new(stream);
+    let body = Body::from_stream(ReaderStream::new(upload.file));
 
     event!(
         Level::INFO,

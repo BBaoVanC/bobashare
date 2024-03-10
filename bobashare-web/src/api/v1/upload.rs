@@ -4,12 +4,11 @@ use std::{io::SeekFrom, sync::Arc};
 
 use anyhow::Context;
 use axum::{
-    extract::{rejection::TypedHeaderRejection, BodyStream, Path, State},
-    headers::{ContentLength, ContentType},
-    response::{IntoResponse, Response},
-    Json, TypedHeader,
+    body::Body, extract::{Path, State}, response::{IntoResponse, Response}, Json
 };
-use axum_extra::extract::WithRejection;
+use headers::{ContentLength, ContentType};
+use axum_extra::{extract::WithRejection, TypedHeader};
+use axum_extra::typed_header::TypedHeaderRejection;
 use bobashare::{generate_randomized_id, storage::file::CreateUploadError};
 use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
@@ -137,7 +136,7 @@ pub async fn put(
         UploadError,
     >,
     headers: HeaderMap,
-    mut body: BodyStream,
+    body: Body,
 ) -> Result<impl IntoResponse, UploadError> {
     // hyper will automatically make sure the body is <= the content-length, so we
     // can rely on it here
@@ -241,6 +240,7 @@ pub async fn put(
     let mut file_writer = BufWriter::new(&mut upload.file);
     event!(Level::DEBUG, "streaming file to disk");
     let stream_file_task = async {
+        let mut body = body.into_data_stream();
         loop {
             let chunk = body.try_next().await.context("error reading body");
             match chunk {
