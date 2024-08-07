@@ -34,7 +34,7 @@ struct Cli {
     /// Enable more logging output (more v's for even lower levels)
     ///
     /// 0. info if release, otherwise info + debug output from bobashare and
-    /// tower_http
+    ///    tower_http
     ///
     /// 1. same as 0 on a debug build
     ///
