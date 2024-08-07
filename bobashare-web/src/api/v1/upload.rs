@@ -22,7 +22,7 @@ use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt, BufWriter};
 use tracing::{event, instrument, Instrument, Level};
 
 use super::ApiErrorExt;
-use crate::{clamp_expiry, AppState};
+use crate::{clamp_expiry, str_to_duration, AppState};
 
 /// The JSON API response after uploading a file
 #[derive(Debug, Clone, Serialize)]
@@ -106,13 +106,11 @@ impl IntoResponse for UploadError {
 /// - `Bobashare-Expiry` (optional) -- number -- duration until the upload
 ///   should expire
 ///   - specify `0` for no expiry
-///   - examples (see [`duration_str`] for more information):
+///   - examples (see [`str_to_duration`] for more information):
 ///     - `1d` -- 1 day
 ///     - `1h` -- 1 hour
 ///     - `1m` -- 1 minute
 ///     - `1s` -- 1 second
-///
-/// [`duration_str`]: https://crates.io/crates/duration_str
 ///
 /// - `Bobashare-Delete-Key` (optional) -- string -- custom key to use for
 ///   deleting the file later; if not provided, one will be randomly generated
@@ -185,7 +183,7 @@ pub async fn put(
                 None
             } else {
                 Some(
-                    Duration::from_std(duration_str::parse(expiry).map_err(|e| {
+                    Duration::from_std(str_to_duration(expiry).map_err(|e| {
                         UploadError::ParseHeader {
                             name: String::from("Bobashare-Expiry"),
                             source: anyhow::Error::new(e).context("error parsing duration string"),

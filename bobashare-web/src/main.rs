@@ -9,7 +9,7 @@ use anyhow::Context;
 use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
-    api, static_routes,
+    api, static_routes, str_to_duration,
     views::{self, ErrorResponse, ErrorTemplate},
     AppState,
 };
@@ -116,7 +116,7 @@ async fn main() -> anyhow::Result<()> {
 
     let backend =
         FileBackend::new(PathBuf::from(config.get_string("backend_path").unwrap())).await?;
-    let cleanup_interval = duration_str::parse(config.get_string("cleanup_interval").unwrap())
+    let cleanup_interval = str_to_duration(config.get_string("cleanup_interval").unwrap())
         .context("error parsing `cleanup_interval`")?;
     let base_url: Url = config
         .get_string("base_url")
@@ -126,13 +126,13 @@ async fn main() -> anyhow::Result<()> {
     let raw_url = base_url.join("raw/").unwrap();
     let id_length = config.get_int("id_length").unwrap().try_into().unwrap();
     let default_expiry = TimeDelta::from_std(
-        duration_str::parse(config.get_string("default_expiry").unwrap())
+        str_to_duration(config.get_string("default_expiry").unwrap())
             .context("error parsing `default_expiry`")?,
     )
     .unwrap();
     let max_expiry = match config.get_string("max_expiry").unwrap().as_str() {
         "never" => None,
-        exp => Some(duration_str::parse(exp).context("error parsing `max_expiry`")?),
+        exp => Some(str_to_duration(exp).context("error parsing `max_expiry`")?),
     }
     .map(|d| TimeDelta::from_std(d).unwrap());
     let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
