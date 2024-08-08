@@ -17,10 +17,6 @@ pub mod api;
 pub mod static_routes;
 pub mod views;
 
-/// Regex used for duration string parsing in [`str_to_duration`]
-static DURATION_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([0-9]+)(m|h|d|w|mon|y)$").unwrap());
-
 /// Prefix for CSS classes used for [`syntect`] highlighting
 pub const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
 /// [`ClassStyle`] used for [`syntect`] highlighting
@@ -142,6 +138,10 @@ pub enum StrToDurationError {
     /// could not parse number in duration, is it too large?
     NumberParse(ParseIntError),
 }
+
+/// Regex used for duration string parsing in [`str_to_duration`]
+static DURATION_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^([0-9]+)(m|h|d|w|mon|y)$").unwrap());
 
 /// Take a string with a simple duration format (single number followed by unit)
 /// and output a [`StdDuration`]. Accepts durations in minutes (m), hours
