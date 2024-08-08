@@ -116,12 +116,10 @@ pub struct AppState {
 /// ```
 /// # use chrono::Duration;
 /// let max_expiry = Some(Duration::days(7));
-/// println!("a");
 /// assert_eq!(
 ///     bobashare_web::clamp_expiry(max_expiry, Some(Duration::days(30))),
 ///     max_expiry,
 /// );
-/// println!("b");
 /// ```
 pub fn clamp_expiry(max_expiry: Option<Duration>, other: Option<Duration>) -> Option<Duration> {
     match other {
