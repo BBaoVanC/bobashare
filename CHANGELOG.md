@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.10] - 2024-08-07
+
+- Upgrade dependencies
+- Replace [duration_str] with simple regex implementation
+  - This means that you can no longer use sums of durations (ie. `1d 5h 20m`).
+    However, this feature may return in the future.
+
+[duration_str]: https://docs.rs/duration-str/latest/duration_str/
+
+### Documentation
+
+- Fix indentation in `bobashare_web::Cli` list
+- Fix headline for static_routes module
+
 ## [v0.2.9] - 2024-03-09
 
 - Add rustdoc via GitHub Pages
@@ -92,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.9..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.10..HEAD
+[v0.2.10]: https://github.com/BBaoVanC/bobashare/compare/v0.2.9..v0.2.10
 [v0.2.9]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..v0.2.9
 [v0.2.8]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..v0.2.8
 [v0.2.7]: https://github.com/BBaoVanC/bobashare/compare/v0.2.6..v0.2.7
