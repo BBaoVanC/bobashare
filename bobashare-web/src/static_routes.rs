@@ -1,4 +1,5 @@
-/// Handler to serve static files
+//! Handler to serve static files
+
 use axum::response::IntoResponse;
 use hyper::{header, HeaderMap, StatusCode, Uri};
 use rust_embed::RustEmbed;
