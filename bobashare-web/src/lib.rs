@@ -155,46 +155,51 @@ static DURATION_REGEX: LazyLock<Regex> =
 /// Basic (small numbers that fit within the unit)
 ///
 /// ```
+/// use bobashare_web::str_to_duration;
 /// use chrono::TimeDelta;
 ///
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("17m").unwrap()).unwrap(),
-///     TimeDelta::minutes(17)
+///     TimeDelta::from_std(str_to_duration("17m")?)?,
+///     TimeDelta::minutes(17),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("14h").unwrap()).unwrap(),
-///     TimeDelta::hours(14)
+///     TimeDelta::from_std(str_to_duration("14h")?)?,
+///     TimeDelta::hours(14),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("26d").unwrap()).unwrap(),
-///     TimeDelta::days(26)
+///     TimeDelta::from_std(str_to_duration("26d")?)?,
+///     TimeDelta::days(26),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("2w").unwrap()).unwrap(),
-///     TimeDelta::weeks(2)
+///     TimeDelta::from_std(str_to_duration("2w")?)?,
+///     TimeDelta::weeks(2),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("4mon").unwrap()).unwrap(),
-///     TimeDelta::days(30 * 4)
+///     TimeDelta::from_std(str_to_duration("4mon")?)?,
+///     TimeDelta::days(30 * 4),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("7y").unwrap()).unwrap(),
-///     TimeDelta::days(365 * 7)
+///     TimeDelta::from_std(str_to_duration("7y")?)?,
+///     TimeDelta::days(365 * 7),
 /// );
+///
+/// # Ok::<(), anyhow::Error>(())
 /// ```
 ///
 /// Demonstrate the day values of months and years
 ///
 /// ```
+/// # use bobashare_web::str_to_duration;
 /// # use chrono::TimeDelta;
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("1mon").unwrap()).unwrap(),
-///     TimeDelta::days(30)
+///     TimeDelta::from_std(str_to_duration("1mon")?)?,
+///     TimeDelta::days(30),
 /// );
 /// assert_eq!(
-///     TimeDelta::from_std(bobashare_web::str_to_duration("1y").unwrap()).unwrap(),
-///     TimeDelta::days(365)
+///     TimeDelta::from_std(str_to_duration("1y")?)?,
+///     TimeDelta::days(365),
 /// );
+/// # Ok::<(), anyhow::Error>(())
 /// ```
 pub fn str_to_duration<S: AsRef<str>>(s: S) -> Result<StdDuration, StrToDurationError> {
     let caps = DURATION_REGEX
