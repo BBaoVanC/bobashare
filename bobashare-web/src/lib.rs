@@ -135,6 +135,7 @@ pub fn clamp_expiry(max_expiry: Option<Duration>, other: Option<Duration>) -> Op
     }
 }
 
+/// Error encountered in converting string to duration values with [`str_to_duration`]
 #[derive(Debug, Error, Display)]
 pub enum StrToDurationError {
     /// string does not match duration format (try: 15d)
