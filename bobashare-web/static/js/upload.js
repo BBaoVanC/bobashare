@@ -118,7 +118,7 @@ window.onload = () => {
                 failTmpl.querySelector(".upload-filename").innerText = file.name;
                 filesDiv.replaceChild(failTmpl, uploadElem);
                 console.error(`upload of ${file.name} failed`, req);
-                alert(`upload of ${file.name} failed: ` + req.response.message);
+                alert(`upload of ${file.name} failed: ` + (req.response.message ?? req.response));
             }
         }
         req.send(file);
