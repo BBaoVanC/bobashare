@@ -16,6 +16,10 @@ pub mod display;
 pub mod filters;
 pub mod upload;
 
+mod prelude {
+    pub use super::CurrentNavigation;
+}
+
 #[derive(Debug, Clone)]
 pub struct TemplateState {
     version: &'static str,
@@ -23,6 +27,9 @@ pub struct TemplateState {
     max_file_size: u64,
     max_expiry: Option<Duration>,
     extra_footer_text: Option<String>,
+
+    // None if the current page is not a navbar item
+    current_navigation: Option<CurrentNavigation>,
 }
 impl From<&AppState> for TemplateState {
     fn from(state: &AppState) -> Self {
@@ -32,6 +39,7 @@ impl From<&AppState> for TemplateState {
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
             extra_footer_text: state.extra_footer_text.clone(),
+            current_navigation: None, // will be set to Some in individual handlers
         }
     }
 }
@@ -43,6 +51,7 @@ impl From<Arc<AppState>> for TemplateState {
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
             extra_footer_text: state.extra_footer_text.clone(),
+            current_navigation: None,
         }
     }
 }
@@ -52,6 +61,14 @@ impl TemplateState {
             .join(&format!("static/svg/fa/{}.svg", name.as_ref()))
             .unwrap()
     }
+}
+
+// which page is current navigated to, for navbar formatting
+#[derive(Debug, Clone)]
+#[non_exhaustive]
+pub enum CurrentNavigation {
+    Upload,
+    Paste,
 }
 
 #[derive(Template)]

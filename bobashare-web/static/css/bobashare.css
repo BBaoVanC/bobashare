@@ -40,6 +40,7 @@ a:not([href]):hover {
     column-gap: 1em;
     /* horizontal margin is 1em on each side */
     min-width: min(360px, var(--max-vw));
+    margin-bottom: 16px;
 }
 .top > .navbar {
     display: flex;
@@ -48,6 +49,9 @@ a:not([href]):hover {
     column-gap: 1em;
     /* for some reason it looks misaligned vertically without this */
     margin: auto 0;
+}
+.navbar-item.navbar-active {
+    color: var(--text-0);
 }
 .top > header {
     font-weight: bold;

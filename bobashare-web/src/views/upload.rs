@@ -5,7 +5,7 @@ use axum::{extract::State, response::IntoResponse};
 use chrono::TimeDelta;
 use tracing::{event, instrument, Level};
 
-use super::{filters, ErrorResponse, TemplateState};
+use super::{filters, CurrentNavigation, ErrorResponse, TemplateState};
 use crate::AppState;
 
 #[derive(Debug, Clone)]
@@ -74,6 +74,8 @@ pub struct UploadTemplate<'a> {
 
 #[instrument(skip(state))]
 pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+    let mut state: TemplateState = state.0.into();
+    state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
     Ok(UploadTemplate {
         expiry_units: iter_expiry_units()
@@ -86,7 +88,7 @@ pub async fn upload(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Er
             })
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
-        state: state.0.into(),
+        state,
     })
 }
 
@@ -100,6 +102,8 @@ pub struct PasteTemplate<'a> {
 
 #[instrument(skip(state))]
 pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+    let mut state: TemplateState = state.0.into();
+    state.current_navigation = Some(CurrentNavigation::Paste);
     event!(Level::DEBUG, "returning paste template");
     Ok(PasteTemplate {
         expiry_units: iter_expiry_units()
@@ -112,6 +116,6 @@ pub async fn paste(state: State<Arc<AppState>>) -> Result<impl IntoResponse, Err
             })
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
-        state: state.0.into(),
+        state,
     })
 }

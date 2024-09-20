@@ -23,7 +23,7 @@ use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 use url::Url;
 
-use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
+use super::{filters, prelude::*, ErrorResponse, ErrorTemplate, TemplateState};
 use crate::{AppState, CLASS_STYLE, MARKDOWN_OPTIONS};
 
 /// Errors when trying to view/download an upload
