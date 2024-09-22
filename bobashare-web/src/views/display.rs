@@ -256,8 +256,7 @@ pub async fn display(
     })
 }
 
-#[allow(unused_variables)]
-fn string_is_true<'de, D>(de: D) -> Result<bool, D::Error>
+fn string_is_true<'de, D>(_: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
 {
