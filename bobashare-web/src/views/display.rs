@@ -101,17 +101,17 @@ const MAX_DISPLAY_SIZE: u64 = 1024 * 1024; // 1 MiB
 /// Display an upload as HTML
 #[instrument(skip(state))]
 pub async fn display(
-    state: State<Arc<AppState>>,
+    State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
     let mut upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::NOT_FOUND,
             message: e.to_string(),
         },
         ViewUploadError::InternalServer(_) => ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: e.to_string(),
         },
@@ -121,7 +121,7 @@ pub async fn display(
         .metadata()
         .await
         .map_err(|e| ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: format!("error reading file size: {e}"),
         })?
@@ -148,7 +148,7 @@ pub async fn display(
                         .read_to_string(&mut contents)
                         .await
                         .map_err(|e| ErrorTemplate {
-                            state: state.0.clone().into(),
+                            state: state.clone().into(),
                             code: StatusCode::INTERNAL_SERVER_ERROR,
                             message: format!("error reading file contents: {e}"),
                         })?;
@@ -168,7 +168,7 @@ pub async fn display(
                             generator
                                 .parse_html_for_line_which_includes_newline(line)
                                 .map_err(|e| ErrorTemplate {
-                                    state: state.0.clone().into(),
+                                    state: state.clone().into(),
                                     code: StatusCode::INTERNAL_SERVER_ERROR,
                                     message: format!("error highlighting file contents: {e}"),
                                 })?;
@@ -201,7 +201,7 @@ pub async fn display(
                                         generator
                                             .parse_html_for_line_which_includes_newline(t)
                                             .map_err(|e| ErrorTemplate {
-                                                state: state.0.clone().into(),
+                                                state: state.clone().into(),
                                                 code: StatusCode::INTERNAL_SERVER_ERROR,
                                                 message: format!(
                                                     "error highlighting markdown fenced code block: {e}",
@@ -252,7 +252,7 @@ pub async fn display(
         size,
         mimetype: upload.metadata.mimetype,
         contents,
-        state: state.0.into(),
+        state: state.into(),
     })
 }
 
@@ -271,18 +271,18 @@ pub struct RawParams {
 /// Download the raw upload file
 #[instrument(skip(state))]
 pub async fn raw(
-    state: State<Arc<AppState>>,
+    State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
     let upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::NOT_FOUND,
             message: e.to_string(),
         },
         ViewUploadError::InternalServer(_) => ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: e.to_string(),
         },
@@ -293,7 +293,7 @@ pub async fn raw(
         .metadata()
         .await
         .map_err(|e| ErrorTemplate {
-            state: state.0.clone().into(),
+            state: state.clone().into(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: format!("error reading file size: {e}"),
         })?
