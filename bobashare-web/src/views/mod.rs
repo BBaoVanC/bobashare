@@ -45,14 +45,7 @@ impl From<&AppState> for TemplateState {
 }
 impl From<Arc<AppState>> for TemplateState {
     fn from(state: Arc<AppState>) -> Self {
-        Self {
-            version: env!("CARGO_PKG_VERSION"),
-            base_url: state.base_url.clone(),
-            max_file_size: state.max_file_size,
-            max_expiry: state.max_expiry,
-            extra_footer_text: state.extra_footer_text.clone(),
-            current_navigation: None,
-        }
+        Self::from(&*state)
     }
 }
 impl TemplateState {
