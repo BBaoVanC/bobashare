@@ -44,7 +44,6 @@ a:not([href]):hover {
     column-gap: 1em;
     /* horizontal margin is 1em on each side */
     min-width: min(360px, var(--max-vw));
-    margin-bottom: 16px;
 }
 .top > .navbar {
     display: flex;
