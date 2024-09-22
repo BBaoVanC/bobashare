@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/views/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0 (051478957 2024-07-21)" data-channel="1.80.0" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/views/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c5d6553a23f1e5a6.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.81.0 (eeb90cda1 2024-09-04)" data-channel="1.81.0" data-search-js="search-d234aafac6c221dd.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-d2fab2bf619172d3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -91,6 +91,9 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Frontend views (as opposed to REST API)
 
 </span><span class="kw">use </span>std::sync::Arc;
@@ -109,6 +112,10 @@
 <span class="kw">pub mod </span>filters;
 <span class="kw">pub mod </span>upload;
 
+<span class="kw">mod </span>prelude {
+    <span class="kw">pub use </span><span class="kw">super</span>::CurrentNavigation;
+}
+
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>TemplateState {
     version: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
@@ -116,6 +123,9 @@
     max_file_size: u64,
     max_expiry: <span class="prelude-ty">Option</span>&lt;Duration&gt;,
     extra_footer_text: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="comment">// None if the current page is not a navbar item
+    </span>current_navigation: <span class="prelude-ty">Option</span>&lt;CurrentNavigation&gt;,
 }
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>AppState&gt; <span class="kw">for </span>TemplateState {
     <span class="kw">fn </span>from(state: <span class="kw-2">&amp;</span>AppState) -&gt; <span class="self">Self </span>{
@@ -125,26 +135,22 @@
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
             extra_footer_text: state.extra_footer_text.clone(),
-        }
+            current_navigation: <span class="prelude-val">None</span>, <span class="comment">// will be set to Some in individual handlers
+        </span>}
     }
 }
 <span class="kw">impl </span>From&lt;Arc&lt;AppState&gt;&gt; <span class="kw">for </span>TemplateState {
     <span class="kw">fn </span>from(state: Arc&lt;AppState&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            version: <span class="macro">env!</span>(<span class="string">"CARGO_PKG_VERSION"</span>),
-            base_url: state.base_url.clone(),
-            max_file_size: state.max_file_size,
-            max_expiry: state.max_expiry,
-            extra_footer_text: state.extra_footer_text.clone(),
-        }
+        <span class="self">Self</span>::from(<span class="kw-2">&amp;*</span>state)
     }
 }
-<span class="kw">impl </span>TemplateState {
-    <span class="kw">pub fn </span>icon&lt;S: AsRef&lt;str&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, name: S) -&gt; Url {
-        <span class="self">self</span>.base_url
-            .join(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"static/svg/fa/{}.svg"</span>, name.as_ref()))
-            .unwrap()
-    }
+
+<span class="comment">// which page is current navigated to, for navbar formatting
+</span><span class="attr">#[derive(Debug, Clone)]
+#[non_exhaustive]
+</span><span class="kw">pub enum </span>CurrentNavigation {
+    Upload,
+    Paste,
 }
 
 <span class="attr">#[derive(Template)]

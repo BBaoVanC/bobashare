@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["router"],"mod":["display","filters","upload"],"struct":["ErrorResponse","ErrorTemplate","TemplateState"]};
+window.SIDEBAR_ITEMS = {"enum":["CurrentNavigation"],"fn":["router"],"mod":["display","filters","upload"],"struct":["ErrorResponse","ErrorTemplate","TemplateState"]};

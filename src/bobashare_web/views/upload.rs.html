@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/views/upload.rs`."><title>upload.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0 (051478957 2024-07-21)" data-channel="1.80.0" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `bobashare-web/src/views/upload.rs`."><title>upload.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c5d6553a23f1e5a6.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bobashare_web" data-themes="" data-resource-suffix="" data-rustdoc-version="1.81.0 (eeb90cda1 2024-09-04)" data-channel="1.81.0" data-search-js="search-d234aafac6c221dd.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-d2fab2bf619172d3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -115,6 +115,12 @@
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>askama::Template;
@@ -122,7 +128,7 @@
 <span class="kw">use </span>chrono::TimeDelta;
 <span class="kw">use </span>tracing::{event, instrument, Level};
 
-<span class="kw">use super</span>::{filters, ErrorResponse, TemplateState};
+<span class="kw">use super</span>::{filters, CurrentNavigation, ErrorResponse, TemplateState};
 <span class="kw">use </span><span class="kw">crate</span>::AppState;
 
 <span class="attr">#[derive(Debug, Clone)]
@@ -190,7 +196,11 @@
 }
 
 <span class="attr">#[instrument(skip(state))]
-</span><span class="kw">pub async fn </span>upload(state: State&lt;Arc&lt;AppState&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>IntoResponse, ErrorResponse&gt; {
+</span><span class="kw">pub async fn </span>upload(
+    State(state): State&lt;Arc&lt;AppState&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>IntoResponse, ErrorResponse&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>state: TemplateState = state.into();
+    state.current_navigation = <span class="prelude-val">Some</span>(CurrentNavigation::Upload);
     <span class="macro">event!</span>(Level::DEBUG, <span class="string">"returning upload template"</span>);
     <span class="prelude-val">Ok</span>(UploadTemplate {
         expiry_units: iter_expiry_units()
@@ -203,7 +213,7 @@
             })
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
-        state: state.<span class="number">0</span>.into(),
+        state,
     })
 }
 
@@ -216,7 +226,9 @@
 }
 
 <span class="attr">#[instrument(skip(state))]
-</span><span class="kw">pub async fn </span>paste(state: State&lt;Arc&lt;AppState&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>IntoResponse, ErrorResponse&gt; {
+</span><span class="kw">pub async fn </span>paste(State(state): State&lt;Arc&lt;AppState&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>IntoResponse, ErrorResponse&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>state: TemplateState = state.into();
+    state.current_navigation = <span class="prelude-val">Some</span>(CurrentNavigation::Paste);
     <span class="macro">event!</span>(Level::DEBUG, <span class="string">"returning paste template"</span>);
     <span class="prelude-val">Ok</span>(PasteTemplate {
         expiry_units: iter_expiry_units()
@@ -229,7 +241,7 @@
             })
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
-        state: state.<span class="number">0</span>.into(),
+        state,
     })
 }
 </code></pre></div></section></main></body></html>
