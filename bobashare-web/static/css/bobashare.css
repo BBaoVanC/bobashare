@@ -1,6 +1,10 @@
 :root {
     /* horizontal margin is 1em on each side */
     --max-vw: 100vw - 2em;
+    /* tell elements that they should be rendering in dark mode
+     * namely, this fixes the dropdown selects being ugly on Safari
+     */
+    color-scheme: dark;
 }
 
 /* Main document formatting */
