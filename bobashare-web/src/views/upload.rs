@@ -73,7 +73,9 @@ pub struct UploadTemplate<'a> {
 }
 
 #[instrument(skip(state))]
-pub async fn upload(State(state): State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
+pub async fn upload(
+    State(state): State<Arc<AppState>>,
+) -> Result<impl IntoResponse, ErrorResponse> {
     let mut state: TemplateState = state.into();
     state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
