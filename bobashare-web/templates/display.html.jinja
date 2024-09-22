@@ -70,12 +70,21 @@
         {% let expiry_exact = String::from("never") %}
     {% endif %}
 
+    <div class="upload-infobar">
+        <div class="upload-infobar-left">
+            <span class="upload-id">bobashare / <code>{{ id }}</code></span>
+        </div>
+        <div class="upload-infobar-right">
+            <span class="upload-expiry" title='{{ expiry_exact }}'>expires in {{ expiry_human }}</span>
+            <a class="download-button" href='{{ download_url }}'>Download</a>
+        </div>
+    </div>
+
     <div class="upload-titlebar">
         <div class="upload-titlebar-left">
-            <div class="upload-filename">{{ filename }}</div>
+            <div class="upload-filename"><code>{{ filename }}</code></div>
         </div>
         <div class="upload-titlebar-right">
-            <div class="upload-expiry" title='{{ expiry_exact }}'>expires in {{ expiry_human }}</div>
             <div class="upload-size" title='{{ size }} bytes'>{{ size|humansize }}</div>
             {% if let DisplayType::Text{ highlighted: _ } = contents %}
                 <div class="upload-wrap-text-checkbox">
@@ -88,7 +97,7 @@
                     <input type="checkbox" id="wrap-text-checkbox" name="wrap-text" value="Wrap text">
                 </div>
             {% endif %}
-            <a class="download-button" href='{{ download_url }}'>Download</a>
+            <a class="view-raw-button" href='{{ raw_url }}'>View raw</a>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 /* Titlebar */
-.upload-titlebar {
+.upload-titlebar,
+.upload-infobar {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -15,7 +16,8 @@
     display: inline-flex;
     align-items: center;
 }
-.upload-titlebar > div > * {
+.upload-titlebar > div > *,
+.upload-infobar > div > * {
     display: inline-block;
     margin: 0 0.25em;
 }
