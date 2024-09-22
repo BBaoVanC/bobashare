@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bugfixes
+
+- Fix uncaught error if network connection drops in failed upload
+  - This was also causing the popup error dialog not to be shown
+
+### API (minor, non-breaking) Changes
+
+- Use plaintext response to invalid routes on /api
+  - Instead of default HTML template response, send a plaintext error message
+    which is easier to deal with or read, i.e. when using curl directly.
+  - **This message is not considered part of the stable API! Please do not match
+    it directly in API clients; read the error code (404) in the response
+    instead.**
+
+### Visual Tweaks
+
+- Add extra info bar to display page to show upload ID and view raw button
+  (fixes [#4](https://github.com/BBaoVanC/bobashare/issues/4))
+  - Browsers do not display the URL in an unambiguous font, so it can be hard to
+    read the upload id by eye. Add a second bar so the id is displayed in a
+    monospace font in the page body. Also make the filename monospace font so it
+    is easy to read too. Two bars gives more space, so add a "View raw" button
+    which is good for copy-pasting the entire file.
+- Make current navbar selection white instead of blue and add margin below top
+  bar on main upload page
+  - This makes it easier to distinguish the "Upload" navbar item from the file
+    upload form, so users are less likely to accidentally click it when trying
+    to upload the current selected file.
+- Fix filename not being vertically aligned on display page
+- Set color-scheme: dark to make native elements use dark mode (partial fix for
+  [#7](https://github.com/BBaoVanC/bobashare/issues/7))
+  - This fixes the arrows looking light on the number input for expiry, but not
+    the weird-looking pseudo-skeumorphic dropdown select box for the expiry unit
+    on Safari.
+
+### Internal Changes
+
+- Destructure State directly in URL handler function parameters to clean up
+  state.0 usage
+- Remove redundant struct construction in `From<Arc<AppState> for TemplateState`
+  - Exactly identical code was used in both the `From<Arc<AppState>>` and
+    `From<&AppState>` impl's to construct `TemplateState`; instead, just call
+    the `From<&AppState>` impl from the `From<Arc<AppState>>` to remove the
+    redundancy.
+- Remove obsolete leftover TemplateState::icon method
+- Remove unnecessary allow(unused_variables) in `views::display::string_is_true`
+  - Replace it with an underscore expression
+
 ## [v0.2.10] - 2024-08-07
 
 - Upgrade dependencies
