@@ -7,8 +7,15 @@
     justify-content: space-between;
     background-color: var(--background-1);
 }
-.upload-titlebar > .upload-filename,
-.upload-titlebar > .upload-titlebar-right > * {
+
+/* not sure why this magically isn't required for the right side
+ * somehow because there is the checkbox for wrap
+ */
+.upload-titlebar > .upload-titlebar-left {
+    display: inline-flex;
+    align-items: center;
+}
+.upload-titlebar > div > * {
     display: inline-block;
     margin: 0 0.25em;
 }
