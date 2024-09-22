@@ -48,13 +48,6 @@ impl From<Arc<AppState>> for TemplateState {
         Self::from(&*state)
     }
 }
-impl TemplateState {
-    pub fn icon<S: AsRef<str>>(&self, name: S) -> Url {
-        self.base_url
-            .join(&format!("static/svg/fa/{}.svg", name.as_ref()))
-            .unwrap()
-    }
-}
 
 // which page is current navigated to, for navbar formatting
 #[derive(Debug, Clone)]
