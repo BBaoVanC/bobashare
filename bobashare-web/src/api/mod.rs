@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use axum::Router;
+use hyper::StatusCode;
 
 use crate::AppState;
 
@@ -16,4 +17,5 @@ pub fn router() -> Router<Arc<AppState>> {
     Router::new()
         .nest("/v1", v1::router())
         .nest("/latest", v1::router())
+        .fallback(|| async { (StatusCode::NOT_FOUND, "error: api route not found") })
 }
