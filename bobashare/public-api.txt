@@ -1,0 +1,695 @@
+pub mod bobashare
+pub mod bobashare::serde
+pub mod bobashare::serde::v0
+pub struct bobashare::serde::v0::UploadV0
+pub bobashare::serde::v0::UploadV0::creation_date: chrono::datetime::DateTime<chrono::offset::utc::Utc>
+pub bobashare::serde::v0::UploadV0::delete_key: alloc::string::String
+pub bobashare::serde::v0::UploadV0::expiry_date: core::option::Option<chrono::datetime::DateTime<chrono::offset::utc::Utc>>
+pub bobashare::serde::v0::UploadV0::filename: alloc::string::String
+pub bobashare::serde::v0::UploadV0::mimetype: alloc::string::String
+impl core::clone::Clone for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::clone(&self) -> bobashare::serde::v0::UploadV0
+impl core::cmp::Eq for bobashare::serde::v0::UploadV0
+impl core::cmp::PartialEq for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::eq(&self, other: &bobashare::serde::v0::UploadV0) -> bool
+impl core::fmt::Debug for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for bobashare::serde::v0::UploadV0
+impl serde::ser::Serialize for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Freeze for bobashare::serde::v0::UploadV0
+impl core::marker::Send for bobashare::serde::v0::UploadV0
+impl core::marker::Sync for bobashare::serde::v0::UploadV0
+impl core::marker::Unpin for bobashare::serde::v0::UploadV0
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::serde::v0::UploadV0
+impl core::panic::unwind_safe::UnwindSafe for bobashare::serde::v0::UploadV0
+impl<T, U> core::convert::Into<U> for bobashare::serde::v0::UploadV0 where U: core::convert::From<T>
+pub fn bobashare::serde::v0::UploadV0::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::serde::v0::UploadV0 where U: core::convert::Into<T>
+pub type bobashare::serde::v0::UploadV0::Error = core::convert::Infallible
+pub fn bobashare::serde::v0::UploadV0::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::serde::v0::UploadV0 where U: core::convert::TryFrom<T>
+pub type bobashare::serde::v0::UploadV0::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::serde::v0::UploadV0::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for bobashare::serde::v0::UploadV0 where T: core::clone::Clone
+pub type bobashare::serde::v0::UploadV0::Owned = T
+pub fn bobashare::serde::v0::UploadV0::clone_into(&self, target: &mut T)
+pub fn bobashare::serde::v0::UploadV0::to_owned(&self) -> T
+impl<T> core::any::Any for bobashare::serde::v0::UploadV0 where T: 'static + core::marker::Sized
+pub fn bobashare::serde::v0::UploadV0::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::serde::v0::UploadV0 where T: core::marker::Sized
+pub fn bobashare::serde::v0::UploadV0::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::serde::v0::UploadV0 where T: core::marker::Sized
+pub fn bobashare::serde::v0::UploadV0::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for bobashare::serde::v0::UploadV0 where T: core::clone::Clone
+pub unsafe fn bobashare::serde::v0::UploadV0::clone_to_uninit(&self, dst: *mut T)
+impl<T> core::convert::From<T> for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for bobashare::serde::v0::UploadV0 where T: for<'de> serde::de::Deserialize<'de>
+impl<T> tracing::instrument::Instrument for bobashare::serde::v0::UploadV0
+impl<T> tracing::instrument::WithSubscriber for bobashare::serde::v0::UploadV0
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::v0::UploadV0 where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::serde::v0::UploadV0::vzip(self) -> V
+#[non_exhaustive] pub enum bobashare::serde::MigrateError
+pub bobashare::serde::MigrateError::UnknownVersion
+pub bobashare::serde::MigrateError::V0(bobashare::serde::MigrateErrorV0)
+impl core::convert::From<bobashare::serde::MigrateError> for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::from(source: bobashare::serde::MigrateError) -> Self
+impl core::convert::From<bobashare::serde::MigrateError> for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::from(source: bobashare::serde::MigrateError) -> Self
+impl core::convert::From<bobashare::serde::MigrateErrorV0> for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::from(source: bobashare::serde::MigrateErrorV0) -> Self
+impl core::error::Error for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::serde::MigrateError
+impl core::marker::Send for bobashare::serde::MigrateError
+impl core::marker::Sync for bobashare::serde::MigrateError
+impl core::marker::Unpin for bobashare::serde::MigrateError
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::serde::MigrateError
+impl core::panic::unwind_safe::UnwindSafe for bobashare::serde::MigrateError
+impl<T, U> core::convert::Into<U> for bobashare::serde::MigrateError where U: core::convert::From<T>
+pub fn bobashare::serde::MigrateError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::serde::MigrateError where U: core::convert::Into<T>
+pub type bobashare::serde::MigrateError::Error = core::convert::Infallible
+pub fn bobashare::serde::MigrateError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::serde::MigrateError where U: core::convert::TryFrom<T>
+pub type bobashare::serde::MigrateError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::serde::MigrateError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::serde::MigrateError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::serde::MigrateError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::serde::MigrateError where T: 'static + core::marker::Sized
+pub fn bobashare::serde::MigrateError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::serde::MigrateError where T: core::marker::Sized
+pub fn bobashare::serde::MigrateError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::serde::MigrateError where T: core::marker::Sized
+pub fn bobashare::serde::MigrateError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::serde::MigrateError
+impl<T> tracing::instrument::WithSubscriber for bobashare::serde::MigrateError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::MigrateError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::serde::MigrateError::vzip(self) -> V
+pub enum bobashare::serde::MigrateErrorV0
+pub bobashare::serde::MigrateErrorV0::ParseMime(mime::FromStrError)
+impl core::convert::From<bobashare::serde::MigrateErrorV0> for bobashare::serde::MigrateError
+pub fn bobashare::serde::MigrateError::from(source: bobashare::serde::MigrateErrorV0) -> Self
+impl core::convert::From<mime::FromStrError> for bobashare::serde::MigrateErrorV0
+pub fn bobashare::serde::MigrateErrorV0::from(source: mime::FromStrError) -> Self
+impl core::error::Error for bobashare::serde::MigrateErrorV0
+pub fn bobashare::serde::MigrateErrorV0::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::serde::MigrateErrorV0
+pub fn bobashare::serde::MigrateErrorV0::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::serde::MigrateErrorV0
+pub fn bobashare::serde::MigrateErrorV0::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::serde::MigrateErrorV0
+impl core::marker::Send for bobashare::serde::MigrateErrorV0
+impl core::marker::Sync for bobashare::serde::MigrateErrorV0
+impl core::marker::Unpin for bobashare::serde::MigrateErrorV0
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::serde::MigrateErrorV0
+impl core::panic::unwind_safe::UnwindSafe for bobashare::serde::MigrateErrorV0
+impl<T, U> core::convert::Into<U> for bobashare::serde::MigrateErrorV0 where U: core::convert::From<T>
+pub fn bobashare::serde::MigrateErrorV0::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::serde::MigrateErrorV0 where U: core::convert::Into<T>
+pub type bobashare::serde::MigrateErrorV0::Error = core::convert::Infallible
+pub fn bobashare::serde::MigrateErrorV0::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::serde::MigrateErrorV0 where U: core::convert::TryFrom<T>
+pub type bobashare::serde::MigrateErrorV0::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::serde::MigrateErrorV0::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::serde::MigrateErrorV0 where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::serde::MigrateErrorV0::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::serde::MigrateErrorV0 where T: 'static + core::marker::Sized
+pub fn bobashare::serde::MigrateErrorV0::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::serde::MigrateErrorV0 where T: core::marker::Sized
+pub fn bobashare::serde::MigrateErrorV0::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::serde::MigrateErrorV0 where T: core::marker::Sized
+pub fn bobashare::serde::MigrateErrorV0::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::serde::MigrateErrorV0
+pub fn bobashare::serde::MigrateErrorV0::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::serde::MigrateErrorV0
+impl<T> tracing::instrument::WithSubscriber for bobashare::serde::MigrateErrorV0
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::MigrateErrorV0 where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::serde::MigrateErrorV0::vzip(self) -> V
+#[non_exhaustive] pub enum bobashare::serde::UploadMetadata
+pub bobashare::serde::UploadMetadata::Unknown
+pub bobashare::serde::UploadMetadata::V0(bobashare::serde::v0::UploadV0)
+impl bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::from_upload(upload: bobashare::storage::upload::Upload) -> Self
+impl bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::into_migrated_upload(self, id: alloc::string::String) -> core::result::Result<(bobashare::storage::upload::Upload, bool), bobashare::serde::MigrateError>
+impl core::clone::Clone for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::clone(&self) -> bobashare::serde::UploadMetadata
+impl core::cmp::Eq for bobashare::serde::UploadMetadata
+impl core::cmp::PartialEq for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::eq(&self, other: &bobashare::serde::UploadMetadata) -> bool
+impl core::fmt::Debug for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for bobashare::serde::UploadMetadata
+impl serde::ser::Serialize for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
+impl<'de> serde::de::Deserialize<'de> for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl core::marker::Freeze for bobashare::serde::UploadMetadata
+impl core::marker::Send for bobashare::serde::UploadMetadata
+impl core::marker::Sync for bobashare::serde::UploadMetadata
+impl core::marker::Unpin for bobashare::serde::UploadMetadata
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::serde::UploadMetadata
+impl core::panic::unwind_safe::UnwindSafe for bobashare::serde::UploadMetadata
+impl<T, U> core::convert::Into<U> for bobashare::serde::UploadMetadata where U: core::convert::From<T>
+pub fn bobashare::serde::UploadMetadata::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::serde::UploadMetadata where U: core::convert::Into<T>
+pub type bobashare::serde::UploadMetadata::Error = core::convert::Infallible
+pub fn bobashare::serde::UploadMetadata::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::serde::UploadMetadata where U: core::convert::TryFrom<T>
+pub type bobashare::serde::UploadMetadata::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::serde::UploadMetadata::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for bobashare::serde::UploadMetadata where T: core::clone::Clone
+pub type bobashare::serde::UploadMetadata::Owned = T
+pub fn bobashare::serde::UploadMetadata::clone_into(&self, target: &mut T)
+pub fn bobashare::serde::UploadMetadata::to_owned(&self) -> T
+impl<T> core::any::Any for bobashare::serde::UploadMetadata where T: 'static + core::marker::Sized
+pub fn bobashare::serde::UploadMetadata::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::serde::UploadMetadata where T: core::marker::Sized
+pub fn bobashare::serde::UploadMetadata::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::serde::UploadMetadata where T: core::marker::Sized
+pub fn bobashare::serde::UploadMetadata::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for bobashare::serde::UploadMetadata where T: core::clone::Clone
+pub unsafe fn bobashare::serde::UploadMetadata::clone_to_uninit(&self, dst: *mut T)
+impl<T> core::convert::From<T> for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::from(t: T) -> T
+impl<T> serde::de::DeserializeOwned for bobashare::serde::UploadMetadata where T: for<'de> serde::de::Deserialize<'de>
+impl<T> tracing::instrument::Instrument for bobashare::serde::UploadMetadata
+impl<T> tracing::instrument::WithSubscriber for bobashare::serde::UploadMetadata
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::UploadMetadata where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::serde::UploadMetadata::vzip(self) -> V
+pub type bobashare::serde::LatestUploadMetadata = bobashare::serde::v0::UploadV0
+pub mod bobashare::storage
+pub mod bobashare::storage::file
+pub enum bobashare::storage::file::CleanupError
+pub bobashare::storage::file::CleanupError::NextEntry(std::io::error::Error)
+pub bobashare::storage::file::CleanupError::ReadDir(std::io::error::Error)
+impl core::error::Error for bobashare::storage::file::CleanupError
+pub fn bobashare::storage::file::CleanupError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::CleanupError
+pub fn bobashare::storage::file::CleanupError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::CleanupError
+pub fn bobashare::storage::file::CleanupError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::CleanupError
+impl core::marker::Send for bobashare::storage::file::CleanupError
+impl core::marker::Sync for bobashare::storage::file::CleanupError
+impl core::marker::Unpin for bobashare::storage::file::CleanupError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::CleanupError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::CleanupError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::CleanupError where U: core::convert::From<T>
+pub fn bobashare::storage::file::CleanupError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::CleanupError where U: core::convert::Into<T>
+pub type bobashare::storage::file::CleanupError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::CleanupError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::CleanupError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::CleanupError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::CleanupError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::CleanupError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::CleanupError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::CleanupError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::CleanupError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::CleanupError where T: core::marker::Sized
+pub fn bobashare::storage::file::CleanupError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::CleanupError where T: core::marker::Sized
+pub fn bobashare::storage::file::CleanupError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::CleanupError
+pub fn bobashare::storage::file::CleanupError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::CleanupError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::CleanupError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::CleanupError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::CleanupError::vzip(self) -> V
+pub enum bobashare::storage::file::CreateUploadError
+pub bobashare::storage::file::CreateUploadError::AlreadyExists
+pub bobashare::storage::file::CreateUploadError::CreateDirectory(std::io::error::Error)
+pub bobashare::storage::file::CreateUploadError::CreateLockFile(std::io::error::Error)
+pub bobashare::storage::file::CreateUploadError::CreateMetadataFile(std::io::error::Error)
+pub bobashare::storage::file::CreateUploadError::CreateUploadFile(std::io::error::Error)
+impl core::error::Error for bobashare::storage::file::CreateUploadError
+pub fn bobashare::storage::file::CreateUploadError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::CreateUploadError
+pub fn bobashare::storage::file::CreateUploadError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::CreateUploadError
+pub fn bobashare::storage::file::CreateUploadError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::CreateUploadError
+impl core::marker::Send for bobashare::storage::file::CreateUploadError
+impl core::marker::Sync for bobashare::storage::file::CreateUploadError
+impl core::marker::Unpin for bobashare::storage::file::CreateUploadError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::CreateUploadError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::CreateUploadError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::CreateUploadError where U: core::convert::From<T>
+pub fn bobashare::storage::file::CreateUploadError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::CreateUploadError where U: core::convert::Into<T>
+pub type bobashare::storage::file::CreateUploadError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::CreateUploadError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::CreateUploadError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::CreateUploadError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::CreateUploadError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::CreateUploadError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::CreateUploadError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::CreateUploadError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::CreateUploadError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::CreateUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::CreateUploadError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::CreateUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::CreateUploadError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::CreateUploadError
+pub fn bobashare::storage::file::CreateUploadError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::CreateUploadError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::CreateUploadError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::CreateUploadError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::CreateUploadError::vzip(self) -> V
+pub enum bobashare::storage::file::DeleteUploadError
+pub bobashare::storage::file::DeleteUploadError::DeleteDirectory(std::io::error::Error)
+pub bobashare::storage::file::DeleteUploadError::DeleteFile(std::io::error::Error)
+pub bobashare::storage::file::DeleteUploadError::DeleteMetadata(std::io::error::Error)
+pub bobashare::storage::file::DeleteUploadError::NotFound
+impl core::error::Error for bobashare::storage::file::DeleteUploadError
+pub fn bobashare::storage::file::DeleteUploadError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::DeleteUploadError
+pub fn bobashare::storage::file::DeleteUploadError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::DeleteUploadError
+pub fn bobashare::storage::file::DeleteUploadError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::DeleteUploadError
+impl core::marker::Send for bobashare::storage::file::DeleteUploadError
+impl core::marker::Sync for bobashare::storage::file::DeleteUploadError
+impl core::marker::Unpin for bobashare::storage::file::DeleteUploadError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::DeleteUploadError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::DeleteUploadError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::DeleteUploadError where U: core::convert::From<T>
+pub fn bobashare::storage::file::DeleteUploadError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::DeleteUploadError where U: core::convert::Into<T>
+pub type bobashare::storage::file::DeleteUploadError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::DeleteUploadError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::DeleteUploadError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::DeleteUploadError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::DeleteUploadError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::DeleteUploadError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::DeleteUploadError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::DeleteUploadError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::DeleteUploadError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::DeleteUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::DeleteUploadError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::DeleteUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::DeleteUploadError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::DeleteUploadError
+pub fn bobashare::storage::file::DeleteUploadError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::DeleteUploadError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::DeleteUploadError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::DeleteUploadError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::DeleteUploadError::vzip(self) -> V
+pub enum bobashare::storage::file::InvalidReason
+pub bobashare::storage::file::InvalidReason::Expired
+pub bobashare::storage::file::InvalidReason::InvalidMetadata(serde_json::error::Error)
+pub bobashare::storage::file::InvalidReason::Locked
+pub bobashare::storage::file::InvalidReason::MissingFile
+pub bobashare::storage::file::InvalidReason::MissingMetadata(std::io::error::Error)
+impl core::convert::From<bobashare::storage::file::InvalidReason> for core::result::Result<bobashare::storage::file::ValidateResult, bobashare::storage::file::ValidateError>
+pub fn core::result::Result<bobashare::storage::file::ValidateResult, bobashare::storage::file::ValidateError>::from(val: bobashare::storage::file::InvalidReason) -> Self
+impl core::convert::From<serde_json::error::Error> for bobashare::storage::file::InvalidReason
+pub fn bobashare::storage::file::InvalidReason::from(source: serde_json::error::Error) -> Self
+impl core::error::Error for bobashare::storage::file::InvalidReason
+pub fn bobashare::storage::file::InvalidReason::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::InvalidReason
+pub fn bobashare::storage::file::InvalidReason::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::InvalidReason
+pub fn bobashare::storage::file::InvalidReason::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::InvalidReason
+impl core::marker::Send for bobashare::storage::file::InvalidReason
+impl core::marker::Sync for bobashare::storage::file::InvalidReason
+impl core::marker::Unpin for bobashare::storage::file::InvalidReason
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::InvalidReason
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::InvalidReason
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::InvalidReason where U: core::convert::From<T>
+pub fn bobashare::storage::file::InvalidReason::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::InvalidReason where U: core::convert::Into<T>
+pub type bobashare::storage::file::InvalidReason::Error = core::convert::Infallible
+pub fn bobashare::storage::file::InvalidReason::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::InvalidReason where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::InvalidReason::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::InvalidReason::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::InvalidReason where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::InvalidReason::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::InvalidReason where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::InvalidReason::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::InvalidReason where T: core::marker::Sized
+pub fn bobashare::storage::file::InvalidReason::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::InvalidReason where T: core::marker::Sized
+pub fn bobashare::storage::file::InvalidReason::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::InvalidReason
+pub fn bobashare::storage::file::InvalidReason::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::InvalidReason
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::InvalidReason
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::InvalidReason where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::InvalidReason::vzip(self) -> V
+pub enum bobashare::storage::file::NewBackendError
+pub bobashare::storage::file::NewBackendError::CreateDirectory(std::io::error::Error)
+pub bobashare::storage::file::NewBackendError::NotADirectory(std::path::PathBuf)
+pub bobashare::storage::file::NewBackendError::ReadMetadata(std::io::error::Error)
+impl core::error::Error for bobashare::storage::file::NewBackendError
+pub fn bobashare::storage::file::NewBackendError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::NewBackendError
+pub fn bobashare::storage::file::NewBackendError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::NewBackendError
+pub fn bobashare::storage::file::NewBackendError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::NewBackendError
+impl core::marker::Send for bobashare::storage::file::NewBackendError
+impl core::marker::Sync for bobashare::storage::file::NewBackendError
+impl core::marker::Unpin for bobashare::storage::file::NewBackendError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::NewBackendError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::NewBackendError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::NewBackendError where U: core::convert::From<T>
+pub fn bobashare::storage::file::NewBackendError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::NewBackendError where U: core::convert::Into<T>
+pub type bobashare::storage::file::NewBackendError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::NewBackendError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::NewBackendError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::NewBackendError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::NewBackendError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::NewBackendError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::NewBackendError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::NewBackendError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::NewBackendError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::NewBackendError where T: core::marker::Sized
+pub fn bobashare::storage::file::NewBackendError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::NewBackendError where T: core::marker::Sized
+pub fn bobashare::storage::file::NewBackendError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::NewBackendError
+pub fn bobashare::storage::file::NewBackendError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::NewBackendError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::NewBackendError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::NewBackendError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::NewBackendError::vzip(self) -> V
+pub enum bobashare::storage::file::OpenUploadError
+pub bobashare::storage::file::OpenUploadError::DeserializeMetadata(serde_json::error::Error)
+pub bobashare::storage::file::OpenUploadError::Locked
+pub bobashare::storage::file::OpenUploadError::MigrateMetadata(bobashare::serde::MigrateError)
+pub bobashare::storage::file::OpenUploadError::NotFound(std::io::error::Error)
+pub bobashare::storage::file::OpenUploadError::OpenFile(std::io::error::Error)
+pub bobashare::storage::file::OpenUploadError::ReadMetadata(std::io::error::Error)
+impl core::convert::From<bobashare::serde::MigrateError> for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::from(source: bobashare::serde::MigrateError) -> Self
+impl core::convert::From<serde_json::error::Error> for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::from(source: serde_json::error::Error) -> Self
+impl core::error::Error for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::OpenUploadError
+impl core::marker::Send for bobashare::storage::file::OpenUploadError
+impl core::marker::Sync for bobashare::storage::file::OpenUploadError
+impl core::marker::Unpin for bobashare::storage::file::OpenUploadError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::OpenUploadError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::OpenUploadError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::OpenUploadError where U: core::convert::From<T>
+pub fn bobashare::storage::file::OpenUploadError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::OpenUploadError where U: core::convert::Into<T>
+pub type bobashare::storage::file::OpenUploadError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::OpenUploadError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::OpenUploadError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::OpenUploadError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::OpenUploadError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::OpenUploadError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::OpenUploadError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::OpenUploadError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::OpenUploadError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::OpenUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::OpenUploadError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::OpenUploadError where T: core::marker::Sized
+pub fn bobashare::storage::file::OpenUploadError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::OpenUploadError
+pub fn bobashare::storage::file::OpenUploadError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::OpenUploadError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::OpenUploadError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::OpenUploadError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::OpenUploadError::vzip(self) -> V
+pub enum bobashare::storage::file::ValidateError
+pub bobashare::storage::file::ValidateError::MigrateMetadata(bobashare::serde::MigrateError)
+pub bobashare::storage::file::ValidateError::OpenMetadata(std::io::error::Error)
+impl core::convert::From<bobashare::serde::MigrateError> for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::from(source: bobashare::serde::MigrateError) -> Self
+impl core::error::Error for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::ValidateError
+impl core::marker::Send for bobashare::storage::file::ValidateError
+impl core::marker::Sync for bobashare::storage::file::ValidateError
+impl core::marker::Unpin for bobashare::storage::file::ValidateError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::ValidateError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::ValidateError
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::ValidateError where U: core::convert::From<T>
+pub fn bobashare::storage::file::ValidateError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::ValidateError where U: core::convert::Into<T>
+pub type bobashare::storage::file::ValidateError::Error = core::convert::Infallible
+pub fn bobashare::storage::file::ValidateError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::ValidateError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::ValidateError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::ValidateError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::ValidateError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::ValidateError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::ValidateError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::ValidateError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::ValidateError where T: core::marker::Sized
+pub fn bobashare::storage::file::ValidateError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::ValidateError where T: core::marker::Sized
+pub fn bobashare::storage::file::ValidateError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::ValidateError
+pub fn bobashare::storage::file::ValidateError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::ValidateError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::ValidateError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::ValidateError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::ValidateError::vzip(self) -> V
+pub enum bobashare::storage::file::ValidateResult
+pub bobashare::storage::file::ValidateResult::Invalid(bobashare::storage::file::InvalidReason)
+pub bobashare::storage::file::ValidateResult::Locked
+pub bobashare::storage::file::ValidateResult::Valid
+impl core::fmt::Debug for bobashare::storage::file::ValidateResult
+pub fn bobashare::storage::file::ValidateResult::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::file::ValidateResult
+pub fn bobashare::storage::file::ValidateResult::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::file::ValidateResult
+impl core::marker::Send for bobashare::storage::file::ValidateResult
+impl core::marker::Sync for bobashare::storage::file::ValidateResult
+impl core::marker::Unpin for bobashare::storage::file::ValidateResult
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::ValidateResult
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::ValidateResult
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::ValidateResult where U: core::convert::From<T>
+pub fn bobashare::storage::file::ValidateResult::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::ValidateResult where U: core::convert::Into<T>
+pub type bobashare::storage::file::ValidateResult::Error = core::convert::Infallible
+pub fn bobashare::storage::file::ValidateResult::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::ValidateResult where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::ValidateResult::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::ValidateResult::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::file::ValidateResult where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::file::ValidateResult::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::file::ValidateResult where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::ValidateResult::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::ValidateResult where T: core::marker::Sized
+pub fn bobashare::storage::file::ValidateResult::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::ValidateResult where T: core::marker::Sized
+pub fn bobashare::storage::file::ValidateResult::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::file::ValidateResult
+pub fn bobashare::storage::file::ValidateResult::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::ValidateResult
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::ValidateResult
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::ValidateResult where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::ValidateResult::vzip(self) -> V
+pub struct bobashare::storage::file::FileBackend
+pub bobashare::storage::file::FileBackend::path: std::path::PathBuf
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::cleanup(&self) -> core::result::Result<(), bobashare::storage::file::CleanupError>
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::create_upload<S: core::convert::AsRef<str>>(&self, id: S, filename: S, mimetype: mime::Mime, expiry: core::option::Option<chrono::Duration>, delete_key: core::option::Option<alloc::string::String>) -> core::result::Result<bobashare::storage::handle::UploadHandle, bobashare::storage::file::CreateUploadError>
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::delete_upload<S: core::convert::AsRef<str>>(&self, id: S) -> core::result::Result<(), bobashare::storage::file::DeleteUploadError>
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::new(path: std::path::PathBuf) -> core::result::Result<Self, bobashare::storage::file::NewBackendError>
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::open_upload<S: core::convert::AsRef<str>>(&self, id: S, write: bool) -> core::result::Result<bobashare::storage::handle::UploadHandle, bobashare::storage::file::OpenUploadError>
+pub async fn bobashare::storage::file::FileBackend::read_upload_metadata<S: core::convert::AsRef<str>>(&self, id: S) -> core::result::Result<bobashare::storage::upload::Upload, bobashare::storage::file::OpenUploadError>
+impl bobashare::storage::file::FileBackend
+pub async fn bobashare::storage::file::FileBackend::validate_upload<S: core::convert::AsRef<str>>(&self, id: S) -> core::result::Result<bobashare::storage::file::ValidateResult, bobashare::storage::file::ValidateError>
+impl core::clone::Clone for bobashare::storage::file::FileBackend
+pub fn bobashare::storage::file::FileBackend::clone(&self) -> bobashare::storage::file::FileBackend
+impl core::cmp::Eq for bobashare::storage::file::FileBackend
+impl core::cmp::PartialEq for bobashare::storage::file::FileBackend
+pub fn bobashare::storage::file::FileBackend::eq(&self, other: &bobashare::storage::file::FileBackend) -> bool
+impl core::fmt::Debug for bobashare::storage::file::FileBackend
+pub fn bobashare::storage::file::FileBackend::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for bobashare::storage::file::FileBackend
+impl core::marker::Freeze for bobashare::storage::file::FileBackend
+impl core::marker::Send for bobashare::storage::file::FileBackend
+impl core::marker::Sync for bobashare::storage::file::FileBackend
+impl core::marker::Unpin for bobashare::storage::file::FileBackend
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::file::FileBackend
+impl core::panic::unwind_safe::UnwindSafe for bobashare::storage::file::FileBackend
+impl<T, U> core::convert::Into<U> for bobashare::storage::file::FileBackend where U: core::convert::From<T>
+pub fn bobashare::storage::file::FileBackend::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::file::FileBackend where U: core::convert::Into<T>
+pub type bobashare::storage::file::FileBackend::Error = core::convert::Infallible
+pub fn bobashare::storage::file::FileBackend::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::file::FileBackend where U: core::convert::TryFrom<T>
+pub type bobashare::storage::file::FileBackend::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::file::FileBackend::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for bobashare::storage::file::FileBackend where T: core::clone::Clone
+pub type bobashare::storage::file::FileBackend::Owned = T
+pub fn bobashare::storage::file::FileBackend::clone_into(&self, target: &mut T)
+pub fn bobashare::storage::file::FileBackend::to_owned(&self) -> T
+impl<T> core::any::Any for bobashare::storage::file::FileBackend where T: 'static + core::marker::Sized
+pub fn bobashare::storage::file::FileBackend::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::file::FileBackend where T: core::marker::Sized
+pub fn bobashare::storage::file::FileBackend::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::FileBackend where T: core::marker::Sized
+pub fn bobashare::storage::file::FileBackend::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for bobashare::storage::file::FileBackend where T: core::clone::Clone
+pub unsafe fn bobashare::storage::file::FileBackend::clone_to_uninit(&self, dst: *mut T)
+impl<T> core::convert::From<T> for bobashare::storage::file::FileBackend
+pub fn bobashare::storage::file::FileBackend::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::file::FileBackend
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::FileBackend
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::FileBackend where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::file::FileBackend::vzip(self) -> V
+pub mod bobashare::storage::handle
+pub enum bobashare::storage::handle::FlushUploadError
+pub bobashare::storage::handle::FlushUploadError::FlushFile(std::io::error::Error)
+pub bobashare::storage::handle::FlushUploadError::FlushMetadata(std::io::error::Error)
+pub bobashare::storage::handle::FlushUploadError::RemoveLock(std::io::error::Error)
+pub bobashare::storage::handle::FlushUploadError::Serialize(serde_json::error::Error)
+pub bobashare::storage::handle::FlushUploadError::WriteMetadata(std::io::error::Error)
+impl core::convert::From<serde_json::error::Error> for bobashare::storage::handle::FlushUploadError
+pub fn bobashare::storage::handle::FlushUploadError::from(source: serde_json::error::Error) -> Self
+impl core::error::Error for bobashare::storage::handle::FlushUploadError
+pub fn bobashare::storage::handle::FlushUploadError::source(&self) -> core::option::Option<&(dyn core::error::Error + 'static)>
+impl core::fmt::Debug for bobashare::storage::handle::FlushUploadError
+pub fn bobashare::storage::handle::FlushUploadError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::fmt::Display for bobashare::storage::handle::FlushUploadError
+pub fn bobashare::storage::handle::FlushUploadError::fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::Freeze for bobashare::storage::handle::FlushUploadError
+impl core::marker::Send for bobashare::storage::handle::FlushUploadError
+impl core::marker::Sync for bobashare::storage::handle::FlushUploadError
+impl core::marker::Unpin for bobashare::storage::handle::FlushUploadError
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::handle::FlushUploadError
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::handle::FlushUploadError
+impl<T, U> core::convert::Into<U> for bobashare::storage::handle::FlushUploadError where U: core::convert::From<T>
+pub fn bobashare::storage::handle::FlushUploadError::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::handle::FlushUploadError where U: core::convert::Into<T>
+pub type bobashare::storage::handle::FlushUploadError::Error = core::convert::Infallible
+pub fn bobashare::storage::handle::FlushUploadError::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::handle::FlushUploadError where U: core::convert::TryFrom<T>
+pub type bobashare::storage::handle::FlushUploadError::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::handle::FlushUploadError::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::string::ToString for bobashare::storage::handle::FlushUploadError where T: core::fmt::Display + core::marker::Sized
+pub fn bobashare::storage::handle::FlushUploadError::to_string(&self) -> alloc::string::String
+impl<T> core::any::Any for bobashare::storage::handle::FlushUploadError where T: 'static + core::marker::Sized
+pub fn bobashare::storage::handle::FlushUploadError::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::handle::FlushUploadError where T: core::marker::Sized
+pub fn bobashare::storage::handle::FlushUploadError::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::handle::FlushUploadError where T: core::marker::Sized
+pub fn bobashare::storage::handle::FlushUploadError::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::handle::FlushUploadError
+pub fn bobashare::storage::handle::FlushUploadError::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::handle::FlushUploadError
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::handle::FlushUploadError
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::handle::FlushUploadError where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::handle::FlushUploadError::vzip(self) -> V
+pub struct bobashare::storage::handle::UploadHandle
+pub bobashare::storage::handle::UploadHandle::file: tokio::fs::file::File
+pub bobashare::storage::handle::UploadHandle::file_path: std::path::PathBuf
+pub bobashare::storage::handle::UploadHandle::metadata: bobashare::storage::upload::Upload
+pub bobashare::storage::handle::UploadHandle::path: std::path::PathBuf
+impl bobashare::storage::handle::UploadHandle
+pub async fn bobashare::storage::handle::UploadHandle::drop_lock(self) -> core::result::Result<(), std::io::error::Error>
+pub async fn bobashare::storage::handle::UploadHandle::flush(self) -> core::result::Result<bobashare::storage::upload::Upload, bobashare::storage::handle::FlushUploadError>
+impl core::fmt::Debug for bobashare::storage::handle::UploadHandle
+pub fn bobashare::storage::handle::UploadHandle::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl !core::marker::Freeze for bobashare::storage::handle::UploadHandle
+impl core::marker::Send for bobashare::storage::handle::UploadHandle
+impl core::marker::Sync for bobashare::storage::handle::UploadHandle
+impl core::marker::Unpin for bobashare::storage::handle::UploadHandle
+impl !core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::handle::UploadHandle
+impl !core::panic::unwind_safe::UnwindSafe for bobashare::storage::handle::UploadHandle
+impl<T, U> core::convert::Into<U> for bobashare::storage::handle::UploadHandle where U: core::convert::From<T>
+pub fn bobashare::storage::handle::UploadHandle::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::handle::UploadHandle where U: core::convert::Into<T>
+pub type bobashare::storage::handle::UploadHandle::Error = core::convert::Infallible
+pub fn bobashare::storage::handle::UploadHandle::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::handle::UploadHandle where U: core::convert::TryFrom<T>
+pub type bobashare::storage::handle::UploadHandle::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::handle::UploadHandle::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> core::any::Any for bobashare::storage::handle::UploadHandle where T: 'static + core::marker::Sized
+pub fn bobashare::storage::handle::UploadHandle::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::handle::UploadHandle where T: core::marker::Sized
+pub fn bobashare::storage::handle::UploadHandle::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::handle::UploadHandle where T: core::marker::Sized
+pub fn bobashare::storage::handle::UploadHandle::borrow_mut(&mut self) -> &mut T
+impl<T> core::convert::From<T> for bobashare::storage::handle::UploadHandle
+pub fn bobashare::storage::handle::UploadHandle::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::handle::UploadHandle
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::handle::UploadHandle
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::handle::UploadHandle where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::handle::UploadHandle::vzip(self) -> V
+pub mod bobashare::storage::upload
+pub struct bobashare::storage::upload::Upload
+pub bobashare::storage::upload::Upload::creation_date: chrono::datetime::DateTime<chrono::offset::utc::Utc>
+pub bobashare::storage::upload::Upload::delete_key: alloc::string::String
+pub bobashare::storage::upload::Upload::expiry_date: core::option::Option<chrono::datetime::DateTime<chrono::offset::utc::Utc>>
+pub bobashare::storage::upload::Upload::filename: alloc::string::String
+pub bobashare::storage::upload::Upload::id: alloc::string::String
+pub bobashare::storage::upload::Upload::mimetype: mime::Mime
+impl bobashare::storage::upload::Upload
+pub fn bobashare::storage::upload::Upload::is_expired(&self) -> bool
+impl core::clone::Clone for bobashare::storage::upload::Upload
+pub fn bobashare::storage::upload::Upload::clone(&self) -> bobashare::storage::upload::Upload
+impl core::cmp::Eq for bobashare::storage::upload::Upload
+impl core::cmp::PartialEq for bobashare::storage::upload::Upload
+pub fn bobashare::storage::upload::Upload::eq(&self, other: &bobashare::storage::upload::Upload) -> bool
+impl core::fmt::Debug for bobashare::storage::upload::Upload
+pub fn bobashare::storage::upload::Upload::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+impl core::marker::StructuralPartialEq for bobashare::storage::upload::Upload
+impl core::marker::Freeze for bobashare::storage::upload::Upload
+impl core::marker::Send for bobashare::storage::upload::Upload
+impl core::marker::Sync for bobashare::storage::upload::Upload
+impl core::marker::Unpin for bobashare::storage::upload::Upload
+impl core::panic::unwind_safe::RefUnwindSafe for bobashare::storage::upload::Upload
+impl core::panic::unwind_safe::UnwindSafe for bobashare::storage::upload::Upload
+impl<T, U> core::convert::Into<U> for bobashare::storage::upload::Upload where U: core::convert::From<T>
+pub fn bobashare::storage::upload::Upload::into(self) -> U
+impl<T, U> core::convert::TryFrom<U> for bobashare::storage::upload::Upload where U: core::convert::Into<T>
+pub type bobashare::storage::upload::Upload::Error = core::convert::Infallible
+pub fn bobashare::storage::upload::Upload::try_from(value: U) -> core::result::Result<T, <T as core::convert::TryFrom<U>>::Error>
+impl<T, U> core::convert::TryInto<U> for bobashare::storage::upload::Upload where U: core::convert::TryFrom<T>
+pub type bobashare::storage::upload::Upload::Error = <U as core::convert::TryFrom<T>>::Error
+pub fn bobashare::storage::upload::Upload::try_into(self) -> core::result::Result<U, <U as core::convert::TryFrom<T>>::Error>
+impl<T> alloc::borrow::ToOwned for bobashare::storage::upload::Upload where T: core::clone::Clone
+pub type bobashare::storage::upload::Upload::Owned = T
+pub fn bobashare::storage::upload::Upload::clone_into(&self, target: &mut T)
+pub fn bobashare::storage::upload::Upload::to_owned(&self) -> T
+impl<T> core::any::Any for bobashare::storage::upload::Upload where T: 'static + core::marker::Sized
+pub fn bobashare::storage::upload::Upload::type_id(&self) -> core::any::TypeId
+impl<T> core::borrow::Borrow<T> for bobashare::storage::upload::Upload where T: core::marker::Sized
+pub fn bobashare::storage::upload::Upload::borrow(&self) -> &T
+impl<T> core::borrow::BorrowMut<T> for bobashare::storage::upload::Upload where T: core::marker::Sized
+pub fn bobashare::storage::upload::Upload::borrow_mut(&mut self) -> &mut T
+impl<T> core::clone::CloneToUninit for bobashare::storage::upload::Upload where T: core::clone::Clone
+pub unsafe fn bobashare::storage::upload::Upload::clone_to_uninit(&self, dst: *mut T)
+impl<T> core::convert::From<T> for bobashare::storage::upload::Upload
+pub fn bobashare::storage::upload::Upload::from(t: T) -> T
+impl<T> tracing::instrument::Instrument for bobashare::storage::upload::Upload
+impl<T> tracing::instrument::WithSubscriber for bobashare::storage::upload::Upload
+impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::upload::Upload where V: ppv_lite86::types::MultiLane<T>
+pub fn bobashare::storage::upload::Upload::vzip(self) -> V
+pub fn bobashare::generate_randomized_id(length: usize) -> alloc::string::String

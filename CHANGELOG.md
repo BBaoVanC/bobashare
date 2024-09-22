@@ -55,6 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unnecessary allow(unused_variables) in `views::display::string_is_true`
   - Replace it with an underscore expression
 
+#### Testing
+
+- Add `cargo-public-api` test that fails if public API changes
+
 ## [v0.2.10] - 2024-08-07
 
 - Upgrade dependencies
