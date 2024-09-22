@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.11] - 2024-09-22
+
 ### Bugfixes
 
 - Fix uncaught error if network connection drops in failed upload
@@ -158,7 +160,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.10..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.11..HEAD
+[v0.2.11]: https://github.com/BBaoVanC/bobashare/compare/v0.2.10..v0.2.11
 [v0.2.10]: https://github.com/BBaoVanC/bobashare/compare/v0.2.9..v0.2.10
 [v0.2.9]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..v0.2.9
 [v0.2.8]: https://github.com/BBaoVanC/bobashare/compare/v0.2.7..v0.2.8
