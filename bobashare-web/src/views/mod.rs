@@ -20,34 +20,35 @@ mod prelude {
     pub use super::CurrentNavigation;
 }
 
+// 's is for &AppState
 #[derive(Debug, Clone)]
-pub struct TemplateState {
+pub struct TemplateState<'s> {
     version: &'static str,
-    base_url: Url,
+    base_url: &'s Url,
     max_file_size: u64,
     max_expiry: Option<Duration>,
-    extra_footer_text: Option<String>,
+    extra_footer_text: Option<&'s str>,
 
     // None if the current page is not a navbar item
     current_navigation: Option<CurrentNavigation>,
 }
-impl From<&AppState> for TemplateState {
-    fn from(state: &AppState) -> Self {
+impl<'s> From<&'s AppState> for TemplateState<'s> {
+    fn from(state: &'s AppState) -> Self {
         Self {
             version: env!("CARGO_PKG_VERSION"),
-            base_url: state.base_url.clone(),
+            base_url: &state.base_url,
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
-            extra_footer_text: state.extra_footer_text.clone(),
+            extra_footer_text: state.extra_footer_text.as_deref(),
             current_navigation: None, // will be set to Some in individual handlers
         }
     }
 }
-impl From<Arc<AppState>> for TemplateState {
-    fn from(state: Arc<AppState>) -> Self {
-        Self::from(&*state)
-    }
-}
+//impl From<Arc<AppState>> for TemplateState {
+//    fn from(state: Arc<AppState>) -> Self {
+//        Self::from(&*state)
+//    }
+//}
 
 // which page is current navigated to, for navbar formatting
 #[derive(Debug, Clone)]
@@ -59,13 +60,19 @@ pub enum CurrentNavigation {
 
 #[derive(Template)]
 #[template(path = "error.html.jinja")]
-pub struct ErrorTemplate {
+pub struct ErrorTemplate<'s> {
     pub state: TemplateState,
     pub code: StatusCode,
     pub message: String,
 }
 
-pub struct ErrorResponse(pub ErrorTemplate);
+pub enum ErrorResponse {
+    Template(ErrorTemplate),
+    // currently only used for askama rendering errors. I am not entirely sure when those happen,
+    // but if it does, instead of attempting to render ErrorTemplate, it's simpler to just return
+    // a bare String to the user so they know something has gone horribly wrong.
+    Raw(String),
+}
 impl From<ErrorTemplate> for ErrorResponse {
     fn from(template: ErrorTemplate) -> Self {
         Self(template)

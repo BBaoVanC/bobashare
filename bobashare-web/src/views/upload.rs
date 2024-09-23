@@ -9,13 +9,13 @@ use super::{filters, CurrentNavigation, ErrorResponse, TemplateState};
 use crate::AppState;
 
 #[derive(Debug, Clone)]
-pub struct ExpiryUnit<'a> {
-    pub name: &'a str,
-    pub value: &'a str,
+pub struct ExpiryUnit {
+    pub name: &'static str,
+    pub value: &'static str,
     pub default: bool,
     pub duration: TimeDelta,
 }
-pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
+pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit> {
     [
         ExpiryUnit {
             name: "seconds",
@@ -65,21 +65,21 @@ pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit<'static>> {
 
 #[derive(Template)]
 #[template(path = "upload.html.jinja")]
-pub struct UploadTemplate<'a> {
-    pub state: TemplateState,
+pub struct UploadTemplate<'s> {
+    pub state: TemplateState<'s>,
     // TODO: make this iterator and not vec
-    pub expiry_units: Vec<ExpiryUnit<'a>>,
+    pub expiry_units: Vec<ExpiryUnit>,
     pub never_expiry_allowed: bool,
 }
 
 #[instrument(skip(state))]
 pub async fn upload(
     State(state): State<Arc<AppState>>,
-) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut state: TemplateState = state.into();
+) -> Result<String, ErrorResponse> {
+    let mut state = TemplateState::from(&*state);
     state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
-    Ok(UploadTemplate {
+    let tmpl = UploadTemplate {
         expiry_units: iter_expiry_units()
             .take_while(|e| {
                 if let Some(max) = state.max_expiry {
@@ -91,20 +91,21 @@ pub async fn upload(
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
         state,
-    })
+    };
+    tmpl.render().map_err(|e| format!("internal error rendering template: {:?}", e))
 }
 
 #[derive(Template)]
 #[template(path = "paste.html.jinja")]
-pub struct PasteTemplate<'a> {
-    pub state: TemplateState,
-    pub expiry_units: Vec<ExpiryUnit<'a>>,
+pub struct PasteTemplate<'s> {
+    pub state: TemplateState<'s>,
+    pub expiry_units: Vec<ExpiryUnit>,
     pub never_expiry_allowed: bool,
 }
 
 #[instrument(skip(state))]
 pub async fn paste(State(state): State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut state: TemplateState = state.into();
+    let mut state = TemplateState::from(&*state);
     state.current_navigation = Some(CurrentNavigation::Paste);
     event!(Level::DEBUG, "returning paste template");
     Ok(PasteTemplate {
