@@ -3,8 +3,8 @@
 use std::sync::Arc;
 
 use askama::Template;
-use askama_axum::IntoResponse;
 use axum::{routing::get, Router};
+use axum::response::IntoResponse;
 use chrono::Duration;
 use hyper::StatusCode;
 use tracing::{event, Level};
@@ -21,6 +21,7 @@ mod prelude {
 }
 
 // 's is for &AppState
+// TODO: should this be Copy
 #[derive(Debug, Clone)]
 pub struct TemplateState<'s> {
     version: &'static str,
@@ -51,7 +52,7 @@ impl<'s> From<&'s AppState> for TemplateState<'s> {
 //}
 
 // which page is current navigated to, for navbar formatting
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 #[non_exhaustive]
 pub enum CurrentNavigation {
     Upload,
@@ -61,27 +62,36 @@ pub enum CurrentNavigation {
 #[derive(Template)]
 #[template(path = "error.html.jinja")]
 pub struct ErrorTemplate<'s> {
-    pub state: TemplateState,
+    pub state: TemplateState<'s>,
     pub code: StatusCode,
     pub message: String,
 }
 
-pub enum ErrorResponse {
-    Template(ErrorTemplate),
-    // currently only used for askama rendering errors. I am not entirely sure when those happen,
-    // but if it does, instead of attempting to render ErrorTemplate, it's simpler to just return
-    // a bare String to the user so they know something has gone horribly wrong.
-    Raw(String),
+pub struct ErrorResponse(StatusCode, String);
+//pub enum ErrorResponse<'s> {
+//    Template(ErrorTemplate<'s>),
+//    // currently only used for askama rendering errors. I am not entirely sure when those happen,
+//    // but if it does, instead of attempting to render ErrorTemplate, it's simpler to just return
+//    // a bare String to the user so they know something has gone horribly wrong.
+//    RenderError(String),
+//}
+impl From<ErrorTemplate<'_>> for ErrorResponse {
+    fn from(tmpl: ErrorTemplate) -> Self {
+        match tmpl.render() {
+            Ok(s) => Self(StatusCode::OK, s),
+            Err(e) => Self(StatusCode::INTERNAL_SERVER_ERROR, format!("internal error rendering error page template: {:?}", e)),
+        }
+    }
 }
-impl From<ErrorTemplate> for ErrorResponse {
-    fn from(template: ErrorTemplate) -> Self {
-        Self(template)
+impl From<askama::Error> for ErrorResponse {
+    fn from(err: askama::Error) -> Self {
+        Self(StatusCode::INTERNAL_SERVER_ERROR, format!("internal error rendering template: {:?}", err))
     }
 }
 impl IntoResponse for ErrorResponse {
-    fn into_response(self) -> askama_axum::Response {
-        let code = self.0.code;
-        let error_msg = &self.0.message;
+    fn into_response(self) -> axum::response::Response {
+        let code = self.0;
+        let error_msg = self.1;
         if code.is_server_error() {
             event!(Level::ERROR, status = code.as_u16(), error = error_msg);
         } else if code.is_client_error() {
@@ -90,7 +100,7 @@ impl IntoResponse for ErrorResponse {
             event!(Level::INFO, status = code.as_u16(), error = error_msg);
         }
 
-        (self.0.code, self.0).into_response()
+        (code, error_msg).into_response()
     }
 }
 
