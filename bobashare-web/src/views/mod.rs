@@ -3,8 +3,12 @@
 use std::sync::Arc;
 
 use askama::Template;
-use axum::{routing::get, Router};
-use axum::response::IntoResponse;
+use axum::{
+    http,
+    response::{IntoResponse, Response},
+    routing::get,
+    Router,
+};
 use chrono::Duration;
 use hyper::StatusCode;
 use tracing::{event, Level};
@@ -45,11 +49,6 @@ impl<'s> From<&'s AppState> for TemplateState<'s> {
         }
     }
 }
-//impl From<Arc<AppState>> for TemplateState {
-//    fn from(state: Arc<AppState>) -> Self {
-//        Self::from(&*state)
-//    }
-//}
 
 // which page is current navigated to, for navbar formatting
 #[derive(Debug, Clone, Copy)]
@@ -67,41 +66,74 @@ pub struct ErrorTemplate<'s> {
     pub message: String,
 }
 
-pub struct ErrorResponse(StatusCode, String);
-//pub enum ErrorResponse<'s> {
-//    Template(ErrorTemplate<'s>),
-//    // currently only used for askama rendering errors. I am not entirely sure when those happen,
-//    // but if it does, instead of attempting to render ErrorTemplate, it's simpler to just return
-//    // a bare String to the user so they know something has gone horribly wrong.
-//    RenderError(String),
-//}
+pub struct ErrorResponse(Response);
 impl From<ErrorTemplate<'_>> for ErrorResponse {
     fn from(tmpl: ErrorTemplate) -> Self {
+        let error_msg = &tmpl.message;
         match tmpl.render() {
-            Ok(s) => Self(StatusCode::OK, s),
-            Err(e) => Self(StatusCode::INTERNAL_SERVER_ERROR, format!("internal error rendering error page template: {:?}", e)),
+            Ok(s) => {
+                let status_num = tmpl.code.as_u16();
+                if tmpl.code.is_server_error() {
+                    event!(Level::ERROR, status = status_num, error_msg);
+                } else if tmpl.code.is_client_error() {
+                    event!(Level::WARN, status = status_num, error_msg);
+                } else {
+                    event!(Level::INFO, status = status_num, error_msg);
+                }
+                Self(
+                    (
+                        tmpl.code,
+                        [(
+                            http::header::CONTENT_TYPE,
+                            http::header::HeaderValue::from_static(ErrorTemplate::MIME_TYPE),
+                        )],
+                        s,
+                    )
+                        .into_response(),
+                )
+            }
+            Err(e) => {
+                let status = tmpl.code.as_u16();
+                event!(Level::ERROR, status, error_msg, render_error = ?e, "error rendering error page template, so HTTP 500 returned:");
+                Self(
+                    (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("internal error rendering error page template: {:?}", e),
+                    )
+                        .into_response(),
+                )
+            }
         }
     }
 }
 impl From<askama::Error> for ErrorResponse {
     fn from(err: askama::Error) -> Self {
-        Self(StatusCode::INTERNAL_SERVER_ERROR, format!("internal error rendering template: {:?}", err))
+        Self(
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("internal error rendering template: {:?}", err),
+            )
+                .into_response(),
+        )
     }
 }
 impl IntoResponse for ErrorResponse {
     fn into_response(self) -> axum::response::Response {
-        let code = self.0;
-        let error_msg = self.1;
-        if code.is_server_error() {
-            event!(Level::ERROR, status = code.as_u16(), error = error_msg);
-        } else if code.is_client_error() {
-            event!(Level::WARN, status = code.as_u16(), error = error_msg);
-        } else {
-            event!(Level::INFO, status = code.as_u16(), error = error_msg);
-        }
-
-        (code, error_msg).into_response()
+        self.0
     }
+}
+
+pub(crate) fn render_template<T: askama::Template>(tmpl: T) -> Result<Response, ErrorResponse> {
+    let rendered = tmpl.render()?;
+    Ok((
+        StatusCode::OK,
+        [(
+            http::header::CONTENT_TYPE,
+            http::header::HeaderValue::from_static(T::MIME_TYPE),
+        )],
+        rendered,
+    )
+        .into_response())
 }
 
 pub fn router() -> Router<Arc<AppState>> {

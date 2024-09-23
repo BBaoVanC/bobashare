@@ -5,7 +5,7 @@ use axum::{extract::State, response::IntoResponse};
 use chrono::TimeDelta;
 use tracing::{event, instrument, Level};
 
-use super::{filters, CurrentNavigation, ErrorResponse, TemplateState};
+use super::{filters, render_template, CurrentNavigation, ErrorResponse, TemplateState};
 use crate::AppState;
 
 #[derive(Debug, Clone)]
@@ -75,7 +75,7 @@ pub struct UploadTemplate<'s> {
 #[instrument(skip(state))]
 pub async fn upload(
     State(state): State<Arc<AppState>>,
-) -> Result<String, ErrorResponse> {
+) -> Result<impl IntoResponse, ErrorResponse> {
     let mut state = TemplateState::from(&*state);
     state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
@@ -92,7 +92,7 @@ pub async fn upload(
         never_expiry_allowed: state.max_expiry.is_none(),
         state,
     };
-    Ok(tmpl.render()?)
+    render_template(tmpl)
 }
 
 #[derive(Template)]
@@ -121,5 +121,5 @@ pub async fn paste(State(state): State<Arc<AppState>>) -> Result<impl IntoRespon
         never_expiry_allowed: state.max_expiry.is_none(),
         state,
     };
-    Ok(tmpl.render()?)
+    render_template(tmpl)
 }
