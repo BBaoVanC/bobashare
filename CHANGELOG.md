@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal Changes
+
+- Entirely rewrite `TemplateState` to use references instead of cloning
+  - Also remove askama_axum as it is easier to reimplement locally by rendering
+    template to String manually
+  - Also includes a major rewrite of how ErrorResponse works
+- Make `CurrentNavigation` type used in `TemplateState` be `Copy` since it is a
+  simple value enum
+- Remove unnecessary lifetime parameter from ExpiryUnit since they are always
+  `'static`
+
 ## [v0.2.11] - 2024-09-22
 
 ### Bugfixes

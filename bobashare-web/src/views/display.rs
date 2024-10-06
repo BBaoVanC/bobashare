@@ -23,7 +23,7 @@ use tokio_util::io::ReaderStream;
 use tracing::{event, instrument, Level};
 use url::Url;
 
-use super::{filters, prelude::*, ErrorResponse, ErrorTemplate, TemplateState};
+use super::{filters, prelude::*, render_template, ErrorResponse, ErrorTemplate, TemplateState};
 use crate::{AppState, CLASS_STYLE, MARKDOWN_OPTIONS};
 
 /// Errors when trying to view/download an upload
@@ -66,8 +66,8 @@ async fn open_upload<S: AsRef<str>>(
 
 #[derive(Template)]
 #[template(path = "display.html.jinja")]
-pub struct DisplayTemplate {
-    pub state: TemplateState,
+pub struct DisplayTemplate<'s> {
+    pub state: TemplateState<'s>,
     pub id: String,
     pub filename: String,
     pub expiry_date: Option<DateTime<Utc>>,
@@ -104,14 +104,15 @@ pub async fn display(
     State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
+    let tmpl_state = TemplateState::from(&*state);
     let mut upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::NOT_FOUND,
             message: e.to_string(),
         },
         ViewUploadError::InternalServer(_) => ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: e.to_string(),
         },
@@ -121,7 +122,7 @@ pub async fn display(
         .metadata()
         .await
         .map_err(|e| ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: format!("error reading file size: {e}"),
         })?
@@ -148,7 +149,7 @@ pub async fn display(
                         .read_to_string(&mut contents)
                         .await
                         .map_err(|e| ErrorTemplate {
-                            state: state.clone().into(),
+                            state: tmpl_state.clone(),
                             code: StatusCode::INTERNAL_SERVER_ERROR,
                             message: format!("error reading file contents: {e}"),
                         })?;
@@ -168,7 +169,7 @@ pub async fn display(
                             generator
                                 .parse_html_for_line_which_includes_newline(line)
                                 .map_err(|e| ErrorTemplate {
-                                    state: state.clone().into(),
+                                    state: tmpl_state.clone(),
                                     code: StatusCode::INTERNAL_SERVER_ERROR,
                                     message: format!("error highlighting file contents: {e}"),
                                 })?;
@@ -201,7 +202,7 @@ pub async fn display(
                                         generator
                                             .parse_html_for_line_which_includes_newline(t)
                                             .map_err(|e| ErrorTemplate {
-                                                state: state.clone().into(),
+                                                state: tmpl_state.clone(),
                                                 code: StatusCode::INTERNAL_SERVER_ERROR,
                                                 message: format!(
                                                     "error highlighting markdown fenced code block: {e}",
@@ -242,7 +243,7 @@ pub async fn display(
     let raw_url = state.raw_url.join(&upload.metadata.id).unwrap();
     let mut download_url = raw_url.clone();
     download_url.set_query(Some("download"));
-    Ok(DisplayTemplate {
+    render_template(DisplayTemplate {
         raw_url,
         download_url,
         id: upload.metadata.id,
@@ -252,7 +253,7 @@ pub async fn display(
         size,
         mimetype: upload.metadata.mimetype,
         contents,
-        state: state.into(),
+        state: tmpl_state,
     })
 }
 
@@ -274,14 +275,15 @@ pub async fn raw(
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
+    let tmpl_state = TemplateState::from(&*state);
     let upload = open_upload(&state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::NOT_FOUND,
             message: e.to_string(),
         },
         ViewUploadError::InternalServer(_) => ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: e.to_string(),
         },
@@ -292,7 +294,7 @@ pub async fn raw(
         .metadata()
         .await
         .map_err(|e| ErrorTemplate {
-            state: state.clone().into(),
+            state: tmpl_state.clone(),
             code: StatusCode::INTERNAL_SERVER_ERROR,
             message: format!("error reading file size: {e}"),
         })?

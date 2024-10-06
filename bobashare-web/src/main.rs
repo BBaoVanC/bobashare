@@ -10,7 +10,7 @@ use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
     api, static_routes, str_to_duration,
-    views::{self, ErrorResponse, ErrorTemplate},
+    views::{self, ErrorResponse, ErrorTemplate, TemplateState},
     AppState,
 };
 use chrono::TimeDelta;
@@ -167,17 +167,23 @@ async fn main() -> anyhow::Result<()> {
         "generated state from config"
     );
 
-    let state2 = state.clone();
     let app = Router::new()
         .nest("/api", api::router())
         .merge(views::router())
         .nest_service("/static", get(static_routes::handler))
-        .fallback(|| async {
-            ErrorResponse(ErrorTemplate {
-                code: StatusCode::NOT_FOUND,
-                message: "no route for the requested URL was found".into(),
-                state: state2.into(),
-            })
+        .fallback({
+            let state = Arc::clone(&state);
+            move || {
+                let state = Arc::clone(&state);
+                async move {
+                    let tmpl_state = TemplateState::from(&*state);
+                    ErrorResponse::from(ErrorTemplate {
+                        code: StatusCode::NOT_FOUND,
+                        message: "no route for the requested URL was found".into(),
+                        state: tmpl_state,
+                    })
+                }
+            }
         })
         .layer(
             ServiceBuilder::new()
