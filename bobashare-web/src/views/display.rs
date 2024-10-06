@@ -243,7 +243,7 @@ pub async fn display(
     let raw_url = state.raw_url.join(&upload.metadata.id).unwrap();
     let mut download_url = raw_url.clone();
     download_url.set_query(Some("download"));
-    let tmpl = DisplayTemplate {
+    render_template(DisplayTemplate {
         raw_url,
         download_url,
         id: upload.metadata.id,
@@ -254,8 +254,7 @@ pub async fn display(
         mimetype: upload.metadata.mimetype,
         contents,
         state: tmpl_state,
-    };
-    render_template(tmpl)
+    })
 }
 
 fn string_is_true<'de, D>(_: D) -> Result<bool, D::Error>

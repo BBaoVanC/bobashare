@@ -79,7 +79,7 @@ pub async fn upload(
     let mut state = TemplateState::from(&*state);
     state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
-    let tmpl = UploadTemplate {
+    render_template(UploadTemplate {
         expiry_units: iter_expiry_units()
             .take_while(|e| {
                 if let Some(max) = state.max_expiry {
@@ -91,8 +91,7 @@ pub async fn upload(
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
         state,
-    };
-    render_template(tmpl)
+    })
 }
 
 #[derive(Template)]
@@ -108,7 +107,7 @@ pub async fn paste(State(state): State<Arc<AppState>>) -> Result<impl IntoRespon
     let mut state = TemplateState::from(&*state);
     state.current_navigation = Some(CurrentNavigation::Paste);
     event!(Level::DEBUG, "returning paste template");
-    let tmpl = PasteTemplate {
+    render_template(PasteTemplate {
         expiry_units: iter_expiry_units()
             .take_while(|e| {
                 if let Some(max) = state.max_expiry {
@@ -120,6 +119,5 @@ pub async fn paste(State(state): State<Arc<AppState>>) -> Result<impl IntoRespon
             .collect(),
         never_expiry_allowed: state.max_expiry.is_none(),
         state,
-    };
-    render_template(tmpl)
+    })
 }
