@@ -108,6 +108,7 @@ impl From<ErrorTemplate<'_>> for ErrorResponse {
 }
 impl From<askama::Error> for ErrorResponse {
     fn from(err: askama::Error) -> Self {
+        event!(Level::ERROR, render_error = ?err, "error rendering template");
         Self(
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
