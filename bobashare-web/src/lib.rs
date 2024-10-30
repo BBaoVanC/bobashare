@@ -142,7 +142,7 @@ pub enum StrToDurationError {
 
 /// Regex used for duration string parsing in [`str_to_duration`]
 static DURATION_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([0-9]+)(m|h|d|w|mon|y)$").unwrap());
+    LazyLock::new(|| Regex::new(r"^([0-9]+)(s|m|h|d|w|mon|y)$").unwrap());
 
 /// Take a string with a simple duration format (single number followed by unit)
 /// and output a [`StdDuration`]. Accepts durations in minutes (m), hours
@@ -209,6 +209,7 @@ pub fn str_to_duration<S: AsRef<str>>(s: S) -> Result<StdDuration, StrToDuration
         .parse::<u64>()
         .map_err(StrToDurationError::NumberParse)?;
     Ok(match &caps[2] {
+        "s" => StdDuration::from_secs(count),
         "m" => StdDuration::from_secs(count * 60),
         "h" => StdDuration::from_secs(count * 60 * 60),
         "d" => StdDuration::from_secs(count * 60 * 60 * 24),

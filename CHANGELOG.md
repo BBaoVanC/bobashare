@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bugfixes
+
+- Fix seconds not being a supported duration unit in `str_to_duration`
+  (originally introduced [8eeb4db]).
+
+[8eeb4db]: https://github.com/BBaoVanC/bobashare/commit/8eeb4dbcf3df2bd5d92c73e3174eeb341740400d
+
 ### Internal Changes
 
 - Entirely rewrite `TemplateState` to use references instead of cloning
