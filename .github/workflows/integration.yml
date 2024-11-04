@@ -77,12 +77,10 @@ jobs:
       - name: Install toolchain on host
         if: ${{ matrix.build.cross }}
         run: |
-          rustup toolchain install stable --profile minimal
-          rustup default stable
           rustup target add ${{ matrix.build.target }}
       - name: Install musl tools
         if: ${{ matrix.build.need_musl }}
-        run: apt install musl-tools
+        run: sudo apt install musl-tools
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
