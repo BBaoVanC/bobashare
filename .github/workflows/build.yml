@@ -1,3 +1,4 @@
+name: Build + Clippy
 on:
   workflow_call:
   workflow_dispatch:
