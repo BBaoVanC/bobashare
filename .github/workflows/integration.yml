@@ -64,13 +64,6 @@ jobs:
       - uses: cargo-bins/cargo-binstall@v1.10.10
       - name: Install cross-rs
         run: cargo binstall cross
-      - name: Install toolchain
-        run: |
-          rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
-          rustup toolchain install nightly --profile minimal
-          rustup target add ${{ matrix.build.target }}
-          rustup component add clippy --toolchain nightly
       - name: Check
         run: |
           cross clippy --locked -- -D warnings
