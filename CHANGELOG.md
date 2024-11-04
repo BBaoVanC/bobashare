@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.12] - 2024-11-04
+
 ### Bugfixes
 
 - Fix seconds not being a supported duration unit in `str_to_duration`
@@ -178,7 +180,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.11..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.12..HEAD
+[v0.2.12]: https://github.com/BBaoVanC/bobashare/compare/v0.2.11..v0.2.12
 [v0.2.11]: https://github.com/BBaoVanC/bobashare/compare/v0.2.10..v0.2.11
 [v0.2.10]: https://github.com/BBaoVanC/bobashare/compare/v0.2.9..v0.2.10
 [v0.2.9]: https://github.com/BBaoVanC/bobashare/compare/v0.2.8..v0.2.9
