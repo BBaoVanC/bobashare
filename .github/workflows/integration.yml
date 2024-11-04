@@ -42,6 +42,7 @@ jobs:
       matrix:
         build:
           # we do not need a gnu one because rust's musl is statically linked by default
+          # use_clang: needs to be specified when onig_sys needs to compile libonig
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             cross: true
@@ -50,14 +51,17 @@ jobs:
             target: arm-unknown-linux-musleabihf
             cross: true
             need_musl: true
+            use_clang: true
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             cross: true
             need_musl: true
+            use_clang: true
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             cross: true
             need_musl: true
+            use_clang: true
           - os: "windows-latest"
             target: "x86_64-pc-windows-gnu"
           - os: "windows-latest"
@@ -86,6 +90,11 @@ jobs:
       - name: Install musl tools
         if: ${{ matrix.build.need_musl }}
         run: sudo apt install musl-tools
+      - name: Install clang
+        if: ${{ matrix.build.use_clang }}
+        run: |
+          sudo apt install clang
+          echo "CC=clang" >> $GITHUB_ENV
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
