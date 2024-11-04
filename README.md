@@ -31,10 +31,13 @@ the `build:` line and uncomment the `image:` line.
 
 ## Configuration
 
-`bobashare-web` accepts configuration via [TOML file](bobashare-web/bobashare.example.toml) and/or environment variables
-(with env vars taking priority). The environment variables are the regular
-names, but in all caps and with the prefix `APP_` (so `base_url` would become
-`APP_BASE_URL`).
+`bobashare-web` accepts configuration via [TOML file](bobashare-web/bobashare.example.toml)
+and/or environment variables (with env vars taking priority). The environment
+variables are the regular names, but in all caps and with the prefix `APP_` (so
+`base_url` would become `APP_BASE_URL`).
+
+If using a config file, you must specify the path of it using the
+`--config`/`-c` flag.
 
 List of config options:
 
