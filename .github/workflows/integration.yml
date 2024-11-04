@@ -78,10 +78,12 @@ jobs:
         shell: bash
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
+
       - name: Install toolchain on host
         if: ${{ matrix.build.cross }}
         run: |
           rustup target add ${{ matrix.build.target }}
+
       - uses: cargo-bins/cargo-binstall@v1.10.10
         if: ${{ matrix.build.crossrs }}
       - name: Install cross-rs
@@ -96,14 +98,18 @@ jobs:
         run: echo cargo_cmd=cross >> $GITHUB_ENV
 
       - name: Check
+        shell: bash
         run: |
           $cargo_cmd clippy --target ${{ matrix.build.target }} --locked -- -D warnings
           $cargo_cmd clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
       - name: Build
+        # FIXME: what does always do here
         if: always()
+        shell: bash
         run: |
           $cargo_cmd build --target ${{ matrix.build.target }} --locked
           $cargo_cmd build --target ${{ matrix.build.target }} --release --locked
+
       - name: Upload debug artifacts
         uses: actions/upload-artifact@v4
         with:
