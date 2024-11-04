@@ -97,7 +97,7 @@ jobs:
           sudo apt install gcc-${{ matrix.build.cc }}
           sudo apt install lld
           echo "CC=${{ matrix.build.cc }}-gcc" >> $GITHUB_ENV
-          echo "RUSTFLAGS=-C link-arg=-fuse-ld=lld" >> $GITHUB_ENV
+          echo "RUSTFLAGS=-C linker=lld" >> $GITHUB_ENV
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
