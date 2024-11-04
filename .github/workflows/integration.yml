@@ -51,16 +51,16 @@ jobs:
             target: arm-unknown-linux-musleabihf
             cross: true
             need_musl: true
-            cc: gcc-arm-linux-gnueabihf
+            cc: arm-linux-gnueabihf
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
             cross: true
-            cc: gcc-arm-linux-gnueabihf
+            cc: arm-linux-gnueabihf
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             cross: true
             need_musl: true
-            cc: gcc-aarch64-linux-gnu
+            cc: aarch64-linux-gnu
 
           - os: windows-latest
             target: x86_64-pc-windows-gnu
@@ -94,8 +94,8 @@ jobs:
       - name: Install custom C compiler chain
         if: ${{ matrix.build.cc }}
         run: |
-          sudo apt install ${{ matrix.build.cc }}
-          echo "CC=${{ matrix.build.cc }}" >> $GITHUB_ENV
+          sudo apt install gcc-${{ matrix.build.cc }}
+          echo "CC=${{ matrix.build.cc }}-gcc" >> $GITHUB_ENV
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
