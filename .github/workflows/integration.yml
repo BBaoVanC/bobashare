@@ -91,11 +91,11 @@ jobs:
       - name: Install musl tools
         if: ${{ matrix.build.need_musl }}
         run: sudo apt install musl-tools
-      - name: Install clang
-        if: ${{ matrix.build.use_clang }}
+      - name: Install custom C compiler chain
+        if: ${{ matrix.build.cc }}
         run: |
-          sudo apt install clang
-          echo "CC=clang" >> $GITHUB_ENV
+          sudo apt install ${{ matrix.build.cc }}
+          echo "CC=${{ matrix.build.cc }}" >> $GITHUB_ENV
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
