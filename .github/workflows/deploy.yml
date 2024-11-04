@@ -68,7 +68,7 @@ jobs:
           rustup toolchain install stable --profile minimal
           rustup target add ${{ matrix.build.target }}
       - name: Build
-        run: cargo build --release --locked
+        run: cargo build --target ${{ matrix.build.target }} --release --locked
       - name: Rename binaries (Unix)
         if: ${{ matrix.build.os == 'ubuntu-latest' || matrix.build.os == 'macos-latest' }}
         run: |

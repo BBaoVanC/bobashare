@@ -75,8 +75,8 @@ jobs:
       - name: Build
         if: always()
         run: |
-          cargo build --locked
-          cargo build --release --locked
+          cargo build --target ${{ matrix.build.target }} --locked
+          cargo build --target ${{ matrix.build.target }} --release --locked
       - name: Test
         run: |
           cargo test --locked
