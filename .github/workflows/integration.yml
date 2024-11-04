@@ -43,17 +43,21 @@ jobs:
         build:
           # we do not need a gnu one because rust's musl is statically linked by default
           - os: ubuntu-latest
-            cross: true
             target: x86_64-unknown-linux-musl
-          - os: ubuntu-latest
             cross: true
+            need_musl: true
+          - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
-          - os: ubuntu-latest
             cross: true
+            need_musl: true
+          - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
-          - os: ubuntu-latest
             cross: true
+            need_musl: true
+          - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
+            cross: true
+            need_musl: true
           - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
           - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
           - {os: "macos-latest", target: "x86_64-apple-darwin"}
@@ -76,6 +80,9 @@ jobs:
           rustup toolchain install stable --profile minimal
           rustup default stable
           rustup target add ${{ matrix.build.target }}
+      - name: Install musl tools
+        if: ${{ matrix.build.need_musl }}
+        run: apt install musl-tools
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
