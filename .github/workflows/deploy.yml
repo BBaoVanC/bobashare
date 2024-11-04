@@ -42,14 +42,26 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {os: "ubuntu-latest", target: "x86_64-unknown-linux-musl"}
-          - {os: "ubuntu-latest", target: "arm-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "armv7-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "aarch64-unknown-linux-musl"}
-          - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
-          - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
-          - {os: "macos-latest", target: "x86_64-apple-darwin"}
-          - {os: "macos-latest", target: "aarch64-apple-darwin"}
+          # we do not need a gnu one because rust's musl is statically linked by default
+          # use_clang: needs to be specified when onig_sys needs to compile libonig
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+          - os: ubuntu-latest
+            target: arm-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            target: armv7-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+
+          - os: windows-latest
+            target: x86_64-pc-windows-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
     name: Draft release
     runs-on: ${{ matrix.build.os }}
     steps:
@@ -62,27 +74,47 @@ jobs:
         shell: bash
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
-      - name: Install toolchain
+
+      - name: Install target on host
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
         run: |
-          rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
           rustup target add ${{ matrix.build.target }}
+
+      - uses: cargo-bins/cargo-binstall@v1.10.10
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+      - name: Install cross-rs
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+        run: cargo binstall cross
+
+      - name: Set cargo command to cargo
+        shell: bash
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
+        run: echo cargo_cmd=cargo >> $GITHUB_ENV
+      - name: Set cargo command to cross
+        shell: bash
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+        run: echo cargo_cmd=cross >> $GITHUB_ENV
+
+      # need env.cargo_cmd instead of just $cargo_cmd because windows shell
       - name: Build
-        run: cargo build --target ${{ matrix.build.target }} --release --locked
+        run: |
+          ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --release --locked
+
+
       - name: Rename binaries (Unix)
         if: ${{ matrix.build.os == 'ubuntu-latest' || matrix.build.os == 'macos-latest' }}
         run: |
-          mv target/release/bobashare-admin target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
-          mv target/release/bobashare-web target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          mv target/${{ matrix.build.target }}/release/bobashare-admin target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          mv target/${{ matrix.build.target }}/release/bobashare-web target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
       - name: Rename binaries (Windows)
         if: ${{ matrix.build.os == 'windows-latest' }}
         run: |
-          mv target/release/bobashare-admin.exe target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
-          mv target/release/bobashare-web.exe target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
+          mv target/${{ matrix.build.target }}/release/bobashare-admin.exe target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
+          mv target/${{ matrix.build.target }}/release/bobashare-web.exe target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
       - name: Draft release
         uses: softprops/action-gh-release@v2.0.1
         with:
           draft: true
           files: |
-            target/release/bobashare-admin-*
-            target/release/bobashare-web-*
+            target/${{ matrix.build.target }}/release/bobashare-admin-*
+            target/${{ matrix.build.target }}/release/bobashare-web-*
