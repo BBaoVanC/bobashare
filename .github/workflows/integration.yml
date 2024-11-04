@@ -41,16 +41,16 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {os: "ubuntu-latest", target: "x86_64-unknown-linux-musl"}
-          - {os: "ubuntu-latest", target: "arm-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "armv7-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "aarch64-unknown-linux-musl"}
-          - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
-          - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
-          - {os: "macos-latest", target: "x86_64-apple-darwin"}
-          - {os: "macos-latest", target: "aarch64-apple-darwin"}
+          - {target: "x86_64-unknown-linux-musl"}
+          - {target: "arm-unknown-linux-musleabihf"}
+          - {target: "armv7-unknown-linux-musleabihf"}
+          - {target: "aarch64-unknown-linux-musl"}
+          - {target: "x86_64-pc-windows-gnu"}
+          - {target: "x86_64-pc-windows-msvc"}
+          - {target: "x86_64-apple-darwin"}
+          - {target: "aarch64-apple-darwin"}
     name: Build
-    runs-on: ${{ matrix.build.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,6 +61,9 @@ jobs:
         shell: bash
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
+      - uses: cargo-bins/cargo-binstall@v1.10.10
+      - name: Install cross-rs
+        run: cargo binstall cross
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
@@ -70,17 +73,17 @@ jobs:
           rustup component add clippy --toolchain nightly
       - name: Check
         run: |
-          cargo clippy --locked -- -D warnings
-          cargo clippy --release --locked -- -D warnings
+          cross clippy --locked -- -D warnings
+          cross clippy --release --locked -- -D warnings
       - name: Build
         if: always()
         run: |
-          cargo build --target ${{ matrix.build.target }} --locked
-          cargo build --target ${{ matrix.build.target }} --release --locked
+          cross build --target ${{ matrix.build.target }} --locked
+          cross build --target ${{ matrix.build.target }} --release --locked
       - name: Test
         run: |
-          cargo test --locked
-          cargo test --release --locked
+          cross test --locked
+          cross test --release --locked
       - name: Upload debug artifacts
         uses: actions/upload-artifact@v4
         with:
