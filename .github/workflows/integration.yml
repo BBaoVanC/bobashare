@@ -45,16 +45,12 @@ jobs:
           # use_clang: needs to be specified when onig_sys needs to compile libonig
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            crossrs: true
           - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
-            crossrs: true
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
-            crossrs: true
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
-            crossrs: true
 
           - os: windows-latest
             target: x86_64-pc-windows-gnu
@@ -63,7 +59,6 @@ jobs:
 
           - os: macos-latest
             target: x86_64-apple-darwin
-            cross: true
           - os: macos-latest
             target: aarch64-apple-darwin
     name: Build
@@ -79,24 +74,24 @@ jobs:
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
 
-      - name: Install toolchain on host
-        if: ${{ matrix.build.cross }}
+      - name: Install target on host
+        if: ${{ matrix.build.os != "ubuntu-latest" }}
         run: |
           rustup target add ${{ matrix.build.target }}
 
       - uses: cargo-bins/cargo-binstall@v1.10.10
-        if: ${{ matrix.build.crossrs }}
+        if: ${{ matrix.build.os == "ubuntu-latest" }}
       - name: Install cross-rs
-        if: ${{ matrix.build.crossrs }}
+        if: ${{ matrix.build.os == "ubuntu-latest" }}
         run: cargo binstall cross
 
       - name: Set cargo command to cargo
         shell: bash
-        if: ${{ ! matrix.build.crossrs }}
+        if: ${{ matrix.build.os != "ubuntu-latest" }}
         run: echo cargo_cmd=cargo >> $GITHUB_ENV
       - name: Set cargo command to cross
         shell: bash
-        if: ${{ matrix.build.crossrs }}
+        if: ${{ matrix.build.os == "ubuntu-latest" }}
         run: echo cargo_cmd=cross >> $GITHUB_ENV
 
       # need env.cargo_cmd instead of just $cargo_cmd because windows shell
