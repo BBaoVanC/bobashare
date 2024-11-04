@@ -85,16 +85,16 @@ jobs:
         with:
           name: debug-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
-            target/debug/bobashare-admin
-            target/debug/bobashare-web
-            target/debug/bobashare-admin.exe
-            target/debug/bobashare-web.exe
+            target/${{ matrix.build.target }}/debug/bobashare-admin
+            target/${{ matrix.build.target }}/debug/bobashare-web
+            target/${{ matrix.build.target }}/debug/bobashare-admin.exe
+            target/${{ matrix.build.target }}/debug/bobashare-web.exe
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
-            target/release/bobashare-admin
-            target/release/bobashare-web
-            target/release/bobashare-admin.exe
-            target/release/bobashare-web.exe
+            target/${{ matrix.build.target }}/release/bobashare-admin
+            target/${{ matrix.build.target }}/release/bobashare-web
+            target/${{ matrix.build.target }}/release/bobashare-admin.exe
+            target/${{ matrix.build.target }}/release/bobashare-web.exe
