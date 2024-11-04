@@ -45,22 +45,16 @@ jobs:
           # use_clang: needs to be specified when onig_sys needs to compile libonig
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            cross: true
-            need_musl: true
+            crossrs: true
           - os: ubuntu-latest
             target: arm-unknown-linux-musleabihf
-            cross: true
-            need_musl: true
-            cc: arm-linux-gnueabihf
+            crossrs: true
           - os: ubuntu-latest
             target: armv7-unknown-linux-musleabihf
-            cross: true
-            cc: arm-linux-gnueabihf
+            crossrs: true
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
-            cross: true
-            need_musl: true
-            cc: aarch64-linux-gnu
+            crossrs: true
 
           - os: windows-latest
             target: x86_64-pc-windows-gnu
@@ -88,25 +82,28 @@ jobs:
         if: ${{ matrix.build.cross }}
         run: |
           rustup target add ${{ matrix.build.target }}
-      - name: Install musl tools
-        if: ${{ matrix.build.need_musl }}
-        run: sudo apt install musl-tools
-      - name: Install custom C compiler chain
-        if: ${{ matrix.build.cc }}
-        run: |
-          sudo apt install gcc-${{ matrix.build.cc }}
-          sudo apt install lld
-          echo "CC=${{ matrix.build.cc }}-gcc" >> $GITHUB_ENV
-          echo "RUSTFLAGS=-C linker=lld" >> $GITHUB_ENV
+      - uses: cargo-bins/cargo-binstall@v1.10.10
+        if: ${{ matrix.build.crossrs }}
+      - name: Install cross-rs
+        if: ${{ matrix.build.crossrs }}
+        run: cargo binstall cross
+
+      - name: Set cargo command to cargo
+        if: ${{ ! matrix.build.crossrs }}
+        run: echo cargo_cmd=cargo >> $GITHUB_ENV
+      - name: Set cargo command to cross
+        if: ${{ matrix.build.crossrs }}
+        run: echo cargo_cmd=cross >> $GITHUB_ENV
+
       - name: Check
         run: |
-          cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
-          cargo clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
+          $cargo_cmd clippy --target ${{ matrix.build.target }} --locked -- -D warnings
+          $cargo_cmd clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
       - name: Build
         if: always()
         run: |
-          cargo build --target ${{ matrix.build.target }} --locked
-          cargo build --target ${{ matrix.build.target }} --release --locked
+          $cargo_cmd build --target ${{ matrix.build.target }} --locked
+          $cargo_cmd build --target ${{ matrix.build.target }} --release --locked
       - name: Upload debug artifacts
         uses: actions/upload-artifact@v4
         with:
