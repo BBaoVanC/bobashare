@@ -91,26 +91,24 @@ jobs:
         run: cargo binstall cross
 
       - name: Set cargo command to cargo
+        shell: bash
         if: ${{ ! matrix.build.crossrs }}
         run: echo cargo_cmd=cargo >> $GITHUB_ENV
       - name: Set cargo command to cross
+        shell: bash
         if: ${{ matrix.build.crossrs }}
         run: echo cargo_cmd=cross >> $GITHUB_ENV
 
-      # FIXME: why does $cargo_cmd alone not work on Windows
-
       - name: Check
-        shell: bash
         run: |
-          ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --locked -- -D warnings
-          ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
+          $cargo_cmd clippy --target ${{ matrix.build.target }} --locked -- -D warnings
+          $cargo_cmd clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
       - name: Build
         # FIXME: what does always do here
         if: always()
-        shell: bash
         run: |
-          ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --locked
-          ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --release --locked
+          $cargo_cmd build --target ${{ matrix.build.target }} --locked
+          $cargo_cmd build --target ${{ matrix.build.target }} --release --locked
 
       - name: Upload debug artifacts
         uses: actions/upload-artifact@v4
