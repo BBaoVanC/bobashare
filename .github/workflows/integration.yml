@@ -41,10 +41,19 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {os: "ubuntu-latest", cross: true, target: "x86_64-unknown-linux-musl"}
-          - {os: "ubuntu-latest", cross: true, target: "arm-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", cross: true, target: "armv7-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", cross: true, target: "aarch64-unknown-linux-musl"}
+          # we do not need a gnu one because rust's musl is statically linked by default
+          - os: ubuntu-latest
+            cross: true
+            target: x86_64-unknown-linux-musl
+          - os: ubuntu-latest
+            cross: true
+            target: arm-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            cross: true
+            target: armv7-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            cross: true
+            target: aarch64-unknown-linux-musl
           - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
           - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
           - {os: "macos-latest", target: "x86_64-apple-darwin"}
@@ -61,25 +70,21 @@ jobs:
         shell: bash
         run: |
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
-      - uses: cargo-bins/cargo-binstall@v1.10.10
-      - name: Install cross-rs
-        if: ${{ matrix.build.cross }}
-        run: cargo binstall cross
       - name: Install toolchain on host
-        if: ${{ ! matrix.build.cross }}
+        if: ${{ matrix.build.cross }}
         run: |
           rustup toolchain install stable --profile minimal
           rustup default stable
           rustup target add ${{ matrix.build.target }}
       - name: Check
         run: |
-          cross clippy --locked -- -D warnings
-          cross clippy --release --locked -- -D warnings
+          cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
+          cargo clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
       - name: Build
         if: always()
         run: |
-          cross build --target ${{ matrix.build.target }} --locked
-          cross build --target ${{ matrix.build.target }} --release --locked
+          cargo build --target ${{ matrix.build.target }} --locked
+          cargo build --target ${{ matrix.build.target }} --release --locked
       - name: Upload debug artifacts
         uses: actions/upload-artifact@v4
         with:
