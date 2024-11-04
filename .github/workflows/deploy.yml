@@ -104,13 +104,13 @@ jobs:
       - name: Rename binaries (Unix)
         if: ${{ matrix.build.os == 'ubuntu-latest' || matrix.build.os == 'macos-latest' }}
         run: |
-          mv target/${{ matrix.build.target }}/release/bobashare-admin target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
-          mv target/${{ matrix.build.target }}/release/bobashare-web target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          mv target/${{ matrix.build.target }}/release/bobashare-admin target/${{ matrix.build.target }}/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          mv target/${{ matrix.build.target }}/release/bobashare-web target/${{ matrix.build.target }}/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
       - name: Rename binaries (Windows)
         if: ${{ matrix.build.os == 'windows-latest' }}
         run: |
-          mv target/${{ matrix.build.target }}/release/bobashare-admin.exe target/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
-          mv target/${{ matrix.build.target }}/release/bobashare-web.exe target/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
+          mv target/${{ matrix.build.target }}/release/bobashare-admin.exe target/${{ matrix.build.target }}/release/bobashare-admin-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
+          mv target/${{ matrix.build.target }}/release/bobashare-web.exe target/${{ matrix.build.target }}/release/bobashare-web-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}.exe
       - name: Draft release
         uses: softprops/action-gh-release@v2.0.1
         with:
