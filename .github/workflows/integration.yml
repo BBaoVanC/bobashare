@@ -58,10 +58,15 @@ jobs:
             target: aarch64-unknown-linux-musl
             cross: true
             need_musl: true
-          - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
-          - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
-          - {os: "macos-latest", target: "x86_64-apple-darwin"}
-          - {os: "macos-latest", target: "aarch64-apple-darwin"}
+          - os: "windows-latest"
+            target: "x86_64-pc-windows-gnu"
+          - os: "windows-latest"
+            target: "x86_64-pc-windows-msvc"
+          - os: "macos-latest"
+            target: "x86_64-apple-darwin"
+            cross: true
+          - os: "macos-latest"
+            target: "aarch64-apple-darwin"
     name: Build
     runs-on: ${{ matrix.build.os }}
     steps:
