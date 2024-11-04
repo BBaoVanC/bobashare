@@ -50,7 +50,7 @@ jobs:
           - {os: "macos-latest", target: "x86_64-apple-darwin"}
           - {os: "macos-latest", target: "aarch64-apple-darwin"}
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.build.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,10 +63,10 @@ jobs:
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
       - uses: cargo-bins/cargo-binstall@v1.10.10
       - name: Install cross-rs
-        if: ${{ matrix.cross }}
+        if: ${{ matrix.build.cross }}
         run: cargo binstall cross
       - name: Install toolchain on host
-        if: ${{ ! matrix.cross }}
+        if: ${{ ! matrix.build.cross }}
         run: |
           rustup toolchain install stable --profile minimal
           rustup default stable
