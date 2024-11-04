@@ -41,10 +41,10 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {os: "ubuntu-latest", target: "x86_64-unknown-linux-musl"}
-          - {os: "ubuntu-latest", target: "arm-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "armv7-unknown-linux-musleabihf"}
-          - {os: "ubuntu-latest", target: "aarch64-unknown-linux-musl"}
+          - {os: "ubuntu-latest", cross: true, target: "x86_64-unknown-linux-musl"}
+          - {os: "ubuntu-latest", cross: true, target: "arm-unknown-linux-musleabihf"}
+          - {os: "ubuntu-latest", cross: true, target: "armv7-unknown-linux-musleabihf"}
+          - {os: "ubuntu-latest", cross: true, target: "aarch64-unknown-linux-musl"}
           - {os: "windows-latest", target: "x86_64-pc-windows-gnu"}
           - {os: "windows-latest", target: "x86_64-pc-windows-msvc"}
           - {os: "macos-latest", target: "x86_64-apple-darwin"}
@@ -63,7 +63,14 @@ jobs:
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
       - uses: cargo-bins/cargo-binstall@v1.10.10
       - name: Install cross-rs
+        if: ${{ matrix.cross }}
         run: cargo binstall cross
+      - name: Install toolchain on host
+        if: ${{ ! matrix.cross }}
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add ${{ matrix.build.target }}
       - name: Check
         run: |
           cross clippy --locked -- -D warnings
