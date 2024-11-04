@@ -75,23 +75,23 @@ jobs:
           echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
 
       - name: Install target on host
-        if: ${{ matrix.build.os != "ubuntu-latest" }}
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
         run: |
           rustup target add ${{ matrix.build.target }}
 
       - uses: cargo-bins/cargo-binstall@v1.10.10
-        if: ${{ matrix.build.os == "ubuntu-latest" }}
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
       - name: Install cross-rs
-        if: ${{ matrix.build.os == "ubuntu-latest" }}
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
         run: cargo binstall cross
 
       - name: Set cargo command to cargo
         shell: bash
-        if: ${{ matrix.build.os != "ubuntu-latest" }}
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
         run: echo cargo_cmd=cargo >> $GITHUB_ENV
       - name: Set cargo command to cross
         shell: bash
-        if: ${{ matrix.build.os == "ubuntu-latest" }}
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
         run: echo cargo_cmd=cross >> $GITHUB_ENV
 
       # need env.cargo_cmd instead of just $cargo_cmd because windows shell
