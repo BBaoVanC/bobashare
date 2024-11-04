@@ -96,6 +96,7 @@ jobs:
         run: |
           sudo apt install gcc-${{ matrix.build.cc }}
           echo "CC=${{ matrix.build.cc }}-gcc" >> $GITHUB_ENV
+          echo "LD=${{ matrix.build.cc }}-gcc" >> $GITHUB_ENV
       - name: Check
         run: |
           cargo clippy --target ${{ matrix.build.target }} --locked -- -D warnings
