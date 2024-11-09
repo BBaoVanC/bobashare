@@ -1,9 +1,7 @@
 {% extends "base.html.jinja" %}
 
 {% block title %}{{ filename }}{% endblock %}
-{% block head %}
-    <meta name="robots" content="noindex">
-
+{% block preview_metadata %}
     {% let filename_truncated %}
     {% if filename.len() > 50 %}
         {# U+2026 is ellipses (three dots) #}
@@ -11,9 +9,11 @@
     {% else %}
         {% let filename_truncated = filename.clone() %}
     {% endif %}
-
     <meta property="og:title" content='{{ filename_truncated }} ({{ size|humansize }})'>
     <meta name="twitter:title" content='{{ filename_truncated }} ({{ size|humansize }})'>
+{% endblock %}
+{% block head %}
+    <meta name="robots" content="noindex">
 
     {% match contents %}
         {% when DisplayType::Image %}
