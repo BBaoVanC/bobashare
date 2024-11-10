@@ -5,7 +5,7 @@ use std::{
 };
 
 use anyhow::Context;
-use axum::{self, routing::get, Router};
+use axum::{self, response::Redirect, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
     api, render_markdown_with_syntax_set, static_routes, str_to_duration,
@@ -196,6 +196,17 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .nest("/api", api::router())
         .merge(views::router())
+        .route(
+            "/upload",
+            get(|| async { Redirect::permanent(state.base_url.as_str()) }),
+        )
+        .route(
+            "/paste",
+            get({
+                let paste_url = Box::leak(Box::new(state.base_url.join("paste/").unwrap()));
+                || async { Redirect::permanent(paste_url.as_str()) }
+            }),
+        )
         .nest_service("/static", get(static_routes::handler))
         .fallback(|| async {
             ErrorResponse::from(ErrorTemplate {
