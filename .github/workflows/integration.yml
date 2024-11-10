@@ -100,13 +100,14 @@ jobs:
           ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --locked -- -D warnings
           ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
       - name: Build
-        # FIXME: what does always do here
-        if: always()
+        # build even if check step failed
+        if: ${{ !cancelled() }}
         run: |
           ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --locked
           ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --release --locked
 
       - name: Upload debug artifacts
+        if: ${{ success() }}
         uses: actions/upload-artifact@v4
         with:
           name: debug-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
@@ -116,6 +117,7 @@ jobs:
             target/${{ matrix.build.target }}/debug/bobashare-admin.exe
             target/${{ matrix.build.target }}/debug/bobashare-web.exe
       - name: Upload release artifacts
+        if: ${{ success() }}
         uses: actions/upload-artifact@v4
         with:
           name: release-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
