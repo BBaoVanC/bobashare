@@ -144,7 +144,7 @@ async fn main() -> anyhow::Result<()> {
     let about_page = config
         .get::<Option<String>>("about_page")
         .unwrap()
-        .map(|s| PathBuf::from(s));
+        .map(PathBuf::from);
     let about_page_content = if let Some(ref path) = about_page {
         // no reason to use tokio here since there is nothing to run concurrently yet
         event!(
