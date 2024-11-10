@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal Changes
+
+- Deduplicate the link preview meta tags in `<head>` set in template files; move
+  to `base.html.jinja` instead
+- Throw compile error if main block is not overridden in a template inheriting
+  `base.html.jinja`
+
 ## [v0.2.12] - 2024-11-04
 
 ### Bugfixes
