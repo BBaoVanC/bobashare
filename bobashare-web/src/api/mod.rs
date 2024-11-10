@@ -1,7 +1,5 @@
 //! Public facing REST API for bobashare
 
-use std::sync::Arc;
-
 use axum::Router;
 use hyper::StatusCode;
 
@@ -13,7 +11,7 @@ pub mod v1;
 ///
 /// - `/api/v1/`: [`v1`]
 /// - `/api/latest/`: [`v1`] (latest API version)
-pub fn router() -> Router<Arc<AppState>> {
+pub fn router() -> Router<&'static AppState> {
     Router::new()
         .nest("/v1", v1::router())
         .nest("/latest", v1::router())

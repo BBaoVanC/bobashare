@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `base.html.jinja`
 - Move markdown rendering code out of `bobashare-web/src/views/display.rs` and
   into main module, so it can be reused in about page rendering
+- Replace usage of `Arc<AppState>` with `&'static AppState` which is leaked
+  before starting web server
+  - This feels a bit nicer because there's no need to reference count a type
+    which must live for the entire program anyways.
 
 ## [v0.2.12] - 2024-11-04
 

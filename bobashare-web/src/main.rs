@@ -2,7 +2,6 @@ use std::{
     future::IntoFuture,
     net::SocketAddr,
     path::{Path, PathBuf},
-    sync::Arc,
 };
 
 use anyhow::Context;
@@ -161,7 +160,8 @@ async fn main() -> anyhow::Result<()> {
         String::new()
     };
 
-    let state = Arc::new(AppState {
+    // leak this because tokio requires all captures to be 'static
+    let state = Box::leak(Box::new(AppState {
         backend,
         cleanup_interval,
         base_url,
@@ -178,7 +178,7 @@ async fn main() -> anyhow::Result<()> {
         about_page_content,
 
         shutdown_tx: broadcast::channel(4).0,
-    });
+    }));
 
     event!(Level::DEBUG,
         backend = ?state.backend,
@@ -197,19 +197,12 @@ async fn main() -> anyhow::Result<()> {
         .nest("/api", api::router())
         .merge(views::router())
         .nest_service("/static", get(static_routes::handler))
-        .fallback({
-            let state = Arc::clone(&state);
-            move || {
-                let state = Arc::clone(&state);
-                async move {
-                    let tmpl_state = TemplateState::from(&*state);
-                    ErrorResponse::from(ErrorTemplate {
-                        code: StatusCode::NOT_FOUND,
-                        message: "no route for the requested URL was found".into(),
-                        state: tmpl_state,
-                    })
-                }
-            }
+        .fallback(|| async {
+            ErrorResponse::from(ErrorTemplate {
+                code: StatusCode::NOT_FOUND,
+                message: "no route for the requested URL was found".into(),
+                state: TemplateState::from(&*state),
+            })
         })
         .layer(
             ServiceBuilder::new()
@@ -230,7 +223,7 @@ async fn main() -> anyhow::Result<()> {
                 )
                 .propagate_x_request_id(),
         )
-        .with_state(state.clone())
+        .with_state(state)
         .into_make_service();
 
     let listen_addr: SocketAddr = config

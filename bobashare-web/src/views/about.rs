@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
 use hyper::StatusCode;
@@ -19,8 +17,10 @@ pub struct AboutTemplate<'s, 'c> {
 
 /// Display a simple about page
 #[instrument(skip(state))]
-pub async fn about(State(state): State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut tmpl_state = TemplateState::from(&*state);
+pub async fn about(
+    State(state): State<&'static AppState>,
+) -> Result<impl IntoResponse, ErrorResponse> {
+    let mut tmpl_state = TemplateState::from(state);
 
     if state.about_page.is_none() {
         Err(ErrorTemplate {

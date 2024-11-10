@@ -1,7 +1,5 @@
 //! Routes to display or download an upload in a browser
 
-use std::sync::Arc;
-
 use anyhow::Context;
 use askama::Template;
 use axum::{
@@ -100,11 +98,11 @@ const MAX_DISPLAY_SIZE: u64 = 1024 * 1024; // 1 MiB
 /// Display an upload as HTML
 #[instrument(skip(state))]
 pub async fn display(
-    State(state): State<Arc<AppState>>,
+    State(state): State<&'static AppState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
-    let tmpl_state = TemplateState::from(&*state);
-    let mut upload = open_upload(&state, id).await.map_err(|e| match e {
+    let tmpl_state = TemplateState::from(state);
+    let mut upload = open_upload(state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
             state: tmpl_state.clone(),
             code: StatusCode::NOT_FOUND,
@@ -236,12 +234,12 @@ pub struct RawParams {
 /// Download the raw upload file
 #[instrument(skip(state))]
 pub async fn raw(
-    State(state): State<Arc<AppState>>,
+    State(state): State<&'static AppState>,
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
-    let tmpl_state = TemplateState::from(&*state);
-    let upload = open_upload(&state, id).await.map_err(|e| match e {
+    let tmpl_state = TemplateState::from(state);
+    let upload = open_upload(state, id).await.map_err(|e| match e {
         ViewUploadError::NotFound => ErrorTemplate {
             state: tmpl_state.clone(),
             code: StatusCode::NOT_FOUND,

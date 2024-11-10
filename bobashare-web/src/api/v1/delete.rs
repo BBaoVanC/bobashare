@@ -1,7 +1,5 @@
 //! API to delete an upload
 
-use std::sync::Arc;
-
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -65,7 +63,7 @@ impl IntoResponse for DeleteError {
 /// - 204 No Content
 #[instrument(skip(state))]
 pub async fn delete(
-    state: State<Arc<AppState>>,
+    state: State<&'static AppState>,
     Path(id): Path<String>,
     key: String,
 ) -> Result<impl IntoResponse, DeleteError> {

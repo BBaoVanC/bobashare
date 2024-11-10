@@ -1,6 +1,6 @@
 //! API to create an upload
 
-use std::{io::SeekFrom, sync::Arc};
+use std::io::SeekFrom;
 
 use anyhow::Context;
 use axum::{
@@ -128,7 +128,7 @@ impl IntoResponse for UploadError {
 /// - JSON body created from [`UploadResponse`]
 #[instrument(skip(state, filename, headers, body), fields(id))]
 pub async fn put(
-    state: State<Arc<AppState>>,
+    state: State<&'static AppState>,
     filename: Path<String>,
     WithRejection(TypedHeader(mimetype), _): WithRejection<TypedHeader<ContentType>, UploadError>,
     WithRejection(TypedHeader(content_length), _): WithRejection<

@@ -1,6 +1,6 @@
 //! Frontend views (as opposed to REST API)
 
-use std::{path::Path, sync::Arc};
+use std::path::Path;
 
 use askama::Template;
 use axum::{
@@ -141,7 +141,7 @@ pub(crate) fn render_template<T: askama::Template>(tmpl: T) -> Result<Response, 
         .into_response())
 }
 
-pub fn router() -> Router<Arc<AppState>> {
+pub fn router() -> Router<&'static AppState> {
     Router::new()
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))

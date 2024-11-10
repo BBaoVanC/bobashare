@@ -1,7 +1,5 @@
 //! API to get metadata about an upload
 
-use std::sync::Arc;
-
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -72,7 +70,7 @@ impl IntoResponse for InfoError {
 /// - JSON body created from [`InfoResponse`]
 #[instrument(skip(state))]
 pub async fn info(
-    state: State<Arc<AppState>>,
+    state: State<&'static AppState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, InfoError> {
     event!(Level::DEBUG, id, "reading upload metadata");

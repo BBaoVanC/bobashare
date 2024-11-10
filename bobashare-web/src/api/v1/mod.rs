@@ -1,6 +1,6 @@
 //! Version 1 of the bobashare API, hosted at `/api/v1/`
 
-use std::{error::Error, sync::Arc};
+use std::error::Error;
 
 use axum::{
     response::{IntoResponse, Response},
@@ -23,7 +23,7 @@ pub mod upload;
 /// - `/api/v1/upload`: [`upload::put`]
 /// - `/api/v1/upload/:filename`: [`upload::put`]
 /// - `/api/v1/delete/:id`: [`delete::delete`]
-pub fn router() -> Router<Arc<AppState>> {
+pub fn router() -> Router<&'static AppState> {
     Router::new()
         .route("/info/:id", get(info::info))
         .route("/upload/:filename", put(upload::put))

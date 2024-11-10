@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
 use chrono::TimeDelta;
@@ -74,9 +72,9 @@ pub struct UploadTemplate<'s> {
 
 #[instrument(skip(state))]
 pub async fn upload(
-    State(state): State<Arc<AppState>>,
+    State(state): State<&'static AppState>,
 ) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut state = TemplateState::from(&*state);
+    let mut state = TemplateState::from(state);
     state.current_navigation = Some(CurrentNavigation::Upload);
     event!(Level::DEBUG, "returning upload template");
     render_template(UploadTemplate {
@@ -103,8 +101,10 @@ pub struct PasteTemplate<'s> {
 }
 
 #[instrument(skip(state))]
-pub async fn paste(State(state): State<Arc<AppState>>) -> Result<impl IntoResponse, ErrorResponse> {
-    let mut state = TemplateState::from(&*state);
+pub async fn paste(
+    State(state): State<&'static AppState>,
+) -> Result<impl IntoResponse, ErrorResponse> {
+    let mut state = TemplateState::from(state);
     state.current_navigation = Some(CurrentNavigation::Paste);
     event!(Level::DEBUG, "returning paste template");
     render_template(PasteTemplate {
