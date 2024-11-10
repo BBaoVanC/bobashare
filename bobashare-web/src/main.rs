@@ -9,7 +9,7 @@ use anyhow::Context;
 use axum::{self, routing::get, Router};
 use bobashare::storage::file::FileBackend;
 use bobashare_web::{
-    api, static_routes, str_to_duration,
+    api, render_markdown_with_syntax_set, static_routes, str_to_duration,
     views::{self, ErrorResponse, ErrorTemplate, TemplateState},
     AppState,
 };
@@ -137,6 +137,9 @@ async fn main() -> anyhow::Result<()> {
     }
     .map(|d| TimeDelta::from_std(d).unwrap());
     let max_file_size = config.get_int("max_file_size").unwrap().try_into().unwrap();
+
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+
     let extra_footer_text = config.get("extra_footer_text").unwrap();
     let about_page = config
         .get::<Option<String>>("about_page")
@@ -144,8 +147,16 @@ async fn main() -> anyhow::Result<()> {
         .map(|s| PathBuf::from(s));
     let about_page_content = if let Some(ref path) = about_page {
         // no reason to use tokio here since there is nothing to run concurrently yet
-        std::fs::read_to_string(path)
-            .with_context(|| format!("error reading about page contents at path {path:?}"))?
+        event!(
+            Level::DEBUG,
+            "opening about page source file at {}",
+            path.display()
+        );
+        let source = std::fs::read_to_string(path)
+            .with_context(|| format!("error reading about page contents at path {path:?}"))?;
+        event!(Level::DEBUG, "rendering about page to HTML");
+        render_markdown_with_syntax_set(&source, &syntax_set)
+            .context("error rendering about page markdown")?
     } else {
         String::new()
     };
@@ -160,7 +171,7 @@ async fn main() -> anyhow::Result<()> {
         max_expiry,
         max_file_size,
 
-        syntax_set: SyntaxSet::load_defaults_newlines(),
+        syntax_set,
 
         extra_footer_text,
         about_page,

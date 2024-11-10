@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to `base.html.jinja` instead
 - Throw compile error if main block is not overridden in a template inheriting
   `base.html.jinja`
+- Move markdown rendering code out of `bobashare-web/src/views/display.rs` and
+  into main module, so it can be reused in about page rendering
 
 ## [v0.2.12] - 2024-11-04
 

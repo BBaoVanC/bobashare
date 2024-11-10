@@ -14,7 +14,6 @@ use chrono::{DateTime, Duration, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
-use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Parser, Tag, TagEnd};
 use serde::{Deserialize, Deserializer};
 use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
 use thiserror::Error;
@@ -24,7 +23,7 @@ use tracing::{event, instrument, Level};
 use url::Url;
 
 use super::{filters, prelude::*, render_template, ErrorResponse, ErrorTemplate, TemplateState};
-use crate::{AppState, CLASS_STYLE, MARKDOWN_OPTIONS};
+use crate::{render_markdown_with_syntax_set, AppState, CLASS_STYLE};
 
 /// Errors when trying to view/download an upload
 #[derive(Debug, Error, Display)]
@@ -178,49 +177,15 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
-                        let mut parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS).peekable();
-                        let mut output = Vec::new();
-                        while let Some(event) = parser.next() {
-                            match event {
-                                Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
-                                    output.push(Event::Html("<pre class=\"highlight\">".into()));
-                                    let syntax = state
-                                        .syntax_set
-                                        .find_syntax_by_token(&token)
-                                        .unwrap_or_else(|| {
-                                            state.syntax_set.find_syntax_plain_text()
-                                        });
-                                    let mut generator = ClassedHTMLGenerator::new_with_class_style(
-                                        syntax,
-                                        &state.syntax_set,
-                                        CLASS_STYLE,
-                                    );
-
-                                    // peek so we don't consume the end tag
-                                    // TODO: figure out if take_while() can do this better
-                                    while let Some(Event::Text(t)) = parser.peek() {
-                                        generator
-                                            .parse_html_for_line_which_includes_newline(t)
-                                            .map_err(|e| ErrorTemplate {
-                                                state: tmpl_state.clone(),
-                                                code: StatusCode::INTERNAL_SERVER_ERROR,
-                                                message: format!(
-                                                    "error highlighting markdown fenced code block: {e}",
-                                                ),
-                                            })?;
-                                        parser.next();
-                                    }
-                                    output.push(Event::Html(generator.finalize().into()));
-                                }
-                                Event::End(TagEnd::CodeBlock) => {
-                                    output.push(Event::Html("</pre>".into()));
-                                }
-                                e => output.push(e),
-                            }
-                        }
-
-                        let mut displayed = String::with_capacity(contents.len() * 3 / 2);
-                        push_html(&mut displayed, output.into_iter());
+                        let displayed = render_markdown_with_syntax_set(
+                            &contents,
+                            &state.syntax_set,
+                        )
+                        .map_err(|e| ErrorTemplate {
+                            state: tmpl_state.clone(),
+                            code: StatusCode::INTERNAL_SERVER_ERROR,
+                            message: format!("error highlighting markdown fenced code block: {e}",),
+                        })?;
 
                         DisplayType::Markdown {
                             highlighted,

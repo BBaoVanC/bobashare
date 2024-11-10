@@ -6,9 +6,12 @@ use std::{num::ParseIntError, path::PathBuf, sync::LazyLock, time::Duration as S
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
 use displaydoc::Display;
-use pulldown_cmark::Options;
+use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
 use regex::Regex;
-use syntect::{html::ClassStyle, parsing::SyntaxSet};
+use syntect::{
+    html::{ClassStyle, ClassedHTMLGenerator},
+    parsing::SyntaxSet,
+};
 use thiserror::Error;
 use tokio::sync::broadcast;
 use url::Url;
@@ -222,4 +225,56 @@ pub fn str_to_duration<S: AsRef<str>>(s: S) -> Result<StdDuration, StrToDuration
         "y" => StdDuration::from_secs(count * 60 * 60 * 24 * 365),
         _ => panic!("invalid duration unit received from regex"),
     })
+}
+
+#[derive(Debug, Error, Display)]
+/// Errors for [`render_markdown_with_syntax_set`]
+pub enum RenderMarkdownWithSyntaxError {
+    /// error highlighting markdown-fenced code block: {0}
+    HighlightCodeBlock(#[source] syntect::Error),
+}
+
+/// Render markdown into HTML, including syntax highlighting for code blocks
+/// using [`syntect`].
+///
+/// Takes in a [`SyntaxSet`] to use for highlighting.
+pub fn render_markdown_with_syntax_set(
+    source: &str,
+    syntax_set: &SyntaxSet,
+) -> Result<String, RenderMarkdownWithSyntaxError> {
+    let mut parser = Parser::new_ext(source, MARKDOWN_OPTIONS).peekable();
+    let mut output = Vec::new();
+    // wrap multiline code blocks in a pre.highlight, and apply a syntect class to
+    // the inner code
+    while let Some(event) = parser.next() {
+        match event {
+            Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
+                output.push(Event::Html("<pre class=\"highlight\">".into()));
+                let syntax = syntax_set
+                    .find_syntax_by_token(&token)
+                    .unwrap_or_else(|| syntax_set.find_syntax_plain_text());
+                let mut generator =
+                    ClassedHTMLGenerator::new_with_class_style(syntax, syntax_set, CLASS_STYLE);
+
+                // peek so we don't consume the end tag
+                // TODO: figure out if take_while() can do this better
+                while let Some(Event::Text(t)) = parser.peek() {
+                    generator
+                        .parse_html_for_line_which_includes_newline(t)
+                        .map_err(RenderMarkdownWithSyntaxError::HighlightCodeBlock)?;
+                    parser.next();
+                }
+                output.push(Event::Html(generator.finalize().into()));
+            }
+            Event::End(TagEnd::CodeBlock) => {
+                output.push(Event::Html("</pre>".into()));
+            }
+            e => output.push(e),
+        }
+    }
+
+    // FIXME: figure out where this specific calculation came from
+    let mut displayed = String::with_capacity(source.len() * 3 / 2);
+    push_html(&mut displayed, output.into_iter());
+    Ok(displayed)
 }

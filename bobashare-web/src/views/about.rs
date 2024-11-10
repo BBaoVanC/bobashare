@@ -3,19 +3,18 @@ use std::sync::Arc;
 use askama::Template;
 use axum::{extract::State, response::IntoResponse};
 use hyper::StatusCode;
-use pulldown_cmark::{html::push_html, Parser};
 use tracing::instrument;
 
 use super::{
     filters, render_template, CurrentNavigation, ErrorResponse, ErrorTemplate, TemplateState,
 };
-use crate::{AppState, MARKDOWN_OPTIONS};
+use crate::AppState;
 
 #[derive(Template)]
 #[template(path = "about.html.jinja")]
-pub struct AboutTemplate<'s> {
+pub struct AboutTemplate<'s, 'c> {
     pub state: TemplateState<'s>,
-    pub about_content_rendered: String,
+    pub about_content_rendered: &'c str,
 }
 
 /// Display a simple about page
@@ -33,12 +32,8 @@ pub async fn about(State(state): State<Arc<AppState>>) -> Result<impl IntoRespon
 
     tmpl_state.current_navigation = Some(CurrentNavigation::About);
 
-    let mut parser = Parser::new_ext(&state.about_page_content, MARKDOWN_OPTIONS);
-    let mut about_content_rendered = String::new();
-    push_html(&mut about_content_rendered, parser);
-
     render_template(AboutTemplate {
         state: tmpl_state,
-        about_content_rendered,
+        about_content_rendered: &state.about_page_content,
     })
 }
