@@ -57,6 +57,8 @@ List of config options:
 - `max_file_size` - default `1073741824` (1 GiB) - maximum size of an upload
 - `extra_footer_text` - default empty - extra text to add to the footer, see the
   "Limits" blurb at the bottom on https://share.boba.best
+- `about_page` - default empty - path to a markdown file to render on the about
+  page at `/about/`
 
 Also see the `--help` page for different verbosity settings.
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Features
+
+- Add configurable, custom about page
+  - configured by setting `about_page` to the path of a markdown file to render
+
 ### Internal Changes
 
 - Deduplicate the link preview meta tags in `<head>` set in template files; move

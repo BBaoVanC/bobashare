@@ -26,6 +26,9 @@
                 <a href='{{ state.base_url }}'>bobashare</a>
             </header>
             <nav class="navbar">
+                {% if let Some(_) = state.about_page %}
+                <a class="navbar-item{% if let Some(CurrentNavigation::About) = state.current_navigation %} navbar-active{% endif %}" href='{{ state.base_url.join("about/").unwrap() }}'>About</a>
+                {% endif %}
                 <a class="navbar-item{% if let Some(CurrentNavigation::Upload) = state.current_navigation %} navbar-active{% endif %}" href='{{ state.base_url }}'>Upload</a>
                 <a class="navbar-item{% if let Some(CurrentNavigation::Paste) = state.current_navigation %} navbar-active{% endif %}" href='{{ state.base_url.join("paste/").unwrap() }}'>Paste</a>
             </nav>

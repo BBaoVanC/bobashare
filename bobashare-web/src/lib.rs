@@ -1,7 +1,7 @@
 //! Webserver written with [`axum`] which provides a frontend and REST API for
 //! [`bobashare`]
 
-use std::{num::ParseIntError, sync::LazyLock, time::Duration as StdDuration};
+use std::{num::ParseIntError, path::PathBuf, sync::LazyLock, time::Duration as StdDuration};
 
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
@@ -52,6 +52,10 @@ pub struct AppState {
 
     /// extra text to display in footer
     pub extra_footer_text: Option<String>,
+    /// path to markdown file for about page
+    pub about_page: Option<PathBuf>,
+    /// raw markdown text content of about page file
+    pub about_page_content: String,
 
     /// channel to broadcast shutdown -- will force all uploads to stop
     pub shutdown_tx: broadcast::Sender<()>,

@@ -7,3 +7,4 @@
 # max_expiry = "30d" # can be never
 # max_file_size = "1073741824"
 # extra_footer_text = "Demo footer text"
+# about_page = "about.md"

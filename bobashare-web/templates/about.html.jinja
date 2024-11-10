@@ -1,0 +1,12 @@
+{% extends "base.html.jinja" %}
+
+{% block title %}About{% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/about.css").unwrap() }}' crossorigin="anonymous">
+{% endblock %}
+
+{% block main %}
+<div class="about-content">
+    {{ about_content_rendered|safe }}
+</div>
+{% endblock %}

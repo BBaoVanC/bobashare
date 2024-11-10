@@ -1,0 +1,3 @@
+.about-content {
+    width: min(720px, var(--max-vw));
+}

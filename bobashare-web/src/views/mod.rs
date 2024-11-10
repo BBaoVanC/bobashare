@@ -1,6 +1,6 @@
 //! Frontend views (as opposed to REST API)
 
-use std::sync::Arc;
+use std::{path::Path, sync::Arc};
 
 use askama::Template;
 use axum::{
@@ -16,6 +16,7 @@ use url::Url;
 
 use crate::AppState;
 
+pub mod about;
 pub mod display;
 pub mod filters;
 pub mod upload;
@@ -33,6 +34,7 @@ pub struct TemplateState<'s> {
     max_file_size: u64,
     max_expiry: Option<Duration>,
     extra_footer_text: Option<&'s str>,
+    about_page: Option<&'s Path>,
 
     // None if the current page is not a navbar item
     current_navigation: Option<CurrentNavigation>,
@@ -45,6 +47,7 @@ impl<'s> From<&'s AppState> for TemplateState<'s> {
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
             extra_footer_text: state.extra_footer_text.as_deref(),
+            about_page: state.about_page.as_deref(),
             current_navigation: None, // will be set to Some in individual handlers
         }
     }
@@ -56,6 +59,7 @@ impl<'s> From<&'s AppState> for TemplateState<'s> {
 pub enum CurrentNavigation {
     Upload,
     Paste,
+    About,
 }
 
 #[derive(Template)]
@@ -141,6 +145,7 @@ pub fn router() -> Router<Arc<AppState>> {
     Router::new()
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
+        .route("/about/", get(about::about))
         .route("/:id", get(display::display))
         .route("/raw/:id", get(display::raw))
 }
