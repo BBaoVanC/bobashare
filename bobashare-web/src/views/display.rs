@@ -140,7 +140,9 @@ pub async fn display(
                         .syntax_set
                         .find_syntax_by_extension(extension)
                         .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
-                    let mut contents = String::with_capacity(size.try_into().unwrap_or(usize::MAX));
+                    // should be alright to assume that 1,048,576 fits in usize on relevant
+                    // platforms
+                    let mut contents = String::with_capacity(size as usize);
                     upload
                         .file
                         .read_to_string(&mut contents)

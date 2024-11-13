@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   before starting web server
   - This feels a bit nicer because there's no need to reference count a type
     which must live for the entire program anyways.
+- Don't potentially try to create a string with `usize::MAX` capacity when
+  displaying a file
+  - Pretty sure that since all relevant (>= 32 bits) platforms can fit 1048576
+    in a usize, that this bug would never actually happen. But it shouldn't
+    exist in the code.
 
 ## [v0.2.12] - 2024-11-04
 
