@@ -27,7 +27,7 @@ impl Upload {
     pub fn is_expired(&self) -> bool {
         // if None (never expires) then not expired (false)
         // otherwise if expiry is before now, then it is expired
-        self.expiry_date.map_or(false, |e| e < Utc::now())
+        self.expiry_date.is_some_and(|e| e < Utc::now())
     }
 }
 
