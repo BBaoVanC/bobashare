@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CLASS_STYLE","HIGHLIGHT_CLASS_PREFIX","MARKDOWN_OPTIONS"],"enum":["StrToDurationError"],"fn":["clamp_expiry","str_to_duration"],"mod":["api","static_routes","views"],"struct":["AppState"]};
+window.SIDEBAR_ITEMS = {"constant":["CLASS_STYLE","HIGHLIGHT_CLASS_PREFIX","MARKDOWN_OPTIONS"],"enum":["RenderMarkdownWithSyntaxError","StrToDurationError"],"fn":["clamp_expiry","render_markdown_with_syntax_set","str_to_duration"],"mod":["api","static_routes","views"],"struct":["AppState"]};
