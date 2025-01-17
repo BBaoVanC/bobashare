@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["body","either","extract","handler","middleware","response","routing","typed_header"],"struct":["TypedHeader"]};

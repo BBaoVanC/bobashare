@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Askama implements a type-safe compiler for Jinja-like templates. It lets you write templates in a Jinja-like syntax, which are linked to a `struct` defining the template context. This is done using a custom derive implementation (implemented in `askama_derive`)."><title>askama - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="askama" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../static.files/storage-59e33391.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../askama/index.html">askama</a><span class="version">0.12.1</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#creating-askama-templates" title="Creating Askama templates">Creating Askama templates</a><ul><li><a href="#the-template-attribute" title="The `template()` attribute">The <code>template()</code> attribute</a></li></ul></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li><li><a href="#types" title="Type Aliases">Type Aliases</a></li><li><a href="#derives" title="Derive Macros">Derive Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>askama</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/askama/lib.rs.html#1-228">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Askama implements a type-safe compiler for Jinja-like templates.
+It lets you write templates in a Jinja-like syntax,
+which are linked to a <code>struct</code> defining the template context.
+This is done using a custom derive implementation (implemented
+in <a href="https://crates.io/crates/askama_derive"><code>askama_derive</code></a>).</p>
+<p>For feature highlights and a quick start, please review the
+<a href="https://github.com/djc/askama/blob/main/README.md">README</a>.</p>
+<p>The primary documentation for this crate now lives in
+<a href="https://djc.github.io/askama/">the book</a>.</p>
+<h2 id="creating-askama-templates"><a class="doc-anchor" href="#creating-askama-templates">§</a>Creating Askama templates</h2>
+<p>An Askama template is a <code>struct</code> definition which provides the template
+context combined with a UTF-8 encoded text file (or inline source, see
+below). Askama can be used to generate any kind of text-based format.
+The template file’s extension may be used to provide content type hints.</p>
+<p>A template consists of <strong>text contents</strong>, which are passed through as-is,
+<strong>expressions</strong>, which get replaced with content while being rendered, and
+<strong>tags</strong>, which control the template’s logic.
+The template syntax is very similar to <a href="http://jinja.pocoo.org/">Jinja</a>,
+as well as Jinja-derivatives like <a href="http://twig.sensiolabs.org/">Twig</a> or
+<a href="https://github.com/Keats/tera">Tera</a>.</p>
+<h3 id="the-template-attribute"><a class="doc-anchor" href="#the-template-attribute">§</a>The <code>template()</code> attribute</h3>
+<p>Askama works by generating one or more trait implementations for any
+<code>struct</code> type decorated with the <code>#[derive(Template)]</code> attribute. The
+code generation process takes some options that can be specified through
+the <code>template()</code> attribute. The following sub-attributes are currently
+recognized:</p>
+<ul>
+<li><code>path</code> (as <code>path = "foo.html"</code>): sets the path to the template file. The
+path is interpreted as relative to the configured template directories
+(by default, this is a <code>templates</code> directory next to your <code>Cargo.toml</code>).
+The file name extension is used to infer an escape mode (see below). In
+web framework integrations, the path’s extension may also be used to
+infer the content type of the resulting response.
+Cannot be used together with <code>source</code>.</li>
+<li><code>source</code> (as <code>source = "{{ foo }}"</code>): directly sets the template source.
+This can be useful for test cases or short templates. The generated path
+is undefined, which generally makes it impossible to refer to this
+template from other templates. If <code>source</code> is specified, <code>ext</code> must also
+be specified (see below). Cannot be used together with <code>path</code>.</li>
+<li><code>ext</code> (as <code>ext = "txt"</code>): lets you specify the content type as a file
+extension. This is used to infer an escape mode (see below), and some
+web framework integrations use it to determine the content type.
+Cannot be used together with <code>path</code>.</li>
+<li><code>print</code> (as <code>print = "code"</code>): enable debugging by printing nothing
+(<code>none</code>), the parsed syntax tree (<code>ast</code>), the generated code (<code>code</code>)
+or <code>all</code> for both. The requested data will be printed to stdout at
+compile time.</li>
+<li><code>escape</code> (as <code>escape = "none"</code>): override the template’s extension used for
+the purpose of determining the escaper for this template. See the section
+on configuring custom escapers for more information.</li>
+<li><code>syntax</code> (as <code>syntax = "foo"</code>): set the syntax name for a parser defined
+in the configuration file. The default syntax , “default”,  is the one
+provided by Askama.</li>
+</ul>
+</div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="filters/index.html" title="mod askama::filters">filters</a></div><div class="desc docblock-short">Module for built-in filter functions</div></li><li><div class="item-name"><a class="mod" href="helpers/index.html" title="mod askama::helpers">helpers</a></div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Html.html" title="struct askama::Html">Html</a></div></li><li><div class="item-name"><a class="struct" href="struct.MarkupDisplay.html" title="struct askama::MarkupDisplay">Markup<wbr>Display</a></div></li><li><div class="item-name"><a class="struct" href="struct.Text.html" title="struct askama::Text">Text</a></div></li></ul><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum askama::Error">Error</a></div><div class="desc docblock-short">askama error type</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.DynTemplate.html" title="trait askama::DynTemplate">DynTemplate</a></div><div class="desc docblock-short">Object-safe wrapper trait around <a href="trait.Template.html" title="trait askama::Template"><code>Template</code></a> implementers</div></li><li><div class="item-name"><a class="trait" href="trait.Template.html" title="trait askama::Template">Template</a></div><div class="desc docblock-short">Main <code>Template</code> trait; implementations are generally derived</div></li></ul><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.rerun_if_templates_changed.html" title="fn askama::rerun_if_templates_changed">rerun_<wbr>if_<wbr>templates_<wbr>changed</a><wbr><span class="stab deprecated" title="">Deprecated</span></div><div class="desc docblock-short">Old build script helper to rebuild crates if contained templates have changed</div></li></ul><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.Result.html" title="type askama::Result">Result</a></div></li></ul><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.Template.html" title="derive askama::Template">Template</a></div></li></ul></section></div></main></body></html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="serde-error"><title>serde_error - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="serde_error" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../static.files/storage-59e33391.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../serde_error/index.html">serde_<wbr>error</a><span class="version">0.1.3</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#serde-error" title="serde-error">serde-error</a><ul><li><a href="#should-i-use-this" title="Should I use this?">Should I use this?</a></li><li><a href="#how-should-i-use-this" title="How should I use this?">How should I use this?</a></li></ul></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>serde_error</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/serde_error/lib.rs.html#1-44">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="serde-error"><a class="doc-anchor" href="#serde-error">§</a>serde-error</h2>
+<p><code>serde-error</code> provides a (de)serializable <code>Error</code> type implementing
+<code>std::error::Error</code>, that can easily be used to transmit errors over
+the wire.</p>
+<h3 id="should-i-use-this"><a class="doc-anchor" href="#should-i-use-this">§</a>Should I use this?</h3>
+<p>This crate is production-grade. However, you probably do not want to
+use it: usually, it makes much more sense to just sum up the error as
+some type, instead of serializing the whole causality chain.</p>
+<p>The use case for which this crate was designed is running Rust
+WebAssembly blobs inside a Rust wasmtime-running host. In such a case
+the causality chain is clearly kept across the serialization boundary,
+and it thus makes sense to keep it all.</p>
+<p>In some other cases it may make sense to serialize the whole causality
+chain, but most often it makes most sense to just not serialize
+errors.</p>
+<p>As such, please use <code>serde-error</code> with parsimony.</p>
+<h3 id="how-should-i-use-this"><a class="doc-anchor" href="#how-should-i-use-this">§</a>How should I use this?</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>std::error::Error;
+
+<span class="kw">fn </span>foo() -&gt; anyhow::Result&lt;()&gt; {
+    <span class="comment">// ...
+    </span><span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">"Failed smurfing the smurfs"</span>))
+}
+
+<span class="kw">fn </span>bar() -&gt; anyhow::Result&lt;()&gt; {
+    <span class="comment">// ...
+    </span>foo().context(<span class="string">"Running foo"</span>)
+}
+
+<span class="kw">fn </span>main() {
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(returned_err) = bar() {
+        <span class="kw">let </span>s = bincode::serialize(<span class="kw-2">&amp;</span>serde_error::Error::new(<span class="kw-2">&amp;*</span>returned_err))
+            .expect(<span class="string">"Serializing error"</span>);
+        <span class="kw">let </span>d: serde_error::Error = bincode::deserialize(<span class="kw-2">&amp;</span>s)
+            .expect(<span class="string">"Deserializing error"</span>);
+        <span class="kw">let </span>e = anyhow::Error::from(d);
+        <span class="macro">assert_eq!</span>(e.to_string(), <span class="string">"Running foo"</span>);
+        <span class="macro">assert_eq!</span>(e.source().unwrap().to_string(), <span class="string">"Failed smurfing the smurfs"</span>);
+    } <span class="kw">else </span>{
+        <span class="macro">panic!</span>(<span class="string">"bar did not return an error"</span>);
+    }
+}</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Error.html" title="struct serde_error::Error">Error</a></div></li></ul></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["connect_info","multipart","path","rejection"],"struct":["ConnectInfo","DefaultBodyLimit","MatchedPath","Multipart","NestedPath","OriginalUri","Path","Query","RawForm","RawPathParams","RawQuery","State"],"trait":["FromRef","FromRequest","FromRequestParts","OptionalFromRequest","OptionalFromRequestParts"],"type":["Request"]};

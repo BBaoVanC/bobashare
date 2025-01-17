@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="`Either*` types for combining extractors or responses into a single type."><title>axum_extra::either - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="axum_extra" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../axum_extra/index.html">axum_<wbr>extra</a><span class="version">0.10.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module either</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#as-an-extractor" title="As an extractor">As an extractor</a></li><li><a href="#as-a-response" title="As a response">As a response</a></li></ul><h3><a href="#enums">Module Items</a></h3><ul class="block"><li><a href="#enums" title="Enums">Enums</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate axum_<wbr>extra</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><span class="rustdoc-breadcrumbs"><a href="../index.html">axum_extra</a></span><h1>Module <span>either</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/axum_extra/either.rs.html#1-314">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><code>Either*</code> types for combining extractors or responses into a single type.</p>
+<h2 id="as-an-extractor"><a class="doc-anchor" href="#as-an-extractor">§</a>As an extractor</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>axum_extra::either::Either3;
+<span class="kw">use </span>axum::{
+    body::Bytes,
+    Router,
+    routing::get,
+    extract::FromRequestParts,
+};
+
+<span class="comment">// extractors for checking permissions
+</span><span class="kw">struct </span>AdminPermissions {}
+
+<span class="kw">impl</span>&lt;S&gt; FromRequestParts&lt;S&gt; <span class="kw">for </span>AdminPermissions
+<span class="kw">where
+    </span>S: Send + Sync,
+{
+    <span class="comment">// check for admin permissions...
+</span>}
+
+<span class="kw">struct </span>User {}
+
+<span class="kw">impl</span>&lt;S&gt; FromRequestParts&lt;S&gt; <span class="kw">for </span>User
+<span class="kw">where
+    </span>S: Send + Sync,
+{
+    <span class="comment">// check for a logged in user...
+</span>}
+
+<span class="kw">async fn </span>handler(
+    body: Either3&lt;AdminPermissions, User, ()&gt;,
+) {
+    <span class="kw">match </span>body {
+        Either3::E1(admin) =&gt; { <span class="comment">/* ... */ </span>}
+        Either3::E2(user) =&gt; { <span class="comment">/* ... */ </span>}
+        Either3::E3(guest) =&gt; { <span class="comment">/* ... */ </span>}
+    }
+}</code></pre></div>
+<p>Note that if all the inner extractors reject the request, the rejection from the last
+extractor will be returned. For the example above that would be <a href="../../axum_core/extract/rejection/enum.BytesRejection.html" title="enum axum_core::extract::rejection::BytesRejection"><code>BytesRejection</code></a>.</p>
+<h2 id="as-a-response"><a class="doc-anchor" href="#as-a-response">§</a>As a response</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>axum_extra::either::Either3;
+<span class="kw">use </span>axum::{Json, http::StatusCode, response::IntoResponse};
+<span class="kw">use </span>serde_json::{Value, json};
+
+<span class="kw">async fn </span>handler() -&gt; Either3&lt;Json&lt;Value&gt;, <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, StatusCode&gt; {
+    <span class="kw">if </span>something() {
+        Either3::E1(Json(<span class="macro">json!</span>({ <span class="string">"data"</span>: <span class="string">"..." </span>})))
+    } <span class="kw">else if </span>something_else() {
+        Either3::E2(<span class="string">"foobar"</span>)
+    } <span class="kw">else </span>{
+        Either3::E3(StatusCode::NOT_FOUND)
+    }
+}
+
+<span class="kw">fn </span>something() -&gt; bool {
+    <span class="comment">// ...
+</span>}
+
+<span class="kw">fn </span>something_else() -&gt; bool {
+    <span class="comment">// ...
+</span>}</code></pre></div>
+<p>The general recommendation is to use <a href="https://docs.rs/axum/0.8/axum/response/index.html#returning-different-response-types"><code>IntoResponse::into_response</code></a> to return different response
+types, but if you need to preserve the exact type then <code>Either*</code> works as well.</p>
+</div></details><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Either.html" title="enum axum_extra::either::Either">Either</a></div><div class="desc docblock-short">Combines two extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either3.html" title="enum axum_extra::either::Either3">Either3</a></div><div class="desc docblock-short">Combines three extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either4.html" title="enum axum_extra::either::Either4">Either4</a></div><div class="desc docblock-short">Combines four extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either5.html" title="enum axum_extra::either::Either5">Either5</a></div><div class="desc docblock-short">Combines five extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either6.html" title="enum axum_extra::either::Either6">Either6</a></div><div class="desc docblock-short">Combines six extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either7.html" title="enum axum_extra::either::Either7">Either7</a></div><div class="desc docblock-short">Combines seven extractors or responses into a single type.</div></li><li><div class="item-name"><a class="enum" href="enum.Either8.html" title="enum axum_extra::either::Either8">Either8</a></div><div class="desc docblock-short">Combines eight extractors or responses into a single type.</div></li></ul></section></div></main></body></html>

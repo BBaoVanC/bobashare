@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Fail","HasArg","Occur","ParsingStyle"],"struct":["Matches","Options"],"type":["Result"]};

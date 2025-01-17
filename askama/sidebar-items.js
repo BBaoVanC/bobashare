@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Template"],"enum":["Error"],"fn":["rerun_if_templates_changed"],"mod":["filters","helpers"],"struct":["Html","MarkupDisplay","Text"],"trait":["DynTemplate","Template"],"type":["Result"]};
