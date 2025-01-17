@@ -17,6 +17,7 @@ on:
     #branches: [ master ]
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -31,7 +32,7 @@ jobs:
           rustup toolchain install stable --profile minimal
       - uses: actions/checkout@v4
       - name: Build rustdoc
-        run: cargo doc --no-deps
+        run: cargo doc
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3.9.3
         with:
