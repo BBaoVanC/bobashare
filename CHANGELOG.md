@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.14] - 2025-01-26
+
 ### Bugfixes
 
 - Fix crash on startup due to path matching syntax changing in axum 0.8
@@ -215,7 +217,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.13..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.14..HEAD
+[v0.2.14]: https://github.com/BBaoVanC/bobashare/compare/v0.2.13..v0.2.14
 [v0.2.13]: https://github.com/BBaoVanC/bobashare/compare/v0.2.12..v0.2.13
 [v0.2.12]: https://github.com/BBaoVanC/bobashare/compare/v0.2.11..v0.2.12
 [v0.2.11]: https://github.com/BBaoVanC/bobashare/compare/v0.2.10..v0.2.11
