@@ -20,6 +20,9 @@ pub mod api;
 pub mod static_routes;
 pub mod views;
 
+#[cfg(test)]
+mod tests;
+
 /// Prefix for CSS classes used for [`syntect`] highlighting
 pub const HIGHLIGHT_CLASS_PREFIX: &str = "hl-";
 /// [`ClassStyle`] used for [`syntect`] highlighting
