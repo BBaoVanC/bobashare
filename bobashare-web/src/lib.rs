@@ -220,7 +220,7 @@ pub fn str_to_duration(s: &str) -> Result<StdDuration, StrToDurationError> {
     let unit_idx = count_end_idx + 1;
 
     let count_str = &s[..unit_idx];
-    let count = u64::from_str(&count_str)?;
+    let count = u64::from_str(count_str)?;
     let unit_str = &s[unit_idx..];
 
     Ok(match unit_str {
