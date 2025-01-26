@@ -146,6 +146,6 @@ pub fn router() -> Router<&'static AppState> {
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
         .route("/about/", get(about::about))
-        .route("/:id", get(display::display))
-        .route("/raw/:id", get(display::raw))
+        .route("/{id}", get(display::display))
+        .route("/raw/{id}", get(display::raw))
 }

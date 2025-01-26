@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bugfixes
+
+- Fix crash on startup due to path matching syntax changing in axum 0.8
+
 ### Internal Changes
 
 - Rewrite `bobashare_web::str_to_duration` to not use regex

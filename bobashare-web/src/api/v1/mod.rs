@@ -25,9 +25,9 @@ pub mod upload;
 /// - `/api/v1/delete/:id`: [`delete::delete`]
 pub fn router() -> Router<&'static AppState> {
     Router::new()
-        .route("/info/:id", get(info::info))
-        .route("/upload/:filename", put(upload::put))
-        .route("/delete/:id", delete(delete::delete))
+        .route("/info/{id}", get(info::info))
+        .route("/upload/{filename}", put(upload::put))
+        .route("/delete/{id}", delete(delete::delete))
 }
 
 /// Method to convert an [`std::error::Error`] into a [`Response`] with a
