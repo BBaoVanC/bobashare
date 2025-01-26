@@ -77,7 +77,7 @@ cases, DFAs often take quite a bit more memory than their NFA counterparts,
 an NFA also provides additional capabilities. For example, it can match
 Unicode word boundaries on non-ASCII text and resolve the positions of
 capturing groups.</p>
-<p>Note that a <a href="../../hybrid/regex/struct.Regex.html" title="struct regex_automata::hybrid::regex::Regex"><code>hybrid::regex::Regex</code></a> strikes a
+<p>Note that a <a href="crate::hybrid::regex::Regex"><code>hybrid::regex::Regex</code></a> strikes a
 good balance between an NFA and a DFA. It avoids the exponential build time
 of a DFA while maintaining its fast search time. The downside of a hybrid
 NFA/DFA is that in some cases it can be slower at search time than the NFA.

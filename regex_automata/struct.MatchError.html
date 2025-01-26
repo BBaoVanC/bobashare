@@ -32,12 +32,12 @@ different regex engine.</p>
 fashion. For example, by default, a DFA will fail to build if the regex
 pattern contains a Unicode word boundary. One needs to opt into the “quit”
 behavior via options, like
-<a href="hybrid/dfa/struct.Config.html#method.unicode_word_boundary" title="method regex_automata::hybrid::dfa::Config::unicode_word_boundary"><code>hybrid::dfa::Config::unicode_word_boundary</code></a>.)</p>
+<a href="crate::hybrid::dfa::Config::unicode_word_boundary"><code>hybrid::dfa::Config::unicode_word_boundary</code></a>.)</p>
 <p>There are a couple other ways a search
 can fail. For example, when using the
-<a href="nfa/thompson/backtrack/struct.BoundedBacktracker.html" title="struct regex_automata::nfa::thompson::backtrack::BoundedBacktracker"><code>BoundedBacktracker</code></a>
+<a href="crate::nfa::thompson::backtrack::BoundedBacktracker"><code>BoundedBacktracker</code></a>
 with a haystack that is too long, or trying to run an unanchored search
-with a <a href="dfa/onepass/index.html" title="mod regex_automata::dfa::onepass">one-pass DFA</a>.</p>
+with a <a href="crate::dfa::onepass">one-pass DFA</a>.</p>
 </div></details><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-MatchError" class="impl"><a class="src rightside" href="../src/regex_automata/util/search.rs.html#1788-1846">Source</a><a href="#impl-MatchError" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.MatchError.html" title="struct regex_automata::MatchError">MatchError</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.new" class="method"><a class="src rightside" href="../src/regex_automata/util/search.rs.html#1793-1802">Source</a><h4 class="code-header">pub fn <a href="#method.new" class="fn">new</a>(kind: <a class="enum" href="enum.MatchErrorKind.html" title="enum regex_automata::MatchErrorKind">MatchErrorKind</a>) -&gt; <a class="struct" href="struct.MatchError.html" title="struct regex_automata::MatchError">MatchError</a></h4></section></summary><div class="docblock"><p>Create a new error value with the given kind.</p>
 <p>This is a more verbose version of the kind-specific constructors,
 e.g., <code>MatchError::quit</code>.</p>

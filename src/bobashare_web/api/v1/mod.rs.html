@@ -88,9 +88,9 @@
 /// - `/api/v1/delete/:id`: [`delete::delete`]
 </span><span class="kw">pub fn </span>router() -&gt; Router&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>AppState&gt; {
     Router::new()
-        .route(<span class="string">"/info/:id"</span>, get(info::info))
-        .route(<span class="string">"/upload/:filename"</span>, put(upload::put))
-        .route(<span class="string">"/delete/:id"</span>, delete(delete::delete))
+        .route(<span class="string">"/info/{id}"</span>, get(info::info))
+        .route(<span class="string">"/upload/{filename}"</span>, put(upload::put))
+        .route(<span class="string">"/delete/{id}"</span>, delete(delete::delete))
 }
 
 <span class="doccomment">/// Method to convert an [`std::error::Error`] into a [`Response`] with a

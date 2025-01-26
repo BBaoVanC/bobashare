@@ -34,7 +34,7 @@ thorough treatment of this topic.</p>
 <h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
 <p>This example shows how to share a single hybrid regex among multiple
 threads, while also safely getting exclusive access to a hybrid’s
-<a href="../../hybrid/regex/struct.Cache.html" title="struct regex_automata::hybrid::regex::Cache"><code>Cache</code></a> without preventing other searches
+<a href="crate::hybrid::regex::Cache"><code>Cache</code></a> without preventing other searches
 from running while your thread uses the <code>Cache</code>.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::{

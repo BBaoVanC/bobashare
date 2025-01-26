@@ -278,16 +278,23 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a></pre></div><pre class="rust"><code><span class="doccomment">//! Webserver written with [`axum`] which provides a frontend and REST API for
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a></pre></div><pre class="rust"><code><span class="doccomment">//! Webserver written with [`axum`] which provides a frontend and REST API for
 //! [`bobashare`]
 
-</span><span class="kw">use </span>std::{num::ParseIntError, path::PathBuf, sync::LazyLock, time::Duration <span class="kw">as </span>StdDuration};
+</span><span class="kw">use </span>std::{num::ParseIntError, path::PathBuf, str::FromStr, time::Duration <span class="kw">as </span>StdDuration};
 
 <span class="kw">use </span>bobashare::storage::file::FileBackend;
 <span class="kw">use </span>chrono::Duration;
 <span class="kw">use </span>displaydoc::Display;
 <span class="kw">use </span>pulldown_cmark::{html::push_html, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
-<span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>syntect::{
     html::{ClassStyle, ClassedHTMLGenerator},
     parsing::SyntaxSet,
@@ -299,6 +306,9 @@
 <span class="kw">pub mod </span>api;
 <span class="kw">pub mod </span>static_routes;
 <span class="kw">pub mod </span>views;
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests;
 
 <span class="doccomment">/// Prefix for CSS classes used for [`syntect`] highlighting
 </span><span class="kw">pub const </span>HIGHLIGHT_CLASS_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">"hl-"</span>;
@@ -424,12 +434,8 @@
     </span>Invalid,
 
     <span class="doccomment">/// could not parse number in duration, is it too large?
-    </span>NumberParse(ParseIntError),
+    </span>NumberParse(<span class="attr">#[from] </span>ParseIntError),
 }
-
-<span class="doccomment">/// Regex used for duration string parsing in [`str_to_duration`]
-</span><span class="kw">static </span>DURATION_REGEX: LazyLock&lt;Regex&gt; =
-    LazyLock::new(|| Regex::new(<span class="string">r"^([0-9]+)(s|m|h|d|w|mon|y)$"</span>).unwrap());
 
 <span class="doccomment">/// Take a string with a simple duration format (single number followed by unit)
 /// and output a [`StdDuration`]. Accepts durations in minutes (m), hours
@@ -488,14 +494,24 @@
 /// );
 /// # Ok::&lt;(), anyhow::Error&gt;(())
 /// ```
-</span><span class="kw">pub fn </span>str_to_duration&lt;S: AsRef&lt;str&gt;&gt;(s: S) -&gt; <span class="prelude-ty">Result</span>&lt;StdDuration, StrToDurationError&gt; {
-    <span class="kw">let </span>caps = DURATION_REGEX
-        .captures(s.as_ref())
-        .ok_or(StrToDurationError::Invalid)<span class="question-mark">?</span>;
-    <span class="kw">let </span>count = caps[<span class="number">1</span>]
-        .parse::&lt;u64&gt;()
-        .map_err(StrToDurationError::NumberParse)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;</span>caps[<span class="number">2</span>] {
+</span><span class="comment">// TODO: make it look nicer
+</span><span class="kw">pub fn </span>str_to_duration(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;StdDuration, StrToDurationError&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>chars = s.char_indices();
+    <span class="kw">if </span>!chars.next().is_some_and(|(<span class="kw">_</span>, c)| c.is_ascii_digit()) {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(StrToDurationError::Invalid);
+    }
+
+    <span class="kw">let </span>count_end_idx = chars
+        .find(|(<span class="kw">_</span>, c)| c.is_ascii_digit())
+        .map_or(<span class="number">0</span>, |(i, <span class="kw">_</span>)| i);
+    <span class="comment">// index of first char of unit part
+    </span><span class="kw">let </span>unit_idx = count_end_idx + <span class="number">1</span>;
+
+    <span class="kw">let </span>count_str = <span class="kw-2">&amp;</span>s[..unit_idx];
+    <span class="kw">let </span>count = u64::from_str(count_str)<span class="question-mark">?</span>;
+    <span class="kw">let </span>unit_str = <span class="kw-2">&amp;</span>s[unit_idx..];
+
+    <span class="prelude-val">Ok</span>(<span class="kw">match </span>unit_str {
         <span class="string">"s" </span>=&gt; StdDuration::from_secs(count),
         <span class="string">"m" </span>=&gt; StdDuration::from_secs(count * <span class="number">60</span>),
         <span class="string">"h" </span>=&gt; StdDuration::from_secs(count * <span class="number">60 </span>* <span class="number">60</span>),
@@ -503,7 +519,7 @@
         <span class="string">"w" </span>=&gt; StdDuration::from_secs(count * <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">24 </span>* <span class="number">7</span>),
         <span class="string">"mon" </span>=&gt; StdDuration::from_secs(count * <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">24 </span>* <span class="number">30</span>),
         <span class="string">"y" </span>=&gt; StdDuration::from_secs(count * <span class="number">60 </span>* <span class="number">60 </span>* <span class="number">24 </span>* <span class="number">365</span>),
-        <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">"invalid duration unit received from regex"</span>),
+        <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(StrToDurationError::Invalid),
     })
 }
 

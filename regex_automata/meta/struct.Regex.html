@@ -16,7 +16,7 @@ examples of how other regex matchers are composed:</p>
 running a slower but more capable regex engine like the
 <a href="../nfa/thompson/pikevm/struct.PikeVM.html" title="struct regex_automata::nfa::thompson::pikevm::PikeVM"><code>PikeVM</code></a>, the meta regex engine
 will usually first look for the bounds of a match with a higher throughput
-regex engine like a <a href="../hybrid/index.html" title="mod regex_automata::hybrid">lazy DFA</a>. Only when a match is found
+regex engine like a <a href="crate::hybrid">lazy DFA</a>. Only when a match is found
 is a slower engine like <code>PikeVM</code> used to find the matching span for each
 capture group.</li>
 <li>While higher throughout engines like the lazy DFA cannot handle

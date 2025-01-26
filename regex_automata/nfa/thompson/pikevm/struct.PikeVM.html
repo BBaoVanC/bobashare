@@ -23,7 +23,7 @@ to pick any other regex engine (or perhaps none at all) before being
 forced to fall back to a <code>PikeVM</code>.</p>
 <p>For example, a common strategy for dealing with capturing groups is to
 actually look for the overall match of the regex using a faster regex
-engine, like a <a href="../../../hybrid/regex/struct.Regex.html" title="struct regex_automata::hybrid::regex::Regex">lazy DFA</a>. Once the overall
+engine, like a <a href="crate::hybrid::regex::Regex">lazy DFA</a>. Once the overall
 match is found, one can then run the <code>PikeVM</code> on just the match span to
 find the spans of the capturing groups. In this way, the faster regex
 engine does the majority of the work, while the <code>PikeVM</code> only lends its
@@ -32,8 +32,8 @@ power in a more limited role.</p>
 don’t support all of the regex features in <code>regex-syntax</code>. This notably
 includes (and is currently limited to) Unicode word boundaries. So if
 your pattern has Unicode word boundaries, you typically can’t use a
-DFA-based regex engine at all (unless you <a href="../../../hybrid/dfa/struct.Config.html#method.unicode_word_boundary" title="method regex_automata::hybrid::dfa::Config::unicode_word_boundary">enable heuristic support for
-it</a>). (The <a href="../../../dfa/onepass/struct.DFA.html" title="struct regex_automata::dfa::onepass::DFA">one-pass
+DFA-based regex engine at all (unless you <a href="crate::hybrid::dfa::Config::unicode_word_boundary">enable heuristic support for
+it</a>). (The <a href="crate::dfa::onepass::DFA">one-pass
 DFA</a> can handle Unicode word boundaries for
 anchored searches only, but in a cruel sort of joke, many Unicode features
 tend to result in making the regex <em>not</em> one-pass.)</p>

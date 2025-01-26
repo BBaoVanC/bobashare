@@ -297,7 +297,7 @@
         .route(<span class="string">"/"</span>, get(upload::upload))
         .route(<span class="string">"/paste/"</span>, get(upload::paste))
         .route(<span class="string">"/about/"</span>, get(about::about))
-        .route(<span class="string">"/:id"</span>, get(display::display))
-        .route(<span class="string">"/raw/:id"</span>, get(display::raw))
+        .route(<span class="string">"/{id}"</span>, get(display::display))
+        .route(<span class="string">"/raw/{id}"</span>, get(display::raw))
 }
 </code></pre></div></section></main></body></html>
