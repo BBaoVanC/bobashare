@@ -116,7 +116,7 @@ async fn main() -> anyhow::Result<()> {
 
     let backend =
         FileBackend::new(PathBuf::from(config.get_string("backend_path").unwrap())).await?;
-    let cleanup_interval = str_to_duration(config.get_string("cleanup_interval").unwrap())
+    let cleanup_interval = str_to_duration(&config.get_string("cleanup_interval").unwrap())
         .context("error parsing `cleanup_interval`")?;
     let base_url: Url = config
         .get_string("base_url")
@@ -126,7 +126,7 @@ async fn main() -> anyhow::Result<()> {
     let raw_url = base_url.join("raw/").unwrap();
     let id_length = config.get_int("id_length").unwrap().try_into().unwrap();
     let default_expiry = TimeDelta::from_std(
-        str_to_duration(config.get_string("default_expiry").unwrap())
+        str_to_duration(&config.get_string("default_expiry").unwrap())
             .context("error parsing `default_expiry`")?,
     )
     .unwrap();

@@ -28,7 +28,6 @@ humansize = "2.1.0"
 hyper = "1.2.0"
 mime = "0.3.16"
 pulldown-cmark = "0.12.0"
-regex = "1.10.6"
 rust-embed = { version = "8.0.0", features = ["mime-guess"] }
 serde = "1.0.145"
 serde-error = "0.1.2"

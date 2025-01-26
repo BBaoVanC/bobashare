@@ -344,7 +344,6 @@ dependencies = [
  "hyper",
  "mime",
  "pulldown-cmark",
- "regex",
  "rust-embed",
  "serde",
  "serde-error",

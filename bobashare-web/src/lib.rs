@@ -1,13 +1,12 @@
 //! Webserver written with [`axum`] which provides a frontend and REST API for
 //! [`bobashare`]
 
-use std::{num::ParseIntError, path::PathBuf, sync::LazyLock, time::Duration as StdDuration};
+use std::{num::ParseIntError, path::PathBuf, str::FromStr, time::Duration as StdDuration};
 
 use bobashare::storage::file::FileBackend;
 use chrono::Duration;
 use displaydoc::Display;
 use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
-use regex::Regex;
 use syntect::{
     html::{ClassStyle, ClassedHTMLGenerator},
     parsing::SyntaxSet,
@@ -147,12 +146,8 @@ pub enum StrToDurationError {
     Invalid,
 
     /// could not parse number in duration, is it too large?
-    NumberParse(ParseIntError),
+    NumberParse(#[from] ParseIntError),
 }
-
-/// Regex used for duration string parsing in [`str_to_duration`]
-static DURATION_REGEX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([0-9]+)(s|m|h|d|w|mon|y)$").unwrap());
 
 /// Take a string with a simple duration format (single number followed by unit)
 /// and output a [`StdDuration`]. Accepts durations in minutes (m), hours
@@ -211,14 +206,24 @@ static DURATION_REGEX: LazyLock<Regex> =
 /// );
 /// # Ok::<(), anyhow::Error>(())
 /// ```
-pub fn str_to_duration<S: AsRef<str>>(s: S) -> Result<StdDuration, StrToDurationError> {
-    let caps = DURATION_REGEX
-        .captures(s.as_ref())
-        .ok_or(StrToDurationError::Invalid)?;
-    let count = caps[1]
-        .parse::<u64>()
-        .map_err(StrToDurationError::NumberParse)?;
-    Ok(match &caps[2] {
+// TODO: make it look nicer
+pub fn str_to_duration(s: &str) -> Result<StdDuration, StrToDurationError> {
+    let mut chars = s.char_indices();
+    if !chars.next().is_some_and(|(_, c)| c.is_ascii_digit()) {
+        return Err(StrToDurationError::Invalid);
+    }
+
+    let count_end_idx = chars
+        .find(|(_, c)| c.is_ascii_digit())
+        .map_or(0, |(i, _)| i);
+    // index of first char of unit part
+    let unit_idx = count_end_idx + 1;
+
+    let count_str = &s[..unit_idx];
+    let count = u64::from_str(&count_str)?;
+    let unit_str = &s[unit_idx..];
+
+    Ok(match unit_str {
         "s" => StdDuration::from_secs(count),
         "m" => StdDuration::from_secs(count * 60),
         "h" => StdDuration::from_secs(count * 60 * 60),
@@ -226,7 +231,7 @@ pub fn str_to_duration<S: AsRef<str>>(s: S) -> Result<StdDuration, StrToDuration
         "w" => StdDuration::from_secs(count * 60 * 60 * 24 * 7),
         "mon" => StdDuration::from_secs(count * 60 * 60 * 24 * 30),
         "y" => StdDuration::from_secs(count * 60 * 60 * 24 * 365),
-        _ => panic!("invalid duration unit received from regex"),
+        _ => return Err(StrToDurationError::Invalid),
     })
 }
 
