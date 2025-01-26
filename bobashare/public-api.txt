@@ -44,7 +44,7 @@ pub fn bobashare::serde::v0::UploadV0::borrow(&self) -> &T
 impl<T> core::borrow::BorrowMut<T> for bobashare::serde::v0::UploadV0 where T: ?core::marker::Sized
 pub fn bobashare::serde::v0::UploadV0::borrow_mut(&mut self) -> &mut T
 impl<T> core::clone::CloneToUninit for bobashare::serde::v0::UploadV0 where T: core::clone::Clone
-pub unsafe fn bobashare::serde::v0::UploadV0::clone_to_uninit(&self, dst: *mut T)
+pub unsafe fn bobashare::serde::v0::UploadV0::clone_to_uninit(&self, dst: *mut u8)
 impl<T> core::convert::From<T> for bobashare::serde::v0::UploadV0
 pub fn bobashare::serde::v0::UploadV0::from(t: T) -> T
 impl<T> serde::de::DeserializeOwned for bobashare::serde::v0::UploadV0 where T: for<'de> serde::de::Deserialize<'de>
@@ -179,7 +179,7 @@ pub fn bobashare::serde::UploadMetadata::borrow(&self) -> &T
 impl<T> core::borrow::BorrowMut<T> for bobashare::serde::UploadMetadata where T: ?core::marker::Sized
 pub fn bobashare::serde::UploadMetadata::borrow_mut(&mut self) -> &mut T
 impl<T> core::clone::CloneToUninit for bobashare::serde::UploadMetadata where T: core::clone::Clone
-pub unsafe fn bobashare::serde::UploadMetadata::clone_to_uninit(&self, dst: *mut T)
+pub unsafe fn bobashare::serde::UploadMetadata::clone_to_uninit(&self, dst: *mut u8)
 impl<T> core::convert::From<T> for bobashare::serde::UploadMetadata
 pub fn bobashare::serde::UploadMetadata::from(t: T) -> T
 impl<T> serde::de::DeserializeOwned for bobashare::serde::UploadMetadata where T: for<'de> serde::de::Deserialize<'de>
@@ -556,7 +556,7 @@ pub fn bobashare::storage::file::FileBackend::borrow(&self) -> &T
 impl<T> core::borrow::BorrowMut<T> for bobashare::storage::file::FileBackend where T: ?core::marker::Sized
 pub fn bobashare::storage::file::FileBackend::borrow_mut(&mut self) -> &mut T
 impl<T> core::clone::CloneToUninit for bobashare::storage::file::FileBackend where T: core::clone::Clone
-pub unsafe fn bobashare::storage::file::FileBackend::clone_to_uninit(&self, dst: *mut T)
+pub unsafe fn bobashare::storage::file::FileBackend::clone_to_uninit(&self, dst: *mut u8)
 impl<T> core::convert::From<T> for bobashare::storage::file::FileBackend
 pub fn bobashare::storage::file::FileBackend::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::FileBackend
@@ -685,7 +685,7 @@ pub fn bobashare::storage::upload::Upload::borrow(&self) -> &T
 impl<T> core::borrow::BorrowMut<T> for bobashare::storage::upload::Upload where T: ?core::marker::Sized
 pub fn bobashare::storage::upload::Upload::borrow_mut(&mut self) -> &mut T
 impl<T> core::clone::CloneToUninit for bobashare::storage::upload::Upload where T: core::clone::Clone
-pub unsafe fn bobashare::storage::upload::Upload::clone_to_uninit(&self, dst: *mut T)
+pub unsafe fn bobashare::storage::upload::Upload::clone_to_uninit(&self, dst: *mut u8)
 impl<T> core::convert::From<T> for bobashare::storage::upload::Upload
 pub fn bobashare::storage::upload::Upload::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::upload::Upload
