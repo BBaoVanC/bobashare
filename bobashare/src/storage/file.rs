@@ -6,8 +6,8 @@ use chrono::{prelude::*, Duration};
 use displaydoc::Display;
 use mime::Mime;
 use rand::{
-    distributions::{Alphanumeric, DistString},
-    thread_rng,
+    distr::{Alphanumeric, SampleString},
+    rng,
 };
 use thiserror::Error;
 use tokio::{
@@ -144,7 +144,7 @@ impl FileBackend {
                 creation_date,
                 expiry_date,
                 delete_key: delete_key
-                    .unwrap_or_else(|| Alphanumeric.sample_string(&mut thread_rng(), 32)),
+                    .unwrap_or_else(|| Alphanumeric.sample_string(&mut rng(), 32)),
             },
             file,
             file_path,

@@ -5,14 +5,14 @@ pub mod serde;
 pub mod storage;
 
 use rand::{
-    distributions::{Alphanumeric, DistString},
-    thread_rng,
+    distr::{Alphanumeric, SampleString},
+    rng,
 };
 
 /// Generate a randomized (alphanumeric) ID for an upload with a specified
 /// length.
 pub fn generate_randomized_id(length: usize) -> String {
-    Alphanumeric.sample_string(&mut thread_rng(), length)
+    Alphanumeric.sample_string(&mut rng(), length)
 }
 
 #[cfg(test)]
