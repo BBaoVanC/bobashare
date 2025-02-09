@@ -5,10 +5,6 @@ use std::path::PathBuf;
 use chrono::{prelude::*, Duration};
 use displaydoc::Display;
 use mime::Mime;
-use rand::{
-    distr::{Alphanumeric, SampleString},
-    rng,
-};
 use thiserror::Error;
 use tokio::{
     fs::{self, OpenOptions},
@@ -17,7 +13,10 @@ use tokio::{
 use tracing::{event, instrument, Instrument, Level};
 
 use super::{handle::UploadHandle, upload::Upload};
-use crate::serde::{MigrateError, UploadMetadata};
+use crate::{
+    generate_delete_key,
+    serde::{MigrateError, UploadMetadata},
+};
 
 /// Errors when creating a new [`FileBackend`]
 #[derive(Debug, Error, Display)]
@@ -143,8 +142,7 @@ impl FileBackend {
                 mimetype,
                 creation_date,
                 expiry_date,
-                delete_key: delete_key
-                    .unwrap_or_else(|| Alphanumeric.sample_string(&mut rng(), 32)),
+                delete_key: delete_key.unwrap_or_else(generate_delete_key),
             },
             file,
             file_path,

@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rewrite `bobashare_web::str_to_duration` to not use regex
   - This removes regex as a dependency entirely, since that was the only place
     it was used.
+- Create `generate_delete_key` function in public api instead of
+  generating it in a hidden closure in bobashare::storage::file
 
 ## [v0.2.13] - 2025-01-17
 

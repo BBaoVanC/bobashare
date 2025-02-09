@@ -692,4 +692,5 @@ impl<T> tracing::instrument::Instrument for bobashare::storage::upload::Upload
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::upload::Upload
 impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::upload::Upload where V: ppv_lite86::types::MultiLane<T>
 pub fn bobashare::storage::upload::Upload::vzip(self) -> V
+pub fn bobashare::generate_delete_key() -> alloc::string::String
 pub fn bobashare::generate_randomized_id(length: usize) -> alloc::string::String
