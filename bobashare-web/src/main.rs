@@ -27,6 +27,9 @@ use tower_http::{
 use tracing::{event, Instrument, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
+use serde::Deserialize;
+use std::time::Duration as StdDuration;
+use chrono::Duration;
 
 #[derive(Debug, Clone, Parser)]
 struct Cli {
@@ -60,6 +63,31 @@ fn validate_config_path(s: &str) -> Result<PathBuf, String> {
 
     Ok(path_canon)
 }
+
+#[derive(Deserialize)]
+struct ConfigNew {
+    #[serde(default = "default_listen_addr")]
+    listen_addr: SocketAddr,
+    #[serde(default = "default_backend_path")]
+    backend_path: PathBuf,
+    cleanup_interval: StdDuration,
+    base_url: Url,
+    id_length: usize,
+    default_expiry: Duration,
+    max_expiry: Duration,
+    max_file_size
+    extra_footer_text
+    about_page
+}
+fn default_listen_addr() -> SocketAddr { "127.0.0.1:3000".parse().unwrap() }
+fn default_backend_path() -> PathBuf { PathBuf::from("storage/") }
+fn default_cleanup_interval() -> StdDuration { StdDuration::from_hours(1) }
+fn default_base_url() -> Url
+fn default_id_length()
+fn default_max_expiry()
+fn default_max_file_size()
+fn default_extra_footer_text()
+fn default_about_page()
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
