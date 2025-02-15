@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Create `generate_delete_key` function in public api instead of
   generating it in a hidden closure in bobashare::storage::file
 
+### Major Dependency Upgrades
+
+- rand 0.8 -> 0.9
+
 ## [v0.2.13] - 2025-01-17
 
 ### Features
