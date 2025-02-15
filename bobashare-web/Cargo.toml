@@ -21,6 +21,7 @@ chrono = { version = "0.4.22", features = ["serde"] }
 clap = { version = "4.0.12", features = ["derive"] }
 config = "0.15.8"
 displaydoc = "0.2.3"
+envy = "0.4.2"
 futures-util = "0.3.24"
 headers = "0.4.0"
 hex = "0.4.3"

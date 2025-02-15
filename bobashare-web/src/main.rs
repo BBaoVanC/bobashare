@@ -14,7 +14,6 @@ use bobashare_web::{
 };
 use chrono::TimeDelta;
 use clap::Parser;
-use config::Config;
 use hyper::{Request, StatusCode};
 use syntect::parsing::SyntaxSet;
 use tokio::{net::TcpListener, signal, sync::broadcast, time::sleep};
@@ -29,7 +28,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use url::Url;
 use serde::Deserialize;
 use std::time::Duration as StdDuration;
-use chrono::Duration;
+use chrono::TimeDelta;
 
 #[derive(Debug, Clone, Parser)]
 struct Cli {
@@ -65,46 +64,41 @@ fn validate_config_path(s: &str) -> Result<PathBuf, String> {
 }
 
 #[derive(Deserialize)]
-struct ConfigNew {
+#[serde(deny_unknown_fields)]
+struct Config {
     #[serde(default = "default_listen_addr")]
     listen_addr: SocketAddr,
     #[serde(default = "default_backend_path")]
     backend_path: PathBuf,
+    #[serde(default = "default_cleanup_interval")]
     cleanup_interval: StdDuration,
+    #[serde(default = "default_base_url")]
     base_url: Url,
+    #[serde(default = "default_id_length")]
     id_length: usize,
-    default_expiry: Duration,
-    max_expiry: Duration,
-    max_file_size
-    extra_footer_text
-    about_page
+    #[serde(default = "default_default_expiry")]
+    default_expiry: TimeDelta,
+    #[serde(default = "default_max_expiry")]
+    max_expiry: Option<TimeDelta>,
+    #[serde(default = "default_max_file_size")]
+    max_file_size: u64,
+    #[serde(default)]
+    extra_footer_text: Option<String>,
+    #[serde(default)]
+    about_page: Option<PathBuf>,
 }
 fn default_listen_addr() -> SocketAddr { "127.0.0.1:3000".parse().unwrap() }
 fn default_backend_path() -> PathBuf { PathBuf::from("storage/") }
 fn default_cleanup_interval() -> StdDuration { StdDuration::from_hours(1) }
-fn default_base_url() -> Url
-fn default_id_length()
-fn default_max_expiry()
-fn default_max_file_size()
-fn default_extra_footer_text()
-fn default_about_page()
+fn default_base_url() -> Url { Url::parse("http://localhost:3000/") }
+fn default_id_length() -> usize { 8 }
+fn default_default_expiry() -> Option<TimeDelta> { TimeDelta::hours(24) }
+fn default_max_expiry() -> Option<TimeDelta> { Some(TimeDelta::days(30)) }
+fn default_max_file_size() -> u64 { 1024 * 1024 * 1024 } // 1 GiB
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-
-    #[rustfmt::skip]
-    let mut config = Config::builder()
-        .set_default("listen_addr", "127.0.0.1:3000").unwrap()
-        .set_default("backend_path", "storage/").unwrap()
-        .set_default("cleanup_interval", "1h").unwrap()
-        .set_default("base_url", "http://localhost:3000/").unwrap()
-        .set_default("id_length", 8).unwrap()
-        .set_default("default_expiry", "24h").unwrap()
-        .set_default("max_expiry", Some("30d")).unwrap()
-        .set_default("max_file_size", 1024 * 1024 * 1024).unwrap() // 1 GiB
-        .set_default("extra_footer_text", None::<String>).unwrap()
-        .set_default("about_page", None::<String>).unwrap();
 
     if let Some(c) = cli.config {
         config = config.add_source(config::File::new(
