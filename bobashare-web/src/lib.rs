@@ -4,7 +4,7 @@
 use std::{num::ParseIntError, path::PathBuf, str::FromStr, time::Duration as StdDuration};
 
 use bobashare::storage::file::FileBackend;
-use chrono::Duration;
+use chrono::TimeDelta;
 use displaydoc::Display;
 use pulldown_cmark::{html::push_html, CodeBlockKind, Event, Options, Parser, Tag, TagEnd};
 use syntect::{
@@ -46,9 +46,9 @@ pub struct AppState {
     /// length of randomly generated IDs
     pub id_length: usize,
     /// default expiry time
-    pub default_expiry: Duration,
+    pub default_expiry: TimeDelta,
     /// maximum expiry time ([`None`] for no maximum)
-    pub max_expiry: Option<Duration>,
+    pub max_expiry: Option<TimeDelta>,
     /// maximum file size in bytes
     pub max_file_size: u64,
 
@@ -79,7 +79,7 @@ pub struct AppState {
 /// Requesting no expiry with no maximum expiry:
 ///
 /// ```
-/// # use chrono::Duration;
+/// # use chrono::TimeDelta;
 /// let max_expiry = None;
 /// assert_eq!(bobashare_web::clamp_expiry(max_expiry, None), None);
 /// ```
@@ -88,30 +88,30 @@ pub struct AppState {
 /// expiry):
 ///
 /// ```
-/// # use chrono::Duration;
-/// let max_expiry = Some(Duration::days(7));
+/// # use chrono::TimeDelta;
+/// let max_expiry = Some(TimeDelta::days(7));
 /// assert_eq!(bobashare_web::clamp_expiry(max_expiry, None), max_expiry);
 /// ```
 ///
 /// Requesting an expiry with no maximum expiry:
 ///
 /// ```
-/// # use chrono::Duration;
+/// # use chrono::TimeDelta;
 /// let max_expiry = None;
 /// assert_eq!(
-///     bobashare_web::clamp_expiry(max_expiry, Some(Duration::days(3))),
-///     Some(Duration::days(3)),
+///     bobashare_web::clamp_expiry(max_expiry, Some(TimeDelta::days(3))),
+///     Some(TimeDelta::days(3)),
 /// );
 /// ```
 ///
 /// Requesting an expiry that's within the maximum expiry:
 ///
 /// ```
-/// # use chrono::Duration;
-/// let max_expiry = Some(Duration::days(7));
+/// # use chrono::TimeDelta;
+/// let max_expiry = Some(TimeDelta::days(7));
 /// assert_eq!(
-///     bobashare_web::clamp_expiry(max_expiry, Some(Duration::days(3))),
-///     Some(Duration::days(3)),
+///     bobashare_web::clamp_expiry(max_expiry, Some(TimeDelta::days(3))),
+///     Some(TimeDelta::days(3)),
 /// );
 /// ```
 ///
@@ -119,21 +119,21 @@ pub struct AppState {
 /// maximum expiry):
 ///
 /// ```
-/// # use chrono::Duration;
-/// let max_expiry = Some(Duration::days(7));
+/// # use chrono::TimeDelta;
+/// let max_expiry = Some(TimeDelta::days(7));
 /// assert_eq!(
-///     bobashare_web::clamp_expiry(max_expiry, Some(Duration::days(30))),
+///     bobashare_web::clamp_expiry(max_expiry, Some(TimeDelta::days(30))),
 ///     max_expiry,
 /// );
 /// ```
-pub fn clamp_expiry(max_expiry: Option<Duration>, other: Option<Duration>) -> Option<Duration> {
+pub fn clamp_expiry(max_expiry: Option<TimeDelta>, other: Option<TimeDelta>) -> Option<TimeDelta> {
     match other {
         // if no expiry requested, use the max no matter what
         None => max_expiry,
         Some(e) => match max_expiry {
             // if no max expiry, keep requested expiry
             None => Some(e),
-            Some(max) => Some(e.clamp(Duration::zero(), max)),
+            Some(max) => Some(e.clamp(TimeDelta::zero(), max)),
         },
     }
 }
