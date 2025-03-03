@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Internal Changes
+
+bobashare:
+
+- Merge many separated module files into inline `pub mod ... {` definitions
+- Reduce amount of submodules in `bobashare::serde::tests` to simplify structure
+
 ## [v0.2.14] - 2025-01-26
 
 ### Bugfixes
