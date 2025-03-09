@@ -2,6 +2,16 @@
 
 A simple, fast, and anonymous file sharing server.
 
+## Usage (client-side)
+
+There are currently a couple of clients for simple usage of the bobashare API,
+namely uploading files:
+
+- [`bobashareupload`](https://github.com/shepgoba/bobashareupload)
+- [`bobash`](https://github.com/kkrruumm/bobash)
+
+Otherwise, see the [API docs](#api).
+
 ## Architecture
 
 This program is separated into three different crates. `bobashare` is the
@@ -9,7 +19,11 @@ backend logic and platform API, and `bobashare-web` provides a webserver
 interface between the `bobashare` backend. And `bobashare-admin` is currently an
 abandoned alternative interface which uses a CLI to edit the storage instead.
 
-## Usage
+## Setup (server-side)
+
+*This section is for running your own bobashare server. If you just want to
+upload files to an existing instance, see the [Usage
+(client-side)](#usage-client-side) section.*
 
 I designed bobashare to be as simple and clean to run as possible. You can
 simply run the corresponding `bobashare-web` executable for your platform,
