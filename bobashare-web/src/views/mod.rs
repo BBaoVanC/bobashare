@@ -9,7 +9,7 @@ use axum::{
     routing::get,
     Router,
 };
-use chrono::Duration;
+use chrono::TimeDelta;
 use hyper::StatusCode;
 use tracing::{event, Level};
 use url::Url;
@@ -32,7 +32,7 @@ pub struct TemplateState<'s> {
     version: &'static str,
     base_url: &'s Url,
     max_file_size: u64,
-    max_expiry: Option<Duration>,
+    max_expiry: Option<TimeDelta>,
     extra_footer_text: Option<&'s str>,
     about_page: Option<&'s Path>,
 

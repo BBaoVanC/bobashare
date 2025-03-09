@@ -11,7 +11,7 @@ use axum::{
 };
 use axum_extra::{extract::WithRejection, typed_header::TypedHeaderRejection, TypedHeader};
 use bobashare::{generate_randomized_id, storage::file::CreateUploadError};
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, TimeDelta, Utc};
 use displaydoc::Display;
 use futures_util::TryStreamExt;
 use headers::{ContentLength, ContentType};
@@ -183,7 +183,7 @@ pub async fn put(
                 None
             } else {
                 Some(
-                    Duration::from_std(str_to_duration(expiry).map_err(|e| {
+                    TimeDelta::from_std(str_to_duration(expiry).map_err(|e| {
                         UploadError::ParseHeader {
                             name: String::from("Bobashare-Expiry"),
                             source: anyhow::Error::new(e).context("error parsing duration string"),

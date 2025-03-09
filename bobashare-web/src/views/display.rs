@@ -8,7 +8,7 @@ use axum::{
     response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
-use chrono::{DateTime, Duration, Utc};
+use chrono::{DateTime, TimeDelta, Utc};
 use displaydoc::Display;
 use hyper::{header, StatusCode};
 use mime::Mime;
@@ -68,7 +68,7 @@ pub struct DisplayTemplate<'s> {
     pub id: String,
     pub filename: String,
     pub expiry_date: Option<DateTime<Utc>>,
-    pub expiry_relative: Option<Duration>,
+    pub expiry_relative: Option<TimeDelta>,
     pub size: u64,
     pub mimetype: Mime,
     pub contents: DisplayType,

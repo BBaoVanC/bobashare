@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal Changes
 
+All:
+
+- Replace remaining uses of `chrono::Duration` type alias with the actual type
+  (`chrono::TimeDelta`)
+  - This shouldn't be a breaking change even though `cargo-public-api` says
+    so; I can't imagine any way existing calling code would be broken. The only
+    changed public api is `FileBackend::create_upload` where it is used as a
+    parameter.
+
 bobashare:
 
 - Merge many separated module files into inline `pub mod ... {` definitions

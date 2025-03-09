@@ -513,7 +513,7 @@ pub bobashare::storage::file::FileBackend::path: std::path::PathBuf
 impl bobashare::storage::file::FileBackend
 pub async fn bobashare::storage::file::FileBackend::cleanup(&self) -> core::result::Result<(), bobashare::storage::file::CleanupError>
 impl bobashare::storage::file::FileBackend
-pub async fn bobashare::storage::file::FileBackend::create_upload<S: core::convert::AsRef<str>>(&self, id: S, filename: S, mimetype: mime::Mime, expiry: core::option::Option<chrono::Duration>, delete_key: core::option::Option<alloc::string::String>) -> core::result::Result<bobashare::storage::handle::UploadHandle, bobashare::storage::file::CreateUploadError>
+pub async fn bobashare::storage::file::FileBackend::create_upload<S: core::convert::AsRef<str>>(&self, id: S, filename: S, mimetype: mime::Mime, expiry: core::option::Option<chrono::time_delta::TimeDelta>, delete_key: core::option::Option<alloc::string::String>) -> core::result::Result<bobashare::storage::handle::UploadHandle, bobashare::storage::file::CreateUploadError>
 impl bobashare::storage::file::FileBackend
 pub async fn bobashare::storage::file::FileBackend::delete_upload<S: core::convert::AsRef<str>>(&self, id: S) -> core::result::Result<(), bobashare::storage::file::DeleteUploadError>
 impl bobashare::storage::file::FileBackend

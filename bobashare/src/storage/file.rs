@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use chrono::{prelude::*, Duration};
+use chrono::{prelude::*, TimeDelta};
 use displaydoc::Display;
 use mime::Mime;
 use thiserror::Error;
@@ -97,7 +97,7 @@ impl FileBackend {
         id: S,
         filename: S,
         mimetype: Mime,
-        expiry: Option<Duration>,
+        expiry: Option<TimeDelta>,
         delete_key: Option<String>,
     ) -> Result<UploadHandle, CreateUploadError> {
         let creation_date = Utc::now();
