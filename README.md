@@ -27,15 +27,19 @@ upload files to an existing instance, see the [Usage
 
 I designed bobashare to be as simple and clean to run as possible. You can
 simply run the corresponding `bobashare-web` executable for your platform,
-available under [Releases](https://github.com/BBaoVanC/bobashare/releases). It
-will create the configured storage directory if it doesn't exist and listen on
-the configured address/port. No files on the system are touched outside of the
-storage directory.
+available under [Releases](https://github.com/BBaoVanC/bobashare/releases).
 
-However, do know that I don't have premade systemd unit service files yet
+**Make sure not to accidentally download a `bobashare-admin` executable as it is
+just a CLI for interacting with the backend database. It won't run the server.**
+
+bobashare will create the configured storage directory if it doesn't exist and
+listen on the configured address/port. No files on the system are touched
+outside of the storage directory.
+
+However, do note that I don't have premade systemd unit service files yet
 (although writing one will be trivial with how simple it is to run
-`bobashare-web`) so running it as a service may be easiest using Docker
-(compose).
+`bobashare-web`) so running it as a service may currently be easiest using
+Docker (and compose).
 
 ### Docker
 
