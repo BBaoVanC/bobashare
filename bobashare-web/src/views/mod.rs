@@ -10,7 +10,9 @@ use axum::{
     Router,
 };
 use chrono::TimeDelta;
+use http::header::{HeaderName, HeaderValue};
 use hyper::StatusCode;
+use tower_http::set_header::SetResponseHeaderLayer;
 use tracing::{event, Level};
 use url::Url;
 
@@ -148,10 +150,20 @@ pub(crate) fn render_template<T: askama::Template>(tmpl: T) -> Result<Response, 
 }
 
 pub fn router() -> Router<&'static AppState> {
+    let x_robots_tag_no_index = SetResponseHeaderLayer::overriding(
+        HeaderName::from_static("x-robots-tag"),
+        HeaderValue::from_static("noindex"),
+    );
     Router::new()
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
         .route("/about/", get(about::about))
-        .route("/{id}", get(display::display))
-        .route("/raw/{id}", get(display::raw))
+        .route(
+            "/{id}",
+            get(display::display).layer(x_robots_tag_no_index.clone()),
+        )
+        .route(
+            "/raw/{id}",
+            get(display::raw).layer(x_robots_tag_no_index.clone()),
+        )
 }

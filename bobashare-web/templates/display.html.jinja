@@ -13,8 +13,6 @@
     <meta name="twitter:title" content='{{ filename_truncated }} ({{ size|humansize }})'>
 {% endblock %}
 {% block head %}
-    <meta name="robots" content="noindex">
-
     {% match contents %}
         {% when DisplayType::Image %}
             <meta property="og:image" content='{{ raw_url }}'>
