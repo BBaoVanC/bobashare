@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["generate_randomized_id"],"mod":["serde","storage"]};
+window.SIDEBAR_ITEMS = {"fn":["generate_delete_key","generate_randomized_id"],"mod":["serde","storage"]};
