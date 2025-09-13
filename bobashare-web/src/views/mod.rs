@@ -128,8 +128,9 @@ impl IntoResponse for ErrorResponse {
     }
 }
 
-// The ErrorResponse is actually the same size as Response, and there's no consumer of this api
-// that would be "infected" by this large error value, so this lint isn't necessary.
+// The ErrorResponse is actually the same size as Response, and there's no
+// consumer of this api that would be "infected" by this large error value, so
+// this lint isn't necessary.
 //
 // See https://github.com/rust-lang/rust-clippy/issues/10211
 #[allow(clippy::result_large_err)]
