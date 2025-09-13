@@ -23,6 +23,10 @@ bobashare:
 - Merge many separated module files into inline `pub mod ... {` definitions
 - Reduce amount of submodules in `bobashare::serde::tests` to simplify structure
 
+bobashare-web:
+
+- Ignore `clippy::result_large_err` in `views::render_template`
+
 ## [v0.2.14] - 2025-01-26
 
 ### Bugfixes
