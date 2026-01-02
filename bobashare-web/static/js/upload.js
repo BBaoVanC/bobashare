@@ -14,9 +14,26 @@ window.onload = () => {
 
     const fileInput = document.getElementById("upload-file");
     const dropTitle = document.getElementById("drop-title");
+    const uploadFileContainer = document.querySelector(".upload-file-container");
+
     fileInput.onchange = () => {
         dropTitle.innerText = fileInput.files[0].name;
     }
+
+    uploadFileContainer.addEventListener("dragover", e => {
+        e.preventDefault();
+    });
+
+    uploadFileContainer.addEventListener("drop", e => {
+        e.preventDefault();
+
+        const files = e.dataTransfer.files;
+        if (files.length === 0)
+            return;
+
+        fileInput.files = files;
+        fileInput.onchange();
+    });
 
     const expiryNumInput = document.getElementById("upload-expiry-number");
     const expiryUnitInput = document.getElementById("upload-expiry-unit");
