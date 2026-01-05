@@ -15,7 +15,7 @@ default-run = "bobashare-web"
 anyhow = "1.0.65"
 askama = "0.12.0"
 axum = { version = "0.8.0", features = ["multipart"] }
-axum-extra = { version = "0.10.0", features = ["typed-header"] }
+axum-extra = { version = "0.12.5", features = ["typed-header", "with-rejection"] }
 bobashare = { path = "../bobashare" }
 chrono = { version = "0.4.22", features = ["serde"] }
 clap = { version = "4.0.12", features = ["derive"] }
