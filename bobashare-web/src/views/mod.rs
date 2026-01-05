@@ -125,7 +125,7 @@ impl IntoResponse for ErrorResponse {
 // this lint isn't necessary.
 //
 // See https://github.com/rust-lang/rust-clippy/issues/10211
-#[allow(clippy::result_large_err)]
+#[expect(clippy::result_large_err)]
 pub(crate) fn render_template<T: askama::Template>(tmpl: T) -> Result<Response, ErrorResponse> {
     let rendered = tmpl.render()?;
     Ok((StatusCode::OK, Html(rendered)).into_response())
