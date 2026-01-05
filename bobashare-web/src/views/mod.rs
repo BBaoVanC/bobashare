@@ -5,7 +5,7 @@ use std::path::Path;
 use askama::Template;
 use axum::{
     http,
-    response::{IntoResponse, Response},
+    response::{Html, IntoResponse, Response},
     routing::get,
     Router,
 };
@@ -86,17 +86,7 @@ impl From<ErrorTemplate<'_>> for ErrorResponse {
                 } else {
                     event!(Level::INFO, status = status_num, error_msg);
                 }
-                Self(
-                    (
-                        tmpl.code,
-                        [(
-                            http::header::CONTENT_TYPE,
-                            http::header::HeaderValue::from_static(ErrorTemplate::MIME_TYPE),
-                        )],
-                        s,
-                    )
-                        .into_response(),
-                )
+                Self((tmpl.code, Html(s)).into_response())
             }
             Err(e) => {
                 let status = tmpl.code.as_u16();
@@ -138,15 +128,7 @@ impl IntoResponse for ErrorResponse {
 #[allow(clippy::result_large_err)]
 pub(crate) fn render_template<T: askama::Template>(tmpl: T) -> Result<Response, ErrorResponse> {
     let rendered = tmpl.render()?;
-    Ok((
-        StatusCode::OK,
-        [(
-            http::header::CONTENT_TYPE,
-            http::header::HeaderValue::from_static(T::MIME_TYPE),
-        )],
-        rendered,
-    )
-        .into_response())
+    Ok((StatusCode::OK, Html(rendered)).into_response())
 }
 
 pub fn router() -> Router<&'static AppState> {
