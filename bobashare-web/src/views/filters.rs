@@ -11,7 +11,7 @@ fn pluralize(input: &str, count: i64) -> String {
 }
 
 // TODO: this would be nice and easy to test
-pub fn humanduration(duration: &TimeDelta) -> Result<String> {
+pub fn humanduration(duration: &TimeDelta, _: &dyn askama::Values) -> Result<String> {
     let duration = *duration;
     if duration < TimeDelta::try_minutes(1).unwrap() {
         let seconds = duration.num_seconds();
@@ -36,6 +36,6 @@ pub fn humanduration(duration: &TimeDelta) -> Result<String> {
     // probably no point going past months
 }
 
-pub fn humansize(size: &u64) -> Result<String> {
+pub fn humansize(size: &u64, _: &dyn askama::Values) -> Result<String> {
     Ok(format_size(*size, humansize::BINARY))
 }
