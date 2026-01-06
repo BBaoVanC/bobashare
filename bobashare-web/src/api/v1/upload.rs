@@ -1,5 +1,18 @@
 //! API to create an upload
 
+// https://github.com/rust-lang/rust/issues/147648#issuecomment-3417679494
+//
+// There's an incorrect warning about the UploadError::ParseHeader{ source } field being unused.
+// It's clearly used in the Display when seralized to an error, and you can see it in the API
+// responses (i.e. when using an incorrectly formatted Bobashare-Expiry header, or simply missing
+// content-type).
+//
+// It can't be added directly onto the field, I believe because the error is originating from
+// inside the displaydoc macro expansion.
+//
+// TODO: remove this when no longer needed
+#![expect(unused_assignments)]
+
 use std::io::SeekFrom;
 
 use anyhow::Context;
