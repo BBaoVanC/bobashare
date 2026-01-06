@@ -2,7 +2,7 @@
 
 {% block title %}{{ filename }}{% endblock %}
 {% block preview_metadata %}
-    {% let filename_truncated %}
+    {% decl filename_truncated %}
     {% if filename.len() > 50 %}
         {# U+2026 is ellipses (three dots) #}
         {% let filename_truncated = format!("{:.50}\u{2026}", self.filename) %}
@@ -54,14 +54,14 @@
 {% endblock %}
 
 {% block main %}
-    {% let expiry_human %}
+    {% decl expiry_human %}
     {% if let Some(e) = expiry_relative %}
         {% let expiry_human = e|humanduration %}
     {% else %}
         {% let expiry_human = String::from("never") %}
     {% endif %}
 
-    {% let expiry_exact %}
+    {% decl expiry_exact %}
     {% if let Some(e) = expiry_date %}
         {% let expiry_exact = e.to_string() %}
     {% else %}

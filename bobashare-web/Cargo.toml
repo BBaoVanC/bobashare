@@ -13,7 +13,7 @@ default-run = "bobashare-web"
 
 [dependencies]
 anyhow = "1.0.65"
-askama = "0.14.0"
+askama = "0.15.1"
 axum = { version = "0.8.0", features = ["multipart"] }
 axum-extra = { version = "0.12.5", features = ["typed-header", "with-rejection"] }
 bobashare = { path = "../bobashare" }

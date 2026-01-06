@@ -1,6 +1,6 @@
 use askama::Result;
 use chrono::TimeDelta;
-use humansize::format_size;
+use ::humansize::format_size;
 
 fn pluralize(input: &str, count: i64) -> String {
     if count == 1 {
@@ -11,6 +11,7 @@ fn pluralize(input: &str, count: i64) -> String {
 }
 
 // TODO: this would be nice and easy to test
+#[askama::filter_fn]
 pub fn humanduration(duration: &TimeDelta, _: &dyn askama::Values) -> Result<String> {
     let duration = *duration;
     if duration < TimeDelta::try_minutes(1).unwrap() {
@@ -36,6 +37,7 @@ pub fn humanduration(duration: &TimeDelta, _: &dyn askama::Values) -> Result<Str
     // probably no point going past months
 }
 
+#[askama::filter_fn]
 pub fn humansize(size: &u64, _: &dyn askama::Values) -> Result<String> {
-    Ok(format_size(*size, humansize::BINARY))
+    Ok(format_size(*size, ::humansize::BINARY))
 }
