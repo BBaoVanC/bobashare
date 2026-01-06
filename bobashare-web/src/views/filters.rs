@@ -1,6 +1,6 @@
+use ::humansize::format_size;
 use askama::Result;
 use chrono::TimeDelta;
-use ::humansize::format_size;
 
 fn pluralize(input: &str, count: i64) -> String {
     if count == 1 {
