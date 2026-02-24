@@ -15,10 +15,10 @@ pub fn bobashare::serde::v0::UploadV0::eq(&self, other: &bobashare::serde::v0::U
 impl core::fmt::Debug for bobashare::serde::v0::UploadV0
 pub fn bobashare::serde::v0::UploadV0::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::StructuralPartialEq for bobashare::serde::v0::UploadV0
-impl serde::ser::Serialize for bobashare::serde::v0::UploadV0
-pub fn bobashare::serde::v0::UploadV0::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
-impl<'de> serde::de::Deserialize<'de> for bobashare::serde::v0::UploadV0
-pub fn bobashare::serde::v0::UploadV0::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl serde_core::ser::Serialize for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde_core::ser::Serializer>::Ok, <__S as serde_core::ser::Serializer>::Error> where __S: serde_core::ser::Serializer
+impl<'de> serde_core::de::Deserialize<'de> for bobashare::serde::v0::UploadV0
+pub fn bobashare::serde::v0::UploadV0::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde_core::de::Deserializer>::Error> where __D: serde_core::de::Deserializer<'de>
 impl core::marker::Freeze for bobashare::serde::v0::UploadV0
 impl core::marker::Send for bobashare::serde::v0::UploadV0
 impl core::marker::Sync for bobashare::serde::v0::UploadV0
@@ -47,11 +47,9 @@ impl<T> core::clone::CloneToUninit for bobashare::serde::v0::UploadV0 where T: c
 pub unsafe fn bobashare::serde::v0::UploadV0::clone_to_uninit(&self, dest: *mut u8)
 impl<T> core::convert::From<T> for bobashare::serde::v0::UploadV0
 pub fn bobashare::serde::v0::UploadV0::from(t: T) -> T
-impl<T> serde::de::DeserializeOwned for bobashare::serde::v0::UploadV0 where T: for<'de> serde::de::Deserialize<'de>
+impl<T> serde_core::de::DeserializeOwned for bobashare::serde::v0::UploadV0 where T: for<'de> serde_core::de::Deserialize<'de>
 impl<T> tracing::instrument::Instrument for bobashare::serde::v0::UploadV0
 impl<T> tracing::instrument::WithSubscriber for bobashare::serde::v0::UploadV0
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::v0::UploadV0 where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::serde::v0::UploadV0::vzip(self) -> V
 #[non_exhaustive] pub enum bobashare::serde::MigrateError
 pub bobashare::serde::MigrateError::UnknownVersion
 pub bobashare::serde::MigrateError::V0(bobashare::serde::MigrateErrorV0)
@@ -93,8 +91,6 @@ impl<T> core::convert::From<T> for bobashare::serde::MigrateError
 pub fn bobashare::serde::MigrateError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::serde::MigrateError
 impl<T> tracing::instrument::WithSubscriber for bobashare::serde::MigrateError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::MigrateError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::serde::MigrateError::vzip(self) -> V
 pub enum bobashare::serde::MigrateErrorV0
 pub bobashare::serde::MigrateErrorV0::ParseMime(mime::FromStrError)
 impl core::convert::From<bobashare::serde::MigrateErrorV0> for bobashare::serde::MigrateError
@@ -133,8 +129,6 @@ impl<T> core::convert::From<T> for bobashare::serde::MigrateErrorV0
 pub fn bobashare::serde::MigrateErrorV0::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::serde::MigrateErrorV0
 impl<T> tracing::instrument::WithSubscriber for bobashare::serde::MigrateErrorV0
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::MigrateErrorV0 where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::serde::MigrateErrorV0::vzip(self) -> V
 #[non_exhaustive] pub enum bobashare::serde::UploadMetadata
 pub bobashare::serde::UploadMetadata::Unknown
 pub bobashare::serde::UploadMetadata::V0(bobashare::serde::v0::UploadV0)
@@ -150,10 +144,10 @@ pub fn bobashare::serde::UploadMetadata::eq(&self, other: &bobashare::serde::Upl
 impl core::fmt::Debug for bobashare::serde::UploadMetadata
 pub fn bobashare::serde::UploadMetadata::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 impl core::marker::StructuralPartialEq for bobashare::serde::UploadMetadata
-impl serde::ser::Serialize for bobashare::serde::UploadMetadata
-pub fn bobashare::serde::UploadMetadata::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde::ser::Serializer>::Ok, <__S as serde::ser::Serializer>::Error> where __S: serde::ser::Serializer
-impl<'de> serde::de::Deserialize<'de> for bobashare::serde::UploadMetadata
-pub fn bobashare::serde::UploadMetadata::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde::de::Deserializer>::Error> where __D: serde::de::Deserializer<'de>
+impl serde_core::ser::Serialize for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::serialize<__S>(&self, __serializer: __S) -> core::result::Result<<__S as serde_core::ser::Serializer>::Ok, <__S as serde_core::ser::Serializer>::Error> where __S: serde_core::ser::Serializer
+impl<'de> serde_core::de::Deserialize<'de> for bobashare::serde::UploadMetadata
+pub fn bobashare::serde::UploadMetadata::deserialize<__D>(__deserializer: __D) -> core::result::Result<Self, <__D as serde_core::de::Deserializer>::Error> where __D: serde_core::de::Deserializer<'de>
 impl core::marker::Freeze for bobashare::serde::UploadMetadata
 impl core::marker::Send for bobashare::serde::UploadMetadata
 impl core::marker::Sync for bobashare::serde::UploadMetadata
@@ -182,11 +176,9 @@ impl<T> core::clone::CloneToUninit for bobashare::serde::UploadMetadata where T:
 pub unsafe fn bobashare::serde::UploadMetadata::clone_to_uninit(&self, dest: *mut u8)
 impl<T> core::convert::From<T> for bobashare::serde::UploadMetadata
 pub fn bobashare::serde::UploadMetadata::from(t: T) -> T
-impl<T> serde::de::DeserializeOwned for bobashare::serde::UploadMetadata where T: for<'de> serde::de::Deserialize<'de>
+impl<T> serde_core::de::DeserializeOwned for bobashare::serde::UploadMetadata where T: for<'de> serde_core::de::Deserialize<'de>
 impl<T> tracing::instrument::Instrument for bobashare::serde::UploadMetadata
 impl<T> tracing::instrument::WithSubscriber for bobashare::serde::UploadMetadata
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::serde::UploadMetadata where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::serde::UploadMetadata::vzip(self) -> V
 pub type bobashare::serde::LatestUploadMetadata = bobashare::serde::v0::UploadV0
 pub mod bobashare::storage
 pub mod bobashare::storage::file
@@ -225,8 +217,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::CleanupError
 pub fn bobashare::storage::file::CleanupError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::CleanupError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::CleanupError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::CleanupError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::CleanupError::vzip(self) -> V
 pub enum bobashare::storage::file::CreateUploadError
 pub bobashare::storage::file::CreateUploadError::AlreadyExists
 pub bobashare::storage::file::CreateUploadError::CreateDirectory(std::io::error::Error)
@@ -265,8 +255,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::CreateUploadError
 pub fn bobashare::storage::file::CreateUploadError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::CreateUploadError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::CreateUploadError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::CreateUploadError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::CreateUploadError::vzip(self) -> V
 pub enum bobashare::storage::file::DeleteUploadError
 pub bobashare::storage::file::DeleteUploadError::DeleteDirectory(std::io::error::Error)
 pub bobashare::storage::file::DeleteUploadError::DeleteFile(std::io::error::Error)
@@ -304,8 +292,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::DeleteUploadError
 pub fn bobashare::storage::file::DeleteUploadError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::DeleteUploadError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::DeleteUploadError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::DeleteUploadError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::DeleteUploadError::vzip(self) -> V
 pub enum bobashare::storage::file::InvalidReason
 pub bobashare::storage::file::InvalidReason::Expired
 pub bobashare::storage::file::InvalidReason::InvalidMetadata(serde_json::error::Error)
@@ -348,8 +334,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::InvalidReason
 pub fn bobashare::storage::file::InvalidReason::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::InvalidReason
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::InvalidReason
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::InvalidReason where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::InvalidReason::vzip(self) -> V
 pub enum bobashare::storage::file::NewBackendError
 pub bobashare::storage::file::NewBackendError::CreateDirectory(std::io::error::Error)
 pub bobashare::storage::file::NewBackendError::NotADirectory(std::path::PathBuf)
@@ -386,8 +370,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::NewBackendError
 pub fn bobashare::storage::file::NewBackendError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::NewBackendError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::NewBackendError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::NewBackendError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::NewBackendError::vzip(self) -> V
 pub enum bobashare::storage::file::OpenUploadError
 pub bobashare::storage::file::OpenUploadError::DeserializeMetadata(serde_json::error::Error)
 pub bobashare::storage::file::OpenUploadError::Locked
@@ -431,8 +413,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::OpenUploadError
 pub fn bobashare::storage::file::OpenUploadError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::OpenUploadError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::OpenUploadError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::OpenUploadError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::OpenUploadError::vzip(self) -> V
 pub enum bobashare::storage::file::ValidateError
 pub bobashare::storage::file::ValidateError::MigrateMetadata(bobashare::serde::MigrateError)
 pub bobashare::storage::file::ValidateError::OpenMetadata(std::io::error::Error)
@@ -470,8 +450,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::ValidateError
 pub fn bobashare::storage::file::ValidateError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::ValidateError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::ValidateError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::ValidateError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::ValidateError::vzip(self) -> V
 pub enum bobashare::storage::file::ValidateResult
 pub bobashare::storage::file::ValidateResult::Invalid(bobashare::storage::file::InvalidReason)
 pub bobashare::storage::file::ValidateResult::Locked
@@ -506,8 +484,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::ValidateResult
 pub fn bobashare::storage::file::ValidateResult::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::ValidateResult
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::ValidateResult
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::ValidateResult where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::ValidateResult::vzip(self) -> V
 pub struct bobashare::storage::file::FileBackend
 pub bobashare::storage::file::FileBackend::path: std::path::PathBuf
 impl bobashare::storage::file::FileBackend
@@ -561,8 +537,6 @@ impl<T> core::convert::From<T> for bobashare::storage::file::FileBackend
 pub fn bobashare::storage::file::FileBackend::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::file::FileBackend
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::file::FileBackend
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::file::FileBackend where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::file::FileBackend::vzip(self) -> V
 pub mod bobashare::storage::handle
 pub enum bobashare::storage::handle::FlushUploadError
 pub bobashare::storage::handle::FlushUploadError::FlushFile(std::io::error::Error)
@@ -604,8 +578,6 @@ impl<T> core::convert::From<T> for bobashare::storage::handle::FlushUploadError
 pub fn bobashare::storage::handle::FlushUploadError::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::handle::FlushUploadError
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::handle::FlushUploadError
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::handle::FlushUploadError where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::handle::FlushUploadError::vzip(self) -> V
 pub struct bobashare::storage::handle::UploadHandle
 pub bobashare::storage::handle::UploadHandle::file: tokio::fs::file::File
 pub bobashare::storage::handle::UploadHandle::file_path: std::path::PathBuf
@@ -640,8 +612,6 @@ impl<T> core::convert::From<T> for bobashare::storage::handle::UploadHandle
 pub fn bobashare::storage::handle::UploadHandle::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::handle::UploadHandle
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::handle::UploadHandle
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::handle::UploadHandle where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::handle::UploadHandle::vzip(self) -> V
 pub mod bobashare::storage::upload
 pub struct bobashare::storage::upload::Upload
 pub bobashare::storage::upload::Upload::creation_date: chrono::datetime::DateTime<chrono::offset::utc::Utc>
@@ -690,7 +660,5 @@ impl<T> core::convert::From<T> for bobashare::storage::upload::Upload
 pub fn bobashare::storage::upload::Upload::from(t: T) -> T
 impl<T> tracing::instrument::Instrument for bobashare::storage::upload::Upload
 impl<T> tracing::instrument::WithSubscriber for bobashare::storage::upload::Upload
-impl<V, T> ppv_lite86::types::VZip<V> for bobashare::storage::upload::Upload where V: ppv_lite86::types::MultiLane<T>
-pub fn bobashare::storage::upload::Upload::vzip(self) -> V
 pub fn bobashare::generate_delete_key() -> alloc::string::String
 pub fn bobashare::generate_randomized_id(length: usize) -> alloc::string::String
