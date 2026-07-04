@@ -9,7 +9,7 @@ use super::{
 use crate::AppState;
 
 #[derive(Template)]
-#[template(path = "about.html.jinja")]
+#[template(path = "about.html.jinja", blocks = ["title"])]
 pub struct AboutTemplate<'s, 'c> {
     pub state: TemplateState<'s>,
     pub about_content_rendered: &'c str,

@@ -65,7 +65,7 @@ pub enum CurrentNavigation {
 }
 
 #[derive(Template)]
-#[template(path = "error.html.jinja")]
+#[template(path = "error.html.jinja", blocks = ["title"])]
 pub struct ErrorTemplate<'s> {
     pub state: TemplateState<'s>,
     pub code: StatusCode,

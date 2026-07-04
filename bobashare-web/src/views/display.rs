@@ -62,6 +62,8 @@ async fn open_upload<S: AsRef<str>>(
 }
 
 #[derive(Template)]
+// `blocks = ["title"]` not required here as diplay.html.jinja overrides the preview_metadata to
+// customize the title separately from the embed meta tags
 #[template(path = "display.html.jinja")]
 pub struct DisplayTemplate<'s> {
     pub state: TemplateState<'s>,

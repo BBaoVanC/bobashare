@@ -62,7 +62,7 @@ pub fn iter_expiry_units() -> impl Iterator<Item = ExpiryUnit> {
 }
 
 #[derive(Template)]
-#[template(path = "upload.html.jinja")]
+#[template(path = "upload.html.jinja", blocks = ["title"])]
 pub struct UploadTemplate<'s> {
     pub state: TemplateState<'s>,
     // TODO: make this iterator and not vec
@@ -93,7 +93,7 @@ pub async fn upload(
 }
 
 #[derive(Template)]
-#[template(path = "paste.html.jinja")]
+#[template(path = "paste.html.jinja", blocks = ["title"])]
 pub struct PasteTemplate<'s> {
     pub state: TemplateState<'s>,
     pub expiry_units: Vec<ExpiryUnit>,

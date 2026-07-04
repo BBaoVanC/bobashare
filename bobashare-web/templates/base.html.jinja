@@ -13,8 +13,8 @@
         <meta name="twitter:site" content="bobashare">
 
         {% block preview_metadata %}
-        <meta property="og:title" content="{% block title %}{% endblock %}">
-        <meta name="twitter:title" content="{% block title %}{% endblock %}">
+        <meta property="og:title" content="{{ self.as_title() }}">
+        <meta name="twitter:title" content="{{ self.as_title() }}">
         {% endblock %}
 
         {% block head %}{% endblock %}
