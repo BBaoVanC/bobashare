@@ -12,7 +12,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
@@ -25,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v7
         with:
           tags: ghcr.io/bbaovanc/bobashare:master
           push: true
@@ -64,7 +64,7 @@ jobs:
     name: Build
     runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Get version name
@@ -79,7 +79,7 @@ jobs:
         run: |
           rustup target add ${{ matrix.build.target }}
 
-      - uses: cargo-bins/cargo-binstall@v1.10.10
+      - uses: cargo-bins/cargo-binstall@v1.20.1
         if: ${{ matrix.build.os == 'ubuntu-latest' }}
       - name: Install cross-rs
         if: ${{ matrix.build.os == 'ubuntu-latest' }}
@@ -107,7 +107,7 @@ jobs:
           ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --release --locked
 
       - name: Upload debug artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: debug-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
@@ -116,7 +116,7 @@ jobs:
             target/${{ matrix.build.target }}/debug/bobashare-admin.exe
             target/${{ matrix.build.target }}/debug/bobashare-web.exe
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
