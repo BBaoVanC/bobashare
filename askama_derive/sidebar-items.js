@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"derive":["Template"]};
+window.SIDEBAR_ITEMS = {"constant":["CAN_USE_EXTERNAL_SOURCES"],"fn":["derive_filter_fn","derive_template"],"macro":["make_derive_template","make_filter_fn"]};

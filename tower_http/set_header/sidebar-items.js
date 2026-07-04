@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["request","response"],"struct":["SetRequestHeader","SetRequestHeaderLayer","SetResponseHeader","SetResponseHeaderLayer"],"trait":["MakeHeaderValue"]};
+window.SIDEBAR_ITEMS = {"mod":["request","response"],"struct":["HeaderMetadata","SetRequestHeader","SetRequestHeaderLayer","SetResponseHeader","SetResponseHeaderLayer"],"trait":["MakeHeaderValue"]};

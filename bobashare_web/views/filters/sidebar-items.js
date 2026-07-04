@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["humanduration","humansize"]};
+window.SIDEBAR_ITEMS = {"struct":["humanduration","humansize"]};

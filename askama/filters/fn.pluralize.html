@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="For a value of `±1` by default an empty string `&#34;&#34;` is returned, otherwise `&#34;s&#34;`."><title>pluralize in askama::filters - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="askama" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">pluralize</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../askama/index.html">askama</a><span class="version">0.16.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">pluralize</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#examples" title="Examples">Examples</a><ul><li><a href="#with-default-arguments" title="With default arguments">With default arguments</a></li><li><a href="#overriding-the-singular-case" title="Overriding the singular case">Overriding the singular case</a></li><li><a href="#overriding-singular-and-plural-cases" title="Overriding singular and plural cases">Overriding singular and plural cases</a></li><li><a href="#arguments-get-escaped" title="Arguments get escaped">Arguments get escaped</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In askama::<wbr>filters</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">askama</a>::<wbr><a href="index.html">filters</a></div><h1>Function <span class="fn">pluralize</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/askama/filters/core.rs.html#331-339">Source</a> </span></div><pre class="rust item-decl"><code>pub fn pluralize&lt;C, S, P&gt;(
+    count: C,
+    singular: S,
+    plural: P,
+) -&gt; <a class="type" href="../type.Result.html" title="type askama::Result">Result</a>&lt;<a class="enum" href="enum.Either.html" title="enum askama::filters::Either">Either</a>&lt;S, P&gt;, C::<a class="associatedtype" href="trait.PluralizeCount.html#associatedtype.Error" title="type askama::filters::PluralizeCount::Error">Error</a>&gt;<div class="where">where
+    C: <a class="trait" href="trait.PluralizeCount.html" title="trait askama::filters::PluralizeCount">PluralizeCount</a>,</div></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>For a value of <code>±1</code> by default an empty string <code>""</code> is returned, otherwise <code>"s"</code>.</p>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2><h3 id="with-default-arguments"><a class="doc-anchor" href="#with-default-arguments">§</a>With default arguments</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// ```jinja
+/// I have {{dogs}} dog{{dogs|pluralize}} and {{cats}} cat{{cats|pluralize}}.
+/// ```
+</span><span class="attr">#[derive(Template)]
+#[template(ext = <span class="string">"html"</span>, in_doc = <span class="bool-val">true</span>)]
+</span><span class="kw">struct </span>Pets {
+    dogs: i8,
+    cats: i8,
+}
+
+<span class="macro">assert_eq!</span>(
+    Pets { dogs: <span class="number">0</span>, cats: <span class="number">0 </span>}.to_string(),
+    <span class="string">"I have 0 dogs and 0 cats."
+</span>);
+<span class="macro">assert_eq!</span>(
+    Pets { dogs: <span class="number">1</span>, cats: <span class="number">1 </span>}.to_string(),
+    <span class="string">"I have 1 dog and 1 cat."
+</span>);
+<span class="macro">assert_eq!</span>(
+    Pets { dogs: -<span class="number">1</span>, cats: <span class="number">99 </span>}.to_string(),
+    <span class="string">"I have -1 dog and 99 cats."
+</span>);</code></pre></div><h3 id="overriding-the-singular-case"><a class="doc-anchor" href="#overriding-the-singular-case">§</a>Overriding the singular case</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// ```jinja
+/// I have {{dogs}} dog{{ dogs|pluralize("go") }}.
+/// ```
+</span><span class="attr">#[derive(Template)]
+#[template(ext = <span class="string">"html"</span>, in_doc = <span class="bool-val">true</span>)]
+</span><span class="kw">struct </span>Dog {
+    dogs: i8,
+}
+
+<span class="macro">assert_eq!</span>(
+    Dog { dogs: <span class="number">0 </span>}.to_string(),
+    <span class="string">"I have 0 dogs."
+</span>);
+<span class="macro">assert_eq!</span>(
+    Dog { dogs: <span class="number">1 </span>}.to_string(),
+    <span class="string">"I have 1 doggo."
+</span>);</code></pre></div><h3 id="overriding-singular-and-plural-cases"><a class="doc-anchor" href="#overriding-singular-and-plural-cases">§</a>Overriding singular and plural cases</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// ```jinja
+/// I have {{mice}} {{ mice|pluralize("mouse", "mice") }}.
+/// ```
+</span><span class="attr">#[derive(Template)]
+#[template(ext = <span class="string">"html"</span>, in_doc = <span class="bool-val">true</span>)]
+</span><span class="kw">struct </span>Mice {
+    mice: i8,
+}
+
+<span class="macro">assert_eq!</span>(
+    Mice { mice: <span class="number">42 </span>}.to_string(),
+    <span class="string">"I have 42 mice."
+</span>);
+<span class="macro">assert_eq!</span>(
+    Mice { mice: <span class="number">1 </span>}.to_string(),
+    <span class="string">"I have 1 mouse."
+</span>);</code></pre></div><h3 id="arguments-get-escaped"><a class="doc-anchor" href="#arguments-get-escaped">§</a>Arguments get escaped</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// ```jinja
+/// You are number {{ number|pluralize("&lt;b&gt;ONE&lt;/b&gt;", number) }}!
+/// ```
+</span><span class="attr">#[derive(Template)]
+#[template(ext = <span class="string">"html"</span>, in_doc = <span class="bool-val">true</span>)]
+</span><span class="kw">struct </span>Number {
+    number: usize
+}
+
+<span class="macro">assert_eq!</span>(
+    Number { number: <span class="number">1 </span>}.to_string(),
+    <span class="string">"You are number &amp;#60;b&amp;#62;ONE&amp;#60;/b&amp;#62;!"</span>,
+);
+<span class="macro">assert_eq!</span>(
+    Number { number: <span class="number">9000 </span>}.to_string(),
+    <span class="string">"You are number 9000!"</span>,
+);</code></pre></div></div></details></section></div></main></body></html>

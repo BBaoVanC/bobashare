@@ -1,6 +1,124 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `Template` derive in crate `askama`."><title>Template in askama - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="askama" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../static.files/storage-4e99c027.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../askama/index.html">askama</a><span class="version">0.12.1</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">askama</a></div><h1>Derive Macro <span class="derive">Template</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/askama_derive/lib.rs.html#22">Source</a> </span></div><pre class="rust item-decl"><code>#[derive(Template)]
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The `Template` derive macro and its `template()` attribute."><title>Template in askama - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="askama" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Template</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../askama/index.html">askama</a><span class="version">0.16.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Template</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#attributes" title="Attributes">Attributes</a><ul><li><a href="#path" title="path">path</a></li><li><a href="#source" title="source">source</a></li><li><a href="#ext" title="ext">ext</a></li><li><a href="#in_doc" title="in_doc">in_doc</a></li><li><a href="#print" title="print">print</a></li><li><a href="#block" title="block">block</a></li><li><a href="#blocks" title="blocks">blocks</a></li><li><a href="#escape" title="escape">escape</a></li><li><a href="#syntax" title="syntax">syntax</a></li><li><a href="#askama" title="askama">askama</a></li></ul></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate askama</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">askama</a></div><h1>Derive Macro <span class="derive">Template</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/askama_macros/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/askama_derive-0.16.0/src/lib.rs.html#235-237">Source</a> </span></div><pre class="rust item-decl"><code>#[derive(Template)]
 {
     <span class="comment">// Attributes available to this derive:</span>
     #[template]
 }
-</code></pre></section></div></main></body></html>
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The <code>Template</code> derive macro and its <code>template()</code> attribute.</p>
+<p>Askama works by generating one or more trait implementations for any
+<code>struct</code> type decorated with the <code>#[derive(Template)]</code> attribute. The
+code generation process takes some options that can be specified through
+the <code>template()</code> attribute.</p>
+<h3 id="attributes"><a class="doc-anchor" href="#attributes">§</a>Attributes</h3>
+<p>The following sub-attributes are currently recognized:</p>
+<h4 id="path"><a class="doc-anchor" href="#path">§</a>path</h4>
+<p>E.g. <code>path = "foo.html"</code></p>
+<p>Sets the path to the template file.
+The path is interpreted as relative to the configured template directories
+(by default, this is a <code>templates</code> directory next to your <code>Cargo.toml</code>).
+The file name extension is used to infer an escape mode (see below). In
+web framework integrations, the path’s extension may also be used to
+infer the content type of the resulting response.
+Cannot be used together with <code>source</code>.</p>
+<h4 id="source"><a class="doc-anchor" href="#source">§</a>source</h4>
+<p>E.g. <code>source = "{{ foo }}"</code></p>
+<p>Directly sets the template source.
+This can be useful for test cases or short templates. The generated path
+is undefined, which generally makes it impossible to refer to this
+template from other templates. If <code>source</code> is specified, <code>ext</code> must also
+be specified (see below). Cannot be used together with <code>path</code>.</p>
+<h4 id="ext"><a class="doc-anchor" href="#ext">§</a>ext</h4>
+<p>E.g. <code>ext = "txt"</code></p>
+<p>Lets you specify the content type as a file
+extension. This is used to infer an escape mode (see below), and some
+web framework integrations use it to determine the content type.
+Cannot be used together with <code>path</code>.</p>
+<h4 id="in_doc"><a class="doc-anchor" href="#in_doc">§</a>in_doc</h4>
+<p>E.g. <code>in_doc = true</code></p>
+<p>As an alternative to supplying the code template code in an external file (as <code>path</code> argument),
+or as a string (as <code>source</code> argument), you can also enable the <code>"code-in-doc"</code> feature.
+With this feature, you can specify the template code directly in the documentation
+of the template <code>struct</code>.</p>
+<p>Instead of <code>path = "…"</code> or <code>source = "…"</code>, specify <code>in_doc = true</code> in the <code>#[template]</code>
+attribute, and in the struct’s documentation add a <code>askama</code> code block:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="doccomment">/// ```askama
+/// &lt;div&gt;{{ lines|linebreaksbr }}&lt;/div&gt;
+/// ```
+</span><span class="attr">#[derive(Template)]
+#[template(ext = <span class="string">"html"</span>, in_doc = <span class="bool-val">true</span>)]
+</span><span class="kw">struct </span>Example&lt;<span class="lifetime">'a</span>&gt; {
+    lines: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+}</code></pre></div><h4 id="print"><a class="doc-anchor" href="#print">§</a>print</h4>
+<p>E.g. <code>print = "code"</code></p>
+<p>Enable debugging by printing nothing (<code>none</code>), the parsed syntax tree (<code>ast</code>),
+the generated code (<code>code</code>) or <code>all</code> for both.
+The requested data will be printed to stdout at compile time.</p>
+<h4 id="block"><a class="doc-anchor" href="#block">§</a>block</h4>
+<p>E.g. <code>block = "block_name"</code></p>
+<p>Renders the block by itself.
+Expressions outside of the block are not required by the struct, and
+inheritance is also supported. This can be useful when you need to
+decompose your template for partial rendering, without needing to
+extract the partial into a separate template or macro.</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Template)]
+#[template(path = <span class="string">"hello.html"</span>, block = <span class="string">"hello"</span>)]
+</span><span class="kw">struct </span>HelloTemplate&lt;<span class="lifetime">'a</span>&gt; { ... }</code></pre></div><h4 id="blocks"><a class="doc-anchor" href="#blocks">§</a>blocks</h4>
+<p>E.g. <code>blocks = ["title", "content"]</code></p>
+<p>Automatically generates (a number of) sub-templates that act as if they had a
+<code>block = "..."</code> attribute. You can access the sub-templates with the method
+<code>my_template.as_<em>block_name</em>()</code>, where <em><code>block_name</code></em> is the
+name of the block:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Template)]
+#[template(
+    ext = <span class="string">"txt"</span>,
+    source = <span class="string">"
+        {% block title -%} &lt;h1&gt;{{title}}&lt;/h1&gt; {%- endblock %}
+        {% block content -%} &lt;p&gt;{{message&lt;/p&gt; {%- endblock %}
+    "</span>,
+    blocks = [<span class="string">"title"</span>, <span class="string">"content"</span>]
+</span>)]
+<span class="kw">struct </span>News&lt;<span class="lifetime">'a</span>&gt; {
+    title: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    message: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+}
+
+<span class="kw">let </span>news = News {
+    title: <span class="string">"Announcing Rust 1.84.1"</span>,
+    message: <span class="string">"The Rust team has published a new point release of Rust, 1.84.1."</span>,
+};
+<span class="macro">assert_eq!</span>(
+    news.as_title().render().unwrap(),
+    <span class="string">"&lt;h1&gt;Announcing Rust 1.84.1&lt;/h1&gt;"
+</span>);</code></pre></div><h4 id="escape"><a class="doc-anchor" href="#escape">§</a>escape</h4>
+<p>E.g. <code>escape = "none"</code></p>
+<p>Override the template’s extension used for the purpose of determining the escaper for
+this template. See the section on configuring custom escapers for more information.</p>
+<h4 id="syntax"><a class="doc-anchor" href="#syntax">§</a>syntax</h4>
+<p>E.g. <code>syntax = "foo"</code></p>
+<p>Set the syntax name for a parser defined in the configuration file.
+The default syntax, <code>"default"</code>,  is the one provided by Askama.</p>
+<h4 id="askama"><a class="doc-anchor" href="#askama">§</a>askama</h4>
+<p>E.g. <code>askama = askama</code></p>
+<p>If you are using askama in a subproject, a library or a <a href="https://doc.rust-lang.org/book/ch19-06-macros.html">macro</a>, it might be
+necessary to specify the <a href="https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html">path</a> where to find the module <code>askama</code>:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[doc(hidden)]
+</span><span class="kw">pub use </span>askama <span class="kw">as </span>__askama;
+
+<span class="attr">#[macro_export]
+</span><span class="macro">macro_rules!</span> new_greeter {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="attr">#[derive(Debug, <span class="macro-nonterminal">$crate::__askama::Template</span>)]
+        #[template(
+            ext = <span class="string">"txt"</span>,
+            source = <span class="string">"Hello, world!"</span>,
+            askama = <span class="macro-nonterminal">$crate::__askama
+        </span>)]
+        </span><span class="kw">struct </span><span class="macro-nonterminal">$name</span>;
+    }
+}
+
+<span class="macro">new_greeter!</span>(HelloWorld);
+<span class="macro">assert_eq!</span>(HelloWorld.to_string(), <span class="string">"Hello, world!"</span>);</code></pre></div></div></details></section></div></main></body></html>

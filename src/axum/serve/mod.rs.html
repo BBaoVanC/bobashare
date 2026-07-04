@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.4/src/serve/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="axum" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-4e99c027.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">axum/serve/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Serve services.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/serve/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="axum" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">axum/serve/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Serve services.
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use </span>std::{
 <a href=#4 id=4 data-nosnippet>4</a>    convert::Infallible,
@@ -114,7 +114,7 @@
 <a href=#114 id=114 data-nosnippet>114</a></span><span class="kw">pub struct </span>Serve&lt;L, M, S&gt; {
 <a href=#115 id=115 data-nosnippet>115</a>    listener: L,
 <a href=#116 id=116 data-nosnippet>116</a>    make_service: M,
-<a href=#117 id=117 data-nosnippet>117</a>    _marker: PhantomData&lt;S&gt;,
+<a href=#117 id=117 data-nosnippet>117</a>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; S&gt;,
 <a href=#118 id=118 data-nosnippet>118</a>}
 <a href=#119 id=119 data-nosnippet>119</a>
 <a href=#120 id=120 data-nosnippet>120</a><span class="attr">#[cfg(all(feature = <span class="string">"tokio"</span>, any(feature = <span class="string">"http1"</span>, feature = <span class="string">"http2"</span>)))]
@@ -239,7 +239,7 @@
 <a href=#239 id=239 data-nosnippet>239</a>    listener: L,
 <a href=#240 id=240 data-nosnippet>240</a>    make_service: M,
 <a href=#241 id=241 data-nosnippet>241</a>    signal: F,
-<a href=#242 id=242 data-nosnippet>242</a>    _marker: PhantomData&lt;S&gt;,
+<a href=#242 id=242 data-nosnippet>242</a>    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; S&gt;,
 <a href=#243 id=243 data-nosnippet>243</a>}
 <a href=#244 id=244 data-nosnippet>244</a>
 <a href=#245 id=245 data-nosnippet>245</a><span class="attr">#[cfg(all(feature = <span class="string">"tokio"</span>, any(feature = <span class="string">"http1"</span>, feature = <span class="string">"http2"</span>)))]
@@ -489,10 +489,10 @@
 <a href=#489 id=489 data-nosnippet>489</a>
 <a href=#490 id=490 data-nosnippet>490</a>    <span class="attr">#[cfg(unix)]
 <a href=#491 id=491 data-nosnippet>491</a>    </span><span class="kw">use </span><span class="kw">super</span>::IncomingStream;
-<a href=#492 id=492 data-nosnippet>492</a>    <span class="kw">use super</span>::{serve, Listener};
+<a href=#492 id=492 data-nosnippet>492</a>    <span class="kw">use </span>super::{serve, Listener};
 <a href=#493 id=493 data-nosnippet>493</a>    <span class="attr">#[cfg(unix)]
 <a href=#494 id=494 data-nosnippet>494</a>    </span><span class="kw">use </span><span class="kw">crate</span>::extract::connect_info::Connected;
-<a href=#495 id=495 data-nosnippet>495</a>    <span class="kw">use crate</span>::{
+<a href=#495 id=495 data-nosnippet>495</a>    <span class="kw">use </span>crate::{
 <a href=#496 id=496 data-nosnippet>496</a>        body::to_bytes,
 <a href=#497 id=497 data-nosnippet>497</a>        handler::{Handler, HandlerWithoutStateExt},
 <a href=#498 id=498 data-nosnippet>498</a>        routing::get,
@@ -725,4 +725,5 @@
 <a href=#725 id=725 data-nosnippet>725</a>        <span class="kw">let </span>body = String::from_utf8(body.to_vec()).unwrap();
 <a href=#726 id=726 data-nosnippet>726</a>        <span class="macro">assert_eq!</span>(body, <span class="string">"Hello, World!"</span>);
 <a href=#727 id=727 data-nosnippet>727</a>    }
-<a href=#728 id=728 data-nosnippet>728</a>}</code></pre></div></section></main></body></html>
+<a href=#728 id=728 data-nosnippet>728</a>}
+</code></pre></div></section></main></body></html>

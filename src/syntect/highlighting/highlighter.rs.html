@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/git/checkouts/syntect-381ea73f4eb3f612/162a7f3/src/highlighting/highlighter.rs`."><title>highlighter.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="syntect" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-4e99c027.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">syntect/highlighting/</div>highlighter.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Iterators and data structures for transforming parsing information into styled text.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/git/checkouts/syntect-381ea73f4eb3f612/4aa7803/src/highlighting/highlighter.rs`."><title>highlighter.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="syntect" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">syntect/highlighting/</div>highlighter.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Iterators and data structures for transforming parsing information into styled text.
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="comment">// Code based on https://github.com/defuz/sublimate/blob/master/src/core/syntax/highlighter.rs
 <a href=#4 id=4 data-nosnippet>4</a>// released under the MIT license by @defuz
@@ -388,7 +388,7 @@
 <a href=#388 id=388 data-nosnippet>388</a><span class="attr">#[cfg(all(feature = <span class="string">"default-syntaxes"</span>, feature = <span class="string">"default-themes"</span>))]
 <a href=#389 id=389 data-nosnippet>389</a>#[cfg(test)]
 <a href=#390 id=390 data-nosnippet>390</a></span><span class="kw">mod </span>tests {
-<a href=#391 id=391 data-nosnippet>391</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#391 id=391 data-nosnippet>391</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#392 id=392 data-nosnippet>392</a>    <span class="kw">use </span><span class="kw">crate</span>::highlighting::{Color, FontStyle, Style, ThemeSet};
 <a href=#393 id=393 data-nosnippet>393</a>    <span class="kw">use </span><span class="kw">crate</span>::parsing::{ParseState, ScopeStack};
 <a href=#394 id=394 data-nosnippet>394</a>    <span class="kw">use </span><span class="kw">crate</span>::utils::testdata;
@@ -397,7 +397,7 @@
 <a href=#397 id=397 data-nosnippet>397</a>    </span><span class="kw">fn </span>can_parse() {
 <a href=#398 id=398 data-nosnippet>398</a>        <span class="kw">let </span>ps = <span class="kw-2">&amp;*</span>testdata::PACKAGES_SYN_SET;
 <a href=#399 id=399 data-nosnippet>399</a>        <span class="kw">let </span><span class="kw-2">mut </span>state = {
-<a href=#400 id=400 data-nosnippet>400</a>            <span class="kw">let </span>syntax = ps.find_syntax_by_name(<span class="string">"Ruby on Rails"</span>).unwrap();
+<a href=#400 id=400 data-nosnippet>400</a>            <span class="kw">let </span>syntax = ps.find_syntax_by_name(<span class="string">"Ruby (Rails)"</span>).unwrap();
 <a href=#401 id=401 data-nosnippet>401</a>            ParseState::new(syntax)
 <a href=#402 id=402 data-nosnippet>402</a>        };
 <a href=#403 id=403 data-nosnippet>403</a>        <span class="kw">let </span>ts = ThemeSet::load_defaults();
@@ -405,7 +405,7 @@
 <a href=#405 id=405 data-nosnippet>405</a>
 <a href=#406 id=406 data-nosnippet>406</a>        <span class="kw">let </span><span class="kw-2">mut </span>highlight_state = HighlightState::new(<span class="kw-2">&amp;</span>highlighter, ScopeStack::new());
 <a href=#407 id=407 data-nosnippet>407</a>        <span class="kw">let </span>line = <span class="string">"module Bob::Wow::Troll::Five; 5; end"</span>;
-<a href=#408 id=408 data-nosnippet>408</a>        <span class="kw">let </span>ops = state.parse_line(line, <span class="kw-2">&amp;</span>ps).expect(<span class="string">"#[cfg(test)]"</span>);
+<a href=#408 id=408 data-nosnippet>408</a>        <span class="kw">let </span>ops = state.parse_line(line, ps).expect(<span class="string">"#[cfg(test)]"</span>).ops;
 <a href=#409 id=409 data-nosnippet>409</a>        <span class="kw">let </span>iter = HighlightIterator::new(<span class="kw-2">&amp;mut </span>highlight_state, <span class="kw-2">&amp;</span>ops[..], line, <span class="kw-2">&amp;</span>highlighter);
 <a href=#410 id=410 data-nosnippet>410</a>        <span class="kw">let </span>regions: Vec&lt;(Style, <span class="kw-2">&amp;</span>str)&gt; = iter.collect();
 <a href=#411 id=411 data-nosnippet>411</a>        <span class="comment">// println!("{:#?}", regions);
@@ -447,7 +447,7 @@
 <a href=#447 id=447 data-nosnippet>447</a>        <span class="comment">// We start by parsing a python multiline-comment: """
 <a href=#448 id=448 data-nosnippet>448</a>        </span><span class="kw">let </span><span class="kw-2">mut </span>highlight_state = HighlightState::new(<span class="kw-2">&amp;</span>highlighter, ScopeStack::new());
 <a href=#449 id=449 data-nosnippet>449</a>        <span class="kw">let </span>line = <span class="string">r#"""""#</span>;
-<a href=#450 id=450 data-nosnippet>450</a>        <span class="kw">let </span>ops = state.parse_line(line, <span class="kw-2">&amp;</span>ps).expect(<span class="string">"#[cfg(test)]"</span>);
+<a href=#450 id=450 data-nosnippet>450</a>        <span class="kw">let </span>ops = state.parse_line(line, ps).expect(<span class="string">"#[cfg(test)]"</span>).ops;
 <a href=#451 id=451 data-nosnippet>451</a>        <span class="kw">let </span>iter = HighlightIterator::new(<span class="kw-2">&amp;mut </span>highlight_state, <span class="kw-2">&amp;</span>ops[..], line, <span class="kw-2">&amp;</span>highlighter);
 <a href=#452 id=452 data-nosnippet>452</a>        <span class="macro">assert_eq!</span>(<span class="number">1</span>, iter.count());
 <a href=#453 id=453 data-nosnippet>453</a>        <span class="kw">let </span>path = highlight_state.path;
@@ -455,7 +455,7 @@
 <a href=#455 id=455 data-nosnippet>455</a>        <span class="comment">// We then parse the next line with a highlight state built from the previous state
 <a href=#456 id=456 data-nosnippet>456</a>        </span><span class="kw">let </span><span class="kw-2">mut </span>highlight_state = HighlightState::new(<span class="kw-2">&amp;</span>highlighter, path);
 <a href=#457 id=457 data-nosnippet>457</a>        <span class="kw">let </span>line = <span class="string">"multiline comment"</span>;
-<a href=#458 id=458 data-nosnippet>458</a>        <span class="kw">let </span>ops = state.parse_line(line, <span class="kw-2">&amp;</span>ps).expect(<span class="string">"#[cfg(test)]"</span>);
+<a href=#458 id=458 data-nosnippet>458</a>        <span class="kw">let </span>ops = state.parse_line(line, ps).expect(<span class="string">"#[cfg(test)]"</span>).ops;
 <a href=#459 id=459 data-nosnippet>459</a>        <span class="kw">let </span>iter = HighlightIterator::new(<span class="kw-2">&amp;mut </span>highlight_state, <span class="kw-2">&amp;</span>ops[..], line, <span class="kw-2">&amp;</span>highlighter);
 <a href=#460 id=460 data-nosnippet>460</a>        <span class="kw">let </span>regions: Vec&lt;(Style, <span class="kw-2">&amp;</span>str)&gt; = iter.collect();
 <a href=#461 id=461 data-nosnippet>461</a>
@@ -609,7 +609,7 @@
 <a href=#609 id=609 data-nosnippet>609</a>    </span><span class="kw">fn </span>test_ranges() {
 <a href=#610 id=610 data-nosnippet>610</a>        <span class="kw">let </span>ps = <span class="kw-2">&amp;*</span>testdata::PACKAGES_SYN_SET;
 <a href=#611 id=611 data-nosnippet>611</a>        <span class="kw">let </span><span class="kw-2">mut </span>state = {
-<a href=#612 id=612 data-nosnippet>612</a>            <span class="kw">let </span>syntax = ps.find_syntax_by_name(<span class="string">"Ruby on Rails"</span>).unwrap();
+<a href=#612 id=612 data-nosnippet>612</a>            <span class="kw">let </span>syntax = ps.find_syntax_by_name(<span class="string">"Ruby (Rails)"</span>).unwrap();
 <a href=#613 id=613 data-nosnippet>613</a>            ParseState::new(syntax)
 <a href=#614 id=614 data-nosnippet>614</a>        };
 <a href=#615 id=615 data-nosnippet>615</a>        <span class="kw">let </span>ts = ThemeSet::load_defaults();
@@ -617,7 +617,7 @@
 <a href=#617 id=617 data-nosnippet>617</a>
 <a href=#618 id=618 data-nosnippet>618</a>        <span class="kw">let </span><span class="kw-2">mut </span>highlight_state = HighlightState::new(<span class="kw-2">&amp;</span>highlighter, ScopeStack::new());
 <a href=#619 id=619 data-nosnippet>619</a>        <span class="kw">let </span>line = <span class="string">"module Bob::Wow::Troll::Five; 5; end"</span>;
-<a href=#620 id=620 data-nosnippet>620</a>        <span class="kw">let </span>ops = state.parse_line(line, <span class="kw-2">&amp;</span>ps).expect(<span class="string">"#[cfg(test)]"</span>);
+<a href=#620 id=620 data-nosnippet>620</a>        <span class="kw">let </span>ops = state.parse_line(line, ps).expect(<span class="string">"#[cfg(test)]"</span>).ops;
 <a href=#621 id=621 data-nosnippet>621</a>        <span class="kw">let </span>iter = RangedHighlightIterator::new(<span class="kw-2">&amp;mut </span>highlight_state, <span class="kw-2">&amp;</span>ops[..], line, <span class="kw-2">&amp;</span>highlighter);
 <a href=#622 id=622 data-nosnippet>622</a>        <span class="kw">let </span>regions: Vec&lt;(Style, <span class="kw-2">&amp;</span>str, Range&lt;usize&gt;)&gt; = iter.collect();
 <a href=#623 id=623 data-nosnippet>623</a>        <span class="comment">// println!("{:#?}", regions);
@@ -644,4 +644,5 @@
 <a href=#644 id=644 data-nosnippet>644</a>            )
 <a href=#645 id=645 data-nosnippet>645</a>        );
 <a href=#646 id=646 data-nosnippet>646</a>    }
-<a href=#647 id=647 data-nosnippet>647</a>}</code></pre></div></section></main></body></html>
+<a href=#647 id=647 data-nosnippet>647</a>}
+</code></pre></div></section></main></body></html>

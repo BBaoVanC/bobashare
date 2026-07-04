@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ResponseFuture","SetResponseHeader","SetResponseHeaderLayer"]};
+window.SIDEBAR_ITEMS = {"struct":["SetMultipleResponseHeader","SetMultipleResponseHeadersLayer","SetResponseHeader","SetResponseHeaderLayer"]};

@@ -1,23 +1,18 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Set a header on the response."><title>tower_http::set_header::response - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-4e99c027.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../tower_http/index.html">tower_<wbr>http</a><span class="version">0.6.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module response</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example" title="Example">Example</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In tower_<wbr>http::<wbr>set_<wbr>header</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">tower_http</a>::<wbr><a href="../index.html">set_header</a></div><h1>Module <span>response</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/tower_http/set_header/response.rs.html#1-391">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Set a header on the response.</p>
-<p>The header value to be set may be provided as a fixed value when the
-middleware is constructed, or determined dynamically based on the response
-by a closure. See the <a href="../trait.MakeHeaderValue.html" title="trait tower_http::set_header::MakeHeaderValue"><code>MakeHeaderValue</code></a> trait for details.</p>
-<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
-<p>Setting a header from a fixed value provided when the middleware is constructed:</p>
-
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Middleware for setting headers on HTTP responses."><title>tower_http::set_header::response - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module response</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../tower_http/index.html">tower_<wbr>http</a><span class="version">0.7.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module response</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#single-header" title="Single Header">Single Header</a><ul><li><a href="#example-fixed-value" title="Example: Fixed Value">Example: Fixed Value</a></li><li><a href="#example-dynamic-value" title="Example: Dynamic Value">Example: Dynamic Value</a></li></ul></li><li><a href="#multiple-headers" title="Multiple Headers">Multiple Headers</a><ul><li><a href="#example-multiple-fixed-values" title="Example: Multiple Fixed Values">Example: Multiple Fixed Values</a></li><li><a href="#example-multiple-dynamic-values" title="Example: Multiple Dynamic Values">Example: Multiple Dynamic Values</a></li></ul></li><li><a href="#modes" title="Modes">Modes</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In tower_<wbr>http::<wbr>set_<wbr>header</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">tower_http</a>::<wbr><a href="../index.html">set_header</a></div><h1>Module <span>response</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/tower_http/set_header/response/mod.rs.html#1-175">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Middleware for setting headers on HTTP responses.</p>
+<p>This module provides middleware for setting one or more headers on HTTP responses, either with fixed values or values determined dynamically from the response.</p>
+<h2 id="single-header"><a class="doc-anchor" href="#single-header">§</a>Single Header</h2>
+<p>Use <a href="../struct.SetResponseHeaderLayer.html" title="struct tower_http::set_header::SetResponseHeaderLayer"><code>SetResponseHeaderLayer</code></a> and <a href="../struct.SetResponseHeader.html" title="struct tower_http::set_header::SetResponseHeader"><code>SetResponseHeader</code></a> to set a single header. The header value can be a fixed value or computed dynamically using a closure. See <a href="../trait.MakeHeaderValue.html" title="trait tower_http::set_header::MakeHeaderValue"><code>crate::set_header::MakeHeaderValue</code></a> for details.</p>
+<h3 id="example-fixed-value"><a class="doc-anchor" href="#example-fixed-value">§</a>Example: Fixed Value</h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>http::{Request, Response, header::{<span class="self">self</span>, HeaderValue}};
 <span class="kw">use </span>tower::{Service, ServiceExt, ServiceBuilder};
 <span class="kw">use </span>tower_http::set_header::SetResponseHeaderLayer;
 <span class="kw">use </span>http_body_util::Full;
 <span class="kw">use </span>bytes::Bytes;
 
+
 <span class="kw">let </span><span class="kw-2">mut </span>svc = ServiceBuilder::new()
     .layer(
-        <span class="comment">// Layer that sets `Content-Type: text/html` on responses.
-        //
-        // `if_not_present` will only insert the header if it does not already
-        // have a value.
-        </span>SetResponseHeaderLayer::if_not_present(
+        SetResponseHeaderLayer::if_not_present(
             header::CONTENT_TYPE,
             HeaderValue::from_static(<span class="string">"text/html"</span>),
         )
@@ -28,9 +23,7 @@ by a closure. See the <a href="../trait.MakeHeaderValue.html" title="trait tower
 
 <span class="kw">let </span>response = svc.ready().<span class="kw">await</span><span class="question-mark">?</span>.call(request).<span class="kw">await</span><span class="question-mark">?</span>;
 
-<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-type"</span>], <span class="string">"text/html"</span>);</code></pre></div>
-<p>Setting a header based on a value determined dynamically from the response:</p>
-
+<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-type"</span>], <span class="string">"text/html"</span>);</code></pre></div><h3 id="example-dynamic-value"><a class="doc-anchor" href="#example-dynamic-value">§</a>Example: Dynamic Value</h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>http::{Request, Response, header::{<span class="self">self</span>, HeaderValue}};
 <span class="kw">use </span>tower::{Service, ServiceExt, ServiceBuilder};
 <span class="kw">use </span>tower_http::set_header::SetResponseHeaderLayer;
@@ -38,24 +31,16 @@ by a closure. See the <a href="../trait.MakeHeaderValue.html" title="trait tower
 <span class="kw">use </span>http_body_util::Full;
 <span class="kw">use </span>http_body::Body <span class="kw">as _</span>; <span class="comment">// for `Body::size_hint`
 
+
 </span><span class="kw">let </span><span class="kw-2">mut </span>svc = ServiceBuilder::new()
     .layer(
-        <span class="comment">// Layer that sets `Content-Length` if the body has a known size.
-        // Bodies with streaming responses wont have a known size.
-        //
-        // `overriding` will insert the header and override any previous values it
-        // may have.
-        </span>SetResponseHeaderLayer::overriding(
+        SetResponseHeaderLayer::overriding(
             header::CONTENT_LENGTH,
             |response: <span class="kw-2">&amp;</span>Response&lt;Full&lt;Bytes&gt;&gt;| {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(size) = response.body().size_hint().exact() {
-                    <span class="comment">// If the response body has a known size, returning `Some` will
-                    // set the `Content-Length` header to that value.
-                    </span><span class="prelude-val">Some</span>(HeaderValue::from_str(<span class="kw-2">&amp;</span>size.to_string()).unwrap())
+                    <span class="prelude-val">Some</span>(HeaderValue::from_str(<span class="kw-2">&amp;</span>size.to_string()).unwrap())
                 } <span class="kw">else </span>{
-                    <span class="comment">// If the response body doesn't have a known size, return `None`
-                    // to skip setting the header on this response.
-                    </span><span class="prelude-val">None
+                    <span class="prelude-val">None
                 </span>}
             }
         )
@@ -66,5 +51,65 @@ by a closure. See the <a href="../trait.MakeHeaderValue.html" title="trait tower
 
 <span class="kw">let </span>response = svc.ready().<span class="kw">await</span><span class="question-mark">?</span>.call(request).<span class="kw">await</span><span class="question-mark">?</span>;
 
-<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-length"</span>], <span class="string">"10"</span>);</code></pre></div>
-</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.ResponseFuture.html" title="struct tower_http::set_header::response::ResponseFuture">Response<wbr>Future</a></dt><dd>Response future for <a href="../struct.SetResponseHeader.html" title="struct tower_http::set_header::SetResponseHeader"><code>SetResponseHeader</code></a>.</dd><dt><a class="struct" href="struct.SetResponseHeader.html" title="struct tower_http::set_header::response::SetResponseHeader">SetResponse<wbr>Header</a></dt><dd>Middleware that sets a header on the response.</dd><dt><a class="struct" href="struct.SetResponseHeaderLayer.html" title="struct tower_http::set_header::response::SetResponseHeaderLayer">SetResponse<wbr>Header<wbr>Layer</a></dt><dd>Layer that applies <a href="../struct.SetResponseHeader.html" title="struct tower_http::set_header::SetResponseHeader"><code>SetResponseHeader</code></a> which adds a response header.</dd></dl></section></div></main></body></html>
+<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-length"</span>], <span class="string">"10"</span>);</code></pre></div><h2 id="multiple-headers"><a class="doc-anchor" href="#multiple-headers">§</a>Multiple Headers</h2>
+<p>Use <a href="struct.SetMultipleResponseHeadersLayer.html" title="struct tower_http::set_header::response::SetMultipleResponseHeadersLayer"><code>SetMultipleResponseHeadersLayer</code></a> and <a href="struct.SetMultipleResponseHeader.html" title="struct tower_http::set_header::response::SetMultipleResponseHeader"><code>SetMultipleResponseHeader</code></a> to set multiple headers at once. Each header can have a fixed value or be computed dynamically.</p>
+<p>Note: this layer uses boxing (allocation + dynamic dispatch) to support mixed producer
+types in a single vec. Stacking multiple <a href="../struct.SetResponseHeaderLayer.html" title="struct tower_http::set_header::SetResponseHeaderLayer"><code>SetResponseHeaderLayer</code></a> avoids this at the
+cost of a more complex composed service type.</p>
+<h3 id="example-multiple-fixed-values"><a class="doc-anchor" href="#example-multiple-fixed-values">§</a>Example: Multiple Fixed Values</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>http::{Request, Response, header::{<span class="self">self</span>, HeaderValue}};
+<span class="kw">use </span>tower::{Service, ServiceExt, ServiceBuilder};
+<span class="kw">use </span>tower_http::set_header::{HeaderMetadata, response::{SetMultipleResponseHeadersLayer}};
+<span class="kw">use </span>http_body_util::Full;
+<span class="kw">use </span>bytes::Bytes;
+
+
+<span class="kw">let </span><span class="kw-2">mut </span>svc = ServiceBuilder::new()
+    .layer(
+        SetMultipleResponseHeadersLayer::overriding(<span class="macro">vec!</span>[
+            (header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"text/html"</span>)).into(),
+            (header::CACHE_CONTROL, HeaderValue::from_static(<span class="string">"no-cache"</span>)).into(),
+        ])
+    )
+    .service(render_html);
+
+<span class="kw">let </span>request = Request::new(Full::default());
+
+<span class="kw">let </span>response = svc.ready().<span class="kw">await</span><span class="question-mark">?</span>.call(request).<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-type"</span>], <span class="string">"text/html"</span>);
+<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"cache-control"</span>], <span class="string">"no-cache"</span>);</code></pre></div><h3 id="example-multiple-dynamic-values"><a class="doc-anchor" href="#example-multiple-dynamic-values">§</a>Example: Multiple Dynamic Values</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>http::{Request, Response, header::{<span class="self">self</span>, HeaderValue}};
+<span class="kw">use </span>tower::{Service, ServiceExt, ServiceBuilder};
+<span class="kw">use </span>tower_http::set_header::{HeaderMetadata, response::{SetMultipleResponseHeadersLayer}};
+<span class="kw">use </span>bytes::Bytes;
+<span class="kw">use </span>http_body_util::Full;
+<span class="kw">use </span>http_body::Body <span class="kw">as _</span>; <span class="comment">// for `Body::size_hint`
+
+
+</span><span class="kw">let </span><span class="kw-2">mut </span>svc = ServiceBuilder::new()
+    .layer(
+        SetMultipleResponseHeadersLayer::overriding(<span class="macro">vec!</span>[
+            (header::CONTENT_LENGTH, |response: <span class="kw-2">&amp;</span>Response&lt;Full&lt;Bytes&gt;&gt;| {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(size) = response.body().size_hint().exact() {
+                    <span class="prelude-val">Some</span>(HeaderValue::from_str(<span class="kw-2">&amp;</span>size.to_string()).unwrap())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">None
+                </span>}
+            }).into(),
+        ])
+    )
+    .service(render_html);
+
+<span class="kw">let </span>request = Request::new(Full::default());
+
+<span class="kw">let </span>response = svc.ready().<span class="kw">await</span><span class="question-mark">?</span>.call(request).<span class="kw">await</span><span class="question-mark">?</span>;
+
+<span class="macro">assert_eq!</span>(response.headers()[<span class="string">"content-length"</span>], <span class="string">"10"</span>);</code></pre></div><h2 id="modes"><a class="doc-anchor" href="#modes">§</a>Modes</h2>
+<ul>
+<li><code>overriding</code>: If a previous value exists for the same header, it is removed and replaced with the new value.</li>
+<li><code>appending</code>: The new header is always added, preserving any existing values. If previous values exist, the header will have multiple values.</li>
+<li><code>if_not_present</code>: If a previous value exists for the header, the new value is not inserted.</li>
+</ul>
+<p>See <a href="../struct.SetResponseHeaderLayer.html" title="struct tower_http::set_header::SetResponseHeaderLayer"><code>SetResponseHeaderLayer</code></a>, <a href="../struct.SetResponseHeader.html" title="struct tower_http::set_header::SetResponseHeader"><code>SetResponseHeader</code></a>, <a href="struct.SetMultipleResponseHeadersLayer.html" title="struct tower_http::set_header::response::SetMultipleResponseHeadersLayer"><code>SetMultipleResponseHeadersLayer</code></a>, and <a href="struct.SetMultipleResponseHeader.html" title="struct tower_http::set_header::response::SetMultipleResponseHeader"><code>SetMultipleResponseHeader</code></a> for more details.</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.SetMultipleResponseHeader.html" title="struct tower_http::set_header::response::SetMultipleResponseHeader">SetMultiple<wbr>Response<wbr>Header</a></dt><dd>Middleware that sets multiple headers on the response.</dd><dt><a class="struct" href="struct.SetMultipleResponseHeadersLayer.html" title="struct tower_http::set_header::response::SetMultipleResponseHeadersLayer">SetMultiple<wbr>Response<wbr>Headers<wbr>Layer</a></dt><dd>Layer that applies <a href="struct.SetMultipleResponseHeader.html" title="struct tower_http::set_header::response::SetMultipleResponseHeader"><code>SetMultipleResponseHeader</code></a> which adds multiple response headers.</dd><dt><a class="struct" href="struct.SetResponseHeader.html" title="struct tower_http::set_header::response::SetResponseHeader">SetResponse<wbr>Header</a></dt><dd>Middleware that sets a header on the response.</dd><dt><a class="struct" href="struct.SetResponseHeaderLayer.html" title="struct tower_http::set_header::response::SetResponseHeaderLayer">SetResponse<wbr>Header<wbr>Layer</a></dt><dd>Layer that applies <a href="../struct.SetResponseHeader.html" title="struct tower_http::set_header::SetResponseHeader"><code>SetResponseHeader</code></a> which adds a response header.</dd></dl></section></div></main></body></html>

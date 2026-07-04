@@ -1,9 +1,9 @@
 (function() {
-    var implementors = Object.fromEntries([["pulldown_cmark_escape",[]]]);
+    const implementors = Object.fromEntries([["pulldown_cmark_escape",[]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
         window.pending_implementors = implementors;
     }
 })()
-//{"start":57,"fragment_lengths":[28]}
+//{"start":59,"fragment_lengths":[28]}

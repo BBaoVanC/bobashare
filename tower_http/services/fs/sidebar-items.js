@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AsyncReadBody","DefaultServeDirFallback","ServeDir","ServeFile","ServeFileSystemResponseBody","ServeFileSystemResponseFuture"]};
+window.SIDEBAR_ITEMS = {"struct":["AsyncReadBody","DefaultServeDirFallback","ServeDir","ServeFile","ServeFileSystemResponseBody","ServeFileSystemResponseFuture","TokioBackend","TokioFile"],"trait":["Backend","File","Metadata"]};

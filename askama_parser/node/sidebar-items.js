@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Node","Target","Whitespace"],"struct":["BlockDef","Call","Comment","Cond","CondTest","Extends","If","Import","Include","Let","Lit","Loop","Macro","Match","Raw","When","Ws"]};
+window.SIDEBAR_ITEMS = {"enum":["LetValueOrBlock","Node","Whitespace"],"struct":["BlockDef","Call","Comment","Compound","Cond","CondTest","Declare","Extends","FilterBlock","If","Import","Include","Let","Lit","Loop","Macro","MacroArg","Match","Raw","When","Ws"]};

@@ -1,1 +1,0 @@
-searchState.loadedDescShard("serde_error", 0, "serde-error\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.")

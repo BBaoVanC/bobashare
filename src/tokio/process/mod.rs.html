@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.47.1/src/process/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-4e99c027.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">tokio/process/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! An implementation of asynchronous process management for Tokio.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/process/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/process/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! An implementation of asynchronous process management for Tokio.
 <a href=#2 id=2 data-nosnippet>2</a>//!
 <a href=#3 id=3 data-nosnippet>3</a>//! This module provides a [`Command`] struct that imitates the interface of the
 <a href=#4 id=4 data-nosnippet>4</a>//! [`std::process::Command`] type in the standard library, but provides asynchronous versions of
@@ -750,7 +750,7 @@
 <a href=#750 id=750 data-nosnippet>750</a>    <span class="kw">where
 <a href=#751 id=751 data-nosnippet>751</a>        </span>F: FnMut() -&gt; io::Result&lt;()&gt; + Send + Sync + <span class="lifetime">'static</span>,
 <a href=#752 id=752 data-nosnippet>752</a>    {
-<a href=#753 id=753 data-nosnippet>753</a>        <span class="self">self</span>.std.pre_exec(f);
+<a href=#753 id=753 data-nosnippet>753</a>        <span class="kw">unsafe </span>{ <span class="self">self</span>.std.pre_exec(f) };
 <a href=#754 id=754 data-nosnippet>754</a>        <span class="self">self
 <a href=#755 id=755 data-nosnippet>755</a>    </span>}
 <a href=#756 id=756 data-nosnippet>756</a>
@@ -933,7 +933,7 @@
 <a href=#933 id=933 data-nosnippet>933</a>    #[inline]
 <a href=#934 id=934 data-nosnippet>934</a>    </span><span class="kw">pub fn </span>spawn_with(
 <a href=#935 id=935 data-nosnippet>935</a>        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-<a href=#936 id=936 data-nosnippet>936</a>        with: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;mut </span>StdCommand) -&gt; io::Result&lt;StdChild&gt;,
+<a href=#936 id=936 data-nosnippet>936</a>        with: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>StdCommand) -&gt; io::Result&lt;StdChild&gt;,
 <a href=#937 id=937 data-nosnippet>937</a>    ) -&gt; io::Result&lt;Child&gt; {
 <a href=#938 id=938 data-nosnippet>938</a>        <span class="comment">// On two lines to circumvent a mutable borrow check failure.
 <a href=#939 id=939 data-nosnippet>939</a>        </span><span class="kw">let </span>child = with(<span class="kw-2">&amp;mut </span><span class="self">self</span>.std)<span class="question-mark">?</span>;
@@ -1628,25 +1628,25 @@
 <a href=#1628 id=1628 data-nosnippet>1628</a>        os::unix::io::{AsFd, AsRawFd, BorrowedFd, OwnedFd, RawFd},
 <a href=#1629 id=1629 data-nosnippet>1629</a>    };
 <a href=#1630 id=1630 data-nosnippet>1630</a>
-<a href=#1631 id=1631 data-nosnippet>1631</a>    <span class="kw">use super</span>::{ChildStderr, ChildStdin, ChildStdout};
+<a href=#1631 id=1631 data-nosnippet>1631</a>    <span class="kw">use </span>super::{ChildStderr, ChildStdin, ChildStdout};
 <a href=#1632 id=1632 data-nosnippet>1632</a>
 <a href=#1633 id=1633 data-nosnippet>1633</a>    <span class="macro">macro_rules!</span> impl_traits {
-<a href=#1634 id=1634 data-nosnippet>1634</a>        (<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
-<a href=#1635 id=1635 data-nosnippet>1635</a>            <span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
+<a href=#1634 id=1634 data-nosnippet>1634</a>        (<span class="macro-nonterminal">$type</span>:ty) =&gt; {
+<a href=#1635 id=1635 data-nosnippet>1635</a>            <span class="kw">impl </span><span class="macro-nonterminal">$type </span>{
 <a href=#1636 id=1636 data-nosnippet>1636</a>                <span class="doccomment">/// Convert into [`OwnedFd`].
-<a href=#1637 id=1637 data-nosnippet>1637</a>                </span><span class="kw">pub fn </span><span class="macro-nonterminal">into_owned_fd</span>(<span class="self">self</span>) -&gt; io::Result&lt;OwnedFd&gt; {
+<a href=#1637 id=1637 data-nosnippet>1637</a>                </span><span class="kw">pub fn </span>into_owned_fd(<span class="self">self</span>) -&gt; io::Result&lt;OwnedFd&gt; {
 <a href=#1638 id=1638 data-nosnippet>1638</a>                    <span class="self">self</span>.inner.into_owned_fd()
 <a href=#1639 id=1639 data-nosnippet>1639</a>                }
 <a href=#1640 id=1640 data-nosnippet>1640</a>            }
 <a href=#1641 id=1641 data-nosnippet>1641</a>
-<a href=#1642 id=1642 data-nosnippet>1642</a>            <span class="kw">impl </span>AsRawFd <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1643 id=1643 data-nosnippet>1643</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_raw_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawFd {
+<a href=#1642 id=1642 data-nosnippet>1642</a>            <span class="kw">impl </span>AsRawFd <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1643 id=1643 data-nosnippet>1643</a>                <span class="kw">fn </span>as_raw_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawFd {
 <a href=#1644 id=1644 data-nosnippet>1644</a>                    <span class="self">self</span>.inner.as_raw_fd()
 <a href=#1645 id=1645 data-nosnippet>1645</a>                }
 <a href=#1646 id=1646 data-nosnippet>1646</a>            }
 <a href=#1647 id=1647 data-nosnippet>1647</a>
-<a href=#1648 id=1648 data-nosnippet>1648</a>            <span class="kw">impl </span>AsFd <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1649 id=1649 data-nosnippet>1649</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_fd</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedFd&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1648 id=1648 data-nosnippet>1648</a>            <span class="kw">impl </span>AsFd <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1649 id=1649 data-nosnippet>1649</a>                <span class="kw">fn </span>as_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedFd&lt;<span class="lifetime">'_</span>&gt; {
 <a href=#1650 id=1650 data-nosnippet>1650</a>                    <span class="kw">unsafe </span>{ BorrowedFd::borrow_raw(<span class="self">self</span>.as_raw_fd()) }
 <a href=#1651 id=1651 data-nosnippet>1651</a>                }
 <a href=#1652 id=1652 data-nosnippet>1652</a>            }
@@ -1661,27 +1661,27 @@
 <a href=#1661 id=1661 data-nosnippet>1661</a><span class="attr">#[cfg(any(windows, docsrs))]
 <a href=#1662 id=1662 data-nosnippet>1662</a>#[cfg_attr(docsrs, doc(cfg(windows)))]
 <a href=#1663 id=1663 data-nosnippet>1663</a></span><span class="kw">mod </span>windows {
-<a href=#1664 id=1664 data-nosnippet>1664</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#1664 id=1664 data-nosnippet>1664</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#1665 id=1665 data-nosnippet>1665</a>    <span class="kw">use </span><span class="kw">crate</span>::os::windows::io::{AsHandle, AsRawHandle, BorrowedHandle, OwnedHandle, RawHandle};
 <a href=#1666 id=1666 data-nosnippet>1666</a>
 <a href=#1667 id=1667 data-nosnippet>1667</a>    <span class="attr">#[cfg(not(docsrs))]
 <a href=#1668 id=1668 data-nosnippet>1668</a>    </span><span class="macro">macro_rules!</span> impl_traits {
-<a href=#1669 id=1669 data-nosnippet>1669</a>        (<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
-<a href=#1670 id=1670 data-nosnippet>1670</a>            <span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
+<a href=#1669 id=1669 data-nosnippet>1669</a>        (<span class="macro-nonterminal">$type</span>:ty) =&gt; {
+<a href=#1670 id=1670 data-nosnippet>1670</a>            <span class="kw">impl </span><span class="macro-nonterminal">$type </span>{
 <a href=#1671 id=1671 data-nosnippet>1671</a>                <span class="doccomment">/// Convert into [`OwnedHandle`].
-<a href=#1672 id=1672 data-nosnippet>1672</a>                </span><span class="kw">pub fn </span><span class="macro-nonterminal">into_owned_handle</span>(<span class="self">self</span>) -&gt; io::Result&lt;OwnedHandle&gt; {
+<a href=#1672 id=1672 data-nosnippet>1672</a>                </span><span class="kw">pub fn </span>into_owned_handle(<span class="self">self</span>) -&gt; io::Result&lt;OwnedHandle&gt; {
 <a href=#1673 id=1673 data-nosnippet>1673</a>                    <span class="self">self</span>.inner.into_owned_handle()
 <a href=#1674 id=1674 data-nosnippet>1674</a>                }
 <a href=#1675 id=1675 data-nosnippet>1675</a>            }
 <a href=#1676 id=1676 data-nosnippet>1676</a>
-<a href=#1677 id=1677 data-nosnippet>1677</a>            <span class="kw">impl </span>AsRawHandle <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1678 id=1678 data-nosnippet>1678</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawHandle {
+<a href=#1677 id=1677 data-nosnippet>1677</a>            <span class="kw">impl </span>AsRawHandle <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1678 id=1678 data-nosnippet>1678</a>                <span class="kw">fn </span>as_raw_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawHandle {
 <a href=#1679 id=1679 data-nosnippet>1679</a>                    <span class="self">self</span>.inner.as_raw_handle()
 <a href=#1680 id=1680 data-nosnippet>1680</a>                }
 <a href=#1681 id=1681 data-nosnippet>1681</a>            }
 <a href=#1682 id=1682 data-nosnippet>1682</a>
-<a href=#1683 id=1683 data-nosnippet>1683</a>            <span class="kw">impl </span>AsHandle <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1684 id=1684 data-nosnippet>1684</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedHandle&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1683 id=1683 data-nosnippet>1683</a>            <span class="kw">impl </span>AsHandle <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1684 id=1684 data-nosnippet>1684</a>                <span class="kw">fn </span>as_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedHandle&lt;<span class="lifetime">'_</span>&gt; {
 <a href=#1685 id=1685 data-nosnippet>1685</a>                    <span class="kw">unsafe </span>{ BorrowedHandle::borrow_raw(<span class="self">self</span>.as_raw_handle()) }
 <a href=#1686 id=1686 data-nosnippet>1686</a>                }
 <a href=#1687 id=1687 data-nosnippet>1687</a>            }
@@ -1690,22 +1690,22 @@
 <a href=#1690 id=1690 data-nosnippet>1690</a>
 <a href=#1691 id=1691 data-nosnippet>1691</a>    <span class="attr">#[cfg(docsrs)]
 <a href=#1692 id=1692 data-nosnippet>1692</a>    </span><span class="macro">macro_rules!</span> impl_traits {
-<a href=#1693 id=1693 data-nosnippet>1693</a>        (<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
-<a href=#1694 id=1694 data-nosnippet>1694</a>            <span class="kw">impl </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
+<a href=#1693 id=1693 data-nosnippet>1693</a>        (<span class="macro-nonterminal">$type</span>:ty) =&gt; {
+<a href=#1694 id=1694 data-nosnippet>1694</a>            <span class="kw">impl </span><span class="macro-nonterminal">$type </span>{
 <a href=#1695 id=1695 data-nosnippet>1695</a>                <span class="doccomment">/// Convert into [`OwnedHandle`].
-<a href=#1696 id=1696 data-nosnippet>1696</a>                </span><span class="kw">pub fn </span><span class="macro-nonterminal">into_owned_handle</span>(<span class="self">self</span>) -&gt; io::Result&lt;OwnedHandle&gt; {
+<a href=#1696 id=1696 data-nosnippet>1696</a>                </span><span class="kw">pub fn </span>into_owned_handle(<span class="self">self</span>) -&gt; io::Result&lt;OwnedHandle&gt; {
 <a href=#1697 id=1697 data-nosnippet>1697</a>                    <span class="macro">todo!</span>(<span class="string">"For doc generation only"</span>)
 <a href=#1698 id=1698 data-nosnippet>1698</a>                }
 <a href=#1699 id=1699 data-nosnippet>1699</a>            }
 <a href=#1700 id=1700 data-nosnippet>1700</a>
-<a href=#1701 id=1701 data-nosnippet>1701</a>            <span class="kw">impl </span>AsRawHandle <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1702 id=1702 data-nosnippet>1702</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_raw_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawHandle {
+<a href=#1701 id=1701 data-nosnippet>1701</a>            <span class="kw">impl </span>AsRawHandle <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1702 id=1702 data-nosnippet>1702</a>                <span class="kw">fn </span>as_raw_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawHandle {
 <a href=#1703 id=1703 data-nosnippet>1703</a>                    <span class="macro">todo!</span>(<span class="string">"For doc generation only"</span>)
 <a href=#1704 id=1704 data-nosnippet>1704</a>                }
 <a href=#1705 id=1705 data-nosnippet>1705</a>            }
 <a href=#1706 id=1706 data-nosnippet>1706</a>
-<a href=#1707 id=1707 data-nosnippet>1707</a>            <span class="kw">impl </span>AsHandle <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#1708 id=1708 data-nosnippet>1708</a>                <span class="kw">fn </span><span class="macro-nonterminal">as_handle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedHandle&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1707 id=1707 data-nosnippet>1707</a>            <span class="kw">impl </span>AsHandle <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#1708 id=1708 data-nosnippet>1708</a>                <span class="kw">fn </span>as_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedHandle&lt;<span class="lifetime">'_</span>&gt; {
 <a href=#1709 id=1709 data-nosnippet>1709</a>                    <span class="macro">todo!</span>(<span class="string">"For doc generation only"</span>)
 <a href=#1710 id=1710 data-nosnippet>1710</a>                }
 <a href=#1711 id=1711 data-nosnippet>1711</a>            }
@@ -1851,4 +1851,5 @@
 <a href=#1851 id=1851 data-nosnippet>1851</a>        <span class="macro">assert_eq!</span>(<span class="number">1</span>, mock_err.num_kills);
 <a href=#1852 id=1852 data-nosnippet>1852</a>        <span class="macro">assert_eq!</span>(<span class="number">1</span>, mock_err.num_polls);
 <a href=#1853 id=1853 data-nosnippet>1853</a>    }
-<a href=#1854 id=1854 data-nosnippet>1854</a>}</code></pre></div></section></main></body></html>
+<a href=#1854 id=1854 data-nosnippet>1854</a>}
+</code></pre></div></section></main></body></html>

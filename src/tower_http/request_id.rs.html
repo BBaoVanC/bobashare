@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.6.6/src/request_id.rs`."><title>request_id.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../static.files/storage-4e99c027.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">tower_http/</div>request_id.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Set and propagate request ids.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.0/src/request_id.rs`."><title>request_id.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tower_http/</div>request_id.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Set and propagate request ids.
 <a href=#2 id=2 data-nosnippet>2</a>//!
 <a href=#3 id=3 data-nosnippet>3</a>//! # Example
 <a href=#4 id=4 data-nosnippet>4</a>//!
@@ -10,7 +10,7 @@
 <a href=#10 id=10 data-nosnippet>10</a>//! };
 <a href=#11 id=11 data-nosnippet>11</a>//! use http_body_util::Full;
 <a href=#12 id=12 data-nosnippet>12</a>//! use bytes::Bytes;
-<a href=#13 id=13 data-nosnippet>13</a>//! use std::sync::{Arc, atomic::{AtomicU64, Ordering}};
+<a href=#13 id=13 data-nosnippet>13</a>//! use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
 <a href=#14 id=14 data-nosnippet>14</a>//!
 <a href=#15 id=15 data-nosnippet>15</a>//! # #[tokio::main]
 <a href=#16 id=16 data-nosnippet>16</a>//! # async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -21,7 +21,7 @@
 <a href=#21 id=21 data-nosnippet>21</a>//! // A `MakeRequestId` that increments an atomic counter
 <a href=#22 id=22 data-nosnippet>22</a>//! #[derive(Clone, Default)]
 <a href=#23 id=23 data-nosnippet>23</a>//! struct MyMakeRequestId {
-<a href=#24 id=24 data-nosnippet>24</a>//!     counter: Arc&lt;AtomicU64&gt;,
+<a href=#24 id=24 data-nosnippet>24</a>//!     counter: Arc&lt;AtomicUsize&gt;,
 <a href=#25 id=25 data-nosnippet>25</a>//! }
 <a href=#26 id=26 data-nosnippet>26</a>//!
 <a href=#27 id=27 data-nosnippet>27</a>//! impl MakeRequestId for MyMakeRequestId {
@@ -68,7 +68,7 @@
 <a href=#68 id=68 data-nosnippet>68</a>//! # };
 <a href=#69 id=69 data-nosnippet>69</a>//! # use bytes::Bytes;
 <a href=#70 id=70 data-nosnippet>70</a>//! # use http_body_util::Full;
-<a href=#71 id=71 data-nosnippet>71</a>//! # use std::sync::{Arc, atomic::{AtomicU64, Ordering}};
+<a href=#71 id=71 data-nosnippet>71</a>//! # use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
 <a href=#72 id=72 data-nosnippet>72</a>//! # #[tokio::main]
 <a href=#73 id=73 data-nosnippet>73</a>//! # async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <a href=#74 id=74 data-nosnippet>74</a>//! # let handler = tower::service_fn(|request: Request&lt;Full&lt;Bytes&gt;&gt;| async move {
@@ -76,7 +76,7 @@
 <a href=#76 id=76 data-nosnippet>76</a>//! # });
 <a href=#77 id=77 data-nosnippet>77</a>//! # #[derive(Clone, Default)]
 <a href=#78 id=78 data-nosnippet>78</a>//! # struct MyMakeRequestId {
-<a href=#79 id=79 data-nosnippet>79</a>//! #     counter: Arc&lt;AtomicU64&gt;,
+<a href=#79 id=79 data-nosnippet>79</a>//! #     counter: Arc&lt;AtomicUsize&gt;,
 <a href=#80 id=80 data-nosnippet>80</a>//! # }
 <a href=#81 id=81 data-nosnippet>81</a>//! # impl MakeRequestId for MyMakeRequestId {
 <a href=#82 id=82 data-nosnippet>82</a>//! #     fn make_request_id&lt;B&gt;(&amp;mut self, request: &amp;Request&lt;B&gt;) -&gt; Option&lt;RequestId&gt; {
@@ -122,7 +122,7 @@
 <a href=#122 id=122 data-nosnippet>122</a>//! # };
 <a href=#123 id=123 data-nosnippet>123</a>//! # use http_body_util::Full;
 <a href=#124 id=124 data-nosnippet>124</a>//! # use bytes::Bytes;
-<a href=#125 id=125 data-nosnippet>125</a>//! # use std::sync::{Arc, atomic::{AtomicU64, Ordering}};
+<a href=#125 id=125 data-nosnippet>125</a>//! # use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
 <a href=#126 id=126 data-nosnippet>126</a>//! # #[tokio::main]
 <a href=#127 id=127 data-nosnippet>127</a>//! # async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <a href=#128 id=128 data-nosnippet>128</a>//! # let handler = tower::service_fn(|request: Request&lt;Full&lt;Bytes&gt;&gt;| async move {
@@ -130,7 +130,7 @@
 <a href=#130 id=130 data-nosnippet>130</a>//! # });
 <a href=#131 id=131 data-nosnippet>131</a>//! # #[derive(Clone, Default)]
 <a href=#132 id=132 data-nosnippet>132</a>//! # struct MyMakeRequestId {
-<a href=#133 id=133 data-nosnippet>133</a>//! #     counter: Arc&lt;AtomicU64&gt;,
+<a href=#133 id=133 data-nosnippet>133</a>//! #     counter: Arc&lt;AtomicUsize&gt;,
 <a href=#134 id=134 data-nosnippet>134</a>//! # }
 <a href=#135 id=135 data-nosnippet>135</a>//! # impl MakeRequestId for MyMakeRequestId {
 <a href=#136 id=136 data-nosnippet>136</a>//! #     fn make_request_id&lt;B&gt;(&amp;mut self, request: &amp;Request&lt;B&gt;) -&gt; Option&lt;RequestId&gt; {
@@ -483,122 +483,121 @@
 <a href=#483 id=483 data-nosnippet>483</a>    <span class="kw">use </span><span class="kw">crate</span>::test_helpers::Body;
 <a href=#484 id=484 data-nosnippet>484</a>    <span class="kw">use </span><span class="kw">crate</span>::ServiceBuilderExt <span class="kw">as _</span>;
 <a href=#485 id=485 data-nosnippet>485</a>    <span class="kw">use </span>http::Response;
-<a href=#486 id=486 data-nosnippet>486</a>    <span class="kw">use </span>std::{
-<a href=#487 id=487 data-nosnippet>487</a>        convert::Infallible,
-<a href=#488 id=488 data-nosnippet>488</a>        sync::{
-<a href=#489 id=489 data-nosnippet>489</a>            atomic::{AtomicU64, Ordering},
-<a href=#490 id=490 data-nosnippet>490</a>            Arc,
-<a href=#491 id=491 data-nosnippet>491</a>        },
-<a href=#492 id=492 data-nosnippet>492</a>    };
-<a href=#493 id=493 data-nosnippet>493</a>    <span class="kw">use </span>tower::{ServiceBuilder, ServiceExt};
-<a href=#494 id=494 data-nosnippet>494</a>
-<a href=#495 id=495 data-nosnippet>495</a>    <span class="attr">#[allow(unused_imports)]
-<a href=#496 id=496 data-nosnippet>496</a>    </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#497 id=497 data-nosnippet>497</a>
-<a href=#498 id=498 data-nosnippet>498</a>    <span class="attr">#[tokio::test]
-<a href=#499 id=499 data-nosnippet>499</a>    </span><span class="kw">async fn </span>basic() {
-<a href=#500 id=500 data-nosnippet>500</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
-<a href=#501 id=501 data-nosnippet>501</a>            .set_x_request_id(Counter::default())
-<a href=#502 id=502 data-nosnippet>502</a>            .propagate_x_request_id()
-<a href=#503 id=503 data-nosnippet>503</a>            .service_fn(handler);
-<a href=#504 id=504 data-nosnippet>504</a>
-<a href=#505 id=505 data-nosnippet>505</a>        <span class="comment">// header on response
-<a href=#506 id=506 data-nosnippet>506</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
-<a href=#507 id=507 data-nosnippet>507</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#508 id=508 data-nosnippet>508</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"0"</span>);
-<a href=#509 id=509 data-nosnippet>509</a>
-<a href=#510 id=510 data-nosnippet>510</a>        <span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
-<a href=#511 id=511 data-nosnippet>511</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#512 id=512 data-nosnippet>512</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"1"</span>);
-<a href=#513 id=513 data-nosnippet>513</a>
-<a href=#514 id=514 data-nosnippet>514</a>        <span class="comment">// doesn't override if header is already there
-<a href=#515 id=515 data-nosnippet>515</a>        </span><span class="kw">let </span>req = Request::builder()
-<a href=#516 id=516 data-nosnippet>516</a>            .header(<span class="string">"x-request-id"</span>, <span class="string">"foo"</span>)
-<a href=#517 id=517 data-nosnippet>517</a>            .body(Body::empty())
-<a href=#518 id=518 data-nosnippet>518</a>            .unwrap();
-<a href=#519 id=519 data-nosnippet>519</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#520 id=520 data-nosnippet>520</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
-<a href=#521 id=521 data-nosnippet>521</a>
-<a href=#522 id=522 data-nosnippet>522</a>        <span class="comment">// extension propagated
-<a href=#523 id=523 data-nosnippet>523</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
-<a href=#524 id=524 data-nosnippet>524</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#525 id=525 data-nosnippet>525</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"2"</span>);
-<a href=#526 id=526 data-nosnippet>526</a>    }
-<a href=#527 id=527 data-nosnippet>527</a>
-<a href=#528 id=528 data-nosnippet>528</a>    <span class="attr">#[tokio::test]
-<a href=#529 id=529 data-nosnippet>529</a>    </span><span class="kw">async fn </span>other_middleware_setting_request_id() {
-<a href=#530 id=530 data-nosnippet>530</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
-<a href=#531 id=531 data-nosnippet>531</a>            .override_request_header(
-<a href=#532 id=532 data-nosnippet>532</a>                HeaderName::from_static(<span class="string">"x-request-id"</span>),
-<a href=#533 id=533 data-nosnippet>533</a>                HeaderValue::from_str(<span class="string">"foo"</span>).unwrap(),
-<a href=#534 id=534 data-nosnippet>534</a>            )
-<a href=#535 id=535 data-nosnippet>535</a>            .set_x_request_id(Counter::default())
-<a href=#536 id=536 data-nosnippet>536</a>            .map_request(|request: Request&lt;<span class="kw">_</span>&gt;| {
-<a href=#537 id=537 data-nosnippet>537</a>                <span class="comment">// `set_x_request_id` should set the extension if its missing
-<a href=#538 id=538 data-nosnippet>538</a>                </span><span class="macro">assert_eq!</span>(request.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
-<a href=#539 id=539 data-nosnippet>539</a>                request
-<a href=#540 id=540 data-nosnippet>540</a>            })
-<a href=#541 id=541 data-nosnippet>541</a>            .propagate_x_request_id()
-<a href=#542 id=542 data-nosnippet>542</a>            .service_fn(handler);
-<a href=#543 id=543 data-nosnippet>543</a>
-<a href=#544 id=544 data-nosnippet>544</a>        <span class="kw">let </span>req = Request::builder()
-<a href=#545 id=545 data-nosnippet>545</a>            .header(
-<a href=#546 id=546 data-nosnippet>546</a>                <span class="string">"x-request-id"</span>,
-<a href=#547 id=547 data-nosnippet>547</a>                <span class="string">"this-will-be-overriden-by-override_request_header-middleware"</span>,
-<a href=#548 id=548 data-nosnippet>548</a>            )
-<a href=#549 id=549 data-nosnippet>549</a>            .body(Body::empty())
-<a href=#550 id=550 data-nosnippet>550</a>            .unwrap();
-<a href=#551 id=551 data-nosnippet>551</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#552 id=552 data-nosnippet>552</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
-<a href=#553 id=553 data-nosnippet>553</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
-<a href=#554 id=554 data-nosnippet>554</a>    }
-<a href=#555 id=555 data-nosnippet>555</a>
-<a href=#556 id=556 data-nosnippet>556</a>    <span class="attr">#[tokio::test]
-<a href=#557 id=557 data-nosnippet>557</a>    </span><span class="kw">async fn </span>other_middleware_setting_request_id_on_response() {
-<a href=#558 id=558 data-nosnippet>558</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
-<a href=#559 id=559 data-nosnippet>559</a>            .set_x_request_id(Counter::default())
-<a href=#560 id=560 data-nosnippet>560</a>            .propagate_x_request_id()
-<a href=#561 id=561 data-nosnippet>561</a>            .override_response_header(
-<a href=#562 id=562 data-nosnippet>562</a>                HeaderName::from_static(<span class="string">"x-request-id"</span>),
-<a href=#563 id=563 data-nosnippet>563</a>                HeaderValue::from_str(<span class="string">"foo"</span>).unwrap(),
-<a href=#564 id=564 data-nosnippet>564</a>            )
-<a href=#565 id=565 data-nosnippet>565</a>            .service_fn(handler);
-<a href=#566 id=566 data-nosnippet>566</a>
-<a href=#567 id=567 data-nosnippet>567</a>        <span class="kw">let </span>req = Request::builder()
-<a href=#568 id=568 data-nosnippet>568</a>            .header(<span class="string">"x-request-id"</span>, <span class="string">"foo"</span>)
-<a href=#569 id=569 data-nosnippet>569</a>            .body(Body::empty())
-<a href=#570 id=570 data-nosnippet>570</a>            .unwrap();
-<a href=#571 id=571 data-nosnippet>571</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#572 id=572 data-nosnippet>572</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
-<a href=#573 id=573 data-nosnippet>573</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
-<a href=#574 id=574 data-nosnippet>574</a>    }
-<a href=#575 id=575 data-nosnippet>575</a>
-<a href=#576 id=576 data-nosnippet>576</a>    <span class="attr">#[derive(Clone, Default)]
-<a href=#577 id=577 data-nosnippet>577</a>    </span><span class="kw">struct </span>Counter(Arc&lt;AtomicU64&gt;);
-<a href=#578 id=578 data-nosnippet>578</a>
-<a href=#579 id=579 data-nosnippet>579</a>    <span class="kw">impl </span>MakeRequestId <span class="kw">for </span>Counter {
-<a href=#580 id=580 data-nosnippet>580</a>        <span class="kw">fn </span>make_request_id&lt;B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;RequestId&gt; {
-<a href=#581 id=581 data-nosnippet>581</a>            <span class="kw">let </span>id =
-<a href=#582 id=582 data-nosnippet>582</a>                HeaderValue::from_str(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.fetch_add(<span class="number">1</span>, Ordering::SeqCst).to_string()).unwrap();
-<a href=#583 id=583 data-nosnippet>583</a>            <span class="prelude-val">Some</span>(RequestId::new(id))
-<a href=#584 id=584 data-nosnippet>584</a>        }
-<a href=#585 id=585 data-nosnippet>585</a>    }
-<a href=#586 id=586 data-nosnippet>586</a>
-<a href=#587 id=587 data-nosnippet>587</a>    <span class="kw">async fn </span>handler(<span class="kw">_</span>: Request&lt;Body&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Body&gt;, Infallible&gt; {
-<a href=#588 id=588 data-nosnippet>588</a>        <span class="prelude-val">Ok</span>(Response::new(Body::empty()))
-<a href=#589 id=589 data-nosnippet>589</a>    }
-<a href=#590 id=590 data-nosnippet>590</a>
-<a href=#591 id=591 data-nosnippet>591</a>    <span class="attr">#[tokio::test]
-<a href=#592 id=592 data-nosnippet>592</a>    </span><span class="kw">async fn </span>uuid() {
-<a href=#593 id=593 data-nosnippet>593</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
-<a href=#594 id=594 data-nosnippet>594</a>            .set_x_request_id(MakeRequestUuid)
-<a href=#595 id=595 data-nosnippet>595</a>            .propagate_x_request_id()
-<a href=#596 id=596 data-nosnippet>596</a>            .service_fn(handler);
-<a href=#597 id=597 data-nosnippet>597</a>
-<a href=#598 id=598 data-nosnippet>598</a>        <span class="comment">// header on response
-<a href=#599 id=599 data-nosnippet>599</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
-<a href=#600 id=600 data-nosnippet>600</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
-<a href=#601 id=601 data-nosnippet>601</a>        <span class="kw">let </span>id = res.headers_mut().remove(<span class="string">"x-request-id"</span>).unwrap();
-<a href=#602 id=602 data-nosnippet>602</a>        id.to_str().unwrap().parse::&lt;Uuid&gt;().unwrap();
-<a href=#603 id=603 data-nosnippet>603</a>    }
-<a href=#604 id=604 data-nosnippet>604</a>}</code></pre></div></section></main></body></html>
+<a href=#486 id=486 data-nosnippet>486</a>    <span class="kw">use </span>std::sync::atomic::AtomicUsize;
+<a href=#487 id=487 data-nosnippet>487</a>    <span class="kw">use </span>std::{
+<a href=#488 id=488 data-nosnippet>488</a>        convert::Infallible,
+<a href=#489 id=489 data-nosnippet>489</a>        sync::{atomic::Ordering, Arc},
+<a href=#490 id=490 data-nosnippet>490</a>    };
+<a href=#491 id=491 data-nosnippet>491</a>    <span class="kw">use </span>tower::{ServiceBuilder, ServiceExt};
+<a href=#492 id=492 data-nosnippet>492</a>
+<a href=#493 id=493 data-nosnippet>493</a>    <span class="attr">#[allow(unused_imports)]
+<a href=#494 id=494 data-nosnippet>494</a>    </span><span class="kw">use </span>super::<span class="kw-2">*</span>;
+<a href=#495 id=495 data-nosnippet>495</a>
+<a href=#496 id=496 data-nosnippet>496</a>    <span class="attr">#[tokio::test]
+<a href=#497 id=497 data-nosnippet>497</a>    </span><span class="kw">async fn </span>basic() {
+<a href=#498 id=498 data-nosnippet>498</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
+<a href=#499 id=499 data-nosnippet>499</a>            .set_x_request_id(Counter::default())
+<a href=#500 id=500 data-nosnippet>500</a>            .propagate_x_request_id()
+<a href=#501 id=501 data-nosnippet>501</a>            .service_fn(handler);
+<a href=#502 id=502 data-nosnippet>502</a>
+<a href=#503 id=503 data-nosnippet>503</a>        <span class="comment">// header on response
+<a href=#504 id=504 data-nosnippet>504</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
+<a href=#505 id=505 data-nosnippet>505</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#506 id=506 data-nosnippet>506</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"0"</span>);
+<a href=#507 id=507 data-nosnippet>507</a>
+<a href=#508 id=508 data-nosnippet>508</a>        <span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
+<a href=#509 id=509 data-nosnippet>509</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#510 id=510 data-nosnippet>510</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"1"</span>);
+<a href=#511 id=511 data-nosnippet>511</a>
+<a href=#512 id=512 data-nosnippet>512</a>        <span class="comment">// doesn't override if header is already there
+<a href=#513 id=513 data-nosnippet>513</a>        </span><span class="kw">let </span>req = Request::builder()
+<a href=#514 id=514 data-nosnippet>514</a>            .header(<span class="string">"x-request-id"</span>, <span class="string">"foo"</span>)
+<a href=#515 id=515 data-nosnippet>515</a>            .body(Body::empty())
+<a href=#516 id=516 data-nosnippet>516</a>            .unwrap();
+<a href=#517 id=517 data-nosnippet>517</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#518 id=518 data-nosnippet>518</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
+<a href=#519 id=519 data-nosnippet>519</a>
+<a href=#520 id=520 data-nosnippet>520</a>        <span class="comment">// extension propagated
+<a href=#521 id=521 data-nosnippet>521</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
+<a href=#522 id=522 data-nosnippet>522</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#523 id=523 data-nosnippet>523</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"2"</span>);
+<a href=#524 id=524 data-nosnippet>524</a>    }
+<a href=#525 id=525 data-nosnippet>525</a>
+<a href=#526 id=526 data-nosnippet>526</a>    <span class="attr">#[tokio::test]
+<a href=#527 id=527 data-nosnippet>527</a>    </span><span class="kw">async fn </span>other_middleware_setting_request_id() {
+<a href=#528 id=528 data-nosnippet>528</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
+<a href=#529 id=529 data-nosnippet>529</a>            .override_request_header(
+<a href=#530 id=530 data-nosnippet>530</a>                HeaderName::from_static(<span class="string">"x-request-id"</span>),
+<a href=#531 id=531 data-nosnippet>531</a>                HeaderValue::from_str(<span class="string">"foo"</span>).unwrap(),
+<a href=#532 id=532 data-nosnippet>532</a>            )
+<a href=#533 id=533 data-nosnippet>533</a>            .set_x_request_id(Counter::default())
+<a href=#534 id=534 data-nosnippet>534</a>            .map_request(|request: Request&lt;<span class="kw">_</span>&gt;| {
+<a href=#535 id=535 data-nosnippet>535</a>                <span class="comment">// `set_x_request_id` should set the extension if its missing
+<a href=#536 id=536 data-nosnippet>536</a>                </span><span class="macro">assert_eq!</span>(request.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
+<a href=#537 id=537 data-nosnippet>537</a>                request
+<a href=#538 id=538 data-nosnippet>538</a>            })
+<a href=#539 id=539 data-nosnippet>539</a>            .propagate_x_request_id()
+<a href=#540 id=540 data-nosnippet>540</a>            .service_fn(handler);
+<a href=#541 id=541 data-nosnippet>541</a>
+<a href=#542 id=542 data-nosnippet>542</a>        <span class="kw">let </span>req = Request::builder()
+<a href=#543 id=543 data-nosnippet>543</a>            .header(
+<a href=#544 id=544 data-nosnippet>544</a>                <span class="string">"x-request-id"</span>,
+<a href=#545 id=545 data-nosnippet>545</a>                <span class="string">"this-will-be-overriden-by-override_request_header-middleware"</span>,
+<a href=#546 id=546 data-nosnippet>546</a>            )
+<a href=#547 id=547 data-nosnippet>547</a>            .body(Body::empty())
+<a href=#548 id=548 data-nosnippet>548</a>            .unwrap();
+<a href=#549 id=549 data-nosnippet>549</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#550 id=550 data-nosnippet>550</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
+<a href=#551 id=551 data-nosnippet>551</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
+<a href=#552 id=552 data-nosnippet>552</a>    }
+<a href=#553 id=553 data-nosnippet>553</a>
+<a href=#554 id=554 data-nosnippet>554</a>    <span class="attr">#[tokio::test]
+<a href=#555 id=555 data-nosnippet>555</a>    </span><span class="kw">async fn </span>other_middleware_setting_request_id_on_response() {
+<a href=#556 id=556 data-nosnippet>556</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
+<a href=#557 id=557 data-nosnippet>557</a>            .set_x_request_id(Counter::default())
+<a href=#558 id=558 data-nosnippet>558</a>            .propagate_x_request_id()
+<a href=#559 id=559 data-nosnippet>559</a>            .override_response_header(
+<a href=#560 id=560 data-nosnippet>560</a>                HeaderName::from_static(<span class="string">"x-request-id"</span>),
+<a href=#561 id=561 data-nosnippet>561</a>                HeaderValue::from_str(<span class="string">"foo"</span>).unwrap(),
+<a href=#562 id=562 data-nosnippet>562</a>            )
+<a href=#563 id=563 data-nosnippet>563</a>            .service_fn(handler);
+<a href=#564 id=564 data-nosnippet>564</a>
+<a href=#565 id=565 data-nosnippet>565</a>        <span class="kw">let </span>req = Request::builder()
+<a href=#566 id=566 data-nosnippet>566</a>            .header(<span class="string">"x-request-id"</span>, <span class="string">"foo"</span>)
+<a href=#567 id=567 data-nosnippet>567</a>            .body(Body::empty())
+<a href=#568 id=568 data-nosnippet>568</a>            .unwrap();
+<a href=#569 id=569 data-nosnippet>569</a>        <span class="kw">let </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#570 id=570 data-nosnippet>570</a>        <span class="macro">assert_eq!</span>(res.headers()[<span class="string">"x-request-id"</span>], <span class="string">"foo"</span>);
+<a href=#571 id=571 data-nosnippet>571</a>        <span class="macro">assert_eq!</span>(res.extensions().get::&lt;RequestId&gt;().unwrap().<span class="number">0</span>, <span class="string">"foo"</span>);
+<a href=#572 id=572 data-nosnippet>572</a>    }
+<a href=#573 id=573 data-nosnippet>573</a>
+<a href=#574 id=574 data-nosnippet>574</a>    <span class="attr">#[derive(Clone, Default)]
+<a href=#575 id=575 data-nosnippet>575</a>    </span><span class="kw">struct </span>Counter(Arc&lt;AtomicUsize&gt;);
+<a href=#576 id=576 data-nosnippet>576</a>
+<a href=#577 id=577 data-nosnippet>577</a>    <span class="kw">impl </span>MakeRequestId <span class="kw">for </span>Counter {
+<a href=#578 id=578 data-nosnippet>578</a>        <span class="kw">fn </span>make_request_id&lt;B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _request: <span class="kw-2">&amp;</span>Request&lt;B&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;RequestId&gt; {
+<a href=#579 id=579 data-nosnippet>579</a>            <span class="kw">let </span>id =
+<a href=#580 id=580 data-nosnippet>580</a>                HeaderValue::from_str(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>.fetch_add(<span class="number">1</span>, Ordering::SeqCst).to_string()).unwrap();
+<a href=#581 id=581 data-nosnippet>581</a>            <span class="prelude-val">Some</span>(RequestId::new(id))
+<a href=#582 id=582 data-nosnippet>582</a>        }
+<a href=#583 id=583 data-nosnippet>583</a>    }
+<a href=#584 id=584 data-nosnippet>584</a>
+<a href=#585 id=585 data-nosnippet>585</a>    <span class="kw">async fn </span>handler(<span class="kw">_</span>: Request&lt;Body&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Body&gt;, Infallible&gt; {
+<a href=#586 id=586 data-nosnippet>586</a>        <span class="prelude-val">Ok</span>(Response::new(Body::empty()))
+<a href=#587 id=587 data-nosnippet>587</a>    }
+<a href=#588 id=588 data-nosnippet>588</a>
+<a href=#589 id=589 data-nosnippet>589</a>    <span class="attr">#[tokio::test]
+<a href=#590 id=590 data-nosnippet>590</a>    </span><span class="kw">async fn </span>uuid() {
+<a href=#591 id=591 data-nosnippet>591</a>        <span class="kw">let </span>svc = ServiceBuilder::new()
+<a href=#592 id=592 data-nosnippet>592</a>            .set_x_request_id(MakeRequestUuid)
+<a href=#593 id=593 data-nosnippet>593</a>            .propagate_x_request_id()
+<a href=#594 id=594 data-nosnippet>594</a>            .service_fn(handler);
+<a href=#595 id=595 data-nosnippet>595</a>
+<a href=#596 id=596 data-nosnippet>596</a>        <span class="comment">// header on response
+<a href=#597 id=597 data-nosnippet>597</a>        </span><span class="kw">let </span>req = Request::builder().body(Body::empty()).unwrap();
+<a href=#598 id=598 data-nosnippet>598</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = svc.clone().oneshot(req).<span class="kw">await</span>.unwrap();
+<a href=#599 id=599 data-nosnippet>599</a>        <span class="kw">let </span>id = res.headers_mut().remove(<span class="string">"x-request-id"</span>).unwrap();
+<a href=#600 id=600 data-nosnippet>600</a>        id.to_str().unwrap().parse::&lt;Uuid&gt;().unwrap();
+<a href=#601 id=601 data-nosnippet>601</a>    }
+<a href=#602 id=602 data-nosnippet>602</a>}
+</code></pre></div></section></main></body></html>

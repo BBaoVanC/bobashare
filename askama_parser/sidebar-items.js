@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["expr","node"],"struct":["Ast","ParseError","Parsed","Syntax"]};
+window.SIDEBAR_ITEMS = {"enum":["CharPrefix","FloatKind","IntKind","Num","PathOrIdentifier","StrPrefix","Target"],"fn":["is_rust_keyword","strip_common"],"mod":["expr","node"],"struct":["Ast","CharLit","InnerSyntax","NamedTarget","ParseError","Parsed","Span","StrLit","Syntax","SyntaxBuilder","WithSpan"]};

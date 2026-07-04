@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["Float","FloatConst","FloatCore","TotalOrder"]};
+window.SIDEBAR_ITEMS = {"trait":["FloatConst","FloatCore","TotalOrder"]};

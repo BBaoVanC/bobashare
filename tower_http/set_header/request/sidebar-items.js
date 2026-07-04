@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SetRequestHeader","SetRequestHeaderLayer"]};
+window.SIDEBAR_ITEMS = {"struct":["SetMultipleRequestHeader","SetMultipleRequestHeadersLayer","SetRequestHeader","SetRequestHeaderLayer"]};

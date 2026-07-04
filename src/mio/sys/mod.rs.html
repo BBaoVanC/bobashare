@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mio-1.0.4/src/sys/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-84e720fa.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.89.0 (29483883e 2025-08-04)" data-channel="1.89.0" data-search-js="search-92309212.js" data-settings-js="settings-5514c975.js" ><script src="../../../static.files/storage-4e99c027.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-fd3af306.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-32bb7600.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">mio/sys/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-2"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Module with system specific types.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mio-1.2.1/src/sys/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">mio/sys/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-2"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Module with system specific types.
 <a href=#2 id=2 data-nosnippet>2</a>//!
 <a href=#3 id=3 data-nosnippet>3</a>//! Required types:
 <a href=#4 id=4 data-nosnippet>4</a>//!
@@ -16,13 +16,13 @@
 <a href=#16 id=16 data-nosnippet>16</a></span><span class="macro">cfg_os_poll!</span> {
 <a href=#17 id=17 data-nosnippet>17</a>    <span class="macro">macro_rules!</span> debug_detail {
 <a href=#18 id=18 data-nosnippet>18</a>        (
-<a href=#19 id=19 data-nosnippet>19</a>            <span class="macro-nonterminal">$</span><span class="kw">type</span>: <span class="macro-nonterminal">ident </span>(<span class="macro-nonterminal">$event_type</span>: ty), <span class="macro-nonterminal">$test</span>: path,
+<a href=#19 id=19 data-nosnippet>19</a>            <span class="macro-nonterminal">$type</span>: ident (<span class="macro-nonterminal">$event_type</span>: ty), <span class="macro-nonterminal">$test</span>: path,
 <a href=#20 id=20 data-nosnippet>20</a>            $($(<span class="attr">#[<span class="macro-nonterminal">$target</span>: meta]</span>)* <span class="macro-nonterminal">$libc</span>: ident :: <span class="macro-nonterminal">$flag</span>: ident),+ $(,)*
 <a href=#21 id=21 data-nosnippet>21</a>        ) =&gt; {
-<a href=#22 id=22 data-nosnippet>22</a>            <span class="kw">struct </span><span class="macro-nonterminal">$</span><span class="kw">type</span>(<span class="macro-nonterminal">$event_type</span>);
+<a href=#22 id=22 data-nosnippet>22</a>            <span class="kw">struct </span><span class="macro-nonterminal">$type</span>(<span class="macro-nonterminal">$event_type</span>);
 <a href=#23 id=23 data-nosnippet>23</a>
-<a href=#24 id=24 data-nosnippet>24</a>            <span class="kw">impl </span>fmt::Debug <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
-<a href=#25 id=25 data-nosnippet>25</a>                <span class="kw">fn </span><span class="macro-nonterminal">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#24 id=24 data-nosnippet>24</a>            <span class="kw">impl </span>fmt::Debug <span class="kw">for </span><span class="macro-nonterminal">$type </span>{
+<a href=#25 id=25 data-nosnippet>25</a>                <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
 <a href=#26 id=26 data-nosnippet>26</a>                    <span class="kw">let </span><span class="kw-2">mut </span>written_one = <span class="bool-val">false</span>;
 <a href=#27 id=27 data-nosnippet>27</a>                    $(
 <a href=#28 id=28 data-nosnippet>28</a>                        $(<span class="attr">#[<span class="macro-nonterminal">$target</span>]</span>)*
@@ -50,33 +50,38 @@
 <a href=#50 id=50 data-nosnippet>50</a>    }
 <a href=#51 id=51 data-nosnippet>51</a>}
 <a href=#52 id=52 data-nosnippet>52</a>
-<a href=#53 id=53 data-nosnippet>53</a><span class="attr">#[cfg(any(unix, target_os = <span class="string">"hermit"</span>))]
-<a href=#54 id=54 data-nosnippet>54</a></span><span class="macro">cfg_os_poll!</span> {
-<a href=#55 id=55 data-nosnippet>55</a>    <span class="kw">mod </span>unix;
-<a href=#56 id=56 data-nosnippet>56</a>    <span class="attr">#[allow(unused_imports)]
-<a href=#57 id=57 data-nosnippet>57</a>    </span><span class="kw">pub use </span><span class="self">self</span>::unix::<span class="kw-2">*</span>;
-<a href=#58 id=58 data-nosnippet>58</a>}
-<a href=#59 id=59 data-nosnippet>59</a>
-<a href=#60 id=60 data-nosnippet>60</a><span class="attr">#[cfg(windows)]
-<a href=#61 id=61 data-nosnippet>61</a></span><span class="macro">cfg_os_poll!</span> {
-<a href=#62 id=62 data-nosnippet>62</a>    <span class="kw">mod </span>windows;
-<a href=#63 id=63 data-nosnippet>63</a>    <span class="kw">pub use </span><span class="self">self</span>::windows::<span class="kw-2">*</span>;
-<a href=#64 id=64 data-nosnippet>64</a>}
-<a href=#65 id=65 data-nosnippet>65</a>
-<a href=#66 id=66 data-nosnippet>66</a><span class="attr">#[cfg(target_os = <span class="string">"wasi"</span>)]
-<a href=#67 id=67 data-nosnippet>67</a></span><span class="macro">cfg_os_poll!</span> {
-<a href=#68 id=68 data-nosnippet>68</a>    <span class="kw">mod </span>wasi;
-<a href=#69 id=69 data-nosnippet>69</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::wasi::<span class="kw-2">*</span>;
-<a href=#70 id=70 data-nosnippet>70</a>}
-<a href=#71 id=71 data-nosnippet>71</a>
-<a href=#72 id=72 data-nosnippet>72</a><span class="macro">cfg_not_os_poll!</span> {
-<a href=#73 id=73 data-nosnippet>73</a>    <span class="kw">mod </span>shell;
-<a href=#74 id=74 data-nosnippet>74</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::shell::<span class="kw-2">*</span>;
+<a href=#53 id=53 data-nosnippet>53</a><span class="attr">#[cfg(any(
+<a href=#54 id=54 data-nosnippet>54</a>    unix,
+<a href=#55 id=55 data-nosnippet>55</a>    target_os = <span class="string">"hermit"</span>,
+<a href=#56 id=56 data-nosnippet>56</a>    all(target_os = <span class="string">"wasi"</span>, not(target_env = <span class="string">"p1"</span>))
+<a href=#57 id=57 data-nosnippet>57</a>))]
+<a href=#58 id=58 data-nosnippet>58</a></span><span class="macro">cfg_os_poll!</span> {
+<a href=#59 id=59 data-nosnippet>59</a>    <span class="kw">mod </span>unix;
+<a href=#60 id=60 data-nosnippet>60</a>    <span class="attr">#[allow(unused_imports)]
+<a href=#61 id=61 data-nosnippet>61</a>    </span><span class="kw">pub use </span><span class="self">self</span>::unix::<span class="kw-2">*</span>;
+<a href=#62 id=62 data-nosnippet>62</a>}
+<a href=#63 id=63 data-nosnippet>63</a>
+<a href=#64 id=64 data-nosnippet>64</a><span class="attr">#[cfg(windows)]
+<a href=#65 id=65 data-nosnippet>65</a></span><span class="macro">cfg_os_poll!</span> {
+<a href=#66 id=66 data-nosnippet>66</a>    <span class="kw">mod </span>windows;
+<a href=#67 id=67 data-nosnippet>67</a>    <span class="kw">pub use </span><span class="self">self</span>::windows::<span class="kw-2">*</span>;
+<a href=#68 id=68 data-nosnippet>68</a>}
+<a href=#69 id=69 data-nosnippet>69</a>
+<a href=#70 id=70 data-nosnippet>70</a><span class="attr">#[cfg(all(target_os = <span class="string">"wasi"</span>, target_env = <span class="string">"p1"</span>))]
+<a href=#71 id=71 data-nosnippet>71</a></span><span class="macro">cfg_os_poll!</span> {
+<a href=#72 id=72 data-nosnippet>72</a>    <span class="kw">mod </span>wasip1;
+<a href=#73 id=73 data-nosnippet>73</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::wasip1::<span class="kw-2">*</span>;
+<a href=#74 id=74 data-nosnippet>74</a>}
 <a href=#75 id=75 data-nosnippet>75</a>
-<a href=#76 id=76 data-nosnippet>76</a>    <span class="attr">#[cfg(unix)]
-<a href=#77 id=77 data-nosnippet>77</a>    </span><span class="macro">cfg_any_os_ext!</span> {
-<a href=#78 id=78 data-nosnippet>78</a>        <span class="kw">mod </span>unix;
-<a href=#79 id=79 data-nosnippet>79</a>        <span class="attr">#[cfg(feature = <span class="string">"os-ext"</span>)]
-<a href=#80 id=80 data-nosnippet>80</a>        </span><span class="kw">pub use </span><span class="self">self</span>::unix::SourceFd;
-<a href=#81 id=81 data-nosnippet>81</a>    }
-<a href=#82 id=82 data-nosnippet>82</a>}</code></pre></div></section></main></body></html>
+<a href=#76 id=76 data-nosnippet>76</a><span class="macro">cfg_not_os_poll!</span> {
+<a href=#77 id=77 data-nosnippet>77</a>    <span class="kw">mod </span>shell;
+<a href=#78 id=78 data-nosnippet>78</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::shell::<span class="kw-2">*</span>;
+<a href=#79 id=79 data-nosnippet>79</a>
+<a href=#80 id=80 data-nosnippet>80</a>    <span class="attr">#[cfg(unix)]
+<a href=#81 id=81 data-nosnippet>81</a>    </span><span class="macro">cfg_any_os_ext!</span> {
+<a href=#82 id=82 data-nosnippet>82</a>        <span class="kw">mod </span>unix;
+<a href=#83 id=83 data-nosnippet>83</a>        <span class="attr">#[cfg(feature = <span class="string">"os-ext"</span>)]
+<a href=#84 id=84 data-nosnippet>84</a>        </span><span class="kw">pub use </span><span class="self">self</span>::unix::SourceFd;
+<a href=#85 id=85 data-nosnippet>85</a>    }
+<a href=#86 id=86 data-nosnippet>86</a>}
+</code></pre></div></section></main></body></html>

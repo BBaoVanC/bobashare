@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["askama",[]],["bobashare_web",[["impl&lt;'s&gt; <a class=\"trait\" href=\"askama/trait.FastWritable.html\" title=\"trait askama::FastWritable\">FastWritable</a> for <a class=\"struct\" href=\"bobashare_web/views/display/struct.DisplayTemplate.html\" title=\"struct bobashare_web::views::display::DisplayTemplate\">DisplayTemplate</a>&lt;'s&gt;",0],["impl&lt;'s&gt; <a class=\"trait\" href=\"askama/trait.FastWritable.html\" title=\"trait askama::FastWritable\">FastWritable</a> for <a class=\"struct\" href=\"bobashare_web/views/struct.ErrorTemplate.html\" title=\"struct bobashare_web::views::ErrorTemplate\">ErrorTemplate</a>&lt;'s&gt;",0],["impl&lt;'s&gt; <a class=\"trait\" href=\"askama/trait.FastWritable.html\" title=\"trait askama::FastWritable\">FastWritable</a> for <a class=\"struct\" href=\"bobashare_web/views/upload/struct.PasteTemplate.html\" title=\"struct bobashare_web::views::upload::PasteTemplate\">PasteTemplate</a>&lt;'s&gt;",0],["impl&lt;'s&gt; <a class=\"trait\" href=\"askama/trait.FastWritable.html\" title=\"trait askama::FastWritable\">FastWritable</a> for <a class=\"struct\" href=\"bobashare_web/views/upload/struct.UploadTemplate.html\" title=\"struct bobashare_web::views::upload::UploadTemplate\">UploadTemplate</a>&lt;'s&gt;",0],["impl&lt;'s, 'c&gt; <a class=\"trait\" href=\"askama/trait.FastWritable.html\" title=\"trait askama::FastWritable\">FastWritable</a> for <a class=\"struct\" href=\"bobashare_web/views/about/struct.AboutTemplate.html\" title=\"struct bobashare_web::views::about::AboutTemplate\">AboutTemplate</a>&lt;'s, 'c&gt;",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[13,1567]}
