@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.17] - 2026-07-04
+
 ### Features
 
 - Add drag and drop ([#21](https://github.com/BBaoVanC/bobashare/pull/21))
@@ -265,7 +267,8 @@ bobashare-web:
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.16..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.17..HEAD
+[v0.2.17]: https://github.com/BBaoVanC/bobashare/compare/v0.2.16..v0.2.17
 [v0.2.16]: https://github.com/BBaoVanC/bobashare/compare/v0.2.15..v0.2.16
 [v0.2.15]: https://github.com/BBaoVanC/bobashare/compare/v0.2.14..v0.2.15
 [v0.2.14]: https://github.com/BBaoVanC/bobashare/compare/v0.2.13..v0.2.14
