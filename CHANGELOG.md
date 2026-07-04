@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add aarch64 (ARM64) Windows target
 - Remove GNU Windows target
+- Fix from-as casing in Dockerfile (as in, make sure that `AS` is capitalized
+  just like `FROM` is)
 
 ### Misc
 

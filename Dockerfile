@@ -1,4 +1,4 @@
-FROM rust:latest as builder
+FROM rust:latest AS builder
 WORKDIR /usr/src/bobashare
 COPY . .
 RUN cargo build --release --locked
