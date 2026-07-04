@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add aarch64 (ARM64) Windows target
 - Remove GNU Windows target
 
+### Misc
+
+- Upgrade askama to 0.16
+
 ## [v0.2.16] - 2025-09-12
 
 bobashare-web: Fix expired files being indexed by Google because the noindex
