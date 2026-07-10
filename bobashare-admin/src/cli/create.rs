@@ -55,7 +55,7 @@ pub(crate) async fn create_upload(backend: FileBackend, args: CreateUpload) -> a
         .to_string();
     let mut file = File::open(&args.source_file)
         .await
-        .with_context(|| format!("error opening file at {:?}", &args.source_file))?;
+        .with_context(|| format!("error opening file at {:?}", args.source_file))?;
     let mimetype = mime_guess::from_path(&args.source_file).first_or_octet_stream();
 
     let mut upload = backend
