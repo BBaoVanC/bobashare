@@ -67,6 +67,7 @@ async fn main() -> anyhow::Result<()> {
 
     #[rustfmt::skip]
     let mut config = Config::builder()
+        .set_default("instance_name", "bobashare").unwrap()
         .set_default("listen_addr", "127.0.0.1:3000").unwrap()
         .set_default("backend_path", "storage/").unwrap()
         .set_default("cleanup_interval", "1h").unwrap()
@@ -114,6 +115,7 @@ async fn main() -> anyhow::Result<()> {
 
     event!(Level::TRACE, ?config);
 
+    let instance_name = config.get_string("instance_name").unwrap();
     let backend =
         FileBackend::new(PathBuf::from(config.get_string("backend_path").unwrap())).await?;
     let cleanup_interval = str_to_duration(&config.get_string("cleanup_interval").unwrap())
@@ -162,6 +164,7 @@ async fn main() -> anyhow::Result<()> {
 
     // leak this because tokio requires all captures to be 'static
     let state = Box::leak(Box::new(AppState {
+        instance_name,
         backend,
         cleanup_interval,
         base_url,

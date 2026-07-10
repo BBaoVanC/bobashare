@@ -1,3 +1,4 @@
+# instance_name = "cooler bobashare"
 # listen_addr = "127.0.0.1:3000"
 # backend_path = "storage/"
 # cleanup_interval = "1h"

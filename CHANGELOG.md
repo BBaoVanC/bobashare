@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Features
+
+- Support setting custom instance name with new `instance_name` config option
+
 ## [v0.2.17] - 2026-07-04
 
 ### Features

@@ -59,6 +59,8 @@ If using a config file, you must specify the path of it using the
 
 List of config options:
 
+- `instance_name` - default `bobashare` - the name you want to show up on all
+  pages as the title of the website; use this to rebrand your instance
 - `listen_addr` - default `127.0.0.1:3000` - the address and port to listen on
 - `backend_path` - default `storage/` (relative to current directory) - the
   directory to use for storing all bobashare data (uploads and metadata)

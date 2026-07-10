@@ -4,13 +4,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{% block title %}{% endblock %} - bobashare</title>
+        <title>{% block title %}{% endblock %} - {{ state.instance_name }}</title>
 
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/colors.css").unwrap() }}' crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href='{{ state.base_url.join("static/css/bobashare.css").unwrap() }}' crossorigin="anonymous">
 
-        <meta property="og:site_name" content="bobashare">
-        <meta name="twitter:site" content="bobashare">
+        <meta property="og:site_name" content="{{ state.instance_name }}">
+        <meta name="twitter:site" content="{{ state.instance_name }}">
 
         {% block preview_metadata %}
         <meta property="og:title" content="{{ self.as_title() }}">
@@ -23,7 +23,7 @@
     <body>
         <div class="top">
             <header>
-                <a href='{{ state.base_url }}'>bobashare</a>
+                <a href='{{ state.base_url }}'>{{ state.instance_name }}</a>
             </header>
             <nav class="navbar">
                 {% if let Some(_) = state.about_page %}

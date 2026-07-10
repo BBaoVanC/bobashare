@@ -35,6 +35,8 @@ pub const MARKDOWN_OPTIONS: Options = Options::all();
 /// A struct that contains all the state and config for bobashare
 #[derive(Debug, Clone)]
 pub struct AppState {
+    /// instance name, displayed on all pages
+    pub instance_name: String,
     /// storage backend
     pub backend: FileBackend,
     /// how often between each cleanup

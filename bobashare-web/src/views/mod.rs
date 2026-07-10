@@ -32,6 +32,7 @@ mod prelude {
 #[derive(Debug, Clone)]
 pub struct TemplateState<'s> {
     version: &'static str,
+    instance_name: &'s str,
     base_url: &'s Url,
     max_file_size: u64,
     max_expiry: Option<TimeDelta>,
@@ -45,6 +46,7 @@ impl<'s> From<&'s AppState> for TemplateState<'s> {
     fn from(state: &'s AppState) -> Self {
         Self {
             version: env!("CARGO_PKG_VERSION"),
+            instance_name: &state.instance_name,
             base_url: &state.base_url,
             max_file_size: state.max_file_size,
             max_expiry: state.max_expiry,
