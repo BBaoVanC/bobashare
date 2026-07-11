@@ -144,10 +144,10 @@ pub async fn display(
                         .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
                     // should be alright to assume that 1,048,576 fits in usize on relevant
                     // platforms
-                    let mut contents = String::with_capacity(size as usize);
+                    let mut bytes = Vec::with_capacity(size as usize);
                     upload
                         .file
-                        .read_to_string(&mut contents)
+                        .read_to_end(&mut bytes)
                         .await
                         .map_err(|e| ErrorTemplate {
                             state: tmpl_state.clone(),
@@ -155,46 +155,58 @@ pub async fn display(
                             message: format!("error reading file contents: {e}"),
                         })?;
 
-                    event!(
-                        Level::DEBUG,
-                        "highlighting file with syntax {}",
-                        syntax.name
-                    );
-                    let highlighted = {
-                        let mut generator = ClassedHTMLGenerator::new_with_class_style(
-                            syntax,
-                            &state.syntax_set,
-                            CLASS_STYLE,
-                        );
-                        for line in LinesWithEndings::from(&contents) {
-                            generator
-                                .parse_html_for_line_which_includes_newline(line)
-                                .map_err(|e| ErrorTemplate {
-                                    state: tmpl_state.clone(),
-                                    code: StatusCode::INTERNAL_SERVER_ERROR,
-                                    message: format!("error highlighting file contents: {e}"),
-                                })?;
-                        }
-                        generator.finalize()
-                    };
+                    // Plaintext uploads aren't guaranteed to be UTF-8. If this
+                    // one isn't, fall back to the generic download view instead
+                    // of returning a 500.
+                    match String::from_utf8(bytes) {
+                        Ok(contents) => {
+                            event!(
+                                Level::DEBUG,
+                                "highlighting file with syntax {}",
+                                syntax.name
+                            );
+                            let highlighted = {
+                                let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                                    syntax,
+                                    &state.syntax_set,
+                                    CLASS_STYLE,
+                                );
+                                for line in LinesWithEndings::from(&contents) {
+                                    generator
+                                        .parse_html_for_line_which_includes_newline(line)
+                                        .map_err(|e| ErrorTemplate {
+                                            state: tmpl_state.clone(),
+                                            code: StatusCode::INTERNAL_SERVER_ERROR,
+                                            message: format!(
+                                                "error highlighting file contents: {e}"
+                                            ),
+                                        })?;
+                                }
+                                generator.finalize()
+                            };
 
-                    if extension.eq_ignore_ascii_case("md") {
-                        let displayed = render_markdown_with_syntax_set(
-                            &contents,
-                            &state.syntax_set,
-                        )
-                        .map_err(|e| ErrorTemplate {
-                            state: tmpl_state.clone(),
-                            code: StatusCode::INTERNAL_SERVER_ERROR,
-                            message: format!("error highlighting markdown fenced code block: {e}",),
-                        })?;
+                            if extension.eq_ignore_ascii_case("md") {
+                                let displayed =
+                                    render_markdown_with_syntax_set(&contents, &state.syntax_set)
+                                        .map_err(|e| ErrorTemplate {
+                                        state: tmpl_state.clone(),
+                                        code: StatusCode::INTERNAL_SERVER_ERROR,
+                                        message: format!(
+                                            "error highlighting markdown fenced code block: {e}",
+                                        ),
+                                    })?;
 
-                        DisplayType::Markdown {
-                            highlighted,
-                            displayed,
+                                DisplayType::Markdown {
+                                    highlighted,
+                                    displayed,
+                                }
+                            } else {
+                                DisplayType::Text { highlighted }
+                            }
                         }
-                    } else {
-                        DisplayType::Text { highlighted }
+                        // Not valid UTF-8 text — offer it as a download rather
+                        // than crashing with a 500.
+                        Err(_) => DisplayType::Other,
                     }
                 }
             }
