@@ -215,10 +215,6 @@ pub fn str_to_duration(s: &str) -> Result<StdDuration, StrToDurationError> {
         return Err(StrToDurationError::Invalid);
     }
 
-    // Index of the first char of the unit part: the first non-digit following
-    // the leading count. Scanning for the next digit (as before) only located
-    // the unit boundary for one- and two-digit counts and mis-split anything
-    // longer, e.g. "999d" became count "99" + unit "9d".
     let unit_idx = s.find(|c: char| !c.is_ascii_digit()).unwrap_or(s.len());
 
     let count_str = &s[..unit_idx];

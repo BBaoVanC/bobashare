@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support setting custom instance name with new `instance_name` config option
 
+### Bugfixes
+
+- Fix `str_to_duration` rejecting durations with counts of three or more digits (e.g. `999d`, `86400s`)
+
 ## [v0.2.17] - 2026-07-04
 
 ### Features
