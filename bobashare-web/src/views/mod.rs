@@ -4,9 +4,10 @@ use std::sync::Arc;
 
 use askama::Template;
 use askama_axum::IntoResponse;
-use axum::{routing::get, Router};
+use axum::{http, http::header::HeaderValue, routing::get, Router};
 use chrono::Duration;
 use hyper::StatusCode;
+use tower_http::set_header::SetResponseHeaderLayer;
 use url::Url;
 
 use crate::AppState;
@@ -72,10 +73,20 @@ impl IntoResponse for ErrorResponse {
 }
 
 pub fn router() -> Router<Arc<AppState>> {
+    let content_security_policy = SetResponseHeaderLayer::overriding(
+        http::header::CONTENT_SECURITY_POLICY,
+        HeaderValue::from_static("default-src 'self'; img-src 'self' data:;"),
+    );
     Router::new()
         .route("/API/", get(api::api))
         .route("/", get(upload::upload))
         .route("/paste/", get(upload::paste))
-        .route("/:id", get(display::display))
-        .route("/raw/:id", get(display::raw))
+        .route(
+            "/:id",
+            get(display::display).layer(content_security_policy.clone()),
+        )
+        .route(
+            "/raw/:id",
+            get(display::raw).layer(content_security_policy.clone()),
+        )
 }
