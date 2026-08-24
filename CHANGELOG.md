@@ -14,9 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **This update patches a critical security vulnerability. All users must upgrade
 immediately.**
 
+### Build
+
+- Bump syntect to 5.3.0 release to fix onig_sys building on modern GCC versions
+- Bump rust-embed to 6.8.1 since I deleted my fork a while ago
+
 ## [v0.1.0] - 2022-01-17
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.1.0..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.1.1..HEAD
+[v0.1.1]: https://github.com/BBaoVanC/bobashare/releases/tag/v0.1.0..v0.1.1
 [v0.1.0]: https://github.com/BBaoVanC/bobashare/releases/tag/v0.1.0
