@@ -212,7 +212,10 @@ async fn main() -> anyhow::Result<()> {
         .serve(app)
         .with_graceful_shutdown(async {
             state.shutdown_tx.subscribe().recv().await.unwrap();
-            event!(Level::INFO, "received shutdown signal, quitting axum server");
+            event!(
+                Level::INFO,
+                "received shutdown signal, quitting axum server"
+            );
         })
         .instrument(server_span);
 
@@ -243,7 +246,6 @@ async fn main() -> anyhow::Result<()> {
                 },
                 _ = sleep(state.cleanup_interval) => {}
             }
-
         }
     }
     .instrument(cleanup_span);
