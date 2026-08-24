@@ -20,7 +20,7 @@ use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
 use tokio_util::io::ReaderStream;
-use tracing::{event, instrument, Level};
+use tracing::{event, instrument, span, Level};
 use url::Url;
 
 use super::{filters, ErrorResponse, ErrorTemplate, TemplateState};
@@ -177,10 +177,18 @@ pub async fn display(
                     };
 
                     if extension.eq_ignore_ascii_case("md") {
+                        let span = span!(Level::TRACE, "render");
+                        let _enter = span.enter();
+
                         let mut parser = Parser::new_ext(&contents, MARKDOWN_OPTIONS).peekable();
                         let mut output = Vec::new();
                         while let Some(event) = parser.next() {
                             match event {
+                                // patch GHSA-g7gw-4888-mr65
+                                Event::Html(s) => {
+                                    event!(Level::TRACE, ?s, "removed raw HTML");
+                                }
+
                                 Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {
                                     output.push(Event::Html("<pre class=\"highlight\">".into()));
                                     let syntax = state
