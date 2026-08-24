@@ -1,45 +1,37 @@
 name: CI checks for every commit
 
+env:
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
 on:
   push:
   pull_request:
 
 jobs:
-  lint:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-    name: Lint
-    runs-on: ${{ matrix.os }}
+  format:
+    name: Format
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Install toolchain
         run: |
           rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Clippy
-        run: cargo clippy -- -D warnings
-      - name: Test
-        run: cargo test
+          rustup toolchain install nightly --profile minimal
+          rustup component add rustfmt --toolchain nightly
+      - run: cargo +nightly fmt --all --check
 
   docker:
     name: Build master Docker image
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/login-action@v2
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v3
+      - uses: docker/build-push-action@v7
         with:
           tags: ghcr.io/bbaovanc/bobashare:master
           push: true
@@ -48,27 +40,87 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+        build:
+          # we do not need a gnu one because rust's musl is statically linked by default
+          # use_clang: needs to be specified when onig_sys needs to compile libonig
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+          - os: ubuntu-latest
+            target: arm-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            target: armv7-unknown-linux-musleabihf
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.build.os }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Install toolchain
-        run: |
-          rustup set auto-self-update disable
-          rustup toolchain install stable --profile minimal
-      - name: Build
-        run: cargo build --release --locked
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - uses: actions/checkout@v7
         with:
-          name: release-binaries-${{ matrix.os }}
+          fetch-depth: 0
+      - name: Get version name
+        id: version
+        # thanks windows
+        shell: bash
+        run: |
+          echo "VERSION=$(git describe --tags --dirty)" >> $GITHUB_OUTPUT
+
+      - name: Install target on host
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
+        run: |
+          rustup target add ${{ matrix.build.target }}
+
+      - uses: cargo-bins/cargo-binstall@v1.20.1
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+      - name: Install cross-rs
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+        run: cargo binstall cross
+
+      - name: Set cargo command to cargo
+        shell: bash
+        if: ${{ matrix.build.os != 'ubuntu-latest' }}
+        run: echo cargo_cmd=cargo >> $GITHUB_ENV
+      - name: Set cargo command to cross
+        shell: bash
+        if: ${{ matrix.build.os == 'ubuntu-latest' }}
+        run: echo cargo_cmd=cross >> $GITHUB_ENV
+
+      # need env.cargo_cmd instead of just $cargo_cmd because windows shell
+      - name: Check
+        run: |
+          ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --locked -- -D warnings
+          ${{ env.cargo_cmd }} clippy --target ${{ matrix.build.target }} --release --locked -- -D warnings
+      - name: Build
+        # FIXME: what does always do here
+        if: always()
+        run: |
+          ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --locked
+          ${{ env.cargo_cmd }} build --target ${{ matrix.build.target }} --release --locked
+
+      - name: Upload debug artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: debug-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
           path: |
-            target/release/bobashare-admin
-            target/release/bobashare-web
-            # windows is silly
-            target/release/bobashare-admin.exe
-            target/release/bobashare-web.exe
+            target/${{ matrix.build.target }}/debug/bobashare-admin
+            target/${{ matrix.build.target }}/debug/bobashare-web
+            target/${{ matrix.build.target }}/debug/bobashare-admin.exe
+            target/${{ matrix.build.target }}/debug/bobashare-web.exe
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-build-${{ steps.version.outputs.VERSION }}-${{ matrix.build.target }}
+          path: |
+            target/${{ matrix.build.target }}/release/bobashare-admin
+            target/${{ matrix.build.target }}/release/bobashare-web
+            target/${{ matrix.build.target }}/release/bobashare-admin.exe
+            target/${{ matrix.build.target }}/release/bobashare-web.exe
