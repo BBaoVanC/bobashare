@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.1] - 2026-08-24
+
+### Security
+
+**This update patches a critical security vulnerability. All users must upgrade
+immediately.**
+
 ## [v0.1.0] - 2022-01-17
 
 - The first release.
