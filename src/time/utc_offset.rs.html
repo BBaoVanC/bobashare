@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-0.3.53/src/utc_offset.rs`."><title>utc_offset.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://avatars0.githubusercontent.com/u/55999857"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">time/</div>utc_offset.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! The [`UtcOffset`] struct and its associated `impl`s.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-0.3.54/src/utc_offset.rs`."><title>utc_offset.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://avatars0.githubusercontent.com/u/55999857"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">time/</div>utc_offset.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! The [`UtcOffset`] struct and its associated `impl`s.
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="attr">#[cfg(feature = <span class="string">"formatting"</span>)]
 <a href=#4 id=4 data-nosnippet>4</a></span><span class="kw">use </span>alloc::string::String;
@@ -371,7 +371,7 @@
 <a href=#371 id=371 data-nosnippet>371</a>    /// assert_eq!(offset!(-1:02:03).whole_seconds(), -3723);
 <a href=#372 id=372 data-nosnippet>372</a>    /// ```
 <a href=#373 id=373 data-nosnippet>373</a>    </span><span class="comment">// This may be useful for anyone manually implementing arithmetic, as it
-<a href=#374 id=374 data-nosnippet>374</a>    // would let them construct a `Duration` directly.
+<a href=#374 id=374 data-nosnippet>374</a>    // would let them construct a `SignedDuration` directly.
 <a href=#375 id=375 data-nosnippet>375</a>    </span><span class="attr">#[inline]
 <a href=#376 id=376 data-nosnippet>376</a>    </span><span class="kw">pub const fn </span>whole_seconds(<span class="self">self</span>) -&gt; i32 {
 <a href=#377 id=377 data-nosnippet>377</a>        <span class="self">self</span>.hours.get() <span class="kw">as </span>i32 * Second::per_t::&lt;i32&gt;(Hour)
@@ -541,94 +541,86 @@
 <a href=#541 id=541 data-nosnippet>541</a>    }
 <a href=#542 id=542 data-nosnippet>542</a>}
 <a href=#543 id=543 data-nosnippet>543</a>
-<a href=#544 id=544 data-nosnippet>544</a><span class="kw">mod </span>private {
-<a href=#545 id=545 data-nosnippet>545</a>    <span class="doccomment">/// Metadata for `UtcOffset`.
-<a href=#546 id=546 data-nosnippet>546</a>    </span><span class="attr">#[non_exhaustive]
-<a href=#547 id=547 data-nosnippet>547</a>    #[derive(Debug, Clone, Copy)]
-<a href=#548 id=548 data-nosnippet>548</a>    </span><span class="kw">pub struct </span>UtcOffsetMetadata;
-<a href=#549 id=549 data-nosnippet>549</a>}
-<a href=#550 id=550 data-nosnippet>550</a><span class="kw">use </span>private::UtcOffsetMetadata;
-<a href=#551 id=551 data-nosnippet>551</a>
-<a href=#552 id=552 data-nosnippet>552</a><span class="comment">// This no longer needs special handling, as the format is fixed and doesn't require anything
-<a href=#553 id=553 data-nosnippet>553</a>// advanced. Trait impls can't be deprecated and the info is still useful for other types
-<a href=#554 id=554 data-nosnippet>554</a>// implementing `SmartDisplay`, so leave it as-is for now.
-<a href=#555 id=555 data-nosnippet>555</a></span><span class="kw">impl </span>SmartDisplay <span class="kw">for </span>UtcOffset {
-<a href=#556 id=556 data-nosnippet>556</a>    <span class="kw">type </span>Metadata = UtcOffsetMetadata;
-<a href=#557 id=557 data-nosnippet>557</a>
-<a href=#558 id=558 data-nosnippet>558</a>    <span class="attr">#[inline]
-<a href=#559 id=559 data-nosnippet>559</a>    </span><span class="kw">fn </span>metadata(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: FormatterOptions) -&gt; Metadata&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt; {
-<a href=#560 id=560 data-nosnippet>560</a>        Metadata::new(<span class="number">9</span>, <span class="self">self</span>, UtcOffsetMetadata)
-<a href=#561 id=561 data-nosnippet>561</a>    }
-<a href=#562 id=562 data-nosnippet>562</a>
-<a href=#563 id=563 data-nosnippet>563</a>    <span class="attr">#[inline]
-<a href=#564 id=564 data-nosnippet>564</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#565 id=565 data-nosnippet>565</a>        fmt::Display::fmt(<span class="self">self</span>, f)
-<a href=#566 id=566 data-nosnippet>566</a>    }
-<a href=#567 id=567 data-nosnippet>567</a>}
-<a href=#568 id=568 data-nosnippet>568</a>
-<a href=#569 id=569 data-nosnippet>569</a><span class="kw">impl </span>UtcOffset {
-<a href=#570 id=570 data-nosnippet>570</a>    <span class="doccomment">/// The maximum number of bytes that the `fmt_into_buffer` method will write, which is also used
-<a href=#571 id=571 data-nosnippet>571</a>    /// for the `Display` implementation.
-<a href=#572 id=572 data-nosnippet>572</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>DISPLAY_BUFFER_SIZE: usize = <span class="number">9</span>;
-<a href=#573 id=573 data-nosnippet>573</a>
-<a href=#574 id=574 data-nosnippet>574</a>    <span class="doccomment">/// Format the `UtcOffset` into the provided buffer, returning the number of bytes written.
-<a href=#575 id=575 data-nosnippet>575</a>    </span><span class="attr">#[inline]
-<a href=#576 id=576 data-nosnippet>576</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>fmt_into_buffer(
-<a href=#577 id=577 data-nosnippet>577</a>        <span class="self">self</span>,
-<a href=#578 id=578 data-nosnippet>578</a>        buf: <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;u8&gt;; <span class="self">Self</span>::DISPLAY_BUFFER_SIZE],
-<a href=#579 id=579 data-nosnippet>579</a>    ) -&gt; usize {
-<a href=#580 id=580 data-nosnippet>580</a>        <span class="kw">let </span>hours = <span class="self">self</span>.hours.get().unsigned_abs();
-<a href=#581 id=581 data-nosnippet>581</a>        <span class="kw">let </span>minutes = <span class="self">self</span>.minutes.get().unsigned_abs();
-<a href=#582 id=582 data-nosnippet>582</a>        <span class="kw">let </span>seconds = <span class="self">self</span>.seconds.get().unsigned_abs();
-<a href=#583 id=583 data-nosnippet>583</a>
-<a href=#584 id=584 data-nosnippet>584</a>        <span class="kw">let </span>sign = <span class="kw">if </span><span class="self">self</span>.is_negative() { <span class="string">b'-' </span>} <span class="kw">else </span>{ <span class="string">b'+' </span>};
-<a href=#585 id=585 data-nosnippet>585</a>        buf[<span class="number">0</span>] = MaybeUninit::new(sign);
-<a href=#586 id=586 data-nosnippet>586</a>        buf[<span class="number">3</span>] = MaybeUninit::new(<span class="string">b':'</span>);
-<a href=#587 id=587 data-nosnippet>587</a>        buf[<span class="number">6</span>] = MaybeUninit::new(<span class="string">b':'</span>);
-<a href=#588 id=588 data-nosnippet>588</a>
-<a href=#589 id=589 data-nosnippet>589</a>        <span class="comment">// Safety: `hours`, `minutes` and `seconds` are all less than 100. Both the source and
-<a href=#590 id=590 data-nosnippet>590</a>        // destination are valid for two bytes, aligned, and do not overlap.
-<a href=#591 id=591 data-nosnippet>591</a>        </span><span class="kw">unsafe </span>{
-<a href=#592 id=592 data-nosnippet>592</a>            two_digits_zero_padded(ru8::new_unchecked(hours))
-<a href=#593 id=593 data-nosnippet>593</a>                .as_ptr()
-<a href=#594 id=594 data-nosnippet>594</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">1</span>).cast(), <span class="number">2</span>);
-<a href=#595 id=595 data-nosnippet>595</a>            two_digits_zero_padded(ru8::new_unchecked(minutes))
-<a href=#596 id=596 data-nosnippet>596</a>                .as_ptr()
-<a href=#597 id=597 data-nosnippet>597</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">4</span>).cast(), <span class="number">2</span>);
-<a href=#598 id=598 data-nosnippet>598</a>            two_digits_zero_padded(ru8::new_unchecked(seconds))
-<a href=#599 id=599 data-nosnippet>599</a>                .as_ptr()
-<a href=#600 id=600 data-nosnippet>600</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">7</span>).cast(), <span class="number">2</span>);
-<a href=#601 id=601 data-nosnippet>601</a>        }
-<a href=#602 id=602 data-nosnippet>602</a>
-<a href=#603 id=603 data-nosnippet>603</a>        <span class="comment">// The number of bytes written does not vary; it is always 9.
-<a href=#604 id=604 data-nosnippet>604</a>        </span><span class="number">9
-<a href=#605 id=605 data-nosnippet>605</a>    </span>}
-<a href=#606 id=606 data-nosnippet>606</a>}
-<a href=#607 id=607 data-nosnippet>607</a>
-<a href=#608 id=608 data-nosnippet>608</a><span class="kw">impl </span>fmt::Display <span class="kw">for </span>UtcOffset {
-<a href=#609 id=609 data-nosnippet>609</a>    <span class="attr">#[inline]
-<a href=#610 id=610 data-nosnippet>610</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#611 id=611 data-nosnippet>611</a>        <span class="kw">let </span><span class="kw-2">mut </span>buf = [MaybeUninit::uninit(); <span class="self">Self</span>::DISPLAY_BUFFER_SIZE];
-<a href=#612 id=612 data-nosnippet>612</a>        <span class="kw">let </span>len = <span class="self">self</span>.fmt_into_buffer(<span class="kw-2">&amp;mut </span>buf);
-<a href=#613 id=613 data-nosnippet>613</a>        <span class="comment">// Safety: All bytes up to `len` have been initialized with ASCII characters.
-<a href=#614 id=614 data-nosnippet>614</a>        </span><span class="kw">let </span>s = <span class="kw">unsafe </span>{ str_from_raw_parts(buf.as_ptr().cast(), len) };
-<a href=#615 id=615 data-nosnippet>615</a>        f.pad(s)
-<a href=#616 id=616 data-nosnippet>616</a>    }
-<a href=#617 id=617 data-nosnippet>617</a>}
-<a href=#618 id=618 data-nosnippet>618</a>
-<a href=#619 id=619 data-nosnippet>619</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>UtcOffset {
-<a href=#620 id=620 data-nosnippet>620</a>    <span class="attr">#[inline]
-<a href=#621 id=621 data-nosnippet>621</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#622 id=622 data-nosnippet>622</a>        fmt::Display::fmt(<span class="self">self</span>, f)
-<a href=#623 id=623 data-nosnippet>623</a>    }
-<a href=#624 id=624 data-nosnippet>624</a>}
-<a href=#625 id=625 data-nosnippet>625</a>
-<a href=#626 id=626 data-nosnippet>626</a><span class="kw">impl </span>Neg <span class="kw">for </span>UtcOffset {
-<a href=#627 id=627 data-nosnippet>627</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<a href=#628 id=628 data-nosnippet>628</a>
-<a href=#629 id=629 data-nosnippet>629</a>    <span class="attr">#[inline]
-<a href=#630 id=630 data-nosnippet>630</a>    </span><span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
-<a href=#631 id=631 data-nosnippet>631</a>        <span class="self">Self</span>::from_hms_ranged(<span class="self">self</span>.hours.neg(), <span class="self">self</span>.minutes.neg(), <span class="self">self</span>.seconds.neg())
-<a href=#632 id=632 data-nosnippet>632</a>    }
-<a href=#633 id=633 data-nosnippet>633</a>}
+<a href=#544 id=544 data-nosnippet>544</a><span class="comment">// This no longer needs special handling, as the format is fixed and doesn't require anything
+<a href=#545 id=545 data-nosnippet>545</a>// advanced. Trait impls can't be deprecated and the info is still useful for other types
+<a href=#546 id=546 data-nosnippet>546</a>// implementing `SmartDisplay`, so leave it as-is for now.
+<a href=#547 id=547 data-nosnippet>547</a></span><span class="kw">impl </span>SmartDisplay <span class="kw">for </span>UtcOffset {
+<a href=#548 id=548 data-nosnippet>548</a>    <span class="kw">type </span>Metadata = ();
+<a href=#549 id=549 data-nosnippet>549</a>
+<a href=#550 id=550 data-nosnippet>550</a>    <span class="attr">#[inline]
+<a href=#551 id=551 data-nosnippet>551</a>    </span><span class="kw">fn </span>metadata(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: FormatterOptions) -&gt; Metadata&lt;<span class="lifetime">'_</span>, <span class="self">Self</span>&gt; {
+<a href=#552 id=552 data-nosnippet>552</a>        Metadata::new(<span class="number">9</span>, <span class="self">self</span>, ())
+<a href=#553 id=553 data-nosnippet>553</a>    }
+<a href=#554 id=554 data-nosnippet>554</a>
+<a href=#555 id=555 data-nosnippet>555</a>    <span class="attr">#[inline]
+<a href=#556 id=556 data-nosnippet>556</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#557 id=557 data-nosnippet>557</a>        fmt::Display::fmt(<span class="self">self</span>, f)
+<a href=#558 id=558 data-nosnippet>558</a>    }
+<a href=#559 id=559 data-nosnippet>559</a>}
+<a href=#560 id=560 data-nosnippet>560</a>
+<a href=#561 id=561 data-nosnippet>561</a><span class="kw">impl </span>UtcOffset {
+<a href=#562 id=562 data-nosnippet>562</a>    <span class="doccomment">/// The maximum number of bytes that the `fmt_into_buffer` method will write, which is also used
+<a href=#563 id=563 data-nosnippet>563</a>    /// for the `Display` implementation.
+<a href=#564 id=564 data-nosnippet>564</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>DISPLAY_BUFFER_SIZE: usize = <span class="number">9</span>;
+<a href=#565 id=565 data-nosnippet>565</a>
+<a href=#566 id=566 data-nosnippet>566</a>    <span class="doccomment">/// Format the `UtcOffset` into the provided buffer, returning the number of bytes written.
+<a href=#567 id=567 data-nosnippet>567</a>    </span><span class="attr">#[inline]
+<a href=#568 id=568 data-nosnippet>568</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>fmt_into_buffer(
+<a href=#569 id=569 data-nosnippet>569</a>        <span class="self">self</span>,
+<a href=#570 id=570 data-nosnippet>570</a>        buf: <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;u8&gt;; <span class="self">Self</span>::DISPLAY_BUFFER_SIZE],
+<a href=#571 id=571 data-nosnippet>571</a>    ) -&gt; usize {
+<a href=#572 id=572 data-nosnippet>572</a>        <span class="kw">let </span>hours = <span class="self">self</span>.hours.get().unsigned_abs();
+<a href=#573 id=573 data-nosnippet>573</a>        <span class="kw">let </span>minutes = <span class="self">self</span>.minutes.get().unsigned_abs();
+<a href=#574 id=574 data-nosnippet>574</a>        <span class="kw">let </span>seconds = <span class="self">self</span>.seconds.get().unsigned_abs();
+<a href=#575 id=575 data-nosnippet>575</a>
+<a href=#576 id=576 data-nosnippet>576</a>        <span class="kw">let </span>sign = <span class="kw">if </span><span class="self">self</span>.is_negative() { <span class="string">b'-' </span>} <span class="kw">else </span>{ <span class="string">b'+' </span>};
+<a href=#577 id=577 data-nosnippet>577</a>        buf[<span class="number">0</span>] = MaybeUninit::new(sign);
+<a href=#578 id=578 data-nosnippet>578</a>        buf[<span class="number">3</span>] = MaybeUninit::new(<span class="string">b':'</span>);
+<a href=#579 id=579 data-nosnippet>579</a>        buf[<span class="number">6</span>] = MaybeUninit::new(<span class="string">b':'</span>);
+<a href=#580 id=580 data-nosnippet>580</a>
+<a href=#581 id=581 data-nosnippet>581</a>        <span class="comment">// Safety: `hours`, `minutes` and `seconds` are all less than 100. Both the source and
+<a href=#582 id=582 data-nosnippet>582</a>        // destination are valid for two bytes, aligned, and do not overlap.
+<a href=#583 id=583 data-nosnippet>583</a>        </span><span class="kw">unsafe </span>{
+<a href=#584 id=584 data-nosnippet>584</a>            two_digits_zero_padded(ru8::new_unchecked(hours))
+<a href=#585 id=585 data-nosnippet>585</a>                .as_ptr()
+<a href=#586 id=586 data-nosnippet>586</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">1</span>).cast(), <span class="number">2</span>);
+<a href=#587 id=587 data-nosnippet>587</a>            two_digits_zero_padded(ru8::new_unchecked(minutes))
+<a href=#588 id=588 data-nosnippet>588</a>                .as_ptr()
+<a href=#589 id=589 data-nosnippet>589</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">4</span>).cast(), <span class="number">2</span>);
+<a href=#590 id=590 data-nosnippet>590</a>            two_digits_zero_padded(ru8::new_unchecked(seconds))
+<a href=#591 id=591 data-nosnippet>591</a>                .as_ptr()
+<a href=#592 id=592 data-nosnippet>592</a>                .copy_to_nonoverlapping(buf.as_mut_ptr().add(<span class="number">7</span>).cast(), <span class="number">2</span>);
+<a href=#593 id=593 data-nosnippet>593</a>        }
+<a href=#594 id=594 data-nosnippet>594</a>
+<a href=#595 id=595 data-nosnippet>595</a>        <span class="comment">// The number of bytes written does not vary; it is always 9.
+<a href=#596 id=596 data-nosnippet>596</a>        </span><span class="number">9
+<a href=#597 id=597 data-nosnippet>597</a>    </span>}
+<a href=#598 id=598 data-nosnippet>598</a>}
+<a href=#599 id=599 data-nosnippet>599</a>
+<a href=#600 id=600 data-nosnippet>600</a><span class="kw">impl </span>fmt::Display <span class="kw">for </span>UtcOffset {
+<a href=#601 id=601 data-nosnippet>601</a>    <span class="attr">#[inline]
+<a href=#602 id=602 data-nosnippet>602</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#603 id=603 data-nosnippet>603</a>        <span class="kw">let </span><span class="kw-2">mut </span>buf = [MaybeUninit::uninit(); <span class="self">Self</span>::DISPLAY_BUFFER_SIZE];
+<a href=#604 id=604 data-nosnippet>604</a>        <span class="kw">let </span>len = <span class="self">self</span>.fmt_into_buffer(<span class="kw-2">&amp;mut </span>buf);
+<a href=#605 id=605 data-nosnippet>605</a>        <span class="comment">// Safety: All bytes up to `len` have been initialized with ASCII characters.
+<a href=#606 id=606 data-nosnippet>606</a>        </span><span class="kw">let </span>s = <span class="kw">unsafe </span>{ str_from_raw_parts(buf.as_ptr().cast(), len) };
+<a href=#607 id=607 data-nosnippet>607</a>        f.pad(s)
+<a href=#608 id=608 data-nosnippet>608</a>    }
+<a href=#609 id=609 data-nosnippet>609</a>}
+<a href=#610 id=610 data-nosnippet>610</a>
+<a href=#611 id=611 data-nosnippet>611</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>UtcOffset {
+<a href=#612 id=612 data-nosnippet>612</a>    <span class="attr">#[inline]
+<a href=#613 id=613 data-nosnippet>613</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#614 id=614 data-nosnippet>614</a>        fmt::Display::fmt(<span class="self">self</span>, f)
+<a href=#615 id=615 data-nosnippet>615</a>    }
+<a href=#616 id=616 data-nosnippet>616</a>}
+<a href=#617 id=617 data-nosnippet>617</a>
+<a href=#618 id=618 data-nosnippet>618</a><span class="kw">impl </span>Neg <span class="kw">for </span>UtcOffset {
+<a href=#619 id=619 data-nosnippet>619</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
+<a href=#620 id=620 data-nosnippet>620</a>
+<a href=#621 id=621 data-nosnippet>621</a>    <span class="attr">#[inline]
+<a href=#622 id=622 data-nosnippet>622</a>    </span><span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+<a href=#623 id=623 data-nosnippet>623</a>        <span class="self">Self</span>::from_hms_ranged(<span class="self">self</span>.hours.neg(), <span class="self">self</span>.minutes.neg(), <span class="self">self</span>.seconds.neg())
+<a href=#624 id=624 data-nosnippet>624</a>    }
+<a href=#625 id=625 data-nosnippet>625</a>}
 </code></pre></div></section></main></body></html>

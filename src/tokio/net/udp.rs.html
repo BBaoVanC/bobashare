@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/net/udp.rs`."><title>udp.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/</div>udp.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::io::{Interest, PollEvented, ReadBuf, Ready};
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/net/udp.rs`."><title>udp.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/</div>udp.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::io::{Interest, PollEvented, ReadBuf, Ready};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><span class="kw">crate</span>::net::{to_socket_addrs, ToSocketAddrs};
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span><span class="kw">crate</span>::util::check_socket_for_blocking;
 <a href=#4 id=4 data-nosnippet>4</a>
@@ -140,7 +140,7 @@
 <a href=#140 id=140 data-nosnippet>140</a>    ///
 <a href=#141 id=141 data-nosnippet>141</a>    /// #[tokio::main]
 <a href=#142 id=142 data-nosnippet>142</a>    /// async fn main() -&gt; io::Result&lt;()&gt; {
-<a href=#143 id=143 data-nosnippet>143</a>    /// #   if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#143 id=143 data-nosnippet>143</a>    /// #   if cfg!(miri) { return Ok(()); } // No UDP sockets in miri.
 <a href=#144 id=144 data-nosnippet>144</a>    ///     let sock = UdpSocket::bind("0.0.0.0:8080").await?;
 <a href=#145 id=145 data-nosnippet>145</a>    ///     // use `sock`
 <a href=#146 id=146 data-nosnippet>146</a>    /// #   let _ = sock;
@@ -308,7 +308,7 @@
 <a href=#308 id=308 data-nosnippet>308</a>    /// # use std::{io, net::SocketAddr};
 <a href=#309 id=309 data-nosnippet>309</a>    /// # #[tokio::main]
 <a href=#310 id=310 data-nosnippet>310</a>    /// # async fn main() -&gt; io::Result&lt;()&gt; {
-<a href=#311 id=311 data-nosnippet>311</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#311 id=311 data-nosnippet>311</a>    /// # if cfg!(miri) { return Ok(()); } // No UDP sockets in miri.
 <a href=#312 id=312 data-nosnippet>312</a>    /// let addr = "0.0.0.0:8080".parse::&lt;SocketAddr&gt;().unwrap();
 <a href=#313 id=313 data-nosnippet>313</a>    /// let peer = "127.0.0.1:11100".parse::&lt;SocketAddr&gt;().unwrap();
 <a href=#314 id=314 data-nosnippet>314</a>    /// let sock = UdpSocket::bind(addr).await?;
@@ -545,8 +545,8 @@
 <a href=#545 id=545 data-nosnippet>545</a>    ///
 <a href=#546 id=546 data-nosnippet>546</a>    /// # Cancel safety
 <a href=#547 id=547 data-nosnippet>547</a>    ///
-<a href=#548 id=548 data-nosnippet>548</a>    /// This method is cancel safe. If `send` is used as the event in a
-<a href=#549 id=549 data-nosnippet>549</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#548 id=548 data-nosnippet>548</a>    /// This method is cancel safe. If `send` is used as a branch in
+<a href=#549 id=549 data-nosnippet>549</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#550 id=550 data-nosnippet>550</a>    /// completes first, then it is guaranteed that the message was not sent.
 <a href=#551 id=551 data-nosnippet>551</a>    ///
 <a href=#552 id=552 data-nosnippet>552</a>    /// # Examples
@@ -762,8 +762,8 @@
 <a href=#762 id=762 data-nosnippet>762</a>    ///
 <a href=#763 id=763 data-nosnippet>763</a>    /// # Cancel safety
 <a href=#764 id=764 data-nosnippet>764</a>    ///
-<a href=#765 id=765 data-nosnippet>765</a>    /// This method is cancel safe. If `recv` is used as the event in a
-<a href=#766 id=766 data-nosnippet>766</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#765 id=765 data-nosnippet>765</a>    /// This method is cancel safe. If `recv` is used as a branch in
+<a href=#766 id=766 data-nosnippet>766</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#767 id=767 data-nosnippet>767</a>    /// completes first, it is guaranteed that no messages were received on this
 <a href=#768 id=768 data-nosnippet>768</a>    /// socket.
 <a href=#769 id=769 data-nosnippet>769</a>    ///
@@ -1149,7 +1149,7 @@
 <a href=#1149 id=1149 data-nosnippet>1149</a>    <span class="doccomment">/// Sends data on the socket to the given address. On success, returns the
 <a href=#1150 id=1150 data-nosnippet>1150</a>    /// number of bytes written.
 <a href=#1151 id=1151 data-nosnippet>1151</a>    ///
-<a href=#1152 id=1152 data-nosnippet>1152</a>    /// Address type can be any implementor of [`ToSocketAddrs`] trait. See its
+<a href=#1152 id=1152 data-nosnippet>1152</a>    /// Address type can be any implementer of [`ToSocketAddrs`] trait. See its
 <a href=#1153 id=1153 data-nosnippet>1153</a>    /// documentation for concrete examples.
 <a href=#1154 id=1154 data-nosnippet>1154</a>    ///
 <a href=#1155 id=1155 data-nosnippet>1155</a>    /// It is possible for `addr` to yield multiple addresses, but `send_to`
@@ -1162,8 +1162,8 @@
 <a href=#1162 id=1162 data-nosnippet>1162</a>    ///
 <a href=#1163 id=1163 data-nosnippet>1163</a>    /// # Cancel safety
 <a href=#1164 id=1164 data-nosnippet>1164</a>    ///
-<a href=#1165 id=1165 data-nosnippet>1165</a>    /// This method is cancel safe. If `send_to` is used as the event in a
-<a href=#1166 id=1166 data-nosnippet>1166</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#1165 id=1165 data-nosnippet>1165</a>    /// This method is cancel safe. If `send_to` is used as a branch in
+<a href=#1166 id=1166 data-nosnippet>1166</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#1167 id=1167 data-nosnippet>1167</a>    /// completes first, then it is guaranteed that the message was not sent.
 <a href=#1168 id=1168 data-nosnippet>1168</a>    ///
 <a href=#1169 id=1169 data-nosnippet>1169</a>    /// # Example
@@ -1291,8 +1291,8 @@
 <a href=#1291 id=1291 data-nosnippet>1291</a>    ///
 <a href=#1292 id=1292 data-nosnippet>1292</a>    /// # Cancel safety
 <a href=#1293 id=1293 data-nosnippet>1293</a>    ///
-<a href=#1294 id=1294 data-nosnippet>1294</a>    /// This method is cancel safe. If `recv_from` is used as the event in a
-<a href=#1295 id=1295 data-nosnippet>1295</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#1294 id=1294 data-nosnippet>1294</a>    /// This method is cancel safe. If `recv_from` is used as a branch in
+<a href=#1295 id=1295 data-nosnippet>1295</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#1296 id=1296 data-nosnippet>1296</a>    /// completes first, it is guaranteed that no messages were received on this
 <a href=#1297 id=1297 data-nosnippet>1297</a>    /// socket.
 <a href=#1298 id=1298 data-nosnippet>1298</a>    ///
@@ -2288,7 +2288,7 @@
 <a href=#2288 id=2288 data-nosnippet>2288</a>    ///
 <a href=#2289 id=2289 data-nosnippet>2289</a>    /// #[tokio::main]
 <a href=#2290 id=2290 data-nosnippet>2290</a>    /// async fn main() -&gt; io::Result&lt;()&gt; {
-<a href=#2291 id=2291 data-nosnippet>2291</a>    /// #   if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#2291 id=2291 data-nosnippet>2291</a>    /// #   if cfg!(miri) { return Ok(()); } // No UDP sockets in miri.
 <a href=#2292 id=2292 data-nosnippet>2292</a>    ///     // Create a socket
 <a href=#2293 id=2293 data-nosnippet>2293</a>    ///     let socket = UdpSocket::bind("0.0.0.0:8080").await?;
 <a href=#2294 id=2294 data-nosnippet>2294</a>    ///

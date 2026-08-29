@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/net/unix/datagram/socket.rs`."><title>socket.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../../src-files.js"></script><script defer src="../../../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/unix/datagram/</div>socket.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::io::{Interest, PollEvented, ReadBuf, Ready};
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/net/unix/datagram/socket.rs`."><title>socket.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../../src-files.js"></script><script defer src="../../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/unix/datagram/</div>socket.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::io::{Interest, PollEvented, ReadBuf, Ready};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><span class="kw">crate</span>::net::unix::SocketAddr;
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span><span class="kw">crate</span>::util::check_socket_for_blocking;
 <a href=#4 id=4 data-nosnippet>4</a>
@@ -39,7 +39,7 @@
 <a href=#39 id=39 data-nosnippet>39</a>    /// # use std::error::Error;
 <a href=#40 id=40 data-nosnippet>40</a>    /// # #[tokio::main]
 <a href=#41 id=41 data-nosnippet>41</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#42 id=42 data-nosnippet>42</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#42 id=42 data-nosnippet>42</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#43 id=43 data-nosnippet>43</a>    /// use tokio::net::UnixDatagram;
 <a href=#44 id=44 data-nosnippet>44</a>    /// use tempfile::tempdir;
 <a href=#45 id=45 data-nosnippet>45</a>    ///
@@ -377,7 +377,7 @@
 <a href=#377 id=377 data-nosnippet>377</a>    /// # use std::error::Error;
 <a href=#378 id=378 data-nosnippet>378</a>    /// # #[tokio::main]
 <a href=#379 id=379 data-nosnippet>379</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#380 id=380 data-nosnippet>380</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#380 id=380 data-nosnippet>380</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#381 id=381 data-nosnippet>381</a>    /// use tokio::net::UnixDatagram;
 <a href=#382 id=382 data-nosnippet>382</a>    /// use tempfile::tempdir;
 <a href=#383 id=383 data-nosnippet>383</a>    ///
@@ -469,7 +469,7 @@
 <a href=#469 id=469 data-nosnippet>469</a>    /// # use std::error::Error;
 <a href=#470 id=470 data-nosnippet>470</a>    /// # #[tokio::main]
 <a href=#471 id=471 data-nosnippet>471</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#472 id=472 data-nosnippet>472</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#472 id=472 data-nosnippet>472</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#473 id=473 data-nosnippet>473</a>    /// use tokio::net::UnixDatagram;
 <a href=#474 id=474 data-nosnippet>474</a>    /// use std::os::unix::net::UnixDatagram as StdUDS;
 <a href=#475 id=475 data-nosnippet>475</a>    /// use tempfile::tempdir;
@@ -536,7 +536,7 @@
 <a href=#536 id=536 data-nosnippet>536</a>    /// # use std::error::Error;
 <a href=#537 id=537 data-nosnippet>537</a>    /// # #[tokio::main]
 <a href=#538 id=538 data-nosnippet>538</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#539 id=539 data-nosnippet>539</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#539 id=539 data-nosnippet>539</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#540 id=540 data-nosnippet>540</a>    /// use tokio::net::UnixDatagram;
 <a href=#541 id=541 data-nosnippet>541</a>    /// use tempfile::tempdir;
 <a href=#542 id=542 data-nosnippet>542</a>    ///
@@ -576,7 +576,7 @@
 <a href=#576 id=576 data-nosnippet>576</a>    /// # use std::error::Error;
 <a href=#577 id=577 data-nosnippet>577</a>    /// # #[tokio::main]
 <a href=#578 id=578 data-nosnippet>578</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#579 id=579 data-nosnippet>579</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#579 id=579 data-nosnippet>579</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#580 id=580 data-nosnippet>580</a>    /// use tokio::net::UnixDatagram;
 <a href=#581 id=581 data-nosnippet>581</a>    /// use tempfile::tempdir;
 <a href=#582 id=582 data-nosnippet>582</a>    ///
@@ -612,8 +612,8 @@
 <a href=#612 id=612 data-nosnippet>612</a>    ///
 <a href=#613 id=613 data-nosnippet>613</a>    /// # Cancel safety
 <a href=#614 id=614 data-nosnippet>614</a>    ///
-<a href=#615 id=615 data-nosnippet>615</a>    /// This method is cancel safe. If `send` is used as the event in a
-<a href=#616 id=616 data-nosnippet>616</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#615 id=615 data-nosnippet>615</a>    /// This method is cancel safe. If `send` is used as a branch in
+<a href=#616 id=616 data-nosnippet>616</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#617 id=617 data-nosnippet>617</a>    /// completes first, then it is guaranteed that the message was not sent.
 <a href=#618 id=618 data-nosnippet>618</a>    ///
 <a href=#619 id=619 data-nosnippet>619</a>    /// # Examples
@@ -742,8 +742,8 @@
 <a href=#742 id=742 data-nosnippet>742</a>    ///
 <a href=#743 id=743 data-nosnippet>743</a>    /// # Cancel safety
 <a href=#744 id=744 data-nosnippet>744</a>    ///
-<a href=#745 id=745 data-nosnippet>745</a>    /// This method is cancel safe. If `recv` is used as the event in a
-<a href=#746 id=746 data-nosnippet>746</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#745 id=745 data-nosnippet>745</a>    /// This method is cancel safe. If `recv` is used as a branch in
+<a href=#746 id=746 data-nosnippet>746</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#747 id=747 data-nosnippet>747</a>    /// completes first, it is guaranteed that no messages were received on this
 <a href=#748 id=748 data-nosnippet>748</a>    /// socket.
 <a href=#749 id=749 data-nosnippet>749</a>    ///
@@ -903,7 +903,7 @@
 <a href=#903 id=903 data-nosnippet>903</a>        /// # use std::error::Error;
 <a href=#904 id=904 data-nosnippet>904</a>        /// # #[tokio::main]
 <a href=#905 id=905 data-nosnippet>905</a>        /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#906 id=906 data-nosnippet>906</a>        /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#906 id=906 data-nosnippet>906</a>        /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#907 id=907 data-nosnippet>907</a>        /// use tokio::net::UnixDatagram;
 <a href=#908 id=908 data-nosnippet>908</a>        /// use tempfile::tempdir;
 <a href=#909 id=909 data-nosnippet>909</a>        ///
@@ -1062,8 +1062,8 @@
 <a href=#1062 id=1062 data-nosnippet>1062</a>    ///
 <a href=#1063 id=1063 data-nosnippet>1063</a>    /// # Cancel safety
 <a href=#1064 id=1064 data-nosnippet>1064</a>    ///
-<a href=#1065 id=1065 data-nosnippet>1065</a>    /// This method is cancel safe. If `send_to` is used as the event in a
-<a href=#1066 id=1066 data-nosnippet>1066</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#1065 id=1065 data-nosnippet>1065</a>    /// This method is cancel safe. If `send_to` is used as a branch in
+<a href=#1066 id=1066 data-nosnippet>1066</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#1067 id=1067 data-nosnippet>1067</a>    /// completes first, then it is guaranteed that the message was not sent.
 <a href=#1068 id=1068 data-nosnippet>1068</a>    ///
 <a href=#1069 id=1069 data-nosnippet>1069</a>    /// # Examples
@@ -1071,7 +1071,7 @@
 <a href=#1071 id=1071 data-nosnippet>1071</a>    /// # use std::error::Error;
 <a href=#1072 id=1072 data-nosnippet>1072</a>    /// # #[tokio::main]
 <a href=#1073 id=1073 data-nosnippet>1073</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1074 id=1074 data-nosnippet>1074</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1074 id=1074 data-nosnippet>1074</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1075 id=1075 data-nosnippet>1075</a>    /// use tokio::net::UnixDatagram;
 <a href=#1076 id=1076 data-nosnippet>1076</a>    /// use tempfile::tempdir;
 <a href=#1077 id=1077 data-nosnippet>1077</a>    ///
@@ -1112,8 +1112,8 @@
 <a href=#1112 id=1112 data-nosnippet>1112</a>    ///
 <a href=#1113 id=1113 data-nosnippet>1113</a>    /// # Cancel safety
 <a href=#1114 id=1114 data-nosnippet>1114</a>    ///
-<a href=#1115 id=1115 data-nosnippet>1115</a>    /// This method is cancel safe. If `recv_from` is used as the event in a
-<a href=#1116 id=1116 data-nosnippet>1116</a>    /// [`tokio::select!`](crate::select) statement and some other branch
+<a href=#1115 id=1115 data-nosnippet>1115</a>    /// This method is cancel safe. If `recv_from` is used as a branch in
+<a href=#1116 id=1116 data-nosnippet>1116</a>    /// [`tokio::select!`](crate::select) and another branch
 <a href=#1117 id=1117 data-nosnippet>1117</a>    /// completes first, it is guaranteed that no messages were received on this
 <a href=#1118 id=1118 data-nosnippet>1118</a>    /// socket.
 <a href=#1119 id=1119 data-nosnippet>1119</a>    ///
@@ -1122,7 +1122,7 @@
 <a href=#1122 id=1122 data-nosnippet>1122</a>    /// # use std::error::Error;
 <a href=#1123 id=1123 data-nosnippet>1123</a>    /// # #[tokio::main]
 <a href=#1124 id=1124 data-nosnippet>1124</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1125 id=1125 data-nosnippet>1125</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1125 id=1125 data-nosnippet>1125</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1126 id=1126 data-nosnippet>1126</a>    /// use tokio::net::UnixDatagram;
 <a href=#1127 id=1127 data-nosnippet>1127</a>    /// use tempfile::tempdir;
 <a href=#1128 id=1128 data-nosnippet>1128</a>    ///
@@ -1439,7 +1439,7 @@
 <a href=#1439 id=1439 data-nosnippet>1439</a>    /// # use std::error::Error;
 <a href=#1440 id=1440 data-nosnippet>1440</a>    /// # #[tokio::main]
 <a href=#1441 id=1441 data-nosnippet>1441</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1442 id=1442 data-nosnippet>1442</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1442 id=1442 data-nosnippet>1442</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1443 id=1443 data-nosnippet>1443</a>    /// use tokio::net::UnixDatagram;
 <a href=#1444 id=1444 data-nosnippet>1444</a>    /// use tempfile::tempdir;
 <a href=#1445 id=1445 data-nosnippet>1445</a>    ///
@@ -1462,7 +1462,7 @@
 <a href=#1462 id=1462 data-nosnippet>1462</a>    /// # use std::error::Error;
 <a href=#1463 id=1463 data-nosnippet>1463</a>    /// # #[tokio::main]
 <a href=#1464 id=1464 data-nosnippet>1464</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1465 id=1465 data-nosnippet>1465</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1465 id=1465 data-nosnippet>1465</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1466 id=1466 data-nosnippet>1466</a>    /// use tokio::net::UnixDatagram;
 <a href=#1467 id=1467 data-nosnippet>1467</a>    ///
 <a href=#1468 id=1468 data-nosnippet>1468</a>    /// // Create an unbound socket
@@ -1487,7 +1487,7 @@
 <a href=#1487 id=1487 data-nosnippet>1487</a>    /// # use std::error::Error;
 <a href=#1488 id=1488 data-nosnippet>1488</a>    /// # #[tokio::main]
 <a href=#1489 id=1489 data-nosnippet>1489</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1490 id=1490 data-nosnippet>1490</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1490 id=1490 data-nosnippet>1490</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1491 id=1491 data-nosnippet>1491</a>    /// use tokio::net::UnixDatagram;
 <a href=#1492 id=1492 data-nosnippet>1492</a>    /// use tempfile::tempdir;
 <a href=#1493 id=1493 data-nosnippet>1493</a>    ///
@@ -1535,7 +1535,7 @@
 <a href=#1535 id=1535 data-nosnippet>1535</a>    /// # use std::error::Error;
 <a href=#1536 id=1536 data-nosnippet>1536</a>    /// # #[tokio::main]
 <a href=#1537 id=1537 data-nosnippet>1537</a>    /// # async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
-<a href=#1538 id=1538 data-nosnippet>1538</a>    /// # if cfg!(miri) { return Ok(()); } // No `socket` in miri.
+<a href=#1538 id=1538 data-nosnippet>1538</a>    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
 <a href=#1539 id=1539 data-nosnippet>1539</a>    /// use tokio::net::UnixDatagram;
 <a href=#1540 id=1540 data-nosnippet>1540</a>    ///
 <a href=#1541 id=1541 data-nosnippet>1541</a>    /// // Create an unbound socket

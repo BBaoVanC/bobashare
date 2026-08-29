@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.10.1/src/common/date.rs`."><title>date.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/common/</div>date.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::cell::RefCell;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.0/src/common/date.rs`."><title>date.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/common/</div>date.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::cell::RefCell;
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::fmt::{<span class="self">self</span>, Write};
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>std::str;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span>std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -14,14 +14,14 @@
 <a href=#14 id=14 data-nosnippet>14</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>extend(dst: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
 <a href=#15 id=15 data-nosnippet>15</a>    CACHED.with(|cache| {
 <a href=#16 id=16 data-nosnippet>16</a>        dst.extend_from_slice(cache.borrow().buffer());
-<a href=#17 id=17 data-nosnippet>17</a>    })
+<a href=#17 id=17 data-nosnippet>17</a>    });
 <a href=#18 id=18 data-nosnippet>18</a>}
 <a href=#19 id=19 data-nosnippet>19</a>
 <a href=#20 id=20 data-nosnippet>20</a><span class="attr">#[cfg(feature = <span class="string">"http1"</span>)]
 <a href=#21 id=21 data-nosnippet>21</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>update() {
 <a href=#22 id=22 data-nosnippet>22</a>    CACHED.with(|cache| {
 <a href=#23 id=23 data-nosnippet>23</a>        cache.borrow_mut().check();
-<a href=#24 id=24 data-nosnippet>24</a>    })
+<a href=#24 id=24 data-nosnippet>24</a>    });
 <a href=#25 id=25 data-nosnippet>25</a>}
 <a href=#26 id=26 data-nosnippet>26</a>
 <a href=#27 id=27 data-nosnippet>27</a><span class="attr">#[cfg(feature = <span class="string">"http2"</span>)]
@@ -74,13 +74,13 @@
 <a href=#74 id=74 data-nosnippet>74</a>            .subsec_nanos();
 <a href=#75 id=75 data-nosnippet>75</a>
 <a href=#76 id=76 data-nosnippet>76</a>        <span class="self">self</span>.render(now);
-<a href=#77 id=77 data-nosnippet>77</a>        <span class="self">self</span>.next_update = now + Duration::new(<span class="number">1</span>, <span class="number">0</span>) - Duration::from_nanos(nanos <span class="kw">as </span>u64);
+<a href=#77 id=77 data-nosnippet>77</a>        <span class="self">self</span>.next_update = now + Duration::new(<span class="number">1</span>, <span class="number">0</span>) - Duration::from_nanos(u64::from(nanos));
 <a href=#78 id=78 data-nosnippet>78</a>    }
 <a href=#79 id=79 data-nosnippet>79</a>
 <a href=#80 id=80 data-nosnippet>80</a>    <span class="kw">fn </span>render(<span class="kw-2">&amp;mut </span><span class="self">self</span>, now: SystemTime) {
 <a href=#81 id=81 data-nosnippet>81</a>        <span class="self">self</span>.pos = <span class="number">0</span>;
 <a href=#82 id=82 data-nosnippet>82</a>        <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"{}"</span>, HttpDate::from(now));
-<a href=#83 id=83 data-nosnippet>83</a>        <span class="macro">debug_assert!</span>(<span class="self">self</span>.pos == DATE_VALUE_LENGTH);
+<a href=#83 id=83 data-nosnippet>83</a>        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.pos, DATE_VALUE_LENGTH);
 <a href=#84 id=84 data-nosnippet>84</a>        <span class="self">self</span>.render_http2();
 <a href=#85 id=85 data-nosnippet>85</a>    }
 <a href=#86 id=86 data-nosnippet>86</a>
@@ -105,7 +105,7 @@
 <a href=#105 id=105 data-nosnippet>105</a>
 <a href=#106 id=106 data-nosnippet>106</a><span class="attr">#[cfg(test)]
 <a href=#107 id=107 data-nosnippet>107</a></span><span class="kw">mod </span>tests {
-<a href=#108 id=108 data-nosnippet>108</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
+<a href=#108 id=108 data-nosnippet>108</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#109 id=109 data-nosnippet>109</a>
 <a href=#110 id=110 data-nosnippet>110</a>    <span class="attr">#[cfg(feature = <span class="string">"nightly"</span>)]
 <a href=#111 id=111 data-nosnippet>111</a>    </span><span class="kw">use </span>test::Bencher;

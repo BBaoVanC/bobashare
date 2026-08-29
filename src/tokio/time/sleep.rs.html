@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/time/sleep.rs`."><title>sleep.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/time/</div>sleep.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::runtime::Timer;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/time/sleep.rs`."><title>sleep.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/time/</div>sleep.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::runtime::{scheduler, Timer};
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><span class="kw">crate</span>::time::{error::Error, Duration, Instant};
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span><span class="kw">crate</span>::util::trace;
 <a href=#4 id=4 data-nosnippet>4</a>
@@ -223,11 +223,11 @@
 <a href=#223 id=223 data-nosnippet>223</a>    #[derive(Debug)]
 <a href=#224 id=224 data-nosnippet>224</a>    #[must_use = <span class="string">"futures do nothing unless you `.await` or poll them"</span>]
 <a href=#225 id=225 data-nosnippet>225</a>    </span><span class="kw">pub struct </span>Sleep {
-<a href=#226 id=226 data-nosnippet>226</a>        inner: Inner,
-<a href=#227 id=227 data-nosnippet>227</a>
-<a href=#228 id=228 data-nosnippet>228</a>        <span class="comment">// The link between the `Sleep` instance and the timer that drives it.
-<a href=#229 id=229 data-nosnippet>229</a>        </span><span class="attr">#[pin]
-<a href=#230 id=230 data-nosnippet>230</a>        </span>entry: Timer,
+<a href=#226 id=226 data-nosnippet>226</a>        deadline: Instant,
+<a href=#227 id=227 data-nosnippet>227</a>        driver: scheduler::Handle,
+<a href=#228 id=228 data-nosnippet>228</a>        inner: Inner,
+<a href=#229 id=229 data-nosnippet>229</a>        <span class="attr">#[pin]
+<a href=#230 id=230 data-nosnippet>230</a>        </span>timer: <span class="prelude-ty">Option</span>&lt;Timer&gt;,
 <a href=#231 id=231 data-nosnippet>231</a>    }
 <a href=#232 id=232 data-nosnippet>232</a>}
 <a href=#233 id=233 data-nosnippet>233</a>
@@ -251,220 +251,221 @@
 <a href=#251 id=251 data-nosnippet>251</a>        deadline: Instant,
 <a href=#252 id=252 data-nosnippet>252</a>        location: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>Location&lt;<span class="lifetime">'static</span>&gt;&gt;,
 <a href=#253 id=253 data-nosnippet>253</a>    ) -&gt; Sleep {
-<a href=#254 id=254 data-nosnippet>254</a>        <span class="kw">use </span><span class="kw">crate</span>::runtime::scheduler;
-<a href=#255 id=255 data-nosnippet>255</a>        <span class="kw">let </span>handle = scheduler::Handle::current();
-<a href=#256 id=256 data-nosnippet>256</a>        <span class="kw">let </span>entry = Timer::new(handle, deadline);
+<a href=#254 id=254 data-nosnippet>254</a>        <span class="kw">let </span>handle = scheduler::Handle::current();
+<a href=#255 id=255 data-nosnippet>255</a>        <span class="comment">// Panic if the time driver is not enabled (backwards compat)
+<a href=#256 id=256 data-nosnippet>256</a>        </span><span class="kw">_ </span>= handle.driver().time();
 <a href=#257 id=257 data-nosnippet>257</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
 <a href=#258 id=258 data-nosnippet>258</a>        </span><span class="kw">let </span>inner = {
-<a href=#259 id=259 data-nosnippet>259</a>            <span class="kw">let </span>handle = scheduler::Handle::current();
-<a href=#260 id=260 data-nosnippet>260</a>            <span class="kw">let </span>clock = handle.driver().clock();
-<a href=#261 id=261 data-nosnippet>261</a>            <span class="kw">let </span>handle = <span class="kw-2">&amp;</span>handle.driver().time();
-<a href=#262 id=262 data-nosnippet>262</a>            <span class="kw">let </span>time_source = handle.time_source();
-<a href=#263 id=263 data-nosnippet>263</a>            <span class="kw">let </span>deadline_tick = time_source.deadline_to_tick(deadline);
-<a href=#264 id=264 data-nosnippet>264</a>            <span class="kw">let </span>duration = deadline_tick.saturating_sub(time_source.now(clock));
-<a href=#265 id=265 data-nosnippet>265</a>
-<a href=#266 id=266 data-nosnippet>266</a>            <span class="kw">let </span>location = location.expect(<span class="string">"should have location if tracing"</span>);
-<a href=#267 id=267 data-nosnippet>267</a>            <span class="kw">let </span>resource_span = <span class="macro">tracing::trace_span!</span>(
-<a href=#268 id=268 data-nosnippet>268</a>                parent: <span class="prelude-val">None</span>,
-<a href=#269 id=269 data-nosnippet>269</a>                <span class="string">"runtime.resource"</span>,
-<a href=#270 id=270 data-nosnippet>270</a>                concrete_type = <span class="string">"Sleep"</span>,
-<a href=#271 id=271 data-nosnippet>271</a>                kind = <span class="string">"timer"</span>,
-<a href=#272 id=272 data-nosnippet>272</a>                loc.file = location.file(),
-<a href=#273 id=273 data-nosnippet>273</a>                loc.line = location.line(),
-<a href=#274 id=274 data-nosnippet>274</a>                loc.col = location.column(),
-<a href=#275 id=275 data-nosnippet>275</a>            );
-<a href=#276 id=276 data-nosnippet>276</a>
-<a href=#277 id=277 data-nosnippet>277</a>            <span class="kw">let </span>async_op_span = resource_span.in_scope(|| {
-<a href=#278 id=278 data-nosnippet>278</a>                <span class="macro">tracing::trace!</span>(
-<a href=#279 id=279 data-nosnippet>279</a>                    target: <span class="string">"runtime::resource::state_update"</span>,
-<a href=#280 id=280 data-nosnippet>280</a>                    duration = duration,
-<a href=#281 id=281 data-nosnippet>281</a>                    duration.unit = <span class="string">"ms"</span>,
-<a href=#282 id=282 data-nosnippet>282</a>                    duration.op = <span class="string">"override"</span>,
-<a href=#283 id=283 data-nosnippet>283</a>                );
+<a href=#259 id=259 data-nosnippet>259</a>            <span class="kw">let </span>location = location.expect(<span class="string">"should have location if tracing"</span>);
+<a href=#260 id=260 data-nosnippet>260</a>            <span class="kw">let </span>resource_span = <span class="macro">tracing::trace_span!</span>(
+<a href=#261 id=261 data-nosnippet>261</a>                parent: <span class="prelude-val">None</span>,
+<a href=#262 id=262 data-nosnippet>262</a>                <span class="string">"runtime.resource"</span>,
+<a href=#263 id=263 data-nosnippet>263</a>                concrete_type = <span class="string">"Sleep"</span>,
+<a href=#264 id=264 data-nosnippet>264</a>                kind = <span class="string">"timer"</span>,
+<a href=#265 id=265 data-nosnippet>265</a>                loc.file = location.file(),
+<a href=#266 id=266 data-nosnippet>266</a>                loc.line = location.line(),
+<a href=#267 id=267 data-nosnippet>267</a>                loc.col = location.column(),
+<a href=#268 id=268 data-nosnippet>268</a>            );
+<a href=#269 id=269 data-nosnippet>269</a>
+<a href=#270 id=270 data-nosnippet>270</a>            <span class="kw">let </span>async_op_span = <span class="macro">tracing::trace_span!</span>(
+<a href=#271 id=271 data-nosnippet>271</a>                parent: <span class="kw-2">&amp;</span>resource_span,
+<a href=#272 id=272 data-nosnippet>272</a>                <span class="string">"runtime.resource.async_op"</span>,
+<a href=#273 id=273 data-nosnippet>273</a>                source = <span class="string">"Sleep::new_timeout"</span>,
+<a href=#274 id=274 data-nosnippet>274</a>            );
+<a href=#275 id=275 data-nosnippet>275</a>
+<a href=#276 id=276 data-nosnippet>276</a>            <span class="kw">let </span>async_op_poll_span =
+<a href=#277 id=277 data-nosnippet>277</a>                <span class="macro">tracing::trace_span!</span>(parent: <span class="kw-2">&amp;</span>async_op_span, <span class="string">"runtime.resource.async_op.poll"</span>);
+<a href=#278 id=278 data-nosnippet>278</a>
+<a href=#279 id=279 data-nosnippet>279</a>            <span class="kw">let </span>ctx = trace::AsyncOpTracingCtx {
+<a href=#280 id=280 data-nosnippet>280</a>                async_op_span,
+<a href=#281 id=281 data-nosnippet>281</a>                async_op_poll_span,
+<a href=#282 id=282 data-nosnippet>282</a>                resource_span,
+<a href=#283 id=283 data-nosnippet>283</a>            };
 <a href=#284 id=284 data-nosnippet>284</a>
-<a href=#285 id=285 data-nosnippet>285</a>                <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op"</span>, source = <span class="string">"Sleep::new_timeout"</span>)
-<a href=#286 id=286 data-nosnippet>286</a>            });
+<a href=#285 id=285 data-nosnippet>285</a>            Inner { ctx }
+<a href=#286 id=286 data-nosnippet>286</a>        };
 <a href=#287 id=287 data-nosnippet>287</a>
-<a href=#288 id=288 data-nosnippet>288</a>            <span class="kw">let </span>async_op_poll_span =
-<a href=#289 id=289 data-nosnippet>289</a>                async_op_span.in_scope(|| <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op.poll"</span>));
+<a href=#288 id=288 data-nosnippet>288</a>        <span class="attr">#[cfg(not(all(tokio_unstable, feature = <span class="string">"tracing"</span>)))]
+<a href=#289 id=289 data-nosnippet>289</a>        </span><span class="kw">let </span>inner = Inner {};
 <a href=#290 id=290 data-nosnippet>290</a>
-<a href=#291 id=291 data-nosnippet>291</a>            <span class="kw">let </span>ctx = trace::AsyncOpTracingCtx {
-<a href=#292 id=292 data-nosnippet>292</a>                async_op_span,
-<a href=#293 id=293 data-nosnippet>293</a>                async_op_poll_span,
-<a href=#294 id=294 data-nosnippet>294</a>                resource_span,
-<a href=#295 id=295 data-nosnippet>295</a>            };
-<a href=#296 id=296 data-nosnippet>296</a>
-<a href=#297 id=297 data-nosnippet>297</a>            Inner { ctx }
-<a href=#298 id=298 data-nosnippet>298</a>        };
-<a href=#299 id=299 data-nosnippet>299</a>
-<a href=#300 id=300 data-nosnippet>300</a>        <span class="attr">#[cfg(not(all(tokio_unstable, feature = <span class="string">"tracing"</span>)))]
-<a href=#301 id=301 data-nosnippet>301</a>        </span><span class="kw">let </span>inner = Inner {};
+<a href=#291 id=291 data-nosnippet>291</a>        Sleep {
+<a href=#292 id=292 data-nosnippet>292</a>            deadline,
+<a href=#293 id=293 data-nosnippet>293</a>            driver: handle,
+<a href=#294 id=294 data-nosnippet>294</a>            inner,
+<a href=#295 id=295 data-nosnippet>295</a>            timer: <span class="prelude-val">None</span>,
+<a href=#296 id=296 data-nosnippet>296</a>        }
+<a href=#297 id=297 data-nosnippet>297</a>    }
+<a href=#298 id=298 data-nosnippet>298</a>
+<a href=#299 id=299 data-nosnippet>299</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>far_future(location: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>Location&lt;<span class="lifetime">'static</span>&gt;&gt;) -&gt; Sleep {
+<a href=#300 id=300 data-nosnippet>300</a>        <span class="self">Self</span>::new_timeout(Instant::far_future(), location)
+<a href=#301 id=301 data-nosnippet>301</a>    }
 <a href=#302 id=302 data-nosnippet>302</a>
-<a href=#303 id=303 data-nosnippet>303</a>        Sleep { inner, entry }
-<a href=#304 id=304 data-nosnippet>304</a>    }
-<a href=#305 id=305 data-nosnippet>305</a>
-<a href=#306 id=306 data-nosnippet>306</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>far_future(location: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>Location&lt;<span class="lifetime">'static</span>&gt;&gt;) -&gt; Sleep {
-<a href=#307 id=307 data-nosnippet>307</a>        <span class="self">Self</span>::new_timeout(Instant::far_future(), location)
-<a href=#308 id=308 data-nosnippet>308</a>    }
-<a href=#309 id=309 data-nosnippet>309</a>
-<a href=#310 id=310 data-nosnippet>310</a>    <span class="doccomment">/// Returns the instant at which the future will complete.
-<a href=#311 id=311 data-nosnippet>311</a>    </span><span class="kw">pub fn </span>deadline(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Instant {
-<a href=#312 id=312 data-nosnippet>312</a>        <span class="self">self</span>.entry.deadline()
+<a href=#303 id=303 data-nosnippet>303</a>    <span class="doccomment">/// Returns the instant at which the future will complete.
+<a href=#304 id=304 data-nosnippet>304</a>    </span><span class="kw">pub fn </span>deadline(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Instant {
+<a href=#305 id=305 data-nosnippet>305</a>        <span class="self">self</span>.deadline
+<a href=#306 id=306 data-nosnippet>306</a>    }
+<a href=#307 id=307 data-nosnippet>307</a>
+<a href=#308 id=308 data-nosnippet>308</a>    <span class="doccomment">/// Returns `true` if `Sleep` has elapsed.
+<a href=#309 id=309 data-nosnippet>309</a>    ///
+<a href=#310 id=310 data-nosnippet>310</a>    /// A `Sleep` instance is elapsed when the requested duration has elapsed.
+<a href=#311 id=311 data-nosnippet>311</a>    </span><span class="kw">pub fn </span>is_elapsed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+<a href=#312 id=312 data-nosnippet>312</a>        <span class="self">self</span>.timer.as_ref().is_some_and(Timer::is_elapsed)
 <a href=#313 id=313 data-nosnippet>313</a>    }
 <a href=#314 id=314 data-nosnippet>314</a>
-<a href=#315 id=315 data-nosnippet>315</a>    <span class="doccomment">/// Returns `true` if `Sleep` has elapsed.
+<a href=#315 id=315 data-nosnippet>315</a>    <span class="doccomment">/// Resets the `Sleep` instance to a new deadline.
 <a href=#316 id=316 data-nosnippet>316</a>    ///
-<a href=#317 id=317 data-nosnippet>317</a>    /// A `Sleep` instance is elapsed when the requested duration has elapsed.
-<a href=#318 id=318 data-nosnippet>318</a>    </span><span class="kw">pub fn </span>is_elapsed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-<a href=#319 id=319 data-nosnippet>319</a>        <span class="self">self</span>.entry.is_elapsed()
-<a href=#320 id=320 data-nosnippet>320</a>    }
-<a href=#321 id=321 data-nosnippet>321</a>
-<a href=#322 id=322 data-nosnippet>322</a>    <span class="doccomment">/// Resets the `Sleep` instance to a new deadline.
-<a href=#323 id=323 data-nosnippet>323</a>    ///
-<a href=#324 id=324 data-nosnippet>324</a>    /// Calling this function allows changing the instant at which the `Sleep`
-<a href=#325 id=325 data-nosnippet>325</a>    /// future completes without having to create new associated state.
+<a href=#317 id=317 data-nosnippet>317</a>    /// Calling this function allows changing the instant at which the `Sleep`
+<a href=#318 id=318 data-nosnippet>318</a>    /// future completes without having to create new associated state.
+<a href=#319 id=319 data-nosnippet>319</a>    ///
+<a href=#320 id=320 data-nosnippet>320</a>    /// This function can be called both before and after the future has
+<a href=#321 id=321 data-nosnippet>321</a>    /// completed.
+<a href=#322 id=322 data-nosnippet>322</a>    ///
+<a href=#323 id=323 data-nosnippet>323</a>    /// To call this method, you will usually combine the call with
+<a href=#324 id=324 data-nosnippet>324</a>    /// [`Pin::as_mut`], which lets you call the method without consuming the
+<a href=#325 id=325 data-nosnippet>325</a>    /// `Sleep` itself.
 <a href=#326 id=326 data-nosnippet>326</a>    ///
-<a href=#327 id=327 data-nosnippet>327</a>    /// This function can be called both before and after the future has
-<a href=#328 id=328 data-nosnippet>328</a>    /// completed.
-<a href=#329 id=329 data-nosnippet>329</a>    ///
-<a href=#330 id=330 data-nosnippet>330</a>    /// To call this method, you will usually combine the call with
-<a href=#331 id=331 data-nosnippet>331</a>    /// [`Pin::as_mut`], which lets you call the method without consuming the
-<a href=#332 id=332 data-nosnippet>332</a>    /// `Sleep` itself.
-<a href=#333 id=333 data-nosnippet>333</a>    ///
-<a href=#334 id=334 data-nosnippet>334</a>    /// # Example
-<a href=#335 id=335 data-nosnippet>335</a>    ///
-<a href=#336 id=336 data-nosnippet>336</a>    /// ```
-<a href=#337 id=337 data-nosnippet>337</a>    /// use tokio::time::{Duration, Instant};
-<a href=#338 id=338 data-nosnippet>338</a>    ///
-<a href=#339 id=339 data-nosnippet>339</a>    /// # #[tokio::main(flavor = "current_thread")]
-<a href=#340 id=340 data-nosnippet>340</a>    /// # async fn main() {
-<a href=#341 id=341 data-nosnippet>341</a>    /// let sleep = tokio::time::sleep(Duration::from_millis(10));
-<a href=#342 id=342 data-nosnippet>342</a>    /// tokio::pin!(sleep);
-<a href=#343 id=343 data-nosnippet>343</a>    ///
-<a href=#344 id=344 data-nosnippet>344</a>    /// sleep.as_mut().reset(Instant::now() + Duration::from_millis(20));
-<a href=#345 id=345 data-nosnippet>345</a>    /// # }
-<a href=#346 id=346 data-nosnippet>346</a>    /// ```
-<a href=#347 id=347 data-nosnippet>347</a>    ///
-<a href=#348 id=348 data-nosnippet>348</a>    /// See also the top-level examples.
-<a href=#349 id=349 data-nosnippet>349</a>    ///
-<a href=#350 id=350 data-nosnippet>350</a>    /// [`Pin::as_mut`]: fn@std::pin::Pin::as_mut
-<a href=#351 id=351 data-nosnippet>351</a>    </span><span class="kw">pub fn </span>reset(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, deadline: Instant) {
-<a href=#352 id=352 data-nosnippet>352</a>        <span class="self">self</span>.reset_inner(deadline);
-<a href=#353 id=353 data-nosnippet>353</a>    }
-<a href=#354 id=354 data-nosnippet>354</a>
-<a href=#355 id=355 data-nosnippet>355</a>    <span class="doccomment">/// Resets the `Sleep` instance to a new deadline without reregistering it
-<a href=#356 id=356 data-nosnippet>356</a>    /// to be woken up.
-<a href=#357 id=357 data-nosnippet>357</a>    ///
-<a href=#358 id=358 data-nosnippet>358</a>    /// Calling this function allows changing the instant at which the `Sleep`
-<a href=#359 id=359 data-nosnippet>359</a>    /// future completes without having to create new associated state and
-<a href=#360 id=360 data-nosnippet>360</a>    /// without having it registered. This is required in e.g. the
-<a href=#361 id=361 data-nosnippet>361</a>    /// [`crate::time::Interval`] where we want to reset the internal [Sleep]
-<a href=#362 id=362 data-nosnippet>362</a>    /// without having it wake up the last task that polled it.
-<a href=#363 id=363 data-nosnippet>363</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>reset_without_reregister(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, deadline: Instant) {
-<a href=#364 id=364 data-nosnippet>364</a>        <span class="kw">let </span><span class="kw-2">mut </span>me = <span class="self">self</span>.project();
-<a href=#365 id=365 data-nosnippet>365</a>        <span class="kw">match </span>me.entry.as_ref().flavor() {
-<a href=#366 id=366 data-nosnippet>366</a>            <span class="kw">crate</span>::runtime::TimerFlavor::Traditional =&gt; {
-<a href=#367 id=367 data-nosnippet>367</a>                me.entry.as_mut().reset(deadline, <span class="bool-val">false</span>);
-<a href=#368 id=368 data-nosnippet>368</a>            }
-<a href=#369 id=369 data-nosnippet>369</a>            <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"rt-multi-thread"</span>))]
-<a href=#370 id=370 data-nosnippet>370</a>            </span><span class="kw">crate</span>::runtime::TimerFlavor::Alternative =&gt; {
-<a href=#371 id=371 data-nosnippet>371</a>                <span class="kw">let </span>handle = me.entry.as_ref().scheduler_handle().clone();
-<a href=#372 id=372 data-nosnippet>372</a>                me.entry.set(Timer::new(handle, deadline));
-<a href=#373 id=373 data-nosnippet>373</a>            }
-<a href=#374 id=374 data-nosnippet>374</a>        }
-<a href=#375 id=375 data-nosnippet>375</a>    }
-<a href=#376 id=376 data-nosnippet>376</a>
-<a href=#377 id=377 data-nosnippet>377</a>    <span class="kw">fn </span>reset_inner(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, deadline: Instant) {
-<a href=#378 id=378 data-nosnippet>378</a>        <span class="kw">let </span><span class="kw-2">mut </span>me = <span class="self">self</span>.project();
-<a href=#379 id=379 data-nosnippet>379</a>        <span class="kw">match </span>me.entry.as_ref().flavor() {
-<a href=#380 id=380 data-nosnippet>380</a>            <span class="kw">crate</span>::runtime::TimerFlavor::Traditional =&gt; {
-<a href=#381 id=381 data-nosnippet>381</a>                me.entry.as_mut().reset(deadline, <span class="bool-val">true</span>);
-<a href=#382 id=382 data-nosnippet>382</a>            }
-<a href=#383 id=383 data-nosnippet>383</a>            <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"rt-multi-thread"</span>))]
-<a href=#384 id=384 data-nosnippet>384</a>            </span><span class="kw">crate</span>::runtime::TimerFlavor::Alternative =&gt; {
-<a href=#385 id=385 data-nosnippet>385</a>                <span class="kw">let </span>handle = me.entry.as_ref().scheduler_handle().clone();
-<a href=#386 id=386 data-nosnippet>386</a>                me.entry.set(Timer::new(handle, deadline));
-<a href=#387 id=387 data-nosnippet>387</a>            }
-<a href=#388 id=388 data-nosnippet>388</a>        }
-<a href=#389 id=389 data-nosnippet>389</a>
-<a href=#390 id=390 data-nosnippet>390</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#391 id=391 data-nosnippet>391</a>        </span>{
-<a href=#392 id=392 data-nosnippet>392</a>            <span class="kw">let </span>_resource_enter = me.inner.ctx.resource_span.enter();
-<a href=#393 id=393 data-nosnippet>393</a>            me.inner.ctx.async_op_span =
-<a href=#394 id=394 data-nosnippet>394</a>                <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op"</span>, source = <span class="string">"Sleep::reset"</span>);
-<a href=#395 id=395 data-nosnippet>395</a>            <span class="kw">let </span>_async_op_enter = me.inner.ctx.async_op_span.enter();
-<a href=#396 id=396 data-nosnippet>396</a>
-<a href=#397 id=397 data-nosnippet>397</a>            me.inner.ctx.async_op_poll_span =
-<a href=#398 id=398 data-nosnippet>398</a>                <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op.poll"</span>);
-<a href=#399 id=399 data-nosnippet>399</a>
-<a href=#400 id=400 data-nosnippet>400</a>            <span class="kw">let </span>duration = {
-<a href=#401 id=401 data-nosnippet>401</a>                <span class="kw">let </span>clock = me.entry.as_ref().clock();
-<a href=#402 id=402 data-nosnippet>402</a>                <span class="kw">let </span>time_source = me.entry.as_ref().driver().time_source();
-<a href=#403 id=403 data-nosnippet>403</a>                <span class="kw">let </span>now = time_source.now(clock);
-<a href=#404 id=404 data-nosnippet>404</a>                <span class="kw">let </span>deadline_tick = time_source.deadline_to_tick(deadline);
-<a href=#405 id=405 data-nosnippet>405</a>                deadline_tick.saturating_sub(now)
-<a href=#406 id=406 data-nosnippet>406</a>            };
-<a href=#407 id=407 data-nosnippet>407</a>
-<a href=#408 id=408 data-nosnippet>408</a>            <span class="macro">tracing::trace!</span>(
-<a href=#409 id=409 data-nosnippet>409</a>                target: <span class="string">"runtime::resource::state_update"</span>,
-<a href=#410 id=410 data-nosnippet>410</a>                duration = duration,
-<a href=#411 id=411 data-nosnippet>411</a>                duration.unit = <span class="string">"ms"</span>,
-<a href=#412 id=412 data-nosnippet>412</a>                duration.op = <span class="string">"override"</span>,
-<a href=#413 id=413 data-nosnippet>413</a>            );
-<a href=#414 id=414 data-nosnippet>414</a>        }
-<a href=#415 id=415 data-nosnippet>415</a>    }
+<a href=#327 id=327 data-nosnippet>327</a>    /// # Example
+<a href=#328 id=328 data-nosnippet>328</a>    ///
+<a href=#329 id=329 data-nosnippet>329</a>    /// ```
+<a href=#330 id=330 data-nosnippet>330</a>    /// use tokio::time::{Duration, Instant};
+<a href=#331 id=331 data-nosnippet>331</a>    ///
+<a href=#332 id=332 data-nosnippet>332</a>    /// # #[tokio::main(flavor = "current_thread")]
+<a href=#333 id=333 data-nosnippet>333</a>    /// # async fn main() {
+<a href=#334 id=334 data-nosnippet>334</a>    /// let sleep = tokio::time::sleep(Duration::from_millis(10));
+<a href=#335 id=335 data-nosnippet>335</a>    /// tokio::pin!(sleep);
+<a href=#336 id=336 data-nosnippet>336</a>    ///
+<a href=#337 id=337 data-nosnippet>337</a>    /// sleep.as_mut().reset(Instant::now() + Duration::from_millis(20));
+<a href=#338 id=338 data-nosnippet>338</a>    /// # }
+<a href=#339 id=339 data-nosnippet>339</a>    /// ```
+<a href=#340 id=340 data-nosnippet>340</a>    ///
+<a href=#341 id=341 data-nosnippet>341</a>    /// See also the top-level examples.
+<a href=#342 id=342 data-nosnippet>342</a>    ///
+<a href=#343 id=343 data-nosnippet>343</a>    /// [`Pin::as_mut`]: fn@std::pin::Pin::as_mut
+<a href=#344 id=344 data-nosnippet>344</a>    </span><span class="kw">pub fn </span>reset(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, deadline: Instant) {
+<a href=#345 id=345 data-nosnippet>345</a>        <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.project();
+<a href=#346 id=346 data-nosnippet>346</a>        <span class="kw-2">*</span>this.deadline = deadline;
+<a href=#347 id=347 data-nosnippet>347</a>
+<a href=#348 id=348 data-nosnippet>348</a>        <span class="kw">let </span>handle = this.driver;
+<a href=#349 id=349 data-nosnippet>349</a>
+<a href=#350 id=350 data-nosnippet>350</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#351 id=351 data-nosnippet>351</a>        </span>{
+<a href=#352 id=352 data-nosnippet>352</a>            <span class="kw">let </span>_resource_enter = this.inner.ctx.resource_span.enter();
+<a href=#353 id=353 data-nosnippet>353</a>            this.inner.ctx.async_op_span =
+<a href=#354 id=354 data-nosnippet>354</a>                <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op"</span>, source = <span class="string">"Sleep::reset"</span>);
+<a href=#355 id=355 data-nosnippet>355</a>            <span class="kw">let </span>_async_op_enter = this.inner.ctx.async_op_span.enter();
+<a href=#356 id=356 data-nosnippet>356</a>
+<a href=#357 id=357 data-nosnippet>357</a>            this.inner.ctx.async_op_poll_span =
+<a href=#358 id=358 data-nosnippet>358</a>                <span class="macro">tracing::trace_span!</span>(<span class="string">"runtime.resource.async_op.poll"</span>);
+<a href=#359 id=359 data-nosnippet>359</a>
+<a href=#360 id=360 data-nosnippet>360</a>            <span class="kw">let </span>clock = handle.driver().clock();
+<a href=#361 id=361 data-nosnippet>361</a>            <span class="kw">let </span>time_source = handle.driver().time().time_source();
+<a href=#362 id=362 data-nosnippet>362</a>            <span class="kw">let </span>now = time_source.now(clock);
+<a href=#363 id=363 data-nosnippet>363</a>            <span class="kw">let </span>tick = time_source.deadline_to_tick(deadline);
+<a href=#364 id=364 data-nosnippet>364</a>            <span class="macro">tracing::trace!</span>(
+<a href=#365 id=365 data-nosnippet>365</a>                target: <span class="string">"runtime::resource::state_update"</span>,
+<a href=#366 id=366 data-nosnippet>366</a>                duration = tick.saturating_sub(now),
+<a href=#367 id=367 data-nosnippet>367</a>                duration.unit = <span class="string">"ms"</span>,
+<a href=#368 id=368 data-nosnippet>368</a>                duration.op = <span class="string">"override"</span>,
+<a href=#369 id=369 data-nosnippet>369</a>            );
+<a href=#370 id=370 data-nosnippet>370</a>        }
+<a href=#371 id=371 data-nosnippet>371</a>
+<a href=#372 id=372 data-nosnippet>372</a>        <span class="kw">match </span>this.timer.as_mut().as_pin_mut() {
+<a href=#373 id=373 data-nosnippet>373</a>            <span class="prelude-val">Some</span>(timer) =&gt; timer.reset(handle.clone(), deadline),
+<a href=#374 id=374 data-nosnippet>374</a>            <span class="prelude-val">None </span>=&gt; {
+<a href=#375 id=375 data-nosnippet>375</a>                <span class="kw">let </span>timer = Timer::new(handle.clone(), deadline);
+<a href=#376 id=376 data-nosnippet>376</a>                this.timer.set(<span class="prelude-val">Some</span>(timer));
+<a href=#377 id=377 data-nosnippet>377</a>                this.timer.as_pin_mut().unwrap().init(deadline);
+<a href=#378 id=378 data-nosnippet>378</a>            }
+<a href=#379 id=379 data-nosnippet>379</a>        }
+<a href=#380 id=380 data-nosnippet>380</a>    }
+<a href=#381 id=381 data-nosnippet>381</a>
+<a href=#382 id=382 data-nosnippet>382</a>    <span class="doccomment">/// Resets the `Sleep` instance to a new deadline.
+<a href=#383 id=383 data-nosnippet>383</a>    ///
+<a href=#384 id=384 data-nosnippet>384</a>    /// Unlike [`reset`][Self::reset], this __removes__ the internal timer.
+<a href=#385 id=385 data-nosnippet>385</a>    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>reset_without_timer(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, deadline: Instant) {
+<a href=#386 id=386 data-nosnippet>386</a>        <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.project();
+<a href=#387 id=387 data-nosnippet>387</a>        <span class="kw-2">*</span>this.deadline = deadline;
+<a href=#388 id=388 data-nosnippet>388</a>        this.timer.set(<span class="prelude-val">None</span>);
+<a href=#389 id=389 data-nosnippet>389</a>    }
+<a href=#390 id=390 data-nosnippet>390</a>
+<a href=#391 id=391 data-nosnippet>391</a>    <span class="kw">fn </span>poll_elapsed(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>task::Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), Error&gt;&gt; {
+<a href=#392 id=392 data-nosnippet>392</a>        <span class="macro">ready!</span>(<span class="kw">crate</span>::trace::trace_leaf());
+<a href=#393 id=393 data-nosnippet>393</a>        <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.project();
+<a href=#394 id=394 data-nosnippet>394</a>
+<a href=#395 id=395 data-nosnippet>395</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#396 id=396 data-nosnippet>396</a>        </span><span class="kw">let </span>_res_span = this.inner.ctx.resource_span.enter();
+<a href=#397 id=397 data-nosnippet>397</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#398 id=398 data-nosnippet>398</a>        </span><span class="kw">let </span>_ao_span = this.inner.ctx.async_op_span.enter();
+<a href=#399 id=399 data-nosnippet>399</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#400 id=400 data-nosnippet>400</a>        </span><span class="kw">let </span>_ao_poll_span = this.inner.ctx.async_op_poll_span.enter();
+<a href=#401 id=401 data-nosnippet>401</a>
+<a href=#402 id=402 data-nosnippet>402</a>        <span class="comment">// Keep track of task budget
+<a href=#403 id=403 data-nosnippet>403</a>        </span><span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#404 id=404 data-nosnippet>404</a>        </span><span class="kw">let </span>coop = <span class="macro">ready!</span>(<span class="macro">trace_poll_op!</span>(
+<a href=#405 id=405 data-nosnippet>405</a>            <span class="string">"poll_elapsed"</span>,
+<a href=#406 id=406 data-nosnippet>406</a>            <span class="kw">crate</span>::task::coop::poll_proceed(cx),
+<a href=#407 id=407 data-nosnippet>407</a>        ));
+<a href=#408 id=408 data-nosnippet>408</a>
+<a href=#409 id=409 data-nosnippet>409</a>        <span class="attr">#[cfg(any(not(tokio_unstable), not(feature = <span class="string">"tracing"</span>)))]
+<a href=#410 id=410 data-nosnippet>410</a>        </span><span class="kw">let </span>coop = <span class="macro">ready!</span>(<span class="kw">crate</span>::task::coop::poll_proceed(cx));
+<a href=#411 id=411 data-nosnippet>411</a>
+<a href=#412 id=412 data-nosnippet>412</a>        <span class="kw">let </span>timer = <span class="kw">match </span>this.timer.as_mut().as_pin_mut() {
+<a href=#413 id=413 data-nosnippet>413</a>            <span class="prelude-val">Some</span>(timer) =&gt; timer,
+<a href=#414 id=414 data-nosnippet>414</a>            <span class="prelude-val">None </span>=&gt; {
+<a href=#415 id=415 data-nosnippet>415</a>                <span class="kw">let </span>handle = this.driver;
 <a href=#416 id=416 data-nosnippet>416</a>
-<a href=#417 id=417 data-nosnippet>417</a>    <span class="kw">fn </span>poll_elapsed(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>task::Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), Error&gt;&gt; {
-<a href=#418 id=418 data-nosnippet>418</a>        <span class="kw">let </span>me = <span class="self">self</span>.project();
-<a href=#419 id=419 data-nosnippet>419</a>
-<a href=#420 id=420 data-nosnippet>420</a>        <span class="macro">ready!</span>(<span class="kw">crate</span>::trace::trace_leaf(cx));
-<a href=#421 id=421 data-nosnippet>421</a>
-<a href=#422 id=422 data-nosnippet>422</a>        <span class="comment">// Keep track of task budget
-<a href=#423 id=423 data-nosnippet>423</a>        </span><span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#424 id=424 data-nosnippet>424</a>        </span><span class="kw">let </span>coop = <span class="macro">ready!</span>(<span class="macro">trace_poll_op!</span>(
-<a href=#425 id=425 data-nosnippet>425</a>            <span class="string">"poll_elapsed"</span>,
-<a href=#426 id=426 data-nosnippet>426</a>            <span class="kw">crate</span>::task::coop::poll_proceed(cx),
-<a href=#427 id=427 data-nosnippet>427</a>        ));
-<a href=#428 id=428 data-nosnippet>428</a>
-<a href=#429 id=429 data-nosnippet>429</a>        <span class="attr">#[cfg(any(not(tokio_unstable), not(feature = <span class="string">"tracing"</span>)))]
-<a href=#430 id=430 data-nosnippet>430</a>        </span><span class="kw">let </span>coop = <span class="macro">ready!</span>(<span class="kw">crate</span>::task::coop::poll_proceed(cx));
-<a href=#431 id=431 data-nosnippet>431</a>
-<a href=#432 id=432 data-nosnippet>432</a>        <span class="kw">let </span>result = me.entry.poll_elapsed(cx).map(<span class="kw">move </span>|r| {
-<a href=#433 id=433 data-nosnippet>433</a>            coop.made_progress();
-<a href=#434 id=434 data-nosnippet>434</a>            r
-<a href=#435 id=435 data-nosnippet>435</a>        });
-<a href=#436 id=436 data-nosnippet>436</a>
-<a href=#437 id=437 data-nosnippet>437</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#438 id=438 data-nosnippet>438</a>        </span><span class="kw">return </span><span class="macro">trace_poll_op!</span>(<span class="string">"poll_elapsed"</span>, result);
-<a href=#439 id=439 data-nosnippet>439</a>
-<a href=#440 id=440 data-nosnippet>440</a>        <span class="attr">#[cfg(any(not(tokio_unstable), not(feature = <span class="string">"tracing"</span>)))]
-<a href=#441 id=441 data-nosnippet>441</a>        </span><span class="kw">return </span>result;
-<a href=#442 id=442 data-nosnippet>442</a>    }
-<a href=#443 id=443 data-nosnippet>443</a>}
-<a href=#444 id=444 data-nosnippet>444</a>
-<a href=#445 id=445 data-nosnippet>445</a><span class="kw">impl </span>Future <span class="kw">for </span>Sleep {
-<a href=#446 id=446 data-nosnippet>446</a>    <span class="kw">type </span>Output = ();
-<a href=#447 id=447 data-nosnippet>447</a>
-<a href=#448 id=448 data-nosnippet>448</a>    <span class="comment">// `poll_elapsed` can return an error in two cases:
-<a href=#449 id=449 data-nosnippet>449</a>    //
-<a href=#450 id=450 data-nosnippet>450</a>    // - AtCapacity: this is a pathological case where far too many
-<a href=#451 id=451 data-nosnippet>451</a>    //   sleep instances have been scheduled.
-<a href=#452 id=452 data-nosnippet>452</a>    // - Shutdown: No timer has been setup, which is a misuse error.
-<a href=#453 id=453 data-nosnippet>453</a>    //
-<a href=#454 id=454 data-nosnippet>454</a>    // Both cases are extremely rare, and pretty accurately fit into
-<a href=#455 id=455 data-nosnippet>455</a>    // "logic errors", so we just panic in this case. A user couldn't
-<a href=#456 id=456 data-nosnippet>456</a>    // really do much better if we passed the error onwards.
-<a href=#457 id=457 data-nosnippet>457</a>    </span><span class="kw">fn </span>poll(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>task::Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
-<a href=#458 id=458 data-nosnippet>458</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#459 id=459 data-nosnippet>459</a>        </span><span class="kw">let </span>_res_span = <span class="self">self</span>.inner.ctx.resource_span.clone().entered();
-<a href=#460 id=460 data-nosnippet>460</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#461 id=461 data-nosnippet>461</a>        </span><span class="kw">let </span>_ao_span = <span class="self">self</span>.inner.ctx.async_op_span.clone().entered();
-<a href=#462 id=462 data-nosnippet>462</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#463 id=463 data-nosnippet>463</a>        </span><span class="kw">let </span>_ao_poll_span = <span class="self">self</span>.inner.ctx.async_op_poll_span.clone().entered();
-<a href=#464 id=464 data-nosnippet>464</a>        <span class="kw">match </span><span class="macro">ready!</span>(<span class="self">self</span>.as_mut().poll_elapsed(cx)) {
-<a href=#465 id=465 data-nosnippet>465</a>            <span class="prelude-val">Ok</span>(()) =&gt; Poll::Ready(()),
-<a href=#466 id=466 data-nosnippet>466</a>            <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">panic!</span>(<span class="string">"timer error: {e}"</span>),
-<a href=#467 id=467 data-nosnippet>467</a>        }
-<a href=#468 id=468 data-nosnippet>468</a>    }
-<a href=#469 id=469 data-nosnippet>469</a>}
+<a href=#417 id=417 data-nosnippet>417</a>                <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#418 id=418 data-nosnippet>418</a>                </span>{
+<a href=#419 id=419 data-nosnippet>419</a>                    <span class="kw">let </span>clock = handle.driver().clock();
+<a href=#420 id=420 data-nosnippet>420</a>                    <span class="kw">let </span>time_source = handle.driver().time().time_source();
+<a href=#421 id=421 data-nosnippet>421</a>                    <span class="kw">let </span>now = time_source.now(clock);
+<a href=#422 id=422 data-nosnippet>422</a>                    <span class="kw">let </span>tick = time_source.deadline_to_tick(<span class="kw-2">*</span>this.deadline);
+<a href=#423 id=423 data-nosnippet>423</a>                    <span class="macro">tracing::trace!</span>(
+<a href=#424 id=424 data-nosnippet>424</a>                        target: <span class="string">"runtime::resource::state_update"</span>,
+<a href=#425 id=425 data-nosnippet>425</a>                        duration = tick.saturating_sub(now),
+<a href=#426 id=426 data-nosnippet>426</a>                        duration.unit = <span class="string">"ms"</span>,
+<a href=#427 id=427 data-nosnippet>427</a>                        duration.op = <span class="string">"override"</span>,
+<a href=#428 id=428 data-nosnippet>428</a>                    );
+<a href=#429 id=429 data-nosnippet>429</a>                }
+<a href=#430 id=430 data-nosnippet>430</a>
+<a href=#431 id=431 data-nosnippet>431</a>                <span class="kw">let </span>timer = Timer::new(handle.clone(), <span class="kw-2">*</span>this.deadline);
+<a href=#432 id=432 data-nosnippet>432</a>                this.timer.set(<span class="prelude-val">Some</span>(timer));
+<a href=#433 id=433 data-nosnippet>433</a>                <span class="kw">let </span><span class="kw-2">mut </span>timer = this.timer.as_pin_mut().unwrap();
+<a href=#434 id=434 data-nosnippet>434</a>                timer.as_mut().init(<span class="kw-2">*</span>this.deadline);
+<a href=#435 id=435 data-nosnippet>435</a>                timer
+<a href=#436 id=436 data-nosnippet>436</a>            }
+<a href=#437 id=437 data-nosnippet>437</a>        };
+<a href=#438 id=438 data-nosnippet>438</a>
+<a href=#439 id=439 data-nosnippet>439</a>        <span class="kw">let </span>result = timer.poll_elapsed(cx).map(<span class="kw">move </span>|r| {
+<a href=#440 id=440 data-nosnippet>440</a>            coop.made_progress();
+<a href=#441 id=441 data-nosnippet>441</a>            r
+<a href=#442 id=442 data-nosnippet>442</a>        });
+<a href=#443 id=443 data-nosnippet>443</a>
+<a href=#444 id=444 data-nosnippet>444</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#445 id=445 data-nosnippet>445</a>        </span><span class="kw">return </span><span class="macro">trace_poll_op!</span>(<span class="string">"poll_elapsed"</span>, result);
+<a href=#446 id=446 data-nosnippet>446</a>
+<a href=#447 id=447 data-nosnippet>447</a>        <span class="attr">#[cfg(any(not(tokio_unstable), not(feature = <span class="string">"tracing"</span>)))]
+<a href=#448 id=448 data-nosnippet>448</a>        </span><span class="kw">return </span>result;
+<a href=#449 id=449 data-nosnippet>449</a>    }
+<a href=#450 id=450 data-nosnippet>450</a>}
+<a href=#451 id=451 data-nosnippet>451</a>
+<a href=#452 id=452 data-nosnippet>452</a><span class="kw">impl </span>Future <span class="kw">for </span>Sleep {
+<a href=#453 id=453 data-nosnippet>453</a>    <span class="kw">type </span>Output = ();
+<a href=#454 id=454 data-nosnippet>454</a>
+<a href=#455 id=455 data-nosnippet>455</a>    <span class="comment">// `poll_elapsed` can return an error in two cases:
+<a href=#456 id=456 data-nosnippet>456</a>    //
+<a href=#457 id=457 data-nosnippet>457</a>    // - AtCapacity: this is a pathological case where far too many
+<a href=#458 id=458 data-nosnippet>458</a>    //   sleep instances have been scheduled.
+<a href=#459 id=459 data-nosnippet>459</a>    // - Shutdown: No timer has been setup, which is a misuse error.
+<a href=#460 id=460 data-nosnippet>460</a>    //
+<a href=#461 id=461 data-nosnippet>461</a>    // Both cases are extremely rare, and pretty accurately fit into
+<a href=#462 id=462 data-nosnippet>462</a>    // "logic errors", so we just panic in this case. A user couldn't
+<a href=#463 id=463 data-nosnippet>463</a>    // really do much better if we passed the error onwards.
+<a href=#464 id=464 data-nosnippet>464</a>    </span><span class="kw">fn </span>poll(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>task::Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
+<a href=#465 id=465 data-nosnippet>465</a>        <span class="kw">match </span><span class="macro">ready!</span>(<span class="self">self</span>.poll_elapsed(cx)) {
+<a href=#466 id=466 data-nosnippet>466</a>            <span class="prelude-val">Ok</span>(()) =&gt; Poll::Ready(()),
+<a href=#467 id=467 data-nosnippet>467</a>            <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">panic!</span>(<span class="string">"timer error: {e}"</span>),
+<a href=#468 id=468 data-nosnippet>468</a>        }
+<a href=#469 id=469 data-nosnippet>469</a>    }
+<a href=#470 id=470 data-nosnippet>470</a>}
 </code></pre></div></section></main></body></html>

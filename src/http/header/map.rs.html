@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/http-1.4.2/src/header/map.rs`."><title>map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">http/header/</div>map.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::collections::hash_map::RandomState;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/http-1.5.0/src/header/map.rs`."><title>map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">http/header/</div>map.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::collections::hash_map::RandomState;
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::collections::HashMap;
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>std::convert::TryFrom;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span>std::hash::{BuildHasher, Hash, Hasher};
@@ -3721,324 +3721,325 @@
 <a href=#3721 id=3721 data-nosnippet>3721</a>    current.wrapping_sub(desired_pos(mask, hash)) &amp; mask <span class="kw">as </span>usize
 <a href=#3722 id=3722 data-nosnippet>3722</a>}
 <a href=#3723 id=3723 data-nosnippet>3723</a>
-<a href=#3724 id=3724 data-nosnippet>3724</a><span class="kw">fn </span>hash_elem_using&lt;K&gt;(danger: <span class="kw-2">&amp;</span>Danger, k: <span class="kw-2">&amp;</span>K) -&gt; HashValue
-<a href=#3725 id=3725 data-nosnippet>3725</a><span class="kw">where
-<a href=#3726 id=3726 data-nosnippet>3726</a>    </span>K: Hash + <span class="question-mark">?</span>Sized,
-<a href=#3727 id=3727 data-nosnippet>3727</a>{
-<a href=#3728 id=3728 data-nosnippet>3728</a>    <span class="kw">const </span>MASK: u64 = (MAX_SIZE <span class="kw">as </span>u64) - <span class="number">1</span>;
-<a href=#3729 id=3729 data-nosnippet>3729</a>
-<a href=#3730 id=3730 data-nosnippet>3730</a>    <span class="kw">let </span>hash = <span class="kw">match </span><span class="kw-2">*</span>danger {
-<a href=#3731 id=3731 data-nosnippet>3731</a>        <span class="comment">// Safe hash
-<a href=#3732 id=3732 data-nosnippet>3732</a>        </span>Danger::Red(<span class="kw-2">ref </span>hasher) =&gt; {
-<a href=#3733 id=3733 data-nosnippet>3733</a>            <span class="kw">let </span><span class="kw-2">mut </span>h = hasher.build_hasher();
-<a href=#3734 id=3734 data-nosnippet>3734</a>            k.hash(<span class="kw-2">&amp;mut </span>h);
-<a href=#3735 id=3735 data-nosnippet>3735</a>            h.finish()
-<a href=#3736 id=3736 data-nosnippet>3736</a>        }
-<a href=#3737 id=3737 data-nosnippet>3737</a>        <span class="comment">// Fast hash
-<a href=#3738 id=3738 data-nosnippet>3738</a>        </span><span class="kw">_ </span>=&gt; {
-<a href=#3739 id=3739 data-nosnippet>3739</a>            <span class="kw">let </span><span class="kw-2">mut </span>h = FnvHasher::new();
-<a href=#3740 id=3740 data-nosnippet>3740</a>            k.hash(<span class="kw-2">&amp;mut </span>h);
-<a href=#3741 id=3741 data-nosnippet>3741</a>            h.finish()
-<a href=#3742 id=3742 data-nosnippet>3742</a>        }
-<a href=#3743 id=3743 data-nosnippet>3743</a>    };
-<a href=#3744 id=3744 data-nosnippet>3744</a>
-<a href=#3745 id=3745 data-nosnippet>3745</a>    HashValue((hash &amp; MASK) <span class="kw">as </span>u16)
-<a href=#3746 id=3746 data-nosnippet>3746</a>}
-<a href=#3747 id=3747 data-nosnippet>3747</a>
-<a href=#3748 id=3748 data-nosnippet>3748</a><span class="kw">struct </span>FnvHasher(u64);
-<a href=#3749 id=3749 data-nosnippet>3749</a>
-<a href=#3750 id=3750 data-nosnippet>3750</a><span class="kw">impl </span>FnvHasher {
-<a href=#3751 id=3751 data-nosnippet>3751</a>    <span class="attr">#[inline]
-<a href=#3752 id=3752 data-nosnippet>3752</a>    </span><span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
-<a href=#3753 id=3753 data-nosnippet>3753</a>        FnvHasher(<span class="number">0xcbf29ce484222325</span>)
-<a href=#3754 id=3754 data-nosnippet>3754</a>    }
-<a href=#3755 id=3755 data-nosnippet>3755</a>}
-<a href=#3756 id=3756 data-nosnippet>3756</a>
-<a href=#3757 id=3757 data-nosnippet>3757</a><span class="kw">impl </span>std::hash::Hasher <span class="kw">for </span>FnvHasher {
-<a href=#3758 id=3758 data-nosnippet>3758</a>    <span class="attr">#[inline]
-<a href=#3759 id=3759 data-nosnippet>3759</a>    </span><span class="kw">fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
-<a href=#3760 id=3760 data-nosnippet>3760</a>        <span class="self">self</span>.<span class="number">0
-<a href=#3761 id=3761 data-nosnippet>3761</a>    </span>}
-<a href=#3762 id=3762 data-nosnippet>3762</a>
-<a href=#3763 id=3763 data-nosnippet>3763</a>    <span class="attr">#[inline]
-<a href=#3764 id=3764 data-nosnippet>3764</a>    </span><span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
-<a href=#3765 id=3765 data-nosnippet>3765</a>        <span class="kw">let </span><span class="kw-2">mut </span>hash = <span class="self">self</span>.<span class="number">0</span>;
-<a href=#3766 id=3766 data-nosnippet>3766</a>        <span class="kw">for </span><span class="kw-2">&amp;</span>b <span class="kw">in </span>bytes {
-<a href=#3767 id=3767 data-nosnippet>3767</a>            hash ^= b <span class="kw">as </span>u64;
-<a href=#3768 id=3768 data-nosnippet>3768</a>            hash = hash.wrapping_mul(<span class="number">0x100000001b3</span>);
-<a href=#3769 id=3769 data-nosnippet>3769</a>        }
-<a href=#3770 id=3770 data-nosnippet>3770</a>        <span class="self">self</span>.<span class="number">0 </span>= hash;
-<a href=#3771 id=3771 data-nosnippet>3771</a>    }
-<a href=#3772 id=3772 data-nosnippet>3772</a>}
-<a href=#3773 id=3773 data-nosnippet>3773</a>
-<a href=#3774 id=3774 data-nosnippet>3774</a><span class="comment">/*
-<a href=#3775 id=3775 data-nosnippet>3775</a> *
-<a href=#3776 id=3776 data-nosnippet>3776</a> * ===== impl IntoHeaderName / AsHeaderName =====
-<a href=#3777 id=3777 data-nosnippet>3777</a> *
-<a href=#3778 id=3778 data-nosnippet>3778</a> */
-<a href=#3779 id=3779 data-nosnippet>3779</a>
-<a href=#3780 id=3780 data-nosnippet>3780</a></span><span class="kw">mod </span>into_header_name {
-<a href=#3781 id=3781 data-nosnippet>3781</a>    <span class="kw">use </span>super::{Entry, HdrName, HeaderMap, HeaderName, MaxSizeReached};
-<a href=#3782 id=3782 data-nosnippet>3782</a>
-<a href=#3783 id=3783 data-nosnippet>3783</a>    <span class="doccomment">/// A marker trait used to identify values that can be used as insert keys
-<a href=#3784 id=3784 data-nosnippet>3784</a>    /// to a `HeaderMap`.
-<a href=#3785 id=3785 data-nosnippet>3785</a>    </span><span class="kw">pub trait </span>IntoHeaderName: Sealed {}
-<a href=#3786 id=3786 data-nosnippet>3786</a>
-<a href=#3787 id=3787 data-nosnippet>3787</a>    <span class="comment">// All methods are on this pub(super) trait, instead of `IntoHeaderName`,
-<a href=#3788 id=3788 data-nosnippet>3788</a>    // so that they aren't publicly exposed to the world.
-<a href=#3789 id=3789 data-nosnippet>3789</a>    //
-<a href=#3790 id=3790 data-nosnippet>3790</a>    // Being on the `IntoHeaderName` trait would mean users could call
-<a href=#3791 id=3791 data-nosnippet>3791</a>    // `"host".insert(&amp;mut map, "localhost")`.
-<a href=#3792 id=3792 data-nosnippet>3792</a>    //
-<a href=#3793 id=3793 data-nosnippet>3793</a>    // Ultimately, this allows us to adjust the signatures of these methods
-<a href=#3794 id=3794 data-nosnippet>3794</a>    // without breaking any external crate.
-<a href=#3795 id=3795 data-nosnippet>3795</a>    </span><span class="kw">pub trait </span>Sealed {
-<a href=#3796 id=3796 data-nosnippet>3796</a>        <span class="attr">#[doc(hidden)]
-<a href=#3797 id=3797 data-nosnippet>3797</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T)
-<a href=#3798 id=3798 data-nosnippet>3798</a>            -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt;;
-<a href=#3799 id=3799 data-nosnippet>3799</a>
-<a href=#3800 id=3800 data-nosnippet>3800</a>        <span class="attr">#[doc(hidden)]
-<a href=#3801 id=3801 data-nosnippet>3801</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt;;
-<a href=#3802 id=3802 data-nosnippet>3802</a>
-<a href=#3803 id=3803 data-nosnippet>3803</a>        <span class="attr">#[doc(hidden)]
-<a href=#3804 id=3804 data-nosnippet>3804</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt;;
-<a href=#3805 id=3805 data-nosnippet>3805</a>    }
-<a href=#3806 id=3806 data-nosnippet>3806</a>
-<a href=#3807 id=3807 data-nosnippet>3807</a>    <span class="comment">// ==== impls ====
-<a href=#3808 id=3808 data-nosnippet>3808</a>
-<a href=#3809 id=3809 data-nosnippet>3809</a>    </span><span class="kw">impl </span>Sealed <span class="kw">for </span>HeaderName {
-<a href=#3810 id=3810 data-nosnippet>3810</a>        <span class="attr">#[inline]
-<a href=#3811 id=3811 data-nosnippet>3811</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
-<a href=#3812 id=3812 data-nosnippet>3812</a>            <span class="self">self</span>,
-<a href=#3813 id=3813 data-nosnippet>3813</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
-<a href=#3814 id=3814 data-nosnippet>3814</a>            val: T,
-<a href=#3815 id=3815 data-nosnippet>3815</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
-<a href=#3816 id=3816 data-nosnippet>3816</a>            map.try_insert2(<span class="self">self</span>, val)
-<a href=#3817 id=3817 data-nosnippet>3817</a>        }
-<a href=#3818 id=3818 data-nosnippet>3818</a>
-<a href=#3819 id=3819 data-nosnippet>3819</a>        <span class="attr">#[inline]
-<a href=#3820 id=3820 data-nosnippet>3820</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
-<a href=#3821 id=3821 data-nosnippet>3821</a>            map.try_append2(<span class="self">self</span>, val)
-<a href=#3822 id=3822 data-nosnippet>3822</a>        }
-<a href=#3823 id=3823 data-nosnippet>3823</a>
-<a href=#3824 id=3824 data-nosnippet>3824</a>        <span class="attr">#[inline]
-<a href=#3825 id=3825 data-nosnippet>3825</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
-<a href=#3826 id=3826 data-nosnippet>3826</a>            map.try_entry2(<span class="self">self</span>)
-<a href=#3827 id=3827 data-nosnippet>3827</a>        }
-<a href=#3828 id=3828 data-nosnippet>3828</a>    }
-<a href=#3829 id=3829 data-nosnippet>3829</a>
-<a href=#3830 id=3830 data-nosnippet>3830</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span>HeaderName {}
-<a href=#3831 id=3831 data-nosnippet>3831</a>
-<a href=#3832 id=3832 data-nosnippet>3832</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {
-<a href=#3833 id=3833 data-nosnippet>3833</a>        <span class="attr">#[inline]
-<a href=#3834 id=3834 data-nosnippet>3834</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
-<a href=#3835 id=3835 data-nosnippet>3835</a>            <span class="self">self</span>,
-<a href=#3836 id=3836 data-nosnippet>3836</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
-<a href=#3837 id=3837 data-nosnippet>3837</a>            val: T,
-<a href=#3838 id=3838 data-nosnippet>3838</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
-<a href=#3839 id=3839 data-nosnippet>3839</a>            map.try_insert2(<span class="self">self</span>, val)
-<a href=#3840 id=3840 data-nosnippet>3840</a>        }
-<a href=#3841 id=3841 data-nosnippet>3841</a>        <span class="attr">#[inline]
-<a href=#3842 id=3842 data-nosnippet>3842</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
-<a href=#3843 id=3843 data-nosnippet>3843</a>            map.try_append2(<span class="self">self</span>, val)
-<a href=#3844 id=3844 data-nosnippet>3844</a>        }
-<a href=#3845 id=3845 data-nosnippet>3845</a>
-<a href=#3846 id=3846 data-nosnippet>3846</a>        <span class="attr">#[inline]
-<a href=#3847 id=3847 data-nosnippet>3847</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
-<a href=#3848 id=3848 data-nosnippet>3848</a>            map.try_entry2(<span class="self">self</span>)
-<a href=#3849 id=3849 data-nosnippet>3849</a>        }
-<a href=#3850 id=3850 data-nosnippet>3850</a>    }
-<a href=#3851 id=3851 data-nosnippet>3851</a>
-<a href=#3852 id=3852 data-nosnippet>3852</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {}
-<a href=#3853 id=3853 data-nosnippet>3853</a>
-<a href=#3854 id=3854 data-nosnippet>3854</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
-<a href=#3855 id=3855 data-nosnippet>3855</a>        <span class="attr">#[inline]
-<a href=#3856 id=3856 data-nosnippet>3856</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
-<a href=#3857 id=3857 data-nosnippet>3857</a>            <span class="self">self</span>,
-<a href=#3858 id=3858 data-nosnippet>3858</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
-<a href=#3859 id=3859 data-nosnippet>3859</a>            val: T,
-<a href=#3860 id=3860 data-nosnippet>3860</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
-<a href=#3861 id=3861 data-nosnippet>3861</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_insert2(hdr, val))
-<a href=#3862 id=3862 data-nosnippet>3862</a>        }
-<a href=#3863 id=3863 data-nosnippet>3863</a>        <span class="attr">#[inline]
-<a href=#3864 id=3864 data-nosnippet>3864</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
-<a href=#3865 id=3865 data-nosnippet>3865</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_append2(hdr, val))
-<a href=#3866 id=3866 data-nosnippet>3866</a>        }
-<a href=#3867 id=3867 data-nosnippet>3867</a>
-<a href=#3868 id=3868 data-nosnippet>3868</a>        <span class="attr">#[inline]
-<a href=#3869 id=3869 data-nosnippet>3869</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
-<a href=#3870 id=3870 data-nosnippet>3870</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_entry2(hdr))
-<a href=#3871 id=3871 data-nosnippet>3871</a>        }
-<a href=#3872 id=3872 data-nosnippet>3872</a>    }
-<a href=#3873 id=3873 data-nosnippet>3873</a>
-<a href=#3874 id=3874 data-nosnippet>3874</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {}
-<a href=#3875 id=3875 data-nosnippet>3875</a>}
-<a href=#3876 id=3876 data-nosnippet>3876</a>
-<a href=#3877 id=3877 data-nosnippet>3877</a><span class="kw">mod </span>as_header_name {
-<a href=#3878 id=3878 data-nosnippet>3878</a>    <span class="kw">use </span>super::{Entry, HdrName, HeaderMap, HeaderName, InvalidHeaderName, MaxSizeReached};
-<a href=#3879 id=3879 data-nosnippet>3879</a>
-<a href=#3880 id=3880 data-nosnippet>3880</a>    <span class="doccomment">/// A marker trait used to identify values that can be used as search keys
-<a href=#3881 id=3881 data-nosnippet>3881</a>    /// to a `HeaderMap`.
-<a href=#3882 id=3882 data-nosnippet>3882</a>    </span><span class="kw">pub trait </span>AsHeaderName: Sealed {}
-<a href=#3883 id=3883 data-nosnippet>3883</a>
-<a href=#3884 id=3884 data-nosnippet>3884</a>    <span class="comment">// Debug not currently needed, save on compiling it
-<a href=#3885 id=3885 data-nosnippet>3885</a>    </span><span class="attr">#[allow(missing_debug_implementations)]
-<a href=#3886 id=3886 data-nosnippet>3886</a>    </span><span class="kw">pub enum </span>TryEntryError {
-<a href=#3887 id=3887 data-nosnippet>3887</a>        InvalidHeaderName(InvalidHeaderName),
-<a href=#3888 id=3888 data-nosnippet>3888</a>        MaxSizeReached(MaxSizeReached),
-<a href=#3889 id=3889 data-nosnippet>3889</a>    }
-<a href=#3890 id=3890 data-nosnippet>3890</a>
-<a href=#3891 id=3891 data-nosnippet>3891</a>    <span class="kw">impl </span>From&lt;InvalidHeaderName&gt; <span class="kw">for </span>TryEntryError {
-<a href=#3892 id=3892 data-nosnippet>3892</a>        <span class="kw">fn </span>from(e: InvalidHeaderName) -&gt; TryEntryError {
-<a href=#3893 id=3893 data-nosnippet>3893</a>            TryEntryError::InvalidHeaderName(e)
-<a href=#3894 id=3894 data-nosnippet>3894</a>        }
-<a href=#3895 id=3895 data-nosnippet>3895</a>    }
-<a href=#3896 id=3896 data-nosnippet>3896</a>
-<a href=#3897 id=3897 data-nosnippet>3897</a>    <span class="kw">impl </span>From&lt;MaxSizeReached&gt; <span class="kw">for </span>TryEntryError {
-<a href=#3898 id=3898 data-nosnippet>3898</a>        <span class="kw">fn </span>from(e: MaxSizeReached) -&gt; TryEntryError {
-<a href=#3899 id=3899 data-nosnippet>3899</a>            TryEntryError::MaxSizeReached(e)
-<a href=#3900 id=3900 data-nosnippet>3900</a>        }
-<a href=#3901 id=3901 data-nosnippet>3901</a>    }
-<a href=#3902 id=3902 data-nosnippet>3902</a>
-<a href=#3903 id=3903 data-nosnippet>3903</a>    <span class="comment">// All methods are on this pub(super) trait, instead of `AsHeaderName`,
-<a href=#3904 id=3904 data-nosnippet>3904</a>    // so that they aren't publicly exposed to the world.
-<a href=#3905 id=3905 data-nosnippet>3905</a>    //
-<a href=#3906 id=3906 data-nosnippet>3906</a>    // Being on the `AsHeaderName` trait would mean users could call
-<a href=#3907 id=3907 data-nosnippet>3907</a>    // `"host".find(&amp;map)`.
-<a href=#3908 id=3908 data-nosnippet>3908</a>    //
-<a href=#3909 id=3909 data-nosnippet>3909</a>    // Ultimately, this allows us to adjust the signatures of these methods
-<a href=#3910 id=3910 data-nosnippet>3910</a>    // without breaking any external crate.
-<a href=#3911 id=3911 data-nosnippet>3911</a>    </span><span class="kw">pub trait </span>Sealed {
-<a href=#3912 id=3912 data-nosnippet>3912</a>        <span class="attr">#[doc(hidden)]
-<a href=#3913 id=3913 data-nosnippet>3913</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt;;
-<a href=#3914 id=3914 data-nosnippet>3914</a>
-<a href=#3915 id=3915 data-nosnippet>3915</a>        <span class="attr">#[doc(hidden)]
-<a href=#3916 id=3916 data-nosnippet>3916</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt;;
-<a href=#3917 id=3917 data-nosnippet>3917</a>
-<a href=#3918 id=3918 data-nosnippet>3918</a>        <span class="attr">#[doc(hidden)]
-<a href=#3919 id=3919 data-nosnippet>3919</a>        </span><span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
-<a href=#3920 id=3920 data-nosnippet>3920</a>    }
-<a href=#3921 id=3921 data-nosnippet>3921</a>
-<a href=#3922 id=3922 data-nosnippet>3922</a>    <span class="comment">// ==== impls ====
-<a href=#3923 id=3923 data-nosnippet>3923</a>
-<a href=#3924 id=3924 data-nosnippet>3924</a>    </span><span class="kw">impl </span>Sealed <span class="kw">for </span>HeaderName {
-<a href=#3925 id=3925 data-nosnippet>3925</a>        <span class="attr">#[inline]
-<a href=#3926 id=3926 data-nosnippet>3926</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
-<a href=#3927 id=3927 data-nosnippet>3927</a>            <span class="prelude-val">Ok</span>(map.try_entry2(<span class="self">self</span>)<span class="question-mark">?</span>)
-<a href=#3928 id=3928 data-nosnippet>3928</a>        }
-<a href=#3929 id=3929 data-nosnippet>3929</a>
-<a href=#3930 id=3930 data-nosnippet>3930</a>        <span class="attr">#[inline]
-<a href=#3931 id=3931 data-nosnippet>3931</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
-<a href=#3932 id=3932 data-nosnippet>3932</a>            map.find(<span class="self">self</span>)
-<a href=#3933 id=3933 data-nosnippet>3933</a>        }
-<a href=#3934 id=3934 data-nosnippet>3934</a>
-<a href=#3935 id=3935 data-nosnippet>3935</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-<a href=#3936 id=3936 data-nosnippet>3936</a>            &lt;HeaderName&gt;::as_str(<span class="self">self</span>)
-<a href=#3937 id=3937 data-nosnippet>3937</a>        }
-<a href=#3938 id=3938 data-nosnippet>3938</a>    }
-<a href=#3939 id=3939 data-nosnippet>3939</a>
-<a href=#3940 id=3940 data-nosnippet>3940</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span>HeaderName {}
-<a href=#3941 id=3941 data-nosnippet>3941</a>
-<a href=#3942 id=3942 data-nosnippet>3942</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {
-<a href=#3943 id=3943 data-nosnippet>3943</a>        <span class="attr">#[inline]
-<a href=#3944 id=3944 data-nosnippet>3944</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
-<a href=#3945 id=3945 data-nosnippet>3945</a>            <span class="prelude-val">Ok</span>(map.try_entry2(<span class="self">self</span>)<span class="question-mark">?</span>)
-<a href=#3946 id=3946 data-nosnippet>3946</a>        }
-<a href=#3947 id=3947 data-nosnippet>3947</a>
-<a href=#3948 id=3948 data-nosnippet>3948</a>        <span class="attr">#[inline]
-<a href=#3949 id=3949 data-nosnippet>3949</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
-<a href=#3950 id=3950 data-nosnippet>3950</a>            map.find(<span class="kw-2">*</span><span class="self">self</span>)
-<a href=#3951 id=3951 data-nosnippet>3951</a>        }
-<a href=#3952 id=3952 data-nosnippet>3952</a>
-<a href=#3953 id=3953 data-nosnippet>3953</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-<a href=#3954 id=3954 data-nosnippet>3954</a>            &lt;HeaderName&gt;::as_str(<span class="self">self</span>)
-<a href=#3955 id=3955 data-nosnippet>3955</a>        }
-<a href=#3956 id=3956 data-nosnippet>3956</a>    }
-<a href=#3957 id=3957 data-nosnippet>3957</a>
-<a href=#3958 id=3958 data-nosnippet>3958</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {}
-<a href=#3959 id=3959 data-nosnippet>3959</a>
-<a href=#3960 id=3960 data-nosnippet>3960</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>str {
-<a href=#3961 id=3961 data-nosnippet>3961</a>        <span class="attr">#[inline]
-<a href=#3962 id=3962 data-nosnippet>3962</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
-<a href=#3963 id=3963 data-nosnippet>3963</a>            <span class="prelude-val">Ok</span>(HdrName::from_bytes(<span class="self">self</span>.as_bytes(), <span class="kw">move </span>|hdr| {
-<a href=#3964 id=3964 data-nosnippet>3964</a>                map.try_entry2(hdr)
-<a href=#3965 id=3965 data-nosnippet>3965</a>            })<span class="question-mark">??</span>)
-<a href=#3966 id=3966 data-nosnippet>3966</a>        }
-<a href=#3967 id=3967 data-nosnippet>3967</a>
-<a href=#3968 id=3968 data-nosnippet>3968</a>        <span class="attr">#[inline]
-<a href=#3969 id=3969 data-nosnippet>3969</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
-<a href=#3970 id=3970 data-nosnippet>3970</a>            HdrName::from_bytes(<span class="self">self</span>.as_bytes(), <span class="kw">move </span>|hdr| map.find(<span class="kw-2">&amp;</span>hdr)).unwrap_or(<span class="prelude-val">None</span>)
-<a href=#3971 id=3971 data-nosnippet>3971</a>        }
-<a href=#3972 id=3972 data-nosnippet>3972</a>
-<a href=#3973 id=3973 data-nosnippet>3973</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-<a href=#3974 id=3974 data-nosnippet>3974</a>            <span class="self">self
-<a href=#3975 id=3975 data-nosnippet>3975</a>        </span>}
-<a href=#3976 id=3976 data-nosnippet>3976</a>    }
-<a href=#3977 id=3977 data-nosnippet>3977</a>
-<a href=#3978 id=3978 data-nosnippet>3978</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>str {}
-<a href=#3979 id=3979 data-nosnippet>3979</a>
-<a href=#3980 id=3980 data-nosnippet>3980</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span>String {
-<a href=#3981 id=3981 data-nosnippet>3981</a>        <span class="attr">#[inline]
-<a href=#3982 id=3982 data-nosnippet>3982</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
-<a href=#3983 id=3983 data-nosnippet>3983</a>            <span class="self">self</span>.as_str().try_entry(map)
-<a href=#3984 id=3984 data-nosnippet>3984</a>        }
-<a href=#3985 id=3985 data-nosnippet>3985</a>
-<a href=#3986 id=3986 data-nosnippet>3986</a>        <span class="attr">#[inline]
-<a href=#3987 id=3987 data-nosnippet>3987</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
-<a href=#3988 id=3988 data-nosnippet>3988</a>            Sealed::find(<span class="kw-2">&amp;</span><span class="self">self</span>.as_str(), map)
-<a href=#3989 id=3989 data-nosnippet>3989</a>        }
-<a href=#3990 id=3990 data-nosnippet>3990</a>
-<a href=#3991 id=3991 data-nosnippet>3991</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-<a href=#3992 id=3992 data-nosnippet>3992</a>            <span class="self">self
-<a href=#3993 id=3993 data-nosnippet>3993</a>        </span>}
-<a href=#3994 id=3994 data-nosnippet>3994</a>    }
-<a href=#3995 id=3995 data-nosnippet>3995</a>
-<a href=#3996 id=3996 data-nosnippet>3996</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span>String {}
-<a href=#3997 id=3997 data-nosnippet>3997</a>
-<a href=#3998 id=3998 data-nosnippet>3998</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>String {
-<a href=#3999 id=3999 data-nosnippet>3999</a>        <span class="attr">#[inline]
-<a href=#4000 id=4000 data-nosnippet>4000</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
-<a href=#4001 id=4001 data-nosnippet>4001</a>            <span class="self">self</span>.as_str().try_entry(map)
-<a href=#4002 id=4002 data-nosnippet>4002</a>        }
-<a href=#4003 id=4003 data-nosnippet>4003</a>
-<a href=#4004 id=4004 data-nosnippet>4004</a>        <span class="attr">#[inline]
-<a href=#4005 id=4005 data-nosnippet>4005</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
-<a href=#4006 id=4006 data-nosnippet>4006</a>            Sealed::find(<span class="kw-2">*</span><span class="self">self</span>, map)
-<a href=#4007 id=4007 data-nosnippet>4007</a>        }
-<a href=#4008 id=4008 data-nosnippet>4008</a>
-<a href=#4009 id=4009 data-nosnippet>4009</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-<a href=#4010 id=4010 data-nosnippet>4010</a>            <span class="self">self
-<a href=#4011 id=4011 data-nosnippet>4011</a>        </span>}
-<a href=#4012 id=4012 data-nosnippet>4012</a>    }
-<a href=#4013 id=4013 data-nosnippet>4013</a>
-<a href=#4014 id=4014 data-nosnippet>4014</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>String {}
-<a href=#4015 id=4015 data-nosnippet>4015</a>}
-<a href=#4016 id=4016 data-nosnippet>4016</a>
-<a href=#4017 id=4017 data-nosnippet>4017</a><span class="attr">#[test]
-<a href=#4018 id=4018 data-nosnippet>4018</a></span><span class="kw">fn </span>test_bounds() {
-<a href=#4019 id=4019 data-nosnippet>4019</a>    <span class="kw">fn </span>check_bounds&lt;T: Send + Send&gt;() {}
-<a href=#4020 id=4020 data-nosnippet>4020</a>
-<a href=#4021 id=4021 data-nosnippet>4021</a>    check_bounds::&lt;HeaderMap&lt;()&gt;&gt;();
-<a href=#4022 id=4022 data-nosnippet>4022</a>    check_bounds::&lt;Iter&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4023 id=4023 data-nosnippet>4023</a>    check_bounds::&lt;IterMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4024 id=4024 data-nosnippet>4024</a>    check_bounds::&lt;Keys&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4025 id=4025 data-nosnippet>4025</a>    check_bounds::&lt;Values&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4026 id=4026 data-nosnippet>4026</a>    check_bounds::&lt;ValuesMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4027 id=4027 data-nosnippet>4027</a>    check_bounds::&lt;Drain&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4028 id=4028 data-nosnippet>4028</a>    check_bounds::&lt;GetAll&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4029 id=4029 data-nosnippet>4029</a>    check_bounds::&lt;Entry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4030 id=4030 data-nosnippet>4030</a>    check_bounds::&lt;VacantEntry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4031 id=4031 data-nosnippet>4031</a>    check_bounds::&lt;OccupiedEntry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4032 id=4032 data-nosnippet>4032</a>    check_bounds::&lt;ValueIter&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4033 id=4033 data-nosnippet>4033</a>    check_bounds::&lt;ValueIterMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4034 id=4034 data-nosnippet>4034</a>    check_bounds::&lt;ValueDrain&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
-<a href=#4035 id=4035 data-nosnippet>4035</a>}
-<a href=#4036 id=4036 data-nosnippet>4036</a>
-<a href=#4037 id=4037 data-nosnippet>4037</a><span class="attr">#[test]
-<a href=#4038 id=4038 data-nosnippet>4038</a></span><span class="kw">fn </span>skip_duplicates_during_key_iteration() {
-<a href=#4039 id=4039 data-nosnippet>4039</a>    <span class="kw">let </span><span class="kw-2">mut </span>map = HeaderMap::new();
-<a href=#4040 id=4040 data-nosnippet>4040</a>    map.try_append(<span class="string">"a"</span>, HeaderValue::from_static(<span class="string">"a"</span>)).unwrap();
-<a href=#4041 id=4041 data-nosnippet>4041</a>    map.try_append(<span class="string">"a"</span>, HeaderValue::from_static(<span class="string">"b"</span>)).unwrap();
-<a href=#4042 id=4042 data-nosnippet>4042</a>    <span class="macro">assert_eq!</span>(map.keys().count(), map.keys_len());
-<a href=#4043 id=4043 data-nosnippet>4043</a>}
+<a href=#3724 id=3724 data-nosnippet>3724</a><span class="attr">#[inline]
+<a href=#3725 id=3725 data-nosnippet>3725</a></span><span class="kw">fn </span>hash_elem_using&lt;K&gt;(danger: <span class="kw-2">&amp;</span>Danger, k: <span class="kw-2">&amp;</span>K) -&gt; HashValue
+<a href=#3726 id=3726 data-nosnippet>3726</a><span class="kw">where
+<a href=#3727 id=3727 data-nosnippet>3727</a>    </span>K: Hash + <span class="question-mark">?</span>Sized,
+<a href=#3728 id=3728 data-nosnippet>3728</a>{
+<a href=#3729 id=3729 data-nosnippet>3729</a>    <span class="kw">const </span>MASK: u64 = (MAX_SIZE <span class="kw">as </span>u64) - <span class="number">1</span>;
+<a href=#3730 id=3730 data-nosnippet>3730</a>
+<a href=#3731 id=3731 data-nosnippet>3731</a>    <span class="kw">let </span>hash = <span class="kw">match </span><span class="kw-2">*</span>danger {
+<a href=#3732 id=3732 data-nosnippet>3732</a>        <span class="comment">// Safe hash
+<a href=#3733 id=3733 data-nosnippet>3733</a>        </span>Danger::Red(<span class="kw-2">ref </span>hasher) =&gt; {
+<a href=#3734 id=3734 data-nosnippet>3734</a>            <span class="kw">let </span><span class="kw-2">mut </span>h = hasher.build_hasher();
+<a href=#3735 id=3735 data-nosnippet>3735</a>            k.hash(<span class="kw-2">&amp;mut </span>h);
+<a href=#3736 id=3736 data-nosnippet>3736</a>            h.finish()
+<a href=#3737 id=3737 data-nosnippet>3737</a>        }
+<a href=#3738 id=3738 data-nosnippet>3738</a>        <span class="comment">// Fast hash
+<a href=#3739 id=3739 data-nosnippet>3739</a>        </span><span class="kw">_ </span>=&gt; {
+<a href=#3740 id=3740 data-nosnippet>3740</a>            <span class="kw">let </span><span class="kw-2">mut </span>h = FnvHasher::new();
+<a href=#3741 id=3741 data-nosnippet>3741</a>            k.hash(<span class="kw-2">&amp;mut </span>h);
+<a href=#3742 id=3742 data-nosnippet>3742</a>            h.finish()
+<a href=#3743 id=3743 data-nosnippet>3743</a>        }
+<a href=#3744 id=3744 data-nosnippet>3744</a>    };
+<a href=#3745 id=3745 data-nosnippet>3745</a>
+<a href=#3746 id=3746 data-nosnippet>3746</a>    HashValue((hash &amp; MASK) <span class="kw">as </span>u16)
+<a href=#3747 id=3747 data-nosnippet>3747</a>}
+<a href=#3748 id=3748 data-nosnippet>3748</a>
+<a href=#3749 id=3749 data-nosnippet>3749</a><span class="kw">struct </span>FnvHasher(u64);
+<a href=#3750 id=3750 data-nosnippet>3750</a>
+<a href=#3751 id=3751 data-nosnippet>3751</a><span class="kw">impl </span>FnvHasher {
+<a href=#3752 id=3752 data-nosnippet>3752</a>    <span class="attr">#[inline]
+<a href=#3753 id=3753 data-nosnippet>3753</a>    </span><span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
+<a href=#3754 id=3754 data-nosnippet>3754</a>        FnvHasher(<span class="number">0xcbf29ce484222325</span>)
+<a href=#3755 id=3755 data-nosnippet>3755</a>    }
+<a href=#3756 id=3756 data-nosnippet>3756</a>}
+<a href=#3757 id=3757 data-nosnippet>3757</a>
+<a href=#3758 id=3758 data-nosnippet>3758</a><span class="kw">impl </span>std::hash::Hasher <span class="kw">for </span>FnvHasher {
+<a href=#3759 id=3759 data-nosnippet>3759</a>    <span class="attr">#[inline]
+<a href=#3760 id=3760 data-nosnippet>3760</a>    </span><span class="kw">fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+<a href=#3761 id=3761 data-nosnippet>3761</a>        <span class="self">self</span>.<span class="number">0
+<a href=#3762 id=3762 data-nosnippet>3762</a>    </span>}
+<a href=#3763 id=3763 data-nosnippet>3763</a>
+<a href=#3764 id=3764 data-nosnippet>3764</a>    <span class="attr">#[inline]
+<a href=#3765 id=3765 data-nosnippet>3765</a>    </span><span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) {
+<a href=#3766 id=3766 data-nosnippet>3766</a>        <span class="kw">let </span><span class="kw-2">mut </span>hash = <span class="self">self</span>.<span class="number">0</span>;
+<a href=#3767 id=3767 data-nosnippet>3767</a>        <span class="kw">for </span><span class="kw-2">&amp;</span>b <span class="kw">in </span>bytes {
+<a href=#3768 id=3768 data-nosnippet>3768</a>            hash ^= b <span class="kw">as </span>u64;
+<a href=#3769 id=3769 data-nosnippet>3769</a>            hash = hash.wrapping_mul(<span class="number">0x100000001b3</span>);
+<a href=#3770 id=3770 data-nosnippet>3770</a>        }
+<a href=#3771 id=3771 data-nosnippet>3771</a>        <span class="self">self</span>.<span class="number">0 </span>= hash;
+<a href=#3772 id=3772 data-nosnippet>3772</a>    }
+<a href=#3773 id=3773 data-nosnippet>3773</a>}
+<a href=#3774 id=3774 data-nosnippet>3774</a>
+<a href=#3775 id=3775 data-nosnippet>3775</a><span class="comment">/*
+<a href=#3776 id=3776 data-nosnippet>3776</a> *
+<a href=#3777 id=3777 data-nosnippet>3777</a> * ===== impl IntoHeaderName / AsHeaderName =====
+<a href=#3778 id=3778 data-nosnippet>3778</a> *
+<a href=#3779 id=3779 data-nosnippet>3779</a> */
+<a href=#3780 id=3780 data-nosnippet>3780</a>
+<a href=#3781 id=3781 data-nosnippet>3781</a></span><span class="kw">mod </span>into_header_name {
+<a href=#3782 id=3782 data-nosnippet>3782</a>    <span class="kw">use super</span>::{Entry, HdrName, HeaderMap, HeaderName, MaxSizeReached};
+<a href=#3783 id=3783 data-nosnippet>3783</a>
+<a href=#3784 id=3784 data-nosnippet>3784</a>    <span class="doccomment">/// A marker trait used to identify values that can be used as insert keys
+<a href=#3785 id=3785 data-nosnippet>3785</a>    /// to a `HeaderMap`.
+<a href=#3786 id=3786 data-nosnippet>3786</a>    </span><span class="kw">pub trait </span>IntoHeaderName: Sealed {}
+<a href=#3787 id=3787 data-nosnippet>3787</a>
+<a href=#3788 id=3788 data-nosnippet>3788</a>    <span class="comment">// All methods are on this pub(super) trait, instead of `IntoHeaderName`,
+<a href=#3789 id=3789 data-nosnippet>3789</a>    // so that they aren't publicly exposed to the world.
+<a href=#3790 id=3790 data-nosnippet>3790</a>    //
+<a href=#3791 id=3791 data-nosnippet>3791</a>    // Being on the `IntoHeaderName` trait would mean users could call
+<a href=#3792 id=3792 data-nosnippet>3792</a>    // `"host".insert(&amp;mut map, "localhost")`.
+<a href=#3793 id=3793 data-nosnippet>3793</a>    //
+<a href=#3794 id=3794 data-nosnippet>3794</a>    // Ultimately, this allows us to adjust the signatures of these methods
+<a href=#3795 id=3795 data-nosnippet>3795</a>    // without breaking any external crate.
+<a href=#3796 id=3796 data-nosnippet>3796</a>    </span><span class="kw">pub trait </span>Sealed {
+<a href=#3797 id=3797 data-nosnippet>3797</a>        <span class="attr">#[doc(hidden)]
+<a href=#3798 id=3798 data-nosnippet>3798</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T)
+<a href=#3799 id=3799 data-nosnippet>3799</a>            -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt;;
+<a href=#3800 id=3800 data-nosnippet>3800</a>
+<a href=#3801 id=3801 data-nosnippet>3801</a>        <span class="attr">#[doc(hidden)]
+<a href=#3802 id=3802 data-nosnippet>3802</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt;;
+<a href=#3803 id=3803 data-nosnippet>3803</a>
+<a href=#3804 id=3804 data-nosnippet>3804</a>        <span class="attr">#[doc(hidden)]
+<a href=#3805 id=3805 data-nosnippet>3805</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt;;
+<a href=#3806 id=3806 data-nosnippet>3806</a>    }
+<a href=#3807 id=3807 data-nosnippet>3807</a>
+<a href=#3808 id=3808 data-nosnippet>3808</a>    <span class="comment">// ==== impls ====
+<a href=#3809 id=3809 data-nosnippet>3809</a>
+<a href=#3810 id=3810 data-nosnippet>3810</a>    </span><span class="kw">impl </span>Sealed <span class="kw">for </span>HeaderName {
+<a href=#3811 id=3811 data-nosnippet>3811</a>        <span class="attr">#[inline]
+<a href=#3812 id=3812 data-nosnippet>3812</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
+<a href=#3813 id=3813 data-nosnippet>3813</a>            <span class="self">self</span>,
+<a href=#3814 id=3814 data-nosnippet>3814</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
+<a href=#3815 id=3815 data-nosnippet>3815</a>            val: T,
+<a href=#3816 id=3816 data-nosnippet>3816</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
+<a href=#3817 id=3817 data-nosnippet>3817</a>            map.try_insert2(<span class="self">self</span>, val)
+<a href=#3818 id=3818 data-nosnippet>3818</a>        }
+<a href=#3819 id=3819 data-nosnippet>3819</a>
+<a href=#3820 id=3820 data-nosnippet>3820</a>        <span class="attr">#[inline]
+<a href=#3821 id=3821 data-nosnippet>3821</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
+<a href=#3822 id=3822 data-nosnippet>3822</a>            map.try_append2(<span class="self">self</span>, val)
+<a href=#3823 id=3823 data-nosnippet>3823</a>        }
+<a href=#3824 id=3824 data-nosnippet>3824</a>
+<a href=#3825 id=3825 data-nosnippet>3825</a>        <span class="attr">#[inline]
+<a href=#3826 id=3826 data-nosnippet>3826</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
+<a href=#3827 id=3827 data-nosnippet>3827</a>            map.try_entry2(<span class="self">self</span>)
+<a href=#3828 id=3828 data-nosnippet>3828</a>        }
+<a href=#3829 id=3829 data-nosnippet>3829</a>    }
+<a href=#3830 id=3830 data-nosnippet>3830</a>
+<a href=#3831 id=3831 data-nosnippet>3831</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span>HeaderName {}
+<a href=#3832 id=3832 data-nosnippet>3832</a>
+<a href=#3833 id=3833 data-nosnippet>3833</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {
+<a href=#3834 id=3834 data-nosnippet>3834</a>        <span class="attr">#[inline]
+<a href=#3835 id=3835 data-nosnippet>3835</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
+<a href=#3836 id=3836 data-nosnippet>3836</a>            <span class="self">self</span>,
+<a href=#3837 id=3837 data-nosnippet>3837</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
+<a href=#3838 id=3838 data-nosnippet>3838</a>            val: T,
+<a href=#3839 id=3839 data-nosnippet>3839</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
+<a href=#3840 id=3840 data-nosnippet>3840</a>            map.try_insert2(<span class="self">self</span>, val)
+<a href=#3841 id=3841 data-nosnippet>3841</a>        }
+<a href=#3842 id=3842 data-nosnippet>3842</a>        <span class="attr">#[inline]
+<a href=#3843 id=3843 data-nosnippet>3843</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
+<a href=#3844 id=3844 data-nosnippet>3844</a>            map.try_append2(<span class="self">self</span>, val)
+<a href=#3845 id=3845 data-nosnippet>3845</a>        }
+<a href=#3846 id=3846 data-nosnippet>3846</a>
+<a href=#3847 id=3847 data-nosnippet>3847</a>        <span class="attr">#[inline]
+<a href=#3848 id=3848 data-nosnippet>3848</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
+<a href=#3849 id=3849 data-nosnippet>3849</a>            map.try_entry2(<span class="self">self</span>)
+<a href=#3850 id=3850 data-nosnippet>3850</a>        }
+<a href=#3851 id=3851 data-nosnippet>3851</a>    }
+<a href=#3852 id=3852 data-nosnippet>3852</a>
+<a href=#3853 id=3853 data-nosnippet>3853</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {}
+<a href=#3854 id=3854 data-nosnippet>3854</a>
+<a href=#3855 id=3855 data-nosnippet>3855</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+<a href=#3856 id=3856 data-nosnippet>3856</a>        <span class="attr">#[inline]
+<a href=#3857 id=3857 data-nosnippet>3857</a>        </span><span class="kw">fn </span>try_insert&lt;T&gt;(
+<a href=#3858 id=3858 data-nosnippet>3858</a>            <span class="self">self</span>,
+<a href=#3859 id=3859 data-nosnippet>3859</a>            map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;,
+<a href=#3860 id=3860 data-nosnippet>3860</a>            val: T,
+<a href=#3861 id=3861 data-nosnippet>3861</a>        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;, MaxSizeReached&gt; {
+<a href=#3862 id=3862 data-nosnippet>3862</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_insert2(hdr, val))
+<a href=#3863 id=3863 data-nosnippet>3863</a>        }
+<a href=#3864 id=3864 data-nosnippet>3864</a>        <span class="attr">#[inline]
+<a href=#3865 id=3865 data-nosnippet>3865</a>        </span><span class="kw">fn </span>try_append&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;, val: T) -&gt; <span class="prelude-ty">Result</span>&lt;bool, MaxSizeReached&gt; {
+<a href=#3866 id=3866 data-nosnippet>3866</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_append2(hdr, val))
+<a href=#3867 id=3867 data-nosnippet>3867</a>        }
+<a href=#3868 id=3868 data-nosnippet>3868</a>
+<a href=#3869 id=3869 data-nosnippet>3869</a>        <span class="attr">#[inline]
+<a href=#3870 id=3870 data-nosnippet>3870</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, MaxSizeReached&gt; {
+<a href=#3871 id=3871 data-nosnippet>3871</a>            HdrName::from_static(<span class="self">self</span>, <span class="kw">move </span>|hdr| map.try_entry2(hdr))
+<a href=#3872 id=3872 data-nosnippet>3872</a>        }
+<a href=#3873 id=3873 data-nosnippet>3873</a>    }
+<a href=#3874 id=3874 data-nosnippet>3874</a>
+<a href=#3875 id=3875 data-nosnippet>3875</a>    <span class="kw">impl </span>IntoHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {}
+<a href=#3876 id=3876 data-nosnippet>3876</a>}
+<a href=#3877 id=3877 data-nosnippet>3877</a>
+<a href=#3878 id=3878 data-nosnippet>3878</a><span class="kw">mod </span>as_header_name {
+<a href=#3879 id=3879 data-nosnippet>3879</a>    <span class="kw">use super</span>::{Entry, HdrName, HeaderMap, HeaderName, InvalidHeaderName, MaxSizeReached};
+<a href=#3880 id=3880 data-nosnippet>3880</a>
+<a href=#3881 id=3881 data-nosnippet>3881</a>    <span class="doccomment">/// A marker trait used to identify values that can be used as search keys
+<a href=#3882 id=3882 data-nosnippet>3882</a>    /// to a `HeaderMap`.
+<a href=#3883 id=3883 data-nosnippet>3883</a>    </span><span class="kw">pub trait </span>AsHeaderName: Sealed {}
+<a href=#3884 id=3884 data-nosnippet>3884</a>
+<a href=#3885 id=3885 data-nosnippet>3885</a>    <span class="comment">// Debug not currently needed, save on compiling it
+<a href=#3886 id=3886 data-nosnippet>3886</a>    </span><span class="attr">#[allow(missing_debug_implementations)]
+<a href=#3887 id=3887 data-nosnippet>3887</a>    </span><span class="kw">pub enum </span>TryEntryError {
+<a href=#3888 id=3888 data-nosnippet>3888</a>        InvalidHeaderName(InvalidHeaderName),
+<a href=#3889 id=3889 data-nosnippet>3889</a>        MaxSizeReached(MaxSizeReached),
+<a href=#3890 id=3890 data-nosnippet>3890</a>    }
+<a href=#3891 id=3891 data-nosnippet>3891</a>
+<a href=#3892 id=3892 data-nosnippet>3892</a>    <span class="kw">impl </span>From&lt;InvalidHeaderName&gt; <span class="kw">for </span>TryEntryError {
+<a href=#3893 id=3893 data-nosnippet>3893</a>        <span class="kw">fn </span>from(e: InvalidHeaderName) -&gt; TryEntryError {
+<a href=#3894 id=3894 data-nosnippet>3894</a>            TryEntryError::InvalidHeaderName(e)
+<a href=#3895 id=3895 data-nosnippet>3895</a>        }
+<a href=#3896 id=3896 data-nosnippet>3896</a>    }
+<a href=#3897 id=3897 data-nosnippet>3897</a>
+<a href=#3898 id=3898 data-nosnippet>3898</a>    <span class="kw">impl </span>From&lt;MaxSizeReached&gt; <span class="kw">for </span>TryEntryError {
+<a href=#3899 id=3899 data-nosnippet>3899</a>        <span class="kw">fn </span>from(e: MaxSizeReached) -&gt; TryEntryError {
+<a href=#3900 id=3900 data-nosnippet>3900</a>            TryEntryError::MaxSizeReached(e)
+<a href=#3901 id=3901 data-nosnippet>3901</a>        }
+<a href=#3902 id=3902 data-nosnippet>3902</a>    }
+<a href=#3903 id=3903 data-nosnippet>3903</a>
+<a href=#3904 id=3904 data-nosnippet>3904</a>    <span class="comment">// All methods are on this pub(super) trait, instead of `AsHeaderName`,
+<a href=#3905 id=3905 data-nosnippet>3905</a>    // so that they aren't publicly exposed to the world.
+<a href=#3906 id=3906 data-nosnippet>3906</a>    //
+<a href=#3907 id=3907 data-nosnippet>3907</a>    // Being on the `AsHeaderName` trait would mean users could call
+<a href=#3908 id=3908 data-nosnippet>3908</a>    // `"host".find(&amp;map)`.
+<a href=#3909 id=3909 data-nosnippet>3909</a>    //
+<a href=#3910 id=3910 data-nosnippet>3910</a>    // Ultimately, this allows us to adjust the signatures of these methods
+<a href=#3911 id=3911 data-nosnippet>3911</a>    // without breaking any external crate.
+<a href=#3912 id=3912 data-nosnippet>3912</a>    </span><span class="kw">pub trait </span>Sealed {
+<a href=#3913 id=3913 data-nosnippet>3913</a>        <span class="attr">#[doc(hidden)]
+<a href=#3914 id=3914 data-nosnippet>3914</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt;;
+<a href=#3915 id=3915 data-nosnippet>3915</a>
+<a href=#3916 id=3916 data-nosnippet>3916</a>        <span class="attr">#[doc(hidden)]
+<a href=#3917 id=3917 data-nosnippet>3917</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt;;
+<a href=#3918 id=3918 data-nosnippet>3918</a>
+<a href=#3919 id=3919 data-nosnippet>3919</a>        <span class="attr">#[doc(hidden)]
+<a href=#3920 id=3920 data-nosnippet>3920</a>        </span><span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+<a href=#3921 id=3921 data-nosnippet>3921</a>    }
+<a href=#3922 id=3922 data-nosnippet>3922</a>
+<a href=#3923 id=3923 data-nosnippet>3923</a>    <span class="comment">// ==== impls ====
+<a href=#3924 id=3924 data-nosnippet>3924</a>
+<a href=#3925 id=3925 data-nosnippet>3925</a>    </span><span class="kw">impl </span>Sealed <span class="kw">for </span>HeaderName {
+<a href=#3926 id=3926 data-nosnippet>3926</a>        <span class="attr">#[inline]
+<a href=#3927 id=3927 data-nosnippet>3927</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
+<a href=#3928 id=3928 data-nosnippet>3928</a>            <span class="prelude-val">Ok</span>(map.try_entry2(<span class="self">self</span>)<span class="question-mark">?</span>)
+<a href=#3929 id=3929 data-nosnippet>3929</a>        }
+<a href=#3930 id=3930 data-nosnippet>3930</a>
+<a href=#3931 id=3931 data-nosnippet>3931</a>        <span class="attr">#[inline]
+<a href=#3932 id=3932 data-nosnippet>3932</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
+<a href=#3933 id=3933 data-nosnippet>3933</a>            map.find(<span class="self">self</span>)
+<a href=#3934 id=3934 data-nosnippet>3934</a>        }
+<a href=#3935 id=3935 data-nosnippet>3935</a>
+<a href=#3936 id=3936 data-nosnippet>3936</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+<a href=#3937 id=3937 data-nosnippet>3937</a>            &lt;HeaderName&gt;::as_str(<span class="self">self</span>)
+<a href=#3938 id=3938 data-nosnippet>3938</a>        }
+<a href=#3939 id=3939 data-nosnippet>3939</a>    }
+<a href=#3940 id=3940 data-nosnippet>3940</a>
+<a href=#3941 id=3941 data-nosnippet>3941</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span>HeaderName {}
+<a href=#3942 id=3942 data-nosnippet>3942</a>
+<a href=#3943 id=3943 data-nosnippet>3943</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {
+<a href=#3944 id=3944 data-nosnippet>3944</a>        <span class="attr">#[inline]
+<a href=#3945 id=3945 data-nosnippet>3945</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
+<a href=#3946 id=3946 data-nosnippet>3946</a>            <span class="prelude-val">Ok</span>(map.try_entry2(<span class="self">self</span>)<span class="question-mark">?</span>)
+<a href=#3947 id=3947 data-nosnippet>3947</a>        }
+<a href=#3948 id=3948 data-nosnippet>3948</a>
+<a href=#3949 id=3949 data-nosnippet>3949</a>        <span class="attr">#[inline]
+<a href=#3950 id=3950 data-nosnippet>3950</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
+<a href=#3951 id=3951 data-nosnippet>3951</a>            map.find(<span class="kw-2">*</span><span class="self">self</span>)
+<a href=#3952 id=3952 data-nosnippet>3952</a>        }
+<a href=#3953 id=3953 data-nosnippet>3953</a>
+<a href=#3954 id=3954 data-nosnippet>3954</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+<a href=#3955 id=3955 data-nosnippet>3955</a>            &lt;HeaderName&gt;::as_str(<span class="self">self</span>)
+<a href=#3956 id=3956 data-nosnippet>3956</a>        }
+<a href=#3957 id=3957 data-nosnippet>3957</a>    }
+<a href=#3958 id=3958 data-nosnippet>3958</a>
+<a href=#3959 id=3959 data-nosnippet>3959</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>HeaderName {}
+<a href=#3960 id=3960 data-nosnippet>3960</a>
+<a href=#3961 id=3961 data-nosnippet>3961</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>str {
+<a href=#3962 id=3962 data-nosnippet>3962</a>        <span class="attr">#[inline]
+<a href=#3963 id=3963 data-nosnippet>3963</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
+<a href=#3964 id=3964 data-nosnippet>3964</a>            <span class="prelude-val">Ok</span>(HdrName::from_bytes(<span class="self">self</span>.as_bytes(), <span class="kw">move </span>|hdr| {
+<a href=#3965 id=3965 data-nosnippet>3965</a>                map.try_entry2(hdr)
+<a href=#3966 id=3966 data-nosnippet>3966</a>            })<span class="question-mark">??</span>)
+<a href=#3967 id=3967 data-nosnippet>3967</a>        }
+<a href=#3968 id=3968 data-nosnippet>3968</a>
+<a href=#3969 id=3969 data-nosnippet>3969</a>        <span class="attr">#[inline]
+<a href=#3970 id=3970 data-nosnippet>3970</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
+<a href=#3971 id=3971 data-nosnippet>3971</a>            HdrName::from_bytes(<span class="self">self</span>.as_bytes(), <span class="kw">move </span>|hdr| map.find(<span class="kw-2">&amp;</span>hdr)).unwrap_or(<span class="prelude-val">None</span>)
+<a href=#3972 id=3972 data-nosnippet>3972</a>        }
+<a href=#3973 id=3973 data-nosnippet>3973</a>
+<a href=#3974 id=3974 data-nosnippet>3974</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+<a href=#3975 id=3975 data-nosnippet>3975</a>            <span class="self">self
+<a href=#3976 id=3976 data-nosnippet>3976</a>        </span>}
+<a href=#3977 id=3977 data-nosnippet>3977</a>    }
+<a href=#3978 id=3978 data-nosnippet>3978</a>
+<a href=#3979 id=3979 data-nosnippet>3979</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>str {}
+<a href=#3980 id=3980 data-nosnippet>3980</a>
+<a href=#3981 id=3981 data-nosnippet>3981</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span>String {
+<a href=#3982 id=3982 data-nosnippet>3982</a>        <span class="attr">#[inline]
+<a href=#3983 id=3983 data-nosnippet>3983</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
+<a href=#3984 id=3984 data-nosnippet>3984</a>            <span class="self">self</span>.as_str().try_entry(map)
+<a href=#3985 id=3985 data-nosnippet>3985</a>        }
+<a href=#3986 id=3986 data-nosnippet>3986</a>
+<a href=#3987 id=3987 data-nosnippet>3987</a>        <span class="attr">#[inline]
+<a href=#3988 id=3988 data-nosnippet>3988</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
+<a href=#3989 id=3989 data-nosnippet>3989</a>            Sealed::find(<span class="kw-2">&amp;</span><span class="self">self</span>.as_str(), map)
+<a href=#3990 id=3990 data-nosnippet>3990</a>        }
+<a href=#3991 id=3991 data-nosnippet>3991</a>
+<a href=#3992 id=3992 data-nosnippet>3992</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+<a href=#3993 id=3993 data-nosnippet>3993</a>            <span class="self">self
+<a href=#3994 id=3994 data-nosnippet>3994</a>        </span>}
+<a href=#3995 id=3995 data-nosnippet>3995</a>    }
+<a href=#3996 id=3996 data-nosnippet>3996</a>
+<a href=#3997 id=3997 data-nosnippet>3997</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span>String {}
+<a href=#3998 id=3998 data-nosnippet>3998</a>
+<a href=#3999 id=3999 data-nosnippet>3999</a>    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw-2">&amp;</span>String {
+<a href=#4000 id=4000 data-nosnippet>4000</a>        <span class="attr">#[inline]
+<a href=#4001 id=4001 data-nosnippet>4001</a>        </span><span class="kw">fn </span>try_entry&lt;T&gt;(<span class="self">self</span>, map: <span class="kw-2">&amp;mut </span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">'_</span>, T&gt;, TryEntryError&gt; {
+<a href=#4002 id=4002 data-nosnippet>4002</a>            <span class="self">self</span>.as_str().try_entry(map)
+<a href=#4003 id=4003 data-nosnippet>4003</a>        }
+<a href=#4004 id=4004 data-nosnippet>4004</a>
+<a href=#4005 id=4005 data-nosnippet>4005</a>        <span class="attr">#[inline]
+<a href=#4006 id=4006 data-nosnippet>4006</a>        </span><span class="kw">fn </span>find&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>HeaderMap&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(usize, usize)&gt; {
+<a href=#4007 id=4007 data-nosnippet>4007</a>            Sealed::find(<span class="kw-2">*</span><span class="self">self</span>, map)
+<a href=#4008 id=4008 data-nosnippet>4008</a>        }
+<a href=#4009 id=4009 data-nosnippet>4009</a>
+<a href=#4010 id=4010 data-nosnippet>4010</a>        <span class="kw">fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+<a href=#4011 id=4011 data-nosnippet>4011</a>            <span class="self">self
+<a href=#4012 id=4012 data-nosnippet>4012</a>        </span>}
+<a href=#4013 id=4013 data-nosnippet>4013</a>    }
+<a href=#4014 id=4014 data-nosnippet>4014</a>
+<a href=#4015 id=4015 data-nosnippet>4015</a>    <span class="kw">impl </span>AsHeaderName <span class="kw">for </span><span class="kw-2">&amp;</span>String {}
+<a href=#4016 id=4016 data-nosnippet>4016</a>}
+<a href=#4017 id=4017 data-nosnippet>4017</a>
+<a href=#4018 id=4018 data-nosnippet>4018</a><span class="attr">#[test]
+<a href=#4019 id=4019 data-nosnippet>4019</a></span><span class="kw">fn </span>test_bounds() {
+<a href=#4020 id=4020 data-nosnippet>4020</a>    <span class="kw">fn </span>check_bounds&lt;T: Send + Send&gt;() {}
+<a href=#4021 id=4021 data-nosnippet>4021</a>
+<a href=#4022 id=4022 data-nosnippet>4022</a>    check_bounds::&lt;HeaderMap&lt;()&gt;&gt;();
+<a href=#4023 id=4023 data-nosnippet>4023</a>    check_bounds::&lt;Iter&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4024 id=4024 data-nosnippet>4024</a>    check_bounds::&lt;IterMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4025 id=4025 data-nosnippet>4025</a>    check_bounds::&lt;Keys&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4026 id=4026 data-nosnippet>4026</a>    check_bounds::&lt;Values&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4027 id=4027 data-nosnippet>4027</a>    check_bounds::&lt;ValuesMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4028 id=4028 data-nosnippet>4028</a>    check_bounds::&lt;Drain&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4029 id=4029 data-nosnippet>4029</a>    check_bounds::&lt;GetAll&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4030 id=4030 data-nosnippet>4030</a>    check_bounds::&lt;Entry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4031 id=4031 data-nosnippet>4031</a>    check_bounds::&lt;VacantEntry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4032 id=4032 data-nosnippet>4032</a>    check_bounds::&lt;OccupiedEntry&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4033 id=4033 data-nosnippet>4033</a>    check_bounds::&lt;ValueIter&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4034 id=4034 data-nosnippet>4034</a>    check_bounds::&lt;ValueIterMut&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4035 id=4035 data-nosnippet>4035</a>    check_bounds::&lt;ValueDrain&lt;<span class="lifetime">'static</span>, ()&gt;&gt;();
+<a href=#4036 id=4036 data-nosnippet>4036</a>}
+<a href=#4037 id=4037 data-nosnippet>4037</a>
+<a href=#4038 id=4038 data-nosnippet>4038</a><span class="attr">#[test]
+<a href=#4039 id=4039 data-nosnippet>4039</a></span><span class="kw">fn </span>skip_duplicates_during_key_iteration() {
+<a href=#4040 id=4040 data-nosnippet>4040</a>    <span class="kw">let </span><span class="kw-2">mut </span>map = HeaderMap::new();
+<a href=#4041 id=4041 data-nosnippet>4041</a>    map.try_append(<span class="string">"a"</span>, HeaderValue::from_static(<span class="string">"a"</span>)).unwrap();
+<a href=#4042 id=4042 data-nosnippet>4042</a>    map.try_append(<span class="string">"a"</span>, HeaderValue::from_static(<span class="string">"b"</span>)).unwrap();
+<a href=#4043 id=4043 data-nosnippet>4043</a>    <span class="macro">assert_eq!</span>(map.keys().count(), map.keys_len());
+<a href=#4044 id=4044 data-nosnippet>4044</a>}
 </code></pre></div></section></main></body></html>

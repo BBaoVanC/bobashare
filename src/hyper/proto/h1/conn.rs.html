@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.10.1/src/proto/h1/conn.rs`."><title>conn.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/proto/h1/</div>conn.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::fmt;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.0/src/proto/h1/conn.rs`."><title>conn.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/proto/h1/</div>conn.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::fmt;
 <a href=#2 id=2 data-nosnippet>2</a><span class="attr">#[cfg(feature = <span class="string">"server"</span>)]
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use </span>std::future::Future;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span>std::io;
@@ -17,7 +17,7 @@
 <a href=#17 id=17 data-nosnippet>17</a><span class="kw">use </span>httparse::ParserConfig;
 <a href=#18 id=18 data-nosnippet>18</a>
 <a href=#19 id=19 data-nosnippet>19</a><span class="kw">use </span><span class="kw">super</span>::io::Buffered;
-<a href=#20 id=20 data-nosnippet>20</a><span class="kw">use </span>super::{Decoder, Encode, EncodedBuf, Encoder, Http1Transaction, ParseContext, Wants};
+<a href=#20 id=20 data-nosnippet>20</a><span class="kw">use super</span>::{Decoder, Encode, EncodedBuf, Encoder, Http1Transaction, ParseContext, Wants};
 <a href=#21 id=21 data-nosnippet>21</a><span class="kw">use </span><span class="kw">crate</span>::body::DecodedLength;
 <a href=#22 id=22 data-nosnippet>22</a><span class="attr">#[cfg(feature = <span class="string">"server"</span>)]
 <a href=#23 id=23 data-nosnippet>23</a></span><span class="kw">use </span><span class="kw">crate</span>::common::time::Time;
@@ -529,7 +529,7 @@
 <a href=#529 id=529 data-nosnippet>529</a>                <span class="kw">return
 <a href=#530 id=530 data-nosnippet>530</a>            </span>}
 <a href=#531 id=531 data-nosnippet>531</a>            Reading::Init =&gt; (),
-<a href=#532 id=532 data-nosnippet>532</a>        };
+<a href=#532 id=532 data-nosnippet>532</a>        }
 <a href=#533 id=533 data-nosnippet>533</a>
 <a href=#534 id=534 data-nosnippet>534</a>        <span class="kw">match </span><span class="self">self</span>.state.writing {
 <a href=#535 id=535 data-nosnippet>535</a>            Writing::Body(..) =&gt; <span class="kw">return</span>,
@@ -545,7 +545,7 @@
 <a href=#545 id=545 data-nosnippet>545</a>                            <span class="kw">if </span><span class="self">self</span>.state.is_idle() {
 <a href=#546 id=546 data-nosnippet>546</a>                                <span class="self">self</span>.state.close();
 <a href=#547 id=547 data-nosnippet>547</a>                            } <span class="kw">else </span>{
-<a href=#548 id=548 data-nosnippet>548</a>                                <span class="self">self</span>.close_read()
+<a href=#548 id=548 data-nosnippet>548</a>                                <span class="self">self</span>.close_read();
 <a href=#549 id=549 data-nosnippet>549</a>                            }
 <a href=#550 id=550 data-nosnippet>550</a>                            <span class="kw">return</span>;
 <a href=#551 id=551 data-nosnippet>551</a>                        }
@@ -833,7 +833,7 @@
 <a href=#833 id=833 data-nosnippet>833</a>    }
 <a href=#834 id=834 data-nosnippet>834</a>
 <a href=#835 id=835 data-nosnippet>835</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>poll_shutdown(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
-<a href=#836 id=836 data-nosnippet>836</a>        <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(<span class="self">self</span>.io.io_mut()).poll_shutdown(cx)) {
+<a href=#836 id=836 data-nosnippet>836</a>        <span class="kw">match </span><span class="macro">ready!</span>(<span class="self">self</span>.io.poll_shutdown(cx)) {
 <a href=#837 id=837 data-nosnippet>837</a>            <span class="prelude-val">Ok</span>(()) =&gt; {
 <a href=#838 id=838 data-nosnippet>838</a>                <span class="macro">trace!</span>(<span class="string">"shut down IO complete"</span>);
 <a href=#839 id=839 data-nosnippet>839</a>                Poll::Ready(<span class="prelude-val">Ok</span>(()))
@@ -1084,14 +1084,14 @@
 <a href=#1084 id=1084 data-nosnippet>1084</a>                }
 <a href=#1085 id=1085 data-nosnippet>1085</a>            }
 <a href=#1086 id=1086 data-nosnippet>1086</a>            (<span class="kw-2">&amp;</span>Reading::Closed, <span class="kw-2">&amp;</span>Writing::KeepAlive) | (<span class="kw-2">&amp;</span>Reading::KeepAlive, <span class="kw-2">&amp;</span>Writing::Closed) =&gt; {
-<a href=#1087 id=1087 data-nosnippet>1087</a>                <span class="self">self</span>.close()
+<a href=#1087 id=1087 data-nosnippet>1087</a>                <span class="self">self</span>.close();
 <a href=#1088 id=1088 data-nosnippet>1088</a>            }
 <a href=#1089 id=1089 data-nosnippet>1089</a>            <span class="kw">_ </span>=&gt; (),
 <a href=#1090 id=1090 data-nosnippet>1090</a>        }
 <a href=#1091 id=1091 data-nosnippet>1091</a>    }
 <a href=#1092 id=1092 data-nosnippet>1092</a>
 <a href=#1093 id=1093 data-nosnippet>1093</a>    <span class="kw">fn </span>disable_keep_alive(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-<a href=#1094 id=1094 data-nosnippet>1094</a>        <span class="self">self</span>.keep_alive.disable()
+<a href=#1094 id=1094 data-nosnippet>1094</a>        <span class="self">self</span>.keep_alive.disable();
 <a href=#1095 id=1095 data-nosnippet>1095</a>    }
 <a href=#1096 id=1096 data-nosnippet>1096</a>
 <a href=#1097 id=1097 data-nosnippet>1097</a>    <span class="kw">fn </span>busy(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -1157,7 +1157,7 @@
 <a href=#1157 id=1157 data-nosnippet>1157</a>    <span class="attr">#[cfg(all(feature = <span class="string">"nightly"</span>, not(miri)))]
 <a href=#1158 id=1158 data-nosnippet>1158</a>    #[bench]
 <a href=#1159 id=1159 data-nosnippet>1159</a>    </span><span class="kw">fn </span>bench_read_head_short(b: <span class="kw-2">&amp;mut </span>::test::Bencher) {
-<a href=#1160 id=1160 data-nosnippet>1160</a>        <span class="kw">use </span>super::<span class="kw-2">*</span>;
+<a href=#1160 id=1160 data-nosnippet>1160</a>        <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#1161 id=1161 data-nosnippet>1161</a>        <span class="kw">use </span><span class="kw">crate</span>::common::io::Compat;
 <a href=#1162 id=1162 data-nosnippet>1162</a>        <span class="kw">let </span>s = <span class="string">b"GET / HTTP/1.1\r\nHost: localhost:8080\r\n\r\n"</span>;
 <a href=#1163 id=1163 data-nosnippet>1163</a>        <span class="kw">let </span>len = s.len();

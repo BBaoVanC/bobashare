@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.4/src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="uuid" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://www.rust-lang.org/favicon.ico"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">uuid/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// Copyright 2013-2014 The Rust Project Developers.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.24.0/src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="uuid" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://www.rust-lang.org/favicon.ico"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">uuid/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// Copyright 2013-2014 The Rust Project Developers.
 <a href=#2 id=2 data-nosnippet>2</a>// Copyright 2018 The Uuid Project Developers.
 <a href=#3 id=3 data-nosnippet>3</a>//
 <a href=#4 id=4 data-nosnippet>4</a>// See the COPYRIGHT file at the top-level directory of this distribution.
@@ -38,7 +38,7 @@
 <a href=#38 id=38 data-nosnippet>38</a>//!
 <a href=#39 id=39 data-nosnippet>39</a>//! ```toml
 <a href=#40 id=40 data-nosnippet>40</a>//! [dependencies.uuid]
-<a href=#41 id=41 data-nosnippet>41</a>//! version = "1.23.4"
+<a href=#41 id=41 data-nosnippet>41</a>//! version = "1.24.0"
 <a href=#42 id=42 data-nosnippet>42</a>//! # Lets you generate random UUIDs
 <a href=#43 id=43 data-nosnippet>43</a>//! features = [
 <a href=#44 id=44 data-nosnippet>44</a>//!     "v4",
@@ -138,7 +138,7 @@
 <a href=#138 id=138 data-nosnippet>138</a>//!
 <a href=#139 id=139 data-nosnippet>139</a>//! ```toml
 <a href=#140 id=140 data-nosnippet>140</a>//! [dependencies.uuid]
-<a href=#141 id=141 data-nosnippet>141</a>//! version = "1.23.4"
+<a href=#141 id=141 data-nosnippet>141</a>//! version = "1.24.0"
 <a href=#142 id=142 data-nosnippet>142</a>//! features = [
 <a href=#143 id=143 data-nosnippet>143</a>//!     "v4",
 <a href=#144 id=144 data-nosnippet>144</a>//!     "v7",
@@ -153,7 +153,7 @@
 <a href=#153 id=153 data-nosnippet>153</a>//!
 <a href=#154 id=154 data-nosnippet>154</a>//! ```toml
 <a href=#155 id=155 data-nosnippet>155</a>//! [dependencies.uuid]
-<a href=#156 id=156 data-nosnippet>156</a>//! version = "1.23.4"
+<a href=#156 id=156 data-nosnippet>156</a>//! version = "1.24.0"
 <a href=#157 id=157 data-nosnippet>157</a>//! default-features = false
 <a href=#158 id=158 data-nosnippet>158</a>//! ```
 <a href=#159 id=159 data-nosnippet>159</a>//!
@@ -213,7 +213,7 @@
 <a href=#213 id=213 data-nosnippet>213</a>#![doc(
 <a href=#214 id=214 data-nosnippet>214</a>    html_logo_url = <span class="string">"https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png"</span>,
 <a href=#215 id=215 data-nosnippet>215</a>    html_favicon_url = <span class="string">"https://www.rust-lang.org/favicon.ico"</span>,
-<a href=#216 id=216 data-nosnippet>216</a>    html_root_url = <span class="string">"https://docs.rs/uuid/1.23.4"
+<a href=#216 id=216 data-nosnippet>216</a>    html_root_url = <span class="string">"https://docs.rs/uuid/1.24.0"
 <a href=#217 id=217 data-nosnippet>217</a></span>)]
 <a href=#218 id=218 data-nosnippet>218</a>
 <a href=#219 id=219 data-nosnippet>219</a>#[cfg(any(feature = <span class="string">"std"</span>, test))]
@@ -280,7 +280,7 @@
 <a href=#280 id=280 data-nosnippet>280</a>    <span class="kw">pub use </span><span class="kw">crate</span>::std::result::Result::{<span class="prelude-val">Err</span>, <span class="prelude-val">Ok</span>};
 <a href=#281 id=281 data-nosnippet>281</a>}
 <a href=#282 id=282 data-nosnippet>282</a>
-<a href=#283 id=283 data-nosnippet>283</a><span class="kw">pub use </span>crate::{builder::Builder, error::Error, non_nil::NonNilUuid};
+<a href=#283 id=283 data-nosnippet>283</a><span class="kw">pub use crate</span>::{builder::Builder, error::Error, non_nil::NonNilUuid};
 <a href=#284 id=284 data-nosnippet>284</a>
 <a href=#285 id=285 data-nosnippet>285</a><span class="doccomment">/// A 128-bit (16 byte) buffer containing the UUID.
 <a href=#286 id=286 data-nosnippet>286</a>///
@@ -1005,7 +1005,7 @@
 <a href=#1005 id=1005 data-nosnippet>1005</a>
 <a href=#1006 id=1006 data-nosnippet>1006</a><span class="attr">#[cfg(test)]
 <a href=#1007 id=1007 data-nosnippet>1007</a></span><span class="kw">mod </span>tests {
-<a href=#1008 id=1008 data-nosnippet>1008</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
+<a href=#1008 id=1008 data-nosnippet>1008</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <a href=#1009 id=1009 data-nosnippet>1009</a>
 <a href=#1010 id=1010 data-nosnippet>1010</a>    <span class="kw">use </span><span class="kw">crate</span>::std::string::{String, ToString};
 <a href=#1011 id=1011 data-nosnippet>1011</a>

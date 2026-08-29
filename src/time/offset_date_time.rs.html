@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-0.3.53/src/offset_date_time.rs`."><title>offset_date_time.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://avatars0.githubusercontent.com/u/55999857"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">time/</div>offset_date_time.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! The [`OffsetDateTime`] struct and its associated `impl`s.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/time-0.3.54/src/offset_date_time.rs`."><title>offset_date_time.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="time" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="icon" href="https://avatars0.githubusercontent.com/u/55999857"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">time/</div>offset_date_time.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! The [`OffsetDateTime`] struct and its associated `impl`s.
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="attr">#[cfg(feature = <span class="string">"formatting"</span>)]
 <a href=#4 id=4 data-nosnippet>4</a></span><span class="kw">use </span>alloc::string::String;
@@ -26,17 +26,17 @@
 <a href=#26 id=26 data-nosnippet>26</a></span><span class="kw">use </span><span class="kw">crate</span>::parsing::{Parsable, Parsed};
 <a href=#27 id=27 data-nosnippet>27</a><span class="kw">use </span><span class="kw">crate</span>::unit::<span class="kw-2">*</span>;
 <a href=#28 id=28 data-nosnippet>28</a><span class="kw">use </span><span class="kw">crate</span>::util::days_in_year;
-<a href=#29 id=29 data-nosnippet>29</a><span class="kw">use </span>crate::{
-<a href=#30 id=30 data-nosnippet>30</a>    Date, Duration, Month, PrimitiveDateTime, Time, UtcDateTime, UtcOffset, Weekday, error,
+<a href=#29 id=29 data-nosnippet>29</a><span class="kw">use crate</span>::{
+<a href=#30 id=30 data-nosnippet>30</a>    Date, Month, PlainDateTime, SignedDuration, Time, UtcDateTime, UtcOffset, Weekday, error,
 <a href=#31 id=31 data-nosnippet>31</a>};
 <a href=#32 id=32 data-nosnippet>32</a>
 <a href=#33 id=33 data-nosnippet>33</a><span class="doccomment">/// The Julian day of the Unix epoch.
 <a href=#34 id=34 data-nosnippet>34</a></span><span class="kw">const </span>UNIX_EPOCH_JULIAN_DAY: i32 = OffsetDateTime::UNIX_EPOCH.to_julian_day();
 <a href=#35 id=35 data-nosnippet>35</a>
-<a href=#36 id=36 data-nosnippet>36</a><span class="doccomment">/// A [`PrimitiveDateTime`] with a [`UtcOffset`].
+<a href=#36 id=36 data-nosnippet>36</a><span class="doccomment">/// A [`PlainDateTime`] with a [`UtcOffset`].
 <a href=#37 id=37 data-nosnippet>37</a></span><span class="attr">#[derive(Clone, Copy, Eq)]
 <a href=#38 id=38 data-nosnippet>38</a></span><span class="kw">pub struct </span>OffsetDateTime {
-<a href=#39 id=39 data-nosnippet>39</a>    local_date_time: PrimitiveDateTime,
+<a href=#39 id=39 data-nosnippet>39</a>    local_date_time: PlainDateTime,
 <a href=#40 id=40 data-nosnippet>40</a>    offset: UtcOffset,
 <a href=#41 id=41 data-nosnippet>41</a>}
 <a href=#42 id=42 data-nosnippet>42</a>
@@ -171,7 +171,7 @@
 <a href=#171 id=171 data-nosnippet>171</a>    /// ```
 <a href=#172 id=172 data-nosnippet>172</a>    </span><span class="attr">#[inline]
 <a href=#173 id=173 data-nosnippet>173</a>    </span><span class="kw">pub const fn </span>new_utc(date: Date, time: Time) -&gt; <span class="self">Self </span>{
-<a href=#174 id=174 data-nosnippet>174</a>        PrimitiveDateTime::new(date, time).assume_utc()
+<a href=#174 id=174 data-nosnippet>174</a>        PlainDateTime::new(date, time).assume_utc()
 <a href=#175 id=175 data-nosnippet>175</a>    }
 <a href=#176 id=176 data-nosnippet>176</a>
 <a href=#177 id=177 data-nosnippet>177</a>    <span class="doccomment">/// Convert the `OffsetDateTime` from the current [`UtcOffset`] to the provided [`UtcOffset`].
@@ -210,7 +210,7 @@
 <a href=#210 id=210 data-nosnippet>210</a>    /// returning `None` if the date-time in the resulting offset is invalid.
 <a href=#211 id=211 data-nosnippet>211</a>    ///
 <a href=#212 id=212 data-nosnippet>212</a>    /// ```rust
-<a href=#213 id=213 data-nosnippet>213</a>    /// # use time::PrimitiveDateTime;
+<a href=#213 id=213 data-nosnippet>213</a>    /// # use time::PlainDateTime;
 <a href=#214 id=214 data-nosnippet>214</a>    /// # use time_macros::{datetime, offset};
 <a href=#215 id=215 data-nosnippet>215</a>    /// assert_eq!(
 <a href=#216 id=216 data-nosnippet>216</a>    ///     datetime!(2000-01-01 0:00 UTC)
@@ -220,7 +220,7 @@
 <a href=#220 id=220 data-nosnippet>220</a>    ///     1999,
 <a href=#221 id=221 data-nosnippet>221</a>    /// );
 <a href=#222 id=222 data-nosnippet>222</a>    /// assert_eq!(
-<a href=#223 id=223 data-nosnippet>223</a>    ///     PrimitiveDateTime::MAX
+<a href=#223 id=223 data-nosnippet>223</a>    ///     PlainDateTime::MAX
 <a href=#224 id=224 data-nosnippet>224</a>    ///         .assume_utc()
 <a href=#225 id=225 data-nosnippet>225</a>    ///         .checked_to_offset(offset!(+1)),
 <a href=#226 id=226 data-nosnippet>226</a>    ///     None,
@@ -426,10 +426,10 @@
 <a href=#426 id=426 data-nosnippet>426</a>    /// following:
 <a href=#427 id=427 data-nosnippet>427</a>    ///
 <a href=#428 id=428 data-nosnippet>428</a>    /// ```rust
-<a href=#429 id=429 data-nosnippet>429</a>    /// # use time::{Duration, OffsetDateTime, ext::NumericalDuration};
+<a href=#429 id=429 data-nosnippet>429</a>    /// # use time::{SignedDuration, OffsetDateTime, ext::NumericalDuration};
 <a href=#430 id=430 data-nosnippet>430</a>    /// let (timestamp, nanos) = (1, 500_000_000);
 <a href=#431 id=431 data-nosnippet>431</a>    /// assert_eq!(
-<a href=#432 id=432 data-nosnippet>432</a>    ///     OffsetDateTime::from_unix_timestamp(timestamp)? + Duration::nanoseconds(nanos),
+<a href=#432 id=432 data-nosnippet>432</a>    ///     OffsetDateTime::from_unix_timestamp(timestamp)? + SignedDuration::nanoseconds(nanos),
 <a href=#433 id=433 data-nosnippet>433</a>    ///     OffsetDateTime::UNIX_EPOCH + 1.5.seconds()
 <a href=#434 id=434 data-nosnippet>434</a>    /// );
 <a href=#435 id=435 data-nosnippet>435</a>    /// # Ok::&lt;_, time::Error&gt;(())
@@ -553,9 +553,9 @@
 <a href=#553 id=553 data-nosnippet>553</a>            + <span class="self">self</span>.nanosecond() <span class="kw">as </span>i128
 <a href=#554 id=554 data-nosnippet>554</a>    }
 <a href=#555 id=555 data-nosnippet>555</a>
-<a href=#556 id=556 data-nosnippet>556</a>    <span class="doccomment">/// Get the [`PrimitiveDateTime`] in the stored offset.
+<a href=#556 id=556 data-nosnippet>556</a>    <span class="doccomment">/// Get the [`PlainDateTime`] in the stored offset.
 <a href=#557 id=557 data-nosnippet>557</a>    </span><span class="attr">#[inline]
-<a href=#558 id=558 data-nosnippet>558</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>date_time(<span class="self">self</span>) -&gt; PrimitiveDateTime {
+<a href=#558 id=558 data-nosnippet>558</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>date_time(<span class="self">self</span>) -&gt; PlainDateTime {
 <a href=#559 id=559 data-nosnippet>559</a>        <span class="self">self</span>.local_date_time
 <a href=#560 id=560 data-nosnippet>560</a>    }
 <a href=#561 id=561 data-nosnippet>561</a>
@@ -994,7 +994,7 @@
 <a href=#994 id=994 data-nosnippet>994</a>    /// );
 <a href=#995 id=995 data-nosnippet>995</a>    /// ```
 <a href=#996 id=996 data-nosnippet>996</a>    </span><span class="attr">#[inline]
-<a href=#997 id=997 data-nosnippet>997</a>    </span><span class="kw">pub const fn </span>checked_add(<span class="self">self</span>, duration: Duration) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+<a href=#997 id=997 data-nosnippet>997</a>    </span><span class="kw">pub const fn </span>checked_add(<span class="self">self</span>, duration: SignedDuration) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
 <a href=#998 id=998 data-nosnippet>998</a>        <span class="prelude-val">Some</span>(<span class="macro">const_try_opt!</span>(<span class="self">self</span>.date_time().checked_add(duration)).assume_offset(<span class="self">self</span>.offset()))
 <a href=#999 id=999 data-nosnippet>999</a>    }
 <a href=#1000 id=1000 data-nosnippet>1000</a>
@@ -1015,7 +1015,7 @@
 <a href=#1015 id=1015 data-nosnippet>1015</a>    /// );
 <a href=#1016 id=1016 data-nosnippet>1016</a>    /// ```
 <a href=#1017 id=1017 data-nosnippet>1017</a>    </span><span class="attr">#[inline]
-<a href=#1018 id=1018 data-nosnippet>1018</a>    </span><span class="kw">pub const fn </span>checked_sub(<span class="self">self</span>, duration: Duration) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+<a href=#1018 id=1018 data-nosnippet>1018</a>    </span><span class="kw">pub const fn </span>checked_sub(<span class="self">self</span>, duration: SignedDuration) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
 <a href=#1019 id=1019 data-nosnippet>1019</a>        <span class="prelude-val">Some</span>(<span class="macro">const_try_opt!</span>(<span class="self">self</span>.date_time().checked_sub(duration)).assume_offset(<span class="self">self</span>.offset()))
 <a href=#1020 id=1020 data-nosnippet>1020</a>    }
 <a href=#1021 id=1021 data-nosnippet>1021</a>
@@ -1065,13 +1065,13 @@
 <a href=#1065 id=1065 data-nosnippet>1065</a>    /// );
 <a href=#1066 id=1066 data-nosnippet>1066</a>    /// ```
 <a href=#1067 id=1067 data-nosnippet>1067</a>    </span><span class="attr">#[inline]
-<a href=#1068 id=1068 data-nosnippet>1068</a>    </span><span class="kw">pub const fn </span>saturating_add(<span class="self">self</span>, duration: Duration) -&gt; <span class="self">Self </span>{
+<a href=#1068 id=1068 data-nosnippet>1068</a>    </span><span class="kw">pub const fn </span>saturating_add(<span class="self">self</span>, duration: SignedDuration) -&gt; <span class="self">Self </span>{
 <a href=#1069 id=1069 data-nosnippet>1069</a>        <span class="kw">if let </span><span class="prelude-val">Some</span>(datetime) = <span class="self">self</span>.checked_add(duration) {
 <a href=#1070 id=1070 data-nosnippet>1070</a>            datetime
 <a href=#1071 id=1071 data-nosnippet>1071</a>        } <span class="kw">else if </span>duration.is_negative() {
-<a href=#1072 id=1072 data-nosnippet>1072</a>            PrimitiveDateTime::MIN.assume_offset(<span class="self">self</span>.offset())
+<a href=#1072 id=1072 data-nosnippet>1072</a>            PlainDateTime::MIN.assume_offset(<span class="self">self</span>.offset())
 <a href=#1073 id=1073 data-nosnippet>1073</a>        } <span class="kw">else </span>{
-<a href=#1074 id=1074 data-nosnippet>1074</a>            PrimitiveDateTime::MAX.assume_offset(<span class="self">self</span>.offset())
+<a href=#1074 id=1074 data-nosnippet>1074</a>            PlainDateTime::MAX.assume_offset(<span class="self">self</span>.offset())
 <a href=#1075 id=1075 data-nosnippet>1075</a>        }
 <a href=#1076 id=1076 data-nosnippet>1076</a>    }
 <a href=#1077 id=1077 data-nosnippet>1077</a>
@@ -1121,13 +1121,13 @@
 <a href=#1121 id=1121 data-nosnippet>1121</a>    /// );
 <a href=#1122 id=1122 data-nosnippet>1122</a>    /// ```
 <a href=#1123 id=1123 data-nosnippet>1123</a>    </span><span class="attr">#[inline]
-<a href=#1124 id=1124 data-nosnippet>1124</a>    </span><span class="kw">pub const fn </span>saturating_sub(<span class="self">self</span>, duration: Duration) -&gt; <span class="self">Self </span>{
+<a href=#1124 id=1124 data-nosnippet>1124</a>    </span><span class="kw">pub const fn </span>saturating_sub(<span class="self">self</span>, duration: SignedDuration) -&gt; <span class="self">Self </span>{
 <a href=#1125 id=1125 data-nosnippet>1125</a>        <span class="kw">if let </span><span class="prelude-val">Some</span>(datetime) = <span class="self">self</span>.checked_sub(duration) {
 <a href=#1126 id=1126 data-nosnippet>1126</a>            datetime
 <a href=#1127 id=1127 data-nosnippet>1127</a>        } <span class="kw">else if </span>duration.is_negative() {
-<a href=#1128 id=1128 data-nosnippet>1128</a>            PrimitiveDateTime::MAX.assume_offset(<span class="self">self</span>.offset())
+<a href=#1128 id=1128 data-nosnippet>1128</a>            PlainDateTime::MAX.assume_offset(<span class="self">self</span>.offset())
 <a href=#1129 id=1129 data-nosnippet>1129</a>        } <span class="kw">else </span>{
-<a href=#1130 id=1130 data-nosnippet>1130</a>            PrimitiveDateTime::MIN.assume_offset(<span class="self">self</span>.offset())
+<a href=#1130 id=1130 data-nosnippet>1130</a>            PlainDateTime::MIN.assume_offset(<span class="self">self</span>.offset())
 <a href=#1131 id=1131 data-nosnippet>1131</a>        }
 <a href=#1132 id=1132 data-nosnippet>1132</a>    }
 <a href=#1133 id=1133 data-nosnippet>1133</a>}
@@ -1194,7 +1194,7 @@
 <a href=#1194 id=1194 data-nosnippet>1194</a>    /// ```
 <a href=#1195 id=1195 data-nosnippet>1195</a>    </span><span class="attr">#[must_use = <span class="string">"This method does not mutate the original `OffsetDateTime`."</span>]
 <a href=#1196 id=1196 data-nosnippet>1196</a>    #[inline]
-<a href=#1197 id=1197 data-nosnippet>1197</a>    </span><span class="kw">pub const fn </span>replace_date_time(<span class="self">self</span>, date_time: PrimitiveDateTime) -&gt; <span class="self">Self </span>{
+<a href=#1197 id=1197 data-nosnippet>1197</a>    </span><span class="kw">pub const fn </span>replace_date_time(<span class="self">self</span>, date_time: PlainDateTime) -&gt; <span class="self">Self </span>{
 <a href=#1198 id=1198 data-nosnippet>1198</a>        date_time.assume_offset(<span class="self">self</span>.offset())
 <a href=#1199 id=1199 data-nosnippet>1199</a>    }
 <a href=#1200 id=1200 data-nosnippet>1200</a>
@@ -1621,180 +1621,179 @@
 <a href=#1621 id=1621 data-nosnippet>1621</a>    <span class="doccomment">/// The maximum number of bytes that the `fmt_into_buffer` method will write, which is also used
 <a href=#1622 id=1622 data-nosnippet>1622</a>    /// for the `Display` implementation.
 <a href=#1623 id=1623 data-nosnippet>1623</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>DISPLAY_BUFFER_SIZE: usize =
-<a href=#1624 id=1624 data-nosnippet>1624</a>        PrimitiveDateTime::DISPLAY_BUFFER_SIZE + UtcOffset::DISPLAY_BUFFER_SIZE + <span class="number">1</span>;
+<a href=#1624 id=1624 data-nosnippet>1624</a>        PlainDateTime::DISPLAY_BUFFER_SIZE + UtcOffset::DISPLAY_BUFFER_SIZE + <span class="number">1</span>;
 <a href=#1625 id=1625 data-nosnippet>1625</a>
-<a href=#1626 id=1626 data-nosnippet>1626</a>    <span class="doccomment">/// Format the `PrimitiveDateTime` into the provided buffer, returning the number of bytes
-<a href=#1627 id=1627 data-nosnippet>1627</a>    /// written.
-<a href=#1628 id=1628 data-nosnippet>1628</a>    </span><span class="attr">#[inline]
-<a href=#1629 id=1629 data-nosnippet>1629</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>fmt_into_buffer(
-<a href=#1630 id=1630 data-nosnippet>1630</a>        <span class="self">self</span>,
-<a href=#1631 id=1631 data-nosnippet>1631</a>        buf: <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;u8&gt;; <span class="self">Self</span>::DISPLAY_BUFFER_SIZE],
-<a href=#1632 id=1632 data-nosnippet>1632</a>    ) -&gt; usize {
-<a href=#1633 id=1633 data-nosnippet>1633</a>        <span class="comment">// Safety: The buffer is large enough that the first chunk is in bounds.
-<a href=#1634 id=1634 data-nosnippet>1634</a>        </span><span class="kw">let </span>date_time_len = <span class="self">self
-<a href=#1635 id=1635 data-nosnippet>1635</a>            </span>.date_time()
-<a href=#1636 id=1636 data-nosnippet>1636</a>            .fmt_into_buffer(<span class="kw">unsafe </span>{ buf.first_chunk_mut().unwrap_unchecked() });
-<a href=#1637 id=1637 data-nosnippet>1637</a>        buf[date_time_len].write(<span class="string">b' '</span>);
-<a href=#1638 id=1638 data-nosnippet>1638</a>        <span class="comment">// Safety: The buffer is large enough that the first chunk is in bounds.
-<a href=#1639 id=1639 data-nosnippet>1639</a>        </span><span class="kw">let </span>offset_len = <span class="self">self</span>.offset().fmt_into_buffer(<span class="kw">unsafe </span>{
-<a href=#1640 id=1640 data-nosnippet>1640</a>            buf[date_time_len + <span class="number">1</span>..]
-<a href=#1641 id=1641 data-nosnippet>1641</a>                .first_chunk_mut()
-<a href=#1642 id=1642 data-nosnippet>1642</a>                .unwrap_unchecked()
-<a href=#1643 id=1643 data-nosnippet>1643</a>        });
-<a href=#1644 id=1644 data-nosnippet>1644</a>        date_time_len + offset_len + <span class="number">1
-<a href=#1645 id=1645 data-nosnippet>1645</a>    </span>}
-<a href=#1646 id=1646 data-nosnippet>1646</a>}
-<a href=#1647 id=1647 data-nosnippet>1647</a>
-<a href=#1648 id=1648 data-nosnippet>1648</a><span class="kw">impl </span>fmt::Display <span class="kw">for </span>OffsetDateTime {
-<a href=#1649 id=1649 data-nosnippet>1649</a>    <span class="attr">#[inline]
-<a href=#1650 id=1650 data-nosnippet>1650</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#1651 id=1651 data-nosnippet>1651</a>        <span class="kw">let </span><span class="kw-2">mut </span>buf = [MaybeUninit::uninit(); <span class="self">Self</span>::DISPLAY_BUFFER_SIZE];
-<a href=#1652 id=1652 data-nosnippet>1652</a>        <span class="kw">let </span>len = <span class="self">self</span>.fmt_into_buffer(<span class="kw-2">&amp;mut </span>buf);
-<a href=#1653 id=1653 data-nosnippet>1653</a>        <span class="comment">// Safety: All bytes up to `len` have been initialized with ASCII characters.
-<a href=#1654 id=1654 data-nosnippet>1654</a>        </span><span class="kw">let </span>s = <span class="kw">unsafe </span>{ str_from_raw_parts(buf.as_ptr().cast(), len) };
-<a href=#1655 id=1655 data-nosnippet>1655</a>        f.pad(s)
-<a href=#1656 id=1656 data-nosnippet>1656</a>    }
-<a href=#1657 id=1657 data-nosnippet>1657</a>}
-<a href=#1658 id=1658 data-nosnippet>1658</a>
-<a href=#1659 id=1659 data-nosnippet>1659</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>OffsetDateTime {
-<a href=#1660 id=1660 data-nosnippet>1660</a>    <span class="attr">#[inline]
-<a href=#1661 id=1661 data-nosnippet>1661</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#1662 id=1662 data-nosnippet>1662</a>        fmt::Display::fmt(<span class="self">self</span>, f)
-<a href=#1663 id=1663 data-nosnippet>1663</a>    }
-<a href=#1664 id=1664 data-nosnippet>1664</a>}
-<a href=#1665 id=1665 data-nosnippet>1665</a>
-<a href=#1666 id=1666 data-nosnippet>1666</a><span class="kw">impl </span>Add&lt;Duration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1667 id=1667 data-nosnippet>1667</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<a href=#1668 id=1668 data-nosnippet>1668</a>
-<a href=#1669 id=1669 data-nosnippet>1669</a>    <span class="doccomment">/// # Panics
-<a href=#1670 id=1670 data-nosnippet>1670</a>    ///
-<a href=#1671 id=1671 data-nosnippet>1671</a>    /// This may panic if an overflow occurs.
-<a href=#1672 id=1672 data-nosnippet>1672</a>    </span><span class="attr">#[inline]
-<a href=#1673 id=1673 data-nosnippet>1673</a>    #[track_caller]
-<a href=#1674 id=1674 data-nosnippet>1674</a>    </span><span class="kw">fn </span>add(<span class="self">self</span>, duration: Duration) -&gt; <span class="self">Self</span>::Output {
-<a href=#1675 id=1675 data-nosnippet>1675</a>        <span class="self">self</span>.checked_add(duration)
-<a href=#1676 id=1676 data-nosnippet>1676</a>            .expect(<span class="string">"resulting value is out of range"</span>)
-<a href=#1677 id=1677 data-nosnippet>1677</a>    }
-<a href=#1678 id=1678 data-nosnippet>1678</a>}
-<a href=#1679 id=1679 data-nosnippet>1679</a>
-<a href=#1680 id=1680 data-nosnippet>1680</a><span class="kw">impl </span>Add&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1681 id=1681 data-nosnippet>1681</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<a href=#1682 id=1682 data-nosnippet>1682</a>
-<a href=#1683 id=1683 data-nosnippet>1683</a>    <span class="doccomment">/// # Panics
-<a href=#1684 id=1684 data-nosnippet>1684</a>    ///
-<a href=#1685 id=1685 data-nosnippet>1685</a>    /// This may panic if an overflow occurs.
-<a href=#1686 id=1686 data-nosnippet>1686</a>    </span><span class="attr">#[inline]
-<a href=#1687 id=1687 data-nosnippet>1687</a>    #[track_caller]
-<a href=#1688 id=1688 data-nosnippet>1688</a>    </span><span class="kw">fn </span>add(<span class="self">self</span>, duration: StdDuration) -&gt; <span class="self">Self</span>::Output {
-<a href=#1689 id=1689 data-nosnippet>1689</a>        <span class="kw">let </span>(is_next_day, time) = <span class="self">self</span>.time().adjusting_add_std(duration);
-<a href=#1690 id=1690 data-nosnippet>1690</a>
-<a href=#1691 id=1691 data-nosnippet>1691</a>        <span class="self">Self</span>::new_in_offset(
-<a href=#1692 id=1692 data-nosnippet>1692</a>            <span class="kw">if </span>is_next_day {
-<a href=#1693 id=1693 data-nosnippet>1693</a>                (<span class="self">self</span>.date() + duration)
-<a href=#1694 id=1694 data-nosnippet>1694</a>                    .next_day()
-<a href=#1695 id=1695 data-nosnippet>1695</a>                    .expect(<span class="string">"resulting value is out of range"</span>)
-<a href=#1696 id=1696 data-nosnippet>1696</a>            } <span class="kw">else </span>{
-<a href=#1697 id=1697 data-nosnippet>1697</a>                <span class="self">self</span>.date() + duration
-<a href=#1698 id=1698 data-nosnippet>1698</a>            },
-<a href=#1699 id=1699 data-nosnippet>1699</a>            time,
-<a href=#1700 id=1700 data-nosnippet>1700</a>            <span class="self">self</span>.offset,
-<a href=#1701 id=1701 data-nosnippet>1701</a>        )
-<a href=#1702 id=1702 data-nosnippet>1702</a>    }
-<a href=#1703 id=1703 data-nosnippet>1703</a>}
-<a href=#1704 id=1704 data-nosnippet>1704</a>
-<a href=#1705 id=1705 data-nosnippet>1705</a><span class="kw">impl </span>AddAssign&lt;Duration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1706 id=1706 data-nosnippet>1706</a>    <span class="doccomment">/// # Panics
-<a href=#1707 id=1707 data-nosnippet>1707</a>    ///
-<a href=#1708 id=1708 data-nosnippet>1708</a>    /// This may panic if an overflow occurs.
-<a href=#1709 id=1709 data-nosnippet>1709</a>    </span><span class="attr">#[inline]
-<a href=#1710 id=1710 data-nosnippet>1710</a>    #[track_caller]
-<a href=#1711 id=1711 data-nosnippet>1711</a>    </span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: Duration) {
-<a href=#1712 id=1712 data-nosnippet>1712</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>+ rhs;
-<a href=#1713 id=1713 data-nosnippet>1713</a>    }
-<a href=#1714 id=1714 data-nosnippet>1714</a>}
-<a href=#1715 id=1715 data-nosnippet>1715</a>
-<a href=#1716 id=1716 data-nosnippet>1716</a><span class="kw">impl </span>AddAssign&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1717 id=1717 data-nosnippet>1717</a>    <span class="doccomment">/// # Panics
-<a href=#1718 id=1718 data-nosnippet>1718</a>    ///
-<a href=#1719 id=1719 data-nosnippet>1719</a>    /// This may panic if an overflow occurs.
-<a href=#1720 id=1720 data-nosnippet>1720</a>    </span><span class="attr">#[inline]
-<a href=#1721 id=1721 data-nosnippet>1721</a>    #[track_caller]
-<a href=#1722 id=1722 data-nosnippet>1722</a>    </span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: StdDuration) {
-<a href=#1723 id=1723 data-nosnippet>1723</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>+ rhs;
-<a href=#1724 id=1724 data-nosnippet>1724</a>    }
-<a href=#1725 id=1725 data-nosnippet>1725</a>}
-<a href=#1726 id=1726 data-nosnippet>1726</a>
-<a href=#1727 id=1727 data-nosnippet>1727</a><span class="kw">impl </span>Sub&lt;Duration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1728 id=1728 data-nosnippet>1728</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<a href=#1729 id=1729 data-nosnippet>1729</a>
-<a href=#1730 id=1730 data-nosnippet>1730</a>    <span class="doccomment">/// # Panics
-<a href=#1731 id=1731 data-nosnippet>1731</a>    ///
-<a href=#1732 id=1732 data-nosnippet>1732</a>    /// This may panic if an overflow occurs.
-<a href=#1733 id=1733 data-nosnippet>1733</a>    </span><span class="attr">#[inline]
-<a href=#1734 id=1734 data-nosnippet>1734</a>    #[track_caller]
-<a href=#1735 id=1735 data-nosnippet>1735</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, rhs: Duration) -&gt; <span class="self">Self</span>::Output {
-<a href=#1736 id=1736 data-nosnippet>1736</a>        <span class="self">self</span>.checked_sub(rhs)
-<a href=#1737 id=1737 data-nosnippet>1737</a>            .expect(<span class="string">"resulting value is out of range"</span>)
-<a href=#1738 id=1738 data-nosnippet>1738</a>    }
-<a href=#1739 id=1739 data-nosnippet>1739</a>}
-<a href=#1740 id=1740 data-nosnippet>1740</a>
-<a href=#1741 id=1741 data-nosnippet>1741</a><span class="kw">impl </span>Sub&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1742 id=1742 data-nosnippet>1742</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
-<a href=#1743 id=1743 data-nosnippet>1743</a>
-<a href=#1744 id=1744 data-nosnippet>1744</a>    <span class="doccomment">/// # Panics
-<a href=#1745 id=1745 data-nosnippet>1745</a>    ///
-<a href=#1746 id=1746 data-nosnippet>1746</a>    /// This may panic if an overflow occurs.
-<a href=#1747 id=1747 data-nosnippet>1747</a>    </span><span class="attr">#[inline]
-<a href=#1748 id=1748 data-nosnippet>1748</a>    #[track_caller]
-<a href=#1749 id=1749 data-nosnippet>1749</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, duration: StdDuration) -&gt; <span class="self">Self</span>::Output {
-<a href=#1750 id=1750 data-nosnippet>1750</a>        <span class="kw">let </span>(is_previous_day, time) = <span class="self">self</span>.time().adjusting_sub_std(duration);
-<a href=#1751 id=1751 data-nosnippet>1751</a>
-<a href=#1752 id=1752 data-nosnippet>1752</a>        <span class="self">Self</span>::new_in_offset(
-<a href=#1753 id=1753 data-nosnippet>1753</a>            <span class="kw">if </span>is_previous_day {
-<a href=#1754 id=1754 data-nosnippet>1754</a>                (<span class="self">self</span>.date() - duration)
-<a href=#1755 id=1755 data-nosnippet>1755</a>                    .previous_day()
-<a href=#1756 id=1756 data-nosnippet>1756</a>                    .expect(<span class="string">"resulting value is out of range"</span>)
-<a href=#1757 id=1757 data-nosnippet>1757</a>            } <span class="kw">else </span>{
-<a href=#1758 id=1758 data-nosnippet>1758</a>                <span class="self">self</span>.date() - duration
-<a href=#1759 id=1759 data-nosnippet>1759</a>            },
-<a href=#1760 id=1760 data-nosnippet>1760</a>            time,
-<a href=#1761 id=1761 data-nosnippet>1761</a>            <span class="self">self</span>.offset,
-<a href=#1762 id=1762 data-nosnippet>1762</a>        )
-<a href=#1763 id=1763 data-nosnippet>1763</a>    }
-<a href=#1764 id=1764 data-nosnippet>1764</a>}
-<a href=#1765 id=1765 data-nosnippet>1765</a>
-<a href=#1766 id=1766 data-nosnippet>1766</a><span class="kw">impl </span>SubAssign&lt;Duration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1767 id=1767 data-nosnippet>1767</a>    <span class="doccomment">/// # Panics
-<a href=#1768 id=1768 data-nosnippet>1768</a>    ///
-<a href=#1769 id=1769 data-nosnippet>1769</a>    /// This may panic if an overflow occurs.
-<a href=#1770 id=1770 data-nosnippet>1770</a>    </span><span class="attr">#[inline]
-<a href=#1771 id=1771 data-nosnippet>1771</a>    #[track_caller]
-<a href=#1772 id=1772 data-nosnippet>1772</a>    </span><span class="kw">fn </span>sub_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: Duration) {
-<a href=#1773 id=1773 data-nosnippet>1773</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>- rhs;
-<a href=#1774 id=1774 data-nosnippet>1774</a>    }
-<a href=#1775 id=1775 data-nosnippet>1775</a>}
-<a href=#1776 id=1776 data-nosnippet>1776</a>
-<a href=#1777 id=1777 data-nosnippet>1777</a><span class="kw">impl </span>SubAssign&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
-<a href=#1778 id=1778 data-nosnippet>1778</a>    <span class="doccomment">/// # Panics
-<a href=#1779 id=1779 data-nosnippet>1779</a>    ///
-<a href=#1780 id=1780 data-nosnippet>1780</a>    /// This may panic if an overflow occurs.
-<a href=#1781 id=1781 data-nosnippet>1781</a>    </span><span class="attr">#[inline]
-<a href=#1782 id=1782 data-nosnippet>1782</a>    #[track_caller]
-<a href=#1783 id=1783 data-nosnippet>1783</a>    </span><span class="kw">fn </span>sub_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: StdDuration) {
-<a href=#1784 id=1784 data-nosnippet>1784</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>- rhs;
-<a href=#1785 id=1785 data-nosnippet>1785</a>    }
-<a href=#1786 id=1786 data-nosnippet>1786</a>}
-<a href=#1787 id=1787 data-nosnippet>1787</a>
-<a href=#1788 id=1788 data-nosnippet>1788</a><span class="kw">impl </span>Sub <span class="kw">for </span>OffsetDateTime {
-<a href=#1789 id=1789 data-nosnippet>1789</a>    <span class="kw">type </span>Output = Duration;
-<a href=#1790 id=1790 data-nosnippet>1790</a>
-<a href=#1791 id=1791 data-nosnippet>1791</a>    <span class="attr">#[inline]
-<a href=#1792 id=1792 data-nosnippet>1792</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-<a href=#1793 id=1793 data-nosnippet>1793</a>        <span class="kw">let </span>base = <span class="self">self</span>.date_time() - rhs.date_time();
-<a href=#1794 id=1794 data-nosnippet>1794</a>        <span class="kw">let </span>adjustment = Duration::seconds(
-<a href=#1795 id=1795 data-nosnippet>1795</a>            (<span class="self">self</span>.offset.whole_seconds() - rhs.offset.whole_seconds()).widen::&lt;i64&gt;(),
-<a href=#1796 id=1796 data-nosnippet>1796</a>        );
-<a href=#1797 id=1797 data-nosnippet>1797</a>        base - adjustment
-<a href=#1798 id=1798 data-nosnippet>1798</a>    }
-<a href=#1799 id=1799 data-nosnippet>1799</a>}
+<a href=#1626 id=1626 data-nosnippet>1626</a>    <span class="doccomment">/// Format the `OffsetDateTime` into the provided buffer, returning the number of bytes written.
+<a href=#1627 id=1627 data-nosnippet>1627</a>    </span><span class="attr">#[inline]
+<a href=#1628 id=1628 data-nosnippet>1628</a>    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>fmt_into_buffer(
+<a href=#1629 id=1629 data-nosnippet>1629</a>        <span class="self">self</span>,
+<a href=#1630 id=1630 data-nosnippet>1630</a>        buf: <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;u8&gt;; <span class="self">Self</span>::DISPLAY_BUFFER_SIZE],
+<a href=#1631 id=1631 data-nosnippet>1631</a>    ) -&gt; usize {
+<a href=#1632 id=1632 data-nosnippet>1632</a>        <span class="comment">// Safety: The buffer is large enough that the first chunk is in bounds.
+<a href=#1633 id=1633 data-nosnippet>1633</a>        </span><span class="kw">let </span>date_time_len = <span class="self">self
+<a href=#1634 id=1634 data-nosnippet>1634</a>            </span>.date_time()
+<a href=#1635 id=1635 data-nosnippet>1635</a>            .fmt_into_buffer(<span class="kw">unsafe </span>{ buf.first_chunk_mut().unwrap_unchecked() });
+<a href=#1636 id=1636 data-nosnippet>1636</a>        buf[date_time_len].write(<span class="string">b' '</span>);
+<a href=#1637 id=1637 data-nosnippet>1637</a>        <span class="comment">// Safety: The buffer is large enough that the first chunk is in bounds.
+<a href=#1638 id=1638 data-nosnippet>1638</a>        </span><span class="kw">let </span>offset_len = <span class="self">self</span>.offset().fmt_into_buffer(<span class="kw">unsafe </span>{
+<a href=#1639 id=1639 data-nosnippet>1639</a>            buf[date_time_len + <span class="number">1</span>..]
+<a href=#1640 id=1640 data-nosnippet>1640</a>                .first_chunk_mut()
+<a href=#1641 id=1641 data-nosnippet>1641</a>                .unwrap_unchecked()
+<a href=#1642 id=1642 data-nosnippet>1642</a>        });
+<a href=#1643 id=1643 data-nosnippet>1643</a>        date_time_len + offset_len + <span class="number">1
+<a href=#1644 id=1644 data-nosnippet>1644</a>    </span>}
+<a href=#1645 id=1645 data-nosnippet>1645</a>}
+<a href=#1646 id=1646 data-nosnippet>1646</a>
+<a href=#1647 id=1647 data-nosnippet>1647</a><span class="kw">impl </span>fmt::Display <span class="kw">for </span>OffsetDateTime {
+<a href=#1648 id=1648 data-nosnippet>1648</a>    <span class="attr">#[inline]
+<a href=#1649 id=1649 data-nosnippet>1649</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#1650 id=1650 data-nosnippet>1650</a>        <span class="kw">let </span><span class="kw-2">mut </span>buf = [MaybeUninit::uninit(); <span class="self">Self</span>::DISPLAY_BUFFER_SIZE];
+<a href=#1651 id=1651 data-nosnippet>1651</a>        <span class="kw">let </span>len = <span class="self">self</span>.fmt_into_buffer(<span class="kw-2">&amp;mut </span>buf);
+<a href=#1652 id=1652 data-nosnippet>1652</a>        <span class="comment">// Safety: All bytes up to `len` have been initialized with ASCII characters.
+<a href=#1653 id=1653 data-nosnippet>1653</a>        </span><span class="kw">let </span>s = <span class="kw">unsafe </span>{ str_from_raw_parts(buf.as_ptr().cast(), len) };
+<a href=#1654 id=1654 data-nosnippet>1654</a>        f.pad(s)
+<a href=#1655 id=1655 data-nosnippet>1655</a>    }
+<a href=#1656 id=1656 data-nosnippet>1656</a>}
+<a href=#1657 id=1657 data-nosnippet>1657</a>
+<a href=#1658 id=1658 data-nosnippet>1658</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>OffsetDateTime {
+<a href=#1659 id=1659 data-nosnippet>1659</a>    <span class="attr">#[inline]
+<a href=#1660 id=1660 data-nosnippet>1660</a>    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#1661 id=1661 data-nosnippet>1661</a>        fmt::Display::fmt(<span class="self">self</span>, f)
+<a href=#1662 id=1662 data-nosnippet>1662</a>    }
+<a href=#1663 id=1663 data-nosnippet>1663</a>}
+<a href=#1664 id=1664 data-nosnippet>1664</a>
+<a href=#1665 id=1665 data-nosnippet>1665</a><span class="kw">impl </span>Add&lt;SignedDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1666 id=1666 data-nosnippet>1666</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
+<a href=#1667 id=1667 data-nosnippet>1667</a>
+<a href=#1668 id=1668 data-nosnippet>1668</a>    <span class="doccomment">/// # Panics
+<a href=#1669 id=1669 data-nosnippet>1669</a>    ///
+<a href=#1670 id=1670 data-nosnippet>1670</a>    /// This may panic if an overflow occurs.
+<a href=#1671 id=1671 data-nosnippet>1671</a>    </span><span class="attr">#[inline]
+<a href=#1672 id=1672 data-nosnippet>1672</a>    #[track_caller]
+<a href=#1673 id=1673 data-nosnippet>1673</a>    </span><span class="kw">fn </span>add(<span class="self">self</span>, duration: SignedDuration) -&gt; <span class="self">Self</span>::Output {
+<a href=#1674 id=1674 data-nosnippet>1674</a>        <span class="self">self</span>.checked_add(duration)
+<a href=#1675 id=1675 data-nosnippet>1675</a>            .expect(<span class="string">"resulting value is out of range"</span>)
+<a href=#1676 id=1676 data-nosnippet>1676</a>    }
+<a href=#1677 id=1677 data-nosnippet>1677</a>}
+<a href=#1678 id=1678 data-nosnippet>1678</a>
+<a href=#1679 id=1679 data-nosnippet>1679</a><span class="kw">impl </span>Add&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1680 id=1680 data-nosnippet>1680</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
+<a href=#1681 id=1681 data-nosnippet>1681</a>
+<a href=#1682 id=1682 data-nosnippet>1682</a>    <span class="doccomment">/// # Panics
+<a href=#1683 id=1683 data-nosnippet>1683</a>    ///
+<a href=#1684 id=1684 data-nosnippet>1684</a>    /// This may panic if an overflow occurs.
+<a href=#1685 id=1685 data-nosnippet>1685</a>    </span><span class="attr">#[inline]
+<a href=#1686 id=1686 data-nosnippet>1686</a>    #[track_caller]
+<a href=#1687 id=1687 data-nosnippet>1687</a>    </span><span class="kw">fn </span>add(<span class="self">self</span>, duration: StdDuration) -&gt; <span class="self">Self</span>::Output {
+<a href=#1688 id=1688 data-nosnippet>1688</a>        <span class="kw">let </span>(is_next_day, time) = <span class="self">self</span>.time().adjusting_add_std(duration);
+<a href=#1689 id=1689 data-nosnippet>1689</a>
+<a href=#1690 id=1690 data-nosnippet>1690</a>        <span class="self">Self</span>::new_in_offset(
+<a href=#1691 id=1691 data-nosnippet>1691</a>            <span class="kw">if </span>is_next_day {
+<a href=#1692 id=1692 data-nosnippet>1692</a>                (<span class="self">self</span>.date() + duration)
+<a href=#1693 id=1693 data-nosnippet>1693</a>                    .next_day()
+<a href=#1694 id=1694 data-nosnippet>1694</a>                    .expect(<span class="string">"resulting value is out of range"</span>)
+<a href=#1695 id=1695 data-nosnippet>1695</a>            } <span class="kw">else </span>{
+<a href=#1696 id=1696 data-nosnippet>1696</a>                <span class="self">self</span>.date() + duration
+<a href=#1697 id=1697 data-nosnippet>1697</a>            },
+<a href=#1698 id=1698 data-nosnippet>1698</a>            time,
+<a href=#1699 id=1699 data-nosnippet>1699</a>            <span class="self">self</span>.offset,
+<a href=#1700 id=1700 data-nosnippet>1700</a>        )
+<a href=#1701 id=1701 data-nosnippet>1701</a>    }
+<a href=#1702 id=1702 data-nosnippet>1702</a>}
+<a href=#1703 id=1703 data-nosnippet>1703</a>
+<a href=#1704 id=1704 data-nosnippet>1704</a><span class="kw">impl </span>AddAssign&lt;SignedDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1705 id=1705 data-nosnippet>1705</a>    <span class="doccomment">/// # Panics
+<a href=#1706 id=1706 data-nosnippet>1706</a>    ///
+<a href=#1707 id=1707 data-nosnippet>1707</a>    /// This may panic if an overflow occurs.
+<a href=#1708 id=1708 data-nosnippet>1708</a>    </span><span class="attr">#[inline]
+<a href=#1709 id=1709 data-nosnippet>1709</a>    #[track_caller]
+<a href=#1710 id=1710 data-nosnippet>1710</a>    </span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: SignedDuration) {
+<a href=#1711 id=1711 data-nosnippet>1711</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>+ rhs;
+<a href=#1712 id=1712 data-nosnippet>1712</a>    }
+<a href=#1713 id=1713 data-nosnippet>1713</a>}
+<a href=#1714 id=1714 data-nosnippet>1714</a>
+<a href=#1715 id=1715 data-nosnippet>1715</a><span class="kw">impl </span>AddAssign&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1716 id=1716 data-nosnippet>1716</a>    <span class="doccomment">/// # Panics
+<a href=#1717 id=1717 data-nosnippet>1717</a>    ///
+<a href=#1718 id=1718 data-nosnippet>1718</a>    /// This may panic if an overflow occurs.
+<a href=#1719 id=1719 data-nosnippet>1719</a>    </span><span class="attr">#[inline]
+<a href=#1720 id=1720 data-nosnippet>1720</a>    #[track_caller]
+<a href=#1721 id=1721 data-nosnippet>1721</a>    </span><span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: StdDuration) {
+<a href=#1722 id=1722 data-nosnippet>1722</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>+ rhs;
+<a href=#1723 id=1723 data-nosnippet>1723</a>    }
+<a href=#1724 id=1724 data-nosnippet>1724</a>}
+<a href=#1725 id=1725 data-nosnippet>1725</a>
+<a href=#1726 id=1726 data-nosnippet>1726</a><span class="kw">impl </span>Sub&lt;SignedDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1727 id=1727 data-nosnippet>1727</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
+<a href=#1728 id=1728 data-nosnippet>1728</a>
+<a href=#1729 id=1729 data-nosnippet>1729</a>    <span class="doccomment">/// # Panics
+<a href=#1730 id=1730 data-nosnippet>1730</a>    ///
+<a href=#1731 id=1731 data-nosnippet>1731</a>    /// This may panic if an overflow occurs.
+<a href=#1732 id=1732 data-nosnippet>1732</a>    </span><span class="attr">#[inline]
+<a href=#1733 id=1733 data-nosnippet>1733</a>    #[track_caller]
+<a href=#1734 id=1734 data-nosnippet>1734</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, rhs: SignedDuration) -&gt; <span class="self">Self</span>::Output {
+<a href=#1735 id=1735 data-nosnippet>1735</a>        <span class="self">self</span>.checked_sub(rhs)
+<a href=#1736 id=1736 data-nosnippet>1736</a>            .expect(<span class="string">"resulting value is out of range"</span>)
+<a href=#1737 id=1737 data-nosnippet>1737</a>    }
+<a href=#1738 id=1738 data-nosnippet>1738</a>}
+<a href=#1739 id=1739 data-nosnippet>1739</a>
+<a href=#1740 id=1740 data-nosnippet>1740</a><span class="kw">impl </span>Sub&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1741 id=1741 data-nosnippet>1741</a>    <span class="kw">type </span>Output = <span class="self">Self</span>;
+<a href=#1742 id=1742 data-nosnippet>1742</a>
+<a href=#1743 id=1743 data-nosnippet>1743</a>    <span class="doccomment">/// # Panics
+<a href=#1744 id=1744 data-nosnippet>1744</a>    ///
+<a href=#1745 id=1745 data-nosnippet>1745</a>    /// This may panic if an overflow occurs.
+<a href=#1746 id=1746 data-nosnippet>1746</a>    </span><span class="attr">#[inline]
+<a href=#1747 id=1747 data-nosnippet>1747</a>    #[track_caller]
+<a href=#1748 id=1748 data-nosnippet>1748</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, duration: StdDuration) -&gt; <span class="self">Self</span>::Output {
+<a href=#1749 id=1749 data-nosnippet>1749</a>        <span class="kw">let </span>(is_previous_day, time) = <span class="self">self</span>.time().adjusting_sub_std(duration);
+<a href=#1750 id=1750 data-nosnippet>1750</a>
+<a href=#1751 id=1751 data-nosnippet>1751</a>        <span class="self">Self</span>::new_in_offset(
+<a href=#1752 id=1752 data-nosnippet>1752</a>            <span class="kw">if </span>is_previous_day {
+<a href=#1753 id=1753 data-nosnippet>1753</a>                (<span class="self">self</span>.date() - duration)
+<a href=#1754 id=1754 data-nosnippet>1754</a>                    .previous_day()
+<a href=#1755 id=1755 data-nosnippet>1755</a>                    .expect(<span class="string">"resulting value is out of range"</span>)
+<a href=#1756 id=1756 data-nosnippet>1756</a>            } <span class="kw">else </span>{
+<a href=#1757 id=1757 data-nosnippet>1757</a>                <span class="self">self</span>.date() - duration
+<a href=#1758 id=1758 data-nosnippet>1758</a>            },
+<a href=#1759 id=1759 data-nosnippet>1759</a>            time,
+<a href=#1760 id=1760 data-nosnippet>1760</a>            <span class="self">self</span>.offset,
+<a href=#1761 id=1761 data-nosnippet>1761</a>        )
+<a href=#1762 id=1762 data-nosnippet>1762</a>    }
+<a href=#1763 id=1763 data-nosnippet>1763</a>}
+<a href=#1764 id=1764 data-nosnippet>1764</a>
+<a href=#1765 id=1765 data-nosnippet>1765</a><span class="kw">impl </span>SubAssign&lt;SignedDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1766 id=1766 data-nosnippet>1766</a>    <span class="doccomment">/// # Panics
+<a href=#1767 id=1767 data-nosnippet>1767</a>    ///
+<a href=#1768 id=1768 data-nosnippet>1768</a>    /// This may panic if an overflow occurs.
+<a href=#1769 id=1769 data-nosnippet>1769</a>    </span><span class="attr">#[inline]
+<a href=#1770 id=1770 data-nosnippet>1770</a>    #[track_caller]
+<a href=#1771 id=1771 data-nosnippet>1771</a>    </span><span class="kw">fn </span>sub_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: SignedDuration) {
+<a href=#1772 id=1772 data-nosnippet>1772</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>- rhs;
+<a href=#1773 id=1773 data-nosnippet>1773</a>    }
+<a href=#1774 id=1774 data-nosnippet>1774</a>}
+<a href=#1775 id=1775 data-nosnippet>1775</a>
+<a href=#1776 id=1776 data-nosnippet>1776</a><span class="kw">impl </span>SubAssign&lt;StdDuration&gt; <span class="kw">for </span>OffsetDateTime {
+<a href=#1777 id=1777 data-nosnippet>1777</a>    <span class="doccomment">/// # Panics
+<a href=#1778 id=1778 data-nosnippet>1778</a>    ///
+<a href=#1779 id=1779 data-nosnippet>1779</a>    /// This may panic if an overflow occurs.
+<a href=#1780 id=1780 data-nosnippet>1780</a>    </span><span class="attr">#[inline]
+<a href=#1781 id=1781 data-nosnippet>1781</a>    #[track_caller]
+<a href=#1782 id=1782 data-nosnippet>1782</a>    </span><span class="kw">fn </span>sub_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: StdDuration) {
+<a href=#1783 id=1783 data-nosnippet>1783</a>        <span class="kw-2">*</span><span class="self">self </span>= <span class="kw-2">*</span><span class="self">self </span>- rhs;
+<a href=#1784 id=1784 data-nosnippet>1784</a>    }
+<a href=#1785 id=1785 data-nosnippet>1785</a>}
+<a href=#1786 id=1786 data-nosnippet>1786</a>
+<a href=#1787 id=1787 data-nosnippet>1787</a><span class="kw">impl </span>Sub <span class="kw">for </span>OffsetDateTime {
+<a href=#1788 id=1788 data-nosnippet>1788</a>    <span class="kw">type </span>Output = SignedDuration;
+<a href=#1789 id=1789 data-nosnippet>1789</a>
+<a href=#1790 id=1790 data-nosnippet>1790</a>    <span class="attr">#[inline]
+<a href=#1791 id=1791 data-nosnippet>1791</a>    </span><span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+<a href=#1792 id=1792 data-nosnippet>1792</a>        <span class="kw">let </span>base = <span class="self">self</span>.date_time() - rhs.date_time();
+<a href=#1793 id=1793 data-nosnippet>1793</a>        <span class="kw">let </span>adjustment = SignedDuration::seconds(
+<a href=#1794 id=1794 data-nosnippet>1794</a>            (<span class="self">self</span>.offset.whole_seconds() - rhs.offset.whole_seconds()).widen::&lt;i64&gt;(),
+<a href=#1795 id=1795 data-nosnippet>1795</a>        );
+<a href=#1796 id=1796 data-nosnippet>1796</a>        base - adjustment
+<a href=#1797 id=1797 data-nosnippet>1797</a>    }
+<a href=#1798 id=1798 data-nosnippet>1798</a>}
 </code></pre></div></section></main></body></html>

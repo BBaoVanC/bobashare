@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BoxBody","Collect","Frame","MapErr","MapFrame","UnsyncBoxBody","WithTrailers"]};
+window.SIDEBAR_ITEMS = {"struct":["BoxBody","Collect","Frame","Fuse","InspectErr","InspectFrame","MapErr","MapFrame","UnsyncBoxBody","WithTrailers"]};

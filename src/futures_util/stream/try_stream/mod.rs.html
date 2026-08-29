@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.32/src/stream/try_stream/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="futures_util" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">futures_util/stream/try_stream/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Streams
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.33/src/stream/try_stream/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="futures_util" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">futures_util/stream/try_stream/</div>mod.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Streams
 <a href=#2 id=2 data-nosnippet>2</a>//!
 <a href=#3 id=3 data-nosnippet>3</a>//! This module contains a number of functions for working with `Streams`s
 <a href=#4 id=4 data-nosnippet>4</a>//! that return `Result`s, allowing for short-circuiting computations.
@@ -89,10 +89,10 @@
 <a href=#89 id=89 data-nosnippet>89</a><span class="attr">#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#90 id=90 data-nosnippet>90</a></span><span class="kw">pub use </span><span class="self">self</span>::try_flatten::TryFlatten;
 <a href=#91 id=91 data-nosnippet>91</a>
-<a href=#92 id=92 data-nosnippet>92</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#92 id=92 data-nosnippet>92</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#93 id=93 data-nosnippet>93</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#94 id=94 data-nosnippet>94</a></span><span class="kw">mod </span>try_flatten_unordered;
-<a href=#95 id=95 data-nosnippet>95</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#95 id=95 data-nosnippet>95</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#96 id=96 data-nosnippet>96</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#97 id=97 data-nosnippet>97</a>#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#98 id=98 data-nosnippet>98</a></span><span class="kw">pub use </span><span class="self">self</span>::try_flatten_unordered::TryFlattenUnordered;
@@ -133,26 +133,26 @@
 <a href=#133 id=133 data-nosnippet>133</a><span class="attr">#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#134 id=134 data-nosnippet>134</a></span><span class="kw">pub use </span><span class="self">self</span>::try_take_while::TryTakeWhile;
 <a href=#135 id=135 data-nosnippet>135</a>
-<a href=#136 id=136 data-nosnippet>136</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#136 id=136 data-nosnippet>136</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#137 id=137 data-nosnippet>137</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#138 id=138 data-nosnippet>138</a></span><span class="kw">mod </span>try_buffer_unordered;
-<a href=#139 id=139 data-nosnippet>139</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#139 id=139 data-nosnippet>139</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#140 id=140 data-nosnippet>140</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#141 id=141 data-nosnippet>141</a>#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#142 id=142 data-nosnippet>142</a></span><span class="kw">pub use </span><span class="self">self</span>::try_buffer_unordered::TryBufferUnordered;
 <a href=#143 id=143 data-nosnippet>143</a>
-<a href=#144 id=144 data-nosnippet>144</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#144 id=144 data-nosnippet>144</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#145 id=145 data-nosnippet>145</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#146 id=146 data-nosnippet>146</a></span><span class="kw">mod </span>try_buffered;
-<a href=#147 id=147 data-nosnippet>147</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#147 id=147 data-nosnippet>147</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#148 id=148 data-nosnippet>148</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#149 id=149 data-nosnippet>149</a>#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#150 id=150 data-nosnippet>150</a></span><span class="kw">pub use </span><span class="self">self</span>::try_buffered::TryBuffered;
 <a href=#151 id=151 data-nosnippet>151</a>
-<a href=#152 id=152 data-nosnippet>152</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#152 id=152 data-nosnippet>152</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#153 id=153 data-nosnippet>153</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#154 id=154 data-nosnippet>154</a></span><span class="kw">mod </span>try_for_each_concurrent;
-<a href=#155 id=155 data-nosnippet>155</a><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#155 id=155 data-nosnippet>155</a><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#156 id=156 data-nosnippet>156</a>#[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#157 id=157 data-nosnippet>157</a>#[allow(unreachable_pub)] </span><span class="comment">// https://github.com/rust-lang/rust/issues/57411
 <a href=#158 id=158 data-nosnippet>158</a></span><span class="kw">pub use </span><span class="self">self</span>::try_for_each_concurrent::TryForEachConcurrent;
@@ -311,7 +311,7 @@
 <a href=#311 id=311 data-nosnippet>311</a>    /// Any successful values produced by this stream will not be passed to the
 <a href=#312 id=312 data-nosnippet>312</a>    /// closure, and will be passed through.
 <a href=#313 id=313 data-nosnippet>313</a>    ///
-<a href=#314 id=314 data-nosnippet>314</a>    /// The returned value of the closure must implement the [`TryFuture`](futures_core::future::TryFuture) trait
+<a href=#314 id=314 data-nosnippet>314</a>    /// The returned value of the closure must implement the [`TryFuture`] trait
 <a href=#315 id=315 data-nosnippet>315</a>    /// and can represent some more work to be done before the composed stream
 <a href=#316 id=316 data-nosnippet>316</a>    /// is finished.
 <a href=#317 id=317 data-nosnippet>317</a>    ///
@@ -415,7 +415,7 @@
 <a href=#415 id=415 data-nosnippet>415</a>    /// yielding a future. That future will then be executed to completion
 <a href=#416 id=416 data-nosnippet>416</a>    /// before moving on to the next item.
 <a href=#417 id=417 data-nosnippet>417</a>    ///
-<a href=#418 id=418 data-nosnippet>418</a>    /// The returned value is a [`Future`](futures_core::future::Future) where the
+<a href=#418 id=418 data-nosnippet>418</a>    /// The returned value is a [`Future`] where the
 <a href=#419 id=419 data-nosnippet>419</a>    /// [`Output`](futures_core::future::Future::Output) type is
 <a href=#420 id=420 data-nosnippet>420</a>    /// `Result&lt;(), Self::Error&gt;`. If any of the intermediate
 <a href=#421 id=421 data-nosnippet>421</a>    /// futures or the stream returns an error, this future will return
@@ -551,7 +551,7 @@
 <a href=#551 id=551 data-nosnippet>551</a>    /// assert_eq!(Err(oneshot::Canceled), fut.await);
 <a href=#552 id=552 data-nosnippet>552</a>    /// # })
 <a href=#553 id=553 data-nosnippet>553</a>    /// ```
-<a href=#554 id=554 data-nosnippet>554</a>    </span><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#554 id=554 data-nosnippet>554</a>    </span><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#555 id=555 data-nosnippet>555</a>    #[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#556 id=556 data-nosnippet>556</a>    </span><span class="kw">fn </span>try_for_each_concurrent&lt;Fut, F&gt;(
 <a href=#557 id=557 data-nosnippet>557</a>        <span class="self">self</span>,
@@ -830,7 +830,7 @@
 <a href=#830 id=830 data-nosnippet>830</a>    /// assert_eq!(values, vec![Ok(1), Ok(2), Ok(4), Err(3), Err(5)]);
 <a href=#831 id=831 data-nosnippet>831</a>    /// # });
 <a href=#832 id=832 data-nosnippet>832</a>    /// ```
-<a href=#833 id=833 data-nosnippet>833</a>    </span><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#833 id=833 data-nosnippet>833</a>    </span><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#834 id=834 data-nosnippet>834</a>    #[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#835 id=835 data-nosnippet>835</a>    </span><span class="kw">fn </span>try_flatten_unordered(<span class="self">self</span>, limit: <span class="kw">impl </span>Into&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;) -&gt; TryFlattenUnordered&lt;<span class="self">Self</span>&gt;
 <a href=#836 id=836 data-nosnippet>836</a>    <span class="kw">where
@@ -940,7 +940,7 @@
 <a href=#940 id=940 data-nosnippet>940</a>    /// the subsequent successful results of the stream. If the stream is empty,
 <a href=#941 id=941 data-nosnippet>941</a>    /// the default value will be returned.
 <a href=#942 id=942 data-nosnippet>942</a>    ///
-<a href=#943 id=943 data-nosnippet>943</a>    /// Works with all collections that implement the [`Extend`](std::iter::Extend) trait.
+<a href=#943 id=943 data-nosnippet>943</a>    /// Works with all collections that implement the [`Extend`] trait.
 <a href=#944 id=944 data-nosnippet>944</a>    ///
 <a href=#945 id=945 data-nosnippet>945</a>    /// This method is similar to [`concat`](crate::stream::StreamExt::concat), but will
 <a href=#946 id=946 data-nosnippet>946</a>    /// exit early if an error is encountered in the stream.
@@ -977,7 +977,7 @@
 <a href=#977 id=977 data-nosnippet>977</a>
 <a href=#978 id=978 data-nosnippet>978</a>    <span class="doccomment">/// Attempt to execute several futures from a stream concurrently (unordered).
 <a href=#979 id=979 data-nosnippet>979</a>    ///
-<a href=#980 id=980 data-nosnippet>980</a>    /// This stream's `Ok` type must be a [`TryFuture`](futures_core::future::TryFuture) with an `Error` type
+<a href=#980 id=980 data-nosnippet>980</a>    /// This stream's `Ok` type must be a [`TryFuture`] with an `Error` type
 <a href=#981 id=981 data-nosnippet>981</a>    /// that matches the stream's `Error` type.
 <a href=#982 id=982 data-nosnippet>982</a>    ///
 <a href=#983 id=983 data-nosnippet>983</a>    /// This adaptor will buffer up to `n` futures and then return their
@@ -1032,7 +1032,7 @@
 <a href=#1032 id=1032 data-nosnippet>1032</a>    /// assert_eq!(buffered.next().await, Some(Err("error in the stream")));
 <a href=#1033 id=1033 data-nosnippet>1033</a>    /// # Ok::&lt;(), Box&lt;dyn std::error::Error&gt;&gt;(()) }).unwrap();
 <a href=#1034 id=1034 data-nosnippet>1034</a>    /// ```
-<a href=#1035 id=1035 data-nosnippet>1035</a>    </span><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#1035 id=1035 data-nosnippet>1035</a>    </span><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#1036 id=1036 data-nosnippet>1036</a>    #[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#1037 id=1037 data-nosnippet>1037</a>    </span><span class="kw">fn </span>try_buffer_unordered(<span class="self">self</span>, n: usize) -&gt; TryBufferUnordered&lt;<span class="self">Self</span>&gt;
 <a href=#1038 id=1038 data-nosnippet>1038</a>    <span class="kw">where
@@ -1046,7 +1046,7 @@
 <a href=#1046 id=1046 data-nosnippet>1046</a>
 <a href=#1047 id=1047 data-nosnippet>1047</a>    <span class="doccomment">/// Attempt to execute several futures from a stream concurrently.
 <a href=#1048 id=1048 data-nosnippet>1048</a>    ///
-<a href=#1049 id=1049 data-nosnippet>1049</a>    /// This stream's `Ok` type must be a [`TryFuture`](futures_core::future::TryFuture) with an `Error` type
+<a href=#1049 id=1049 data-nosnippet>1049</a>    /// This stream's `Ok` type must be a [`TryFuture`] with an `Error` type
 <a href=#1050 id=1050 data-nosnippet>1050</a>    /// that matches the stream's `Error` type.
 <a href=#1051 id=1051 data-nosnippet>1051</a>    ///
 <a href=#1052 id=1052 data-nosnippet>1052</a>    /// This adaptor will buffer up to `n` futures and then return their
@@ -1108,7 +1108,7 @@
 <a href=#1108 id=1108 data-nosnippet>1108</a>    /// assert_eq!(buffered.next().await, Some(Err("error in the stream")));
 <a href=#1109 id=1109 data-nosnippet>1109</a>    /// # Ok::&lt;(), Box&lt;dyn std::error::Error&gt;&gt;(()) }).unwrap();
 <a href=#1110 id=1110 data-nosnippet>1110</a>    /// ```
-<a href=#1111 id=1111 data-nosnippet>1111</a>    </span><span class="attr">#[cfg_attr(target_os = <span class="string">"none"</span>, cfg(target_has_atomic = <span class="string">"ptr"</span>))]
+<a href=#1111 id=1111 data-nosnippet>1111</a>    </span><span class="attr">#[cfg(target_has_atomic = <span class="string">"ptr"</span>)]
 <a href=#1112 id=1112 data-nosnippet>1112</a>    #[cfg(feature = <span class="string">"alloc"</span>)]
 <a href=#1113 id=1113 data-nosnippet>1113</a>    </span><span class="kw">fn </span>try_buffered(<span class="self">self</span>, n: usize) -&gt; TryBuffered&lt;<span class="self">Self</span>&gt;
 <a href=#1114 id=1114 data-nosnippet>1114</a>    <span class="kw">where
@@ -1137,7 +1137,7 @@
 <a href=#1137 id=1137 data-nosnippet>1137</a>    <span class="doccomment">/// Wraps a [`TryStream`] into a stream compatible with libraries using
 <a href=#1138 id=1138 data-nosnippet>1138</a>    /// futures 0.1 `Stream`. Requires the `compat` feature to be enabled.
 <a href=#1139 id=1139 data-nosnippet>1139</a>    /// ```
-<a href=#1140 id=1140 data-nosnippet>1140</a>    /// # if cfg!(miri) { return; } // Miri does not support epoll
+<a href=#1140 id=1140 data-nosnippet>1140</a>    /// # if cfg!(miri) { return; } // Miri does not support epoll_create
 <a href=#1141 id=1141 data-nosnippet>1141</a>    /// use futures::future::{FutureExt, TryFutureExt};
 <a href=#1142 id=1142 data-nosnippet>1142</a>    /// # let (tx, rx) = futures::channel::oneshot::channel();
 <a href=#1143 id=1143 data-nosnippet>1143</a>    ///

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.0/src/set_header/response/multiple_headers.rs`."><title>multiple_headers.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tower_http/set_header/response/</div>multiple_headers.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Set multiple headers on the response.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.0/src/set_header/response/multiple_headers.rs`."><title>multiple_headers.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tower_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tower_http/set_header/response/</div>multiple_headers.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Set multiple headers on the response.
 <a href=#2 id=2 data-nosnippet>2</a>//!
 <a href=#3 id=3 data-nosnippet>3</a>//! See the root [`crate::set_header::response`] module for full documentation and usage examples.
 <a href=#4 id=4 data-nosnippet>4</a>//!
@@ -206,8 +206,8 @@
 <a href=#206 id=206 data-nosnippet>206</a>
 <a href=#207 id=207 data-nosnippet>207</a><span class="attr">#[cfg(test)]
 <a href=#208 id=208 data-nosnippet>208</a></span><span class="kw">mod </span>tests {
-<a href=#209 id=209 data-nosnippet>209</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
-<a href=#210 id=210 data-nosnippet>210</a>    <span class="kw">use </span>crate::{
+<a href=#209 id=209 data-nosnippet>209</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#210 id=210 data-nosnippet>210</a>    <span class="kw">use crate</span>::{
 <a href=#211 id=211 data-nosnippet>211</a>        set_header::{BoxedMakeHeaderValue, MakeHeaderValue <span class="kw">as _</span>},
 <a href=#212 id=212 data-nosnippet>212</a>        test_helpers::Body,
 <a href=#213 id=213 data-nosnippet>213</a>    };
@@ -223,7 +223,7 @@
 <a href=#223 id=223 data-nosnippet>223</a>                    .header(header::CONTENT_TYPE, <span class="string">"good-content"</span>)
 <a href=#224 id=224 data-nosnippet>224</a>                    .body(Body::empty())
 <a href=#225 id=225 data-nosnippet>225</a>                    .unwrap();
-<a href=#226 id=226 data-nosnippet>226</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(res)
+<a href=#226 id=226 data-nosnippet>226</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(res)
 <a href=#227 id=227 data-nosnippet>227</a>            }),
 <a href=#228 id=228 data-nosnippet>228</a>            <span class="macro">vec!</span>[(header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"text/html"</span>)).into()],
 <a href=#229 id=229 data-nosnippet>229</a>        );
@@ -243,7 +243,7 @@
 <a href=#243 id=243 data-nosnippet>243</a>                    .header(header::CONTENT_TYPE, <span class="string">"good-content"</span>)
 <a href=#244 id=244 data-nosnippet>244</a>                    .body(Body::empty())
 <a href=#245 id=245 data-nosnippet>245</a>                    .unwrap();
-<a href=#246 id=246 data-nosnippet>246</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(res)
+<a href=#246 id=246 data-nosnippet>246</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(res)
 <a href=#247 id=247 data-nosnippet>247</a>            }),
 <a href=#248 id=248 data-nosnippet>248</a>            <span class="macro">vec!</span>[(header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"text/html"</span>)).into()],
 <a href=#249 id=249 data-nosnippet>249</a>        );
@@ -264,7 +264,7 @@
 <a href=#264 id=264 data-nosnippet>264</a>                    .header(header::CONTENT_TYPE, <span class="string">"good-content"</span>)
 <a href=#265 id=265 data-nosnippet>265</a>                    .body(Body::empty())
 <a href=#266 id=266 data-nosnippet>266</a>                    .unwrap();
-<a href=#267 id=267 data-nosnippet>267</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(res)
+<a href=#267 id=267 data-nosnippet>267</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(res)
 <a href=#268 id=268 data-nosnippet>268</a>            }),
 <a href=#269 id=269 data-nosnippet>269</a>            <span class="macro">vec!</span>[(header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"text/html"</span>)).into()],
 <a href=#270 id=270 data-nosnippet>270</a>        );
@@ -281,7 +281,7 @@
 <a href=#281 id=281 data-nosnippet>281</a>        <span class="kw">let </span>svc = SetMultipleResponseHeader::if_not_present(
 <a href=#282 id=282 data-nosnippet>282</a>            service_fn(|_req: Request&lt;Body&gt;| <span class="kw">async </span>{
 <a href=#283 id=283 data-nosnippet>283</a>                <span class="kw">let </span>res = Response::builder().body(Body::empty()).unwrap();
-<a href=#284 id=284 data-nosnippet>284</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(res)
+<a href=#284 id=284 data-nosnippet>284</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(res)
 <a href=#285 id=285 data-nosnippet>285</a>            }),
 <a href=#286 id=286 data-nosnippet>286</a>            <span class="macro">vec!</span>[(header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"text/html"</span>)).into()],
 <a href=#287 id=287 data-nosnippet>287</a>        );
@@ -348,7 +348,7 @@
 <a href=#348 id=348 data-nosnippet>348</a>
 <a href=#349 id=349 data-nosnippet>349</a>        <span class="kw">let </span>svc = SetMultipleResponseHeader::overriding(
 <a href=#350 id=350 data-nosnippet>350</a>            tower::service_fn(|_req: Request&lt;Body&gt;| <span class="kw">async </span>{
-<a href=#351 id=351 data-nosnippet>351</a>                Ok::&lt;<span class="kw">_</span>, std::convert::Infallible&gt;(Response::new(Body::empty()))
+<a href=#351 id=351 data-nosnippet>351</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, std::convert::Infallible&gt;(Response::new(Body::empty()))
 <a href=#352 id=352 data-nosnippet>352</a>            }),
 <a href=#353 id=353 data-nosnippet>353</a>            <span class="macro">vec!</span>[(header::CONTENT_TYPE, HeaderValue::from_static(<span class="string">"foo"</span>)).into()]
 <a href=#354 id=354 data-nosnippet>354</a>                <span class="kw">as </span>Vec&lt;HeaderMetadata&lt;HeaderValue&gt;&gt;,
@@ -366,7 +366,7 @@
 <a href=#366 id=366 data-nosnippet>366</a>                (header::CACHE_CONTROL, HeaderValue::from_static(<span class="string">"no-cache"</span>)).into(),
 <a href=#367 id=367 data-nosnippet>367</a>            ]))
 <a href=#368 id=368 data-nosnippet>368</a>            .service(service_fn(|_req: Request&lt;Body&gt;| <span class="kw">async </span>{
-<a href=#369 id=369 data-nosnippet>369</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
+<a href=#369 id=369 data-nosnippet>369</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
 <a href=#370 id=370 data-nosnippet>370</a>            }));
 <a href=#371 id=371 data-nosnippet>371</a>
 <a href=#372 id=372 data-nosnippet>372</a>        <span class="kw">let </span>res = svc.oneshot(Request::new(Body::empty())).<span class="kw">await</span>.unwrap();
@@ -379,7 +379,7 @@
 <a href=#379 id=379 data-nosnippet>379</a>        <span class="kw">let </span>svc = tower::ServiceBuilder::new()
 <a href=#380 id=380 data-nosnippet>380</a>            .layer(SetMultipleResponseHeadersLayer::&lt;Response&lt;Body&gt;&gt;::overriding(<span class="macro">vec!</span>[]))
 <a href=#381 id=381 data-nosnippet>381</a>            .service(service_fn(|_req: Request&lt;Body&gt;| <span class="kw">async </span>{
-<a href=#382 id=382 data-nosnippet>382</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
+<a href=#382 id=382 data-nosnippet>382</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
 <a href=#383 id=383 data-nosnippet>383</a>            }));
 <a href=#384 id=384 data-nosnippet>384</a>
 <a href=#385 id=385 data-nosnippet>385</a>        <span class="kw">let </span>res = svc.oneshot(Request::new(Body::empty())).<span class="kw">await</span>.unwrap();
@@ -404,7 +404,7 @@
 <a href=#404 id=404 data-nosnippet>404</a>                closure_meta,
 <a href=#405 id=405 data-nosnippet>405</a>            ]))
 <a href=#406 id=406 data-nosnippet>406</a>            .service(service_fn(|_req: Request&lt;Body&gt;| <span class="kw">async </span>{
-<a href=#407 id=407 data-nosnippet>407</a>                Ok::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
+<a href=#407 id=407 data-nosnippet>407</a>                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Infallible&gt;(Response::new(Body::empty()))
 <a href=#408 id=408 data-nosnippet>408</a>            }));
 <a href=#409 id=409 data-nosnippet>409</a>
 <a href=#410 id=410 data-nosnippet>410</a>        <span class="kw">let </span>res = svc.oneshot(Request::new(Body::empty())).<span class="kw">await</span>.unwrap();

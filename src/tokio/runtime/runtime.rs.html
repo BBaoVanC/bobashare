@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.52.3/src/runtime/runtime.rs`."><title>runtime.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.1 (31fca3adb 2026-06-26)" data-channel="1.96.1" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/runtime/</div>runtime.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">super</span>::BOX_FUTURE_THRESHOLD;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/runtime/runtime.rs`."><title>runtime.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/runtime/</div>runtime.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">super</span>::BOX_FUTURE_THRESHOLD;
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><span class="kw">crate</span>::runtime::blocking::BlockingPool;
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span><span class="kw">crate</span>::runtime::scheduler::CurrentThread;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span><span class="kw">crate</span>::runtime::{context, EnterGuard, Handle};
@@ -334,253 +334,256 @@
 <a href=#334 id=334 data-nosnippet>334</a>    /// });
 <a href=#335 id=335 data-nosnippet>335</a>    /// # }
 <a href=#336 id=336 data-nosnippet>336</a>    /// ```
-<a href=#337 id=337 data-nosnippet>337</a>    ///
-<a href=#338 id=338 data-nosnippet>338</a>    /// [handle]: fn@Handle::block_on
-<a href=#339 id=339 data-nosnippet>339</a>    </span><span class="attr">#[track_caller]
-<a href=#340 id=340 data-nosnippet>340</a>    </span><span class="kw">pub fn </span>block_on&lt;F: Future&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, future: F) -&gt; F::Output {
-<a href=#341 id=341 data-nosnippet>341</a>        <span class="kw">let </span>fut_size = mem::size_of::&lt;F&gt;();
-<a href=#342 id=342 data-nosnippet>342</a>        <span class="kw">if </span>fut_size &gt; BOX_FUTURE_THRESHOLD {
-<a href=#343 id=343 data-nosnippet>343</a>            <span class="self">self</span>.block_on_inner(Box::pin(future), SpawnMeta::new_unnamed(fut_size))
-<a href=#344 id=344 data-nosnippet>344</a>        } <span class="kw">else </span>{
-<a href=#345 id=345 data-nosnippet>345</a>            <span class="self">self</span>.block_on_inner(future, SpawnMeta::new_unnamed(fut_size))
-<a href=#346 id=346 data-nosnippet>346</a>        }
-<a href=#347 id=347 data-nosnippet>347</a>    }
-<a href=#348 id=348 data-nosnippet>348</a>
-<a href=#349 id=349 data-nosnippet>349</a>    <span class="attr">#[track_caller]
-<a href=#350 id=350 data-nosnippet>350</a>    </span><span class="kw">fn </span>block_on_inner&lt;F: Future&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, future: F, _meta: SpawnMeta&lt;<span class="lifetime">'_</span>&gt;) -&gt; F::Output {
-<a href=#351 id=351 data-nosnippet>351</a>        <span class="attr">#[cfg(all(
-<a href=#352 id=352 data-nosnippet>352</a>            tokio_unstable,
-<a href=#353 id=353 data-nosnippet>353</a>            feature = <span class="string">"taskdump"</span>,
-<a href=#354 id=354 data-nosnippet>354</a>            feature = <span class="string">"rt"</span>,
-<a href=#355 id=355 data-nosnippet>355</a>            target_os = <span class="string">"linux"</span>,
-<a href=#356 id=356 data-nosnippet>356</a>            any(target_arch = <span class="string">"aarch64"</span>, target_arch = <span class="string">"x86"</span>, target_arch = <span class="string">"x86_64"</span>)
-<a href=#357 id=357 data-nosnippet>357</a>        ))]
-<a href=#358 id=358 data-nosnippet>358</a>        </span><span class="kw">let </span>future = <span class="kw">super</span>::task::trace::Trace::root(future);
-<a href=#359 id=359 data-nosnippet>359</a>
-<a href=#360 id=360 data-nosnippet>360</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
-<a href=#361 id=361 data-nosnippet>361</a>        </span><span class="kw">let </span>future = <span class="kw">crate</span>::util::trace::task(
-<a href=#362 id=362 data-nosnippet>362</a>            future,
-<a href=#363 id=363 data-nosnippet>363</a>            <span class="string">"block_on"</span>,
-<a href=#364 id=364 data-nosnippet>364</a>            _meta,
-<a href=#365 id=365 data-nosnippet>365</a>            <span class="kw">crate</span>::runtime::task::Id::next().as_u64(),
-<a href=#366 id=366 data-nosnippet>366</a>        );
-<a href=#367 id=367 data-nosnippet>367</a>
-<a href=#368 id=368 data-nosnippet>368</a>        <span class="kw">let </span>_enter = <span class="self">self</span>.enter();
-<a href=#369 id=369 data-nosnippet>369</a>
-<a href=#370 id=370 data-nosnippet>370</a>        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.scheduler {
-<a href=#371 id=371 data-nosnippet>371</a>            Scheduler::CurrentThread(exec) =&gt; exec.block_on(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner, future),
-<a href=#372 id=372 data-nosnippet>372</a>            <span class="attr">#[cfg(feature = <span class="string">"rt-multi-thread"</span>)]
-<a href=#373 id=373 data-nosnippet>373</a>            </span>Scheduler::MultiThread(exec) =&gt; exec.block_on(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner, future),
-<a href=#374 id=374 data-nosnippet>374</a>        }
-<a href=#375 id=375 data-nosnippet>375</a>    }
-<a href=#376 id=376 data-nosnippet>376</a>
-<a href=#377 id=377 data-nosnippet>377</a>    <span class="doccomment">/// Enters the runtime context.
-<a href=#378 id=378 data-nosnippet>378</a>    ///
-<a href=#379 id=379 data-nosnippet>379</a>    /// This allows you to construct types that must have an executor
-<a href=#380 id=380 data-nosnippet>380</a>    /// available on creation such as [`Sleep`] or [`TcpStream`]. It will
-<a href=#381 id=381 data-nosnippet>381</a>    /// also allow you to call methods such as [`tokio::spawn`].
-<a href=#382 id=382 data-nosnippet>382</a>    ///
-<a href=#383 id=383 data-nosnippet>383</a>    /// [`Sleep`]: struct@crate::time::Sleep
-<a href=#384 id=384 data-nosnippet>384</a>    /// [`TcpStream`]: struct@crate::net::TcpStream
-<a href=#385 id=385 data-nosnippet>385</a>    /// [`tokio::spawn`]: fn@crate::spawn
-<a href=#386 id=386 data-nosnippet>386</a>    ///
-<a href=#387 id=387 data-nosnippet>387</a>    /// # Example
-<a href=#388 id=388 data-nosnippet>388</a>    ///
-<a href=#389 id=389 data-nosnippet>389</a>    /// ```
-<a href=#390 id=390 data-nosnippet>390</a>    /// # #[cfg(not(target_family = "wasm"))]
-<a href=#391 id=391 data-nosnippet>391</a>    /// # {
-<a href=#392 id=392 data-nosnippet>392</a>    /// use tokio::runtime::Runtime;
-<a href=#393 id=393 data-nosnippet>393</a>    /// use tokio::task::JoinHandle;
-<a href=#394 id=394 data-nosnippet>394</a>    ///
-<a href=#395 id=395 data-nosnippet>395</a>    /// fn function_that_spawns(msg: String) -&gt; JoinHandle&lt;()&gt; {
-<a href=#396 id=396 data-nosnippet>396</a>    ///     // Had we not used `rt.enter` below, this would panic.
-<a href=#397 id=397 data-nosnippet>397</a>    ///     tokio::spawn(async move {
-<a href=#398 id=398 data-nosnippet>398</a>    ///         println!("{}", msg);
-<a href=#399 id=399 data-nosnippet>399</a>    ///     })
-<a href=#400 id=400 data-nosnippet>400</a>    /// }
-<a href=#401 id=401 data-nosnippet>401</a>    ///
-<a href=#402 id=402 data-nosnippet>402</a>    /// fn main() {
-<a href=#403 id=403 data-nosnippet>403</a>    ///     let rt = Runtime::new().unwrap();
+<a href=#337 id=337 data-nosnippet>337</a>    </span><span class="attr">#[track_caller]
+<a href=#338 id=338 data-nosnippet>338</a>    </span><span class="kw">pub fn </span>block_on&lt;F: Future&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, future: F) -&gt; F::Output {
+<a href=#339 id=339 data-nosnippet>339</a>        <span class="kw">let </span>fut_size = mem::size_of::&lt;F&gt;();
+<a href=#340 id=340 data-nosnippet>340</a>        <span class="kw">if </span>fut_size &gt; BOX_FUTURE_THRESHOLD {
+<a href=#341 id=341 data-nosnippet>341</a>            <span class="self">self</span>.block_on_inner(Box::pin(future), SpawnMeta::new_unnamed(fut_size))
+<a href=#342 id=342 data-nosnippet>342</a>        } <span class="kw">else </span>{
+<a href=#343 id=343 data-nosnippet>343</a>            <span class="self">self</span>.block_on_inner(future, SpawnMeta::new_unnamed(fut_size))
+<a href=#344 id=344 data-nosnippet>344</a>        }
+<a href=#345 id=345 data-nosnippet>345</a>    }
+<a href=#346 id=346 data-nosnippet>346</a>
+<a href=#347 id=347 data-nosnippet>347</a>    <span class="attr">#[track_caller]
+<a href=#348 id=348 data-nosnippet>348</a>    </span><span class="kw">fn </span>block_on_inner&lt;F: Future&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, future: F, _meta: SpawnMeta&lt;<span class="lifetime">'_</span>&gt;) -&gt; F::Output {
+<a href=#349 id=349 data-nosnippet>349</a>        <span class="attr">#[cfg(all(
+<a href=#350 id=350 data-nosnippet>350</a>            tokio_unstable,
+<a href=#351 id=351 data-nosnippet>351</a>            feature = <span class="string">"taskdump"</span>,
+<a href=#352 id=352 data-nosnippet>352</a>            feature = <span class="string">"rt"</span>,
+<a href=#353 id=353 data-nosnippet>353</a>            target_os = <span class="string">"linux"</span>,
+<a href=#354 id=354 data-nosnippet>354</a>            any(
+<a href=#355 id=355 data-nosnippet>355</a>                target_arch = <span class="string">"aarch64"</span>,
+<a href=#356 id=356 data-nosnippet>356</a>                target_arch = <span class="string">"x86"</span>,
+<a href=#357 id=357 data-nosnippet>357</a>                target_arch = <span class="string">"x86_64"</span>,
+<a href=#358 id=358 data-nosnippet>358</a>                target_arch = <span class="string">"s390x"
+<a href=#359 id=359 data-nosnippet>359</a>            </span>)
+<a href=#360 id=360 data-nosnippet>360</a>        ))]
+<a href=#361 id=361 data-nosnippet>361</a>        </span><span class="kw">let </span>future = <span class="kw">super</span>::task::trace::Trace::root(future);
+<a href=#362 id=362 data-nosnippet>362</a>
+<a href=#363 id=363 data-nosnippet>363</a>        <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"tracing"</span>))]
+<a href=#364 id=364 data-nosnippet>364</a>        </span><span class="kw">let </span>future = <span class="kw">crate</span>::util::trace::task(
+<a href=#365 id=365 data-nosnippet>365</a>            future,
+<a href=#366 id=366 data-nosnippet>366</a>            <span class="string">"block_on"</span>,
+<a href=#367 id=367 data-nosnippet>367</a>            _meta,
+<a href=#368 id=368 data-nosnippet>368</a>            <span class="kw">crate</span>::runtime::task::Id::next().as_u64(),
+<a href=#369 id=369 data-nosnippet>369</a>        );
+<a href=#370 id=370 data-nosnippet>370</a>
+<a href=#371 id=371 data-nosnippet>371</a>        <span class="kw">let </span>_enter = <span class="self">self</span>.enter();
+<a href=#372 id=372 data-nosnippet>372</a>
+<a href=#373 id=373 data-nosnippet>373</a>        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.scheduler {
+<a href=#374 id=374 data-nosnippet>374</a>            Scheduler::CurrentThread(exec) =&gt; exec.block_on(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner, future),
+<a href=#375 id=375 data-nosnippet>375</a>            <span class="attr">#[cfg(feature = <span class="string">"rt-multi-thread"</span>)]
+<a href=#376 id=376 data-nosnippet>376</a>            </span>Scheduler::MultiThread(exec) =&gt; exec.block_on(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner, future),
+<a href=#377 id=377 data-nosnippet>377</a>        }
+<a href=#378 id=378 data-nosnippet>378</a>    }
+<a href=#379 id=379 data-nosnippet>379</a>
+<a href=#380 id=380 data-nosnippet>380</a>    <span class="doccomment">/// Enters the runtime context.
+<a href=#381 id=381 data-nosnippet>381</a>    ///
+<a href=#382 id=382 data-nosnippet>382</a>    /// This allows you to construct types that must have an executor
+<a href=#383 id=383 data-nosnippet>383</a>    /// available on creation such as [`Sleep`] or [`TcpStream`]. It will
+<a href=#384 id=384 data-nosnippet>384</a>    /// also allow you to call methods such as [`tokio::spawn`].
+<a href=#385 id=385 data-nosnippet>385</a>    ///
+<a href=#386 id=386 data-nosnippet>386</a>    /// [`Sleep`]: struct@crate::time::Sleep
+<a href=#387 id=387 data-nosnippet>387</a>    /// [`TcpStream`]: struct@crate::net::TcpStream
+<a href=#388 id=388 data-nosnippet>388</a>    /// [`tokio::spawn`]: fn@crate::spawn
+<a href=#389 id=389 data-nosnippet>389</a>    ///
+<a href=#390 id=390 data-nosnippet>390</a>    /// # Example
+<a href=#391 id=391 data-nosnippet>391</a>    ///
+<a href=#392 id=392 data-nosnippet>392</a>    /// ```
+<a href=#393 id=393 data-nosnippet>393</a>    /// # #[cfg(not(target_family = "wasm"))]
+<a href=#394 id=394 data-nosnippet>394</a>    /// # {
+<a href=#395 id=395 data-nosnippet>395</a>    /// use tokio::runtime::Runtime;
+<a href=#396 id=396 data-nosnippet>396</a>    /// use tokio::task::JoinHandle;
+<a href=#397 id=397 data-nosnippet>397</a>    ///
+<a href=#398 id=398 data-nosnippet>398</a>    /// fn function_that_spawns(msg: String) -&gt; JoinHandle&lt;()&gt; {
+<a href=#399 id=399 data-nosnippet>399</a>    ///     // Had we not used `rt.enter` below, this would panic.
+<a href=#400 id=400 data-nosnippet>400</a>    ///     tokio::spawn(async move {
+<a href=#401 id=401 data-nosnippet>401</a>    ///         println!("{}", msg);
+<a href=#402 id=402 data-nosnippet>402</a>    ///     })
+<a href=#403 id=403 data-nosnippet>403</a>    /// }
 <a href=#404 id=404 data-nosnippet>404</a>    ///
-<a href=#405 id=405 data-nosnippet>405</a>    ///     let s = "Hello World!".to_string();
-<a href=#406 id=406 data-nosnippet>406</a>    ///
-<a href=#407 id=407 data-nosnippet>407</a>    ///     // By entering the context, we tie `tokio::spawn` to this executor.
-<a href=#408 id=408 data-nosnippet>408</a>    ///     let _guard = rt.enter();
-<a href=#409 id=409 data-nosnippet>409</a>    ///     let handle = function_that_spawns(s);
-<a href=#410 id=410 data-nosnippet>410</a>    ///
-<a href=#411 id=411 data-nosnippet>411</a>    ///     // Wait for the task before we end the test.
-<a href=#412 id=412 data-nosnippet>412</a>    ///     rt.block_on(handle).unwrap();
-<a href=#413 id=413 data-nosnippet>413</a>    /// }
-<a href=#414 id=414 data-nosnippet>414</a>    /// # }
-<a href=#415 id=415 data-nosnippet>415</a>    /// ```
-<a href=#416 id=416 data-nosnippet>416</a>    </span><span class="kw">pub fn </span>enter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EnterGuard&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#417 id=417 data-nosnippet>417</a>        <span class="self">self</span>.handle.enter()
-<a href=#418 id=418 data-nosnippet>418</a>    }
-<a href=#419 id=419 data-nosnippet>419</a>
-<a href=#420 id=420 data-nosnippet>420</a>    <span class="doccomment">/// Shuts down the runtime, waiting for at most `duration` for all spawned
-<a href=#421 id=421 data-nosnippet>421</a>    /// work to stop.
-<a href=#422 id=422 data-nosnippet>422</a>    ///
-<a href=#423 id=423 data-nosnippet>423</a>    /// See the [struct level documentation](Runtime#shutdown) for more details.
-<a href=#424 id=424 data-nosnippet>424</a>    ///
-<a href=#425 id=425 data-nosnippet>425</a>    /// # Examples
-<a href=#426 id=426 data-nosnippet>426</a>    ///
-<a href=#427 id=427 data-nosnippet>427</a>    /// ```
-<a href=#428 id=428 data-nosnippet>428</a>    /// # #[cfg(not(target_family = "wasm"))]
-<a href=#429 id=429 data-nosnippet>429</a>    /// # {
-<a href=#430 id=430 data-nosnippet>430</a>    /// use tokio::runtime::Runtime;
-<a href=#431 id=431 data-nosnippet>431</a>    /// use tokio::task;
-<a href=#432 id=432 data-nosnippet>432</a>    ///
-<a href=#433 id=433 data-nosnippet>433</a>    /// use std::thread;
-<a href=#434 id=434 data-nosnippet>434</a>    /// use std::time::Duration;
+<a href=#405 id=405 data-nosnippet>405</a>    /// fn main() {
+<a href=#406 id=406 data-nosnippet>406</a>    ///     let rt = Runtime::new().unwrap();
+<a href=#407 id=407 data-nosnippet>407</a>    ///
+<a href=#408 id=408 data-nosnippet>408</a>    ///     let s = "Hello World!".to_string();
+<a href=#409 id=409 data-nosnippet>409</a>    ///
+<a href=#410 id=410 data-nosnippet>410</a>    ///     // By entering the context, we tie `tokio::spawn` to this executor.
+<a href=#411 id=411 data-nosnippet>411</a>    ///     let _guard = rt.enter();
+<a href=#412 id=412 data-nosnippet>412</a>    ///     let handle = function_that_spawns(s);
+<a href=#413 id=413 data-nosnippet>413</a>    ///
+<a href=#414 id=414 data-nosnippet>414</a>    ///     // Wait for the task before we end the test.
+<a href=#415 id=415 data-nosnippet>415</a>    ///     rt.block_on(handle).unwrap();
+<a href=#416 id=416 data-nosnippet>416</a>    /// }
+<a href=#417 id=417 data-nosnippet>417</a>    /// # }
+<a href=#418 id=418 data-nosnippet>418</a>    /// ```
+<a href=#419 id=419 data-nosnippet>419</a>    </span><span class="kw">pub fn </span>enter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; EnterGuard&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#420 id=420 data-nosnippet>420</a>        <span class="self">self</span>.handle.enter()
+<a href=#421 id=421 data-nosnippet>421</a>    }
+<a href=#422 id=422 data-nosnippet>422</a>
+<a href=#423 id=423 data-nosnippet>423</a>    <span class="doccomment">/// Shuts down the runtime, waiting for at most `duration` for all spawned
+<a href=#424 id=424 data-nosnippet>424</a>    /// work to stop.
+<a href=#425 id=425 data-nosnippet>425</a>    ///
+<a href=#426 id=426 data-nosnippet>426</a>    /// See the [struct level documentation](Runtime#shutdown) for more details.
+<a href=#427 id=427 data-nosnippet>427</a>    ///
+<a href=#428 id=428 data-nosnippet>428</a>    /// # Examples
+<a href=#429 id=429 data-nosnippet>429</a>    ///
+<a href=#430 id=430 data-nosnippet>430</a>    /// ```
+<a href=#431 id=431 data-nosnippet>431</a>    /// # #[cfg(not(target_family = "wasm"))]
+<a href=#432 id=432 data-nosnippet>432</a>    /// # {
+<a href=#433 id=433 data-nosnippet>433</a>    /// use tokio::runtime::Runtime;
+<a href=#434 id=434 data-nosnippet>434</a>    /// use tokio::task;
 <a href=#435 id=435 data-nosnippet>435</a>    ///
-<a href=#436 id=436 data-nosnippet>436</a>    /// fn main() {
-<a href=#437 id=437 data-nosnippet>437</a>    ///    let runtime = Runtime::new().unwrap();
+<a href=#436 id=436 data-nosnippet>436</a>    /// use std::thread;
+<a href=#437 id=437 data-nosnippet>437</a>    /// use std::time::Duration;
 <a href=#438 id=438 data-nosnippet>438</a>    ///
-<a href=#439 id=439 data-nosnippet>439</a>    ///    runtime.block_on(async move {
-<a href=#440 id=440 data-nosnippet>440</a>    ///        task::spawn_blocking(move || {
-<a href=#441 id=441 data-nosnippet>441</a>    ///            thread::sleep(Duration::from_secs(10_000));
-<a href=#442 id=442 data-nosnippet>442</a>    ///        });
-<a href=#443 id=443 data-nosnippet>443</a>    ///    });
-<a href=#444 id=444 data-nosnippet>444</a>    ///
-<a href=#445 id=445 data-nosnippet>445</a>    ///    runtime.shutdown_timeout(Duration::from_millis(100));
-<a href=#446 id=446 data-nosnippet>446</a>    /// }
-<a href=#447 id=447 data-nosnippet>447</a>    /// # }
-<a href=#448 id=448 data-nosnippet>448</a>    /// ```
-<a href=#449 id=449 data-nosnippet>449</a>    </span><span class="kw">pub fn </span>shutdown_timeout(<span class="kw-2">mut </span><span class="self">self</span>, duration: Duration) {
-<a href=#450 id=450 data-nosnippet>450</a>        <span class="comment">// Wakeup and shutdown all the worker threads
-<a href=#451 id=451 data-nosnippet>451</a>        </span><span class="self">self</span>.handle.inner.shutdown();
-<a href=#452 id=452 data-nosnippet>452</a>        <span class="self">self</span>.blocking_pool.shutdown(<span class="prelude-val">Some</span>(duration));
-<a href=#453 id=453 data-nosnippet>453</a>    }
-<a href=#454 id=454 data-nosnippet>454</a>
-<a href=#455 id=455 data-nosnippet>455</a>    <span class="doccomment">/// Shuts down the runtime, without waiting for any spawned work to stop.
-<a href=#456 id=456 data-nosnippet>456</a>    ///
-<a href=#457 id=457 data-nosnippet>457</a>    /// This can be useful if you want to drop a runtime from within another runtime.
-<a href=#458 id=458 data-nosnippet>458</a>    /// Normally, dropping a runtime will block indefinitely for spawned blocking tasks
-<a href=#459 id=459 data-nosnippet>459</a>    /// to complete, which would normally not be permitted within an asynchronous context.
-<a href=#460 id=460 data-nosnippet>460</a>    /// By calling `shutdown_background()`, you can drop the runtime from such a context.
-<a href=#461 id=461 data-nosnippet>461</a>    ///
-<a href=#462 id=462 data-nosnippet>462</a>    /// Note however, that because we do not wait for any blocking tasks to complete, this
-<a href=#463 id=463 data-nosnippet>463</a>    /// may result in a resource leak (in that any blocking tasks are still running until they
-<a href=#464 id=464 data-nosnippet>464</a>    /// return.
-<a href=#465 id=465 data-nosnippet>465</a>    ///
-<a href=#466 id=466 data-nosnippet>466</a>    /// See the [struct level documentation](Runtime#shutdown) for more details.
-<a href=#467 id=467 data-nosnippet>467</a>    ///
-<a href=#468 id=468 data-nosnippet>468</a>    /// This function is equivalent to calling `shutdown_timeout(Duration::from_nanos(0))`.
-<a href=#469 id=469 data-nosnippet>469</a>    ///
-<a href=#470 id=470 data-nosnippet>470</a>    /// ```
-<a href=#471 id=471 data-nosnippet>471</a>    /// # #[cfg(not(target_family = "wasm"))]
-<a href=#472 id=472 data-nosnippet>472</a>    /// # {
-<a href=#473 id=473 data-nosnippet>473</a>    /// use tokio::runtime::Runtime;
-<a href=#474 id=474 data-nosnippet>474</a>    ///
-<a href=#475 id=475 data-nosnippet>475</a>    /// fn main() {
-<a href=#476 id=476 data-nosnippet>476</a>    ///    let runtime = Runtime::new().unwrap();
+<a href=#439 id=439 data-nosnippet>439</a>    /// fn main() {
+<a href=#440 id=440 data-nosnippet>440</a>    ///    let runtime = Runtime::new().unwrap();
+<a href=#441 id=441 data-nosnippet>441</a>    ///
+<a href=#442 id=442 data-nosnippet>442</a>    ///    runtime.block_on(async move {
+<a href=#443 id=443 data-nosnippet>443</a>    ///        task::spawn_blocking(move || {
+<a href=#444 id=444 data-nosnippet>444</a>    ///            thread::sleep(Duration::from_secs(10_000));
+<a href=#445 id=445 data-nosnippet>445</a>    ///        });
+<a href=#446 id=446 data-nosnippet>446</a>    ///    });
+<a href=#447 id=447 data-nosnippet>447</a>    ///
+<a href=#448 id=448 data-nosnippet>448</a>    ///    runtime.shutdown_timeout(Duration::from_millis(100));
+<a href=#449 id=449 data-nosnippet>449</a>    /// }
+<a href=#450 id=450 data-nosnippet>450</a>    /// # }
+<a href=#451 id=451 data-nosnippet>451</a>    /// ```
+<a href=#452 id=452 data-nosnippet>452</a>    </span><span class="kw">pub fn </span>shutdown_timeout(<span class="kw-2">mut </span><span class="self">self</span>, duration: Duration) {
+<a href=#453 id=453 data-nosnippet>453</a>        <span class="comment">// Wakeup and shutdown all the worker threads
+<a href=#454 id=454 data-nosnippet>454</a>        </span><span class="self">self</span>.handle.inner.shutdown();
+<a href=#455 id=455 data-nosnippet>455</a>        <span class="self">self</span>.blocking_pool.shutdown(<span class="prelude-val">Some</span>(duration));
+<a href=#456 id=456 data-nosnippet>456</a>    }
+<a href=#457 id=457 data-nosnippet>457</a>
+<a href=#458 id=458 data-nosnippet>458</a>    <span class="doccomment">/// Shuts down the runtime, without waiting for any spawned work to stop.
+<a href=#459 id=459 data-nosnippet>459</a>    ///
+<a href=#460 id=460 data-nosnippet>460</a>    /// This can be useful if you want to drop a runtime from within another runtime.
+<a href=#461 id=461 data-nosnippet>461</a>    /// Normally, dropping a runtime will block indefinitely for spawned blocking tasks
+<a href=#462 id=462 data-nosnippet>462</a>    /// to complete, which would normally not be permitted within an asynchronous context.
+<a href=#463 id=463 data-nosnippet>463</a>    /// By calling `shutdown_background()`, you can drop the runtime from such a context.
+<a href=#464 id=464 data-nosnippet>464</a>    ///
+<a href=#465 id=465 data-nosnippet>465</a>    /// Note however, that because we do not wait for any blocking tasks to complete, this
+<a href=#466 id=466 data-nosnippet>466</a>    /// may result in a resource leak (in that any blocking tasks are still running until they
+<a href=#467 id=467 data-nosnippet>467</a>    /// return.
+<a href=#468 id=468 data-nosnippet>468</a>    ///
+<a href=#469 id=469 data-nosnippet>469</a>    /// See the [struct level documentation](Runtime#shutdown) for more details.
+<a href=#470 id=470 data-nosnippet>470</a>    ///
+<a href=#471 id=471 data-nosnippet>471</a>    /// This function is equivalent to calling `shutdown_timeout(Duration::from_nanos(0))`.
+<a href=#472 id=472 data-nosnippet>472</a>    ///
+<a href=#473 id=473 data-nosnippet>473</a>    /// ```
+<a href=#474 id=474 data-nosnippet>474</a>    /// # #[cfg(not(target_family = "wasm"))]
+<a href=#475 id=475 data-nosnippet>475</a>    /// # {
+<a href=#476 id=476 data-nosnippet>476</a>    /// use tokio::runtime::Runtime;
 <a href=#477 id=477 data-nosnippet>477</a>    ///
-<a href=#478 id=478 data-nosnippet>478</a>    ///    runtime.block_on(async move {
-<a href=#479 id=479 data-nosnippet>479</a>    ///        let inner_runtime = Runtime::new().unwrap();
-<a href=#480 id=480 data-nosnippet>480</a>    ///        // ...
-<a href=#481 id=481 data-nosnippet>481</a>    ///        inner_runtime.shutdown_background();
-<a href=#482 id=482 data-nosnippet>482</a>    ///    });
-<a href=#483 id=483 data-nosnippet>483</a>    /// }
-<a href=#484 id=484 data-nosnippet>484</a>    /// # }
-<a href=#485 id=485 data-nosnippet>485</a>    /// ```
-<a href=#486 id=486 data-nosnippet>486</a>    </span><span class="kw">pub fn </span>shutdown_background(<span class="self">self</span>) {
-<a href=#487 id=487 data-nosnippet>487</a>        <span class="self">self</span>.shutdown_timeout(Duration::from_nanos(<span class="number">0</span>));
-<a href=#488 id=488 data-nosnippet>488</a>    }
-<a href=#489 id=489 data-nosnippet>489</a>
-<a href=#490 id=490 data-nosnippet>490</a>    <span class="doccomment">/// Returns a view that lets you get information about how the runtime
-<a href=#491 id=491 data-nosnippet>491</a>    /// is performing.
-<a href=#492 id=492 data-nosnippet>492</a>    </span><span class="kw">pub fn </span>metrics(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::runtime::RuntimeMetrics {
-<a href=#493 id=493 data-nosnippet>493</a>        <span class="self">self</span>.handle.metrics()
-<a href=#494 id=494 data-nosnippet>494</a>    }
-<a href=#495 id=495 data-nosnippet>495</a>}
-<a href=#496 id=496 data-nosnippet>496</a>
-<a href=#497 id=497 data-nosnippet>497</a><span class="kw">impl </span>Drop <span class="kw">for </span>Runtime {
-<a href=#498 id=498 data-nosnippet>498</a>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-<a href=#499 id=499 data-nosnippet>499</a>        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.scheduler {
-<a href=#500 id=500 data-nosnippet>500</a>            Scheduler::CurrentThread(current_thread) =&gt; {
-<a href=#501 id=501 data-nosnippet>501</a>                <span class="comment">// This ensures that tasks spawned on the current-thread
-<a href=#502 id=502 data-nosnippet>502</a>                // runtime are dropped inside the runtime's context.
-<a href=#503 id=503 data-nosnippet>503</a>                </span><span class="kw">let </span>_guard = context::try_set_current(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
-<a href=#504 id=504 data-nosnippet>504</a>                current_thread.shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
-<a href=#505 id=505 data-nosnippet>505</a>            }
-<a href=#506 id=506 data-nosnippet>506</a>            <span class="attr">#[cfg(feature = <span class="string">"rt-multi-thread"</span>)]
-<a href=#507 id=507 data-nosnippet>507</a>            </span>Scheduler::MultiThread(multi_thread) =&gt; {
-<a href=#508 id=508 data-nosnippet>508</a>                <span class="comment">// The threaded scheduler drops its tasks on its worker threads, which is
-<a href=#509 id=509 data-nosnippet>509</a>                // already in the runtime's context.
-<a href=#510 id=510 data-nosnippet>510</a>                </span>multi_thread.shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
-<a href=#511 id=511 data-nosnippet>511</a>            }
-<a href=#512 id=512 data-nosnippet>512</a>        }
-<a href=#513 id=513 data-nosnippet>513</a>    }
-<a href=#514 id=514 data-nosnippet>514</a>}
-<a href=#515 id=515 data-nosnippet>515</a>
-<a href=#516 id=516 data-nosnippet>516</a><span class="kw">impl </span>std::panic::UnwindSafe <span class="kw">for </span>Runtime {}
-<a href=#517 id=517 data-nosnippet>517</a>
-<a href=#518 id=518 data-nosnippet>518</a><span class="kw">impl </span>std::panic::RefUnwindSafe <span class="kw">for </span>Runtime {}
-<a href=#519 id=519 data-nosnippet>519</a>
-<a href=#520 id=520 data-nosnippet>520</a><span class="kw">fn </span>display_eq(d: <span class="kw">impl </span>std::fmt::Display, s: <span class="kw-2">&amp;</span>str) -&gt; bool {
-<a href=#521 id=521 data-nosnippet>521</a>    <span class="kw">use </span>std::fmt::Write;
+<a href=#478 id=478 data-nosnippet>478</a>    /// fn main() {
+<a href=#479 id=479 data-nosnippet>479</a>    ///    let runtime = Runtime::new().unwrap();
+<a href=#480 id=480 data-nosnippet>480</a>    ///
+<a href=#481 id=481 data-nosnippet>481</a>    ///    runtime.block_on(async move {
+<a href=#482 id=482 data-nosnippet>482</a>    ///        let inner_runtime = Runtime::new().unwrap();
+<a href=#483 id=483 data-nosnippet>483</a>    ///        // ...
+<a href=#484 id=484 data-nosnippet>484</a>    ///        inner_runtime.shutdown_background();
+<a href=#485 id=485 data-nosnippet>485</a>    ///    });
+<a href=#486 id=486 data-nosnippet>486</a>    /// }
+<a href=#487 id=487 data-nosnippet>487</a>    /// # }
+<a href=#488 id=488 data-nosnippet>488</a>    /// ```
+<a href=#489 id=489 data-nosnippet>489</a>    </span><span class="kw">pub fn </span>shutdown_background(<span class="self">self</span>) {
+<a href=#490 id=490 data-nosnippet>490</a>        <span class="self">self</span>.shutdown_timeout(Duration::from_nanos(<span class="number">0</span>));
+<a href=#491 id=491 data-nosnippet>491</a>    }
+<a href=#492 id=492 data-nosnippet>492</a>
+<a href=#493 id=493 data-nosnippet>493</a>    <span class="doccomment">/// Returns a view that lets you get information about how the runtime
+<a href=#494 id=494 data-nosnippet>494</a>    /// is performing.
+<a href=#495 id=495 data-nosnippet>495</a>    </span><span class="kw">pub fn </span>metrics(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::runtime::RuntimeMetrics {
+<a href=#496 id=496 data-nosnippet>496</a>        <span class="self">self</span>.handle.metrics()
+<a href=#497 id=497 data-nosnippet>497</a>    }
+<a href=#498 id=498 data-nosnippet>498</a>}
+<a href=#499 id=499 data-nosnippet>499</a>
+<a href=#500 id=500 data-nosnippet>500</a><span class="kw">impl </span>Drop <span class="kw">for </span>Runtime {
+<a href=#501 id=501 data-nosnippet>501</a>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<a href=#502 id=502 data-nosnippet>502</a>        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.scheduler {
+<a href=#503 id=503 data-nosnippet>503</a>            Scheduler::CurrentThread(current_thread) =&gt; {
+<a href=#504 id=504 data-nosnippet>504</a>                <span class="comment">// This ensures that tasks spawned on the current-thread
+<a href=#505 id=505 data-nosnippet>505</a>                // runtime are dropped inside the runtime's context.
+<a href=#506 id=506 data-nosnippet>506</a>                </span><span class="kw">let </span>_guard = context::try_set_current(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
+<a href=#507 id=507 data-nosnippet>507</a>                current_thread.shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
+<a href=#508 id=508 data-nosnippet>508</a>            }
+<a href=#509 id=509 data-nosnippet>509</a>            <span class="attr">#[cfg(feature = <span class="string">"rt-multi-thread"</span>)]
+<a href=#510 id=510 data-nosnippet>510</a>            </span>Scheduler::MultiThread(multi_thread) =&gt; {
+<a href=#511 id=511 data-nosnippet>511</a>                <span class="comment">// The threaded scheduler drops its tasks on its worker threads, which is
+<a href=#512 id=512 data-nosnippet>512</a>                // already in the runtime's context.
+<a href=#513 id=513 data-nosnippet>513</a>                </span>multi_thread.shutdown(<span class="kw-2">&amp;</span><span class="self">self</span>.handle.inner);
+<a href=#514 id=514 data-nosnippet>514</a>            }
+<a href=#515 id=515 data-nosnippet>515</a>        }
+<a href=#516 id=516 data-nosnippet>516</a>    }
+<a href=#517 id=517 data-nosnippet>517</a>}
+<a href=#518 id=518 data-nosnippet>518</a>
+<a href=#519 id=519 data-nosnippet>519</a><span class="kw">impl </span>std::panic::UnwindSafe <span class="kw">for </span>Runtime {}
+<a href=#520 id=520 data-nosnippet>520</a>
+<a href=#521 id=521 data-nosnippet>521</a><span class="kw">impl </span>std::panic::RefUnwindSafe <span class="kw">for </span>Runtime {}
 <a href=#522 id=522 data-nosnippet>522</a>
-<a href=#523 id=523 data-nosnippet>523</a>    <span class="kw">struct </span>FormatEq&lt;<span class="lifetime">'r</span>&gt; {
-<a href=#524 id=524 data-nosnippet>524</a>        remainder: <span class="kw-2">&amp;</span><span class="lifetime">'r </span>str,
-<a href=#525 id=525 data-nosnippet>525</a>        unequal: bool,
-<a href=#526 id=526 data-nosnippet>526</a>    }
-<a href=#527 id=527 data-nosnippet>527</a>
-<a href=#528 id=528 data-nosnippet>528</a>    <span class="kw">impl</span>&lt;<span class="lifetime">'r</span>&gt; Write <span class="kw">for </span>FormatEq&lt;<span class="lifetime">'r</span>&gt; {
-<a href=#529 id=529 data-nosnippet>529</a>        <span class="kw">fn </span>write_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>str) -&gt; std::fmt::Result {
-<a href=#530 id=530 data-nosnippet>530</a>            <span class="kw">if </span>!<span class="self">self</span>.unequal {
-<a href=#531 id=531 data-nosnippet>531</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(new_remainder) = <span class="self">self</span>.remainder.strip_prefix(s) {
-<a href=#532 id=532 data-nosnippet>532</a>                    <span class="self">self</span>.remainder = new_remainder;
-<a href=#533 id=533 data-nosnippet>533</a>                } <span class="kw">else </span>{
-<a href=#534 id=534 data-nosnippet>534</a>                    <span class="self">self</span>.unequal = <span class="bool-val">true</span>;
-<a href=#535 id=535 data-nosnippet>535</a>                }
-<a href=#536 id=536 data-nosnippet>536</a>            }
-<a href=#537 id=537 data-nosnippet>537</a>            <span class="prelude-val">Ok</span>(())
-<a href=#538 id=538 data-nosnippet>538</a>        }
-<a href=#539 id=539 data-nosnippet>539</a>    }
-<a href=#540 id=540 data-nosnippet>540</a>
-<a href=#541 id=541 data-nosnippet>541</a>    <span class="kw">let </span><span class="kw-2">mut </span>fmt_eq = FormatEq {
-<a href=#542 id=542 data-nosnippet>542</a>        remainder: s,
-<a href=#543 id=543 data-nosnippet>543</a>        unequal: <span class="bool-val">false</span>,
-<a href=#544 id=544 data-nosnippet>544</a>    };
-<a href=#545 id=545 data-nosnippet>545</a>    <span class="kw">let _ </span>= <span class="macro">write!</span>(fmt_eq, <span class="string">"{d}"</span>);
-<a href=#546 id=546 data-nosnippet>546</a>    fmt_eq.remainder.is_empty() &amp;&amp; !fmt_eq.unequal
-<a href=#547 id=547 data-nosnippet>547</a>}
-<a href=#548 id=548 data-nosnippet>548</a>
-<a href=#549 id=549 data-nosnippet>549</a><span class="doccomment">/// Checks whether the given error was emitted by Tokio when shutting down its runtime.
-<a href=#550 id=550 data-nosnippet>550</a>///
-<a href=#551 id=551 data-nosnippet>551</a>/// # Examples
-<a href=#552 id=552 data-nosnippet>552</a>///
-<a href=#553 id=553 data-nosnippet>553</a>/// ```
-<a href=#554 id=554 data-nosnippet>554</a>/// # #[cfg(not(target_family = "wasm"))]
-<a href=#555 id=555 data-nosnippet>555</a>/// # {
-<a href=#556 id=556 data-nosnippet>556</a>/// use tokio::runtime::Runtime;
-<a href=#557 id=557 data-nosnippet>557</a>/// use tokio::net::TcpListener;
-<a href=#558 id=558 data-nosnippet>558</a>///
-<a href=#559 id=559 data-nosnippet>559</a>/// fn main() {
-<a href=#560 id=560 data-nosnippet>560</a>///     let rt1 = Runtime::new().unwrap();
-<a href=#561 id=561 data-nosnippet>561</a>///     let rt2 = Runtime::new().unwrap();
-<a href=#562 id=562 data-nosnippet>562</a>///
-<a href=#563 id=563 data-nosnippet>563</a>///     let listener = rt1.block_on(async {
-<a href=#564 id=564 data-nosnippet>564</a>///         TcpListener::bind("127.0.0.1:0").await.unwrap()
-<a href=#565 id=565 data-nosnippet>565</a>///     });
-<a href=#566 id=566 data-nosnippet>566</a>///
-<a href=#567 id=567 data-nosnippet>567</a>///     drop(rt1);
-<a href=#568 id=568 data-nosnippet>568</a>///
-<a href=#569 id=569 data-nosnippet>569</a>///     rt2.block_on(async {
-<a href=#570 id=570 data-nosnippet>570</a>///         let res = listener.accept().await;
-<a href=#571 id=571 data-nosnippet>571</a>///         assert!(res.is_err());
-<a href=#572 id=572 data-nosnippet>572</a>///         assert!(tokio::runtime::is_rt_shutdown_err(res.as_ref().unwrap_err()));
-<a href=#573 id=573 data-nosnippet>573</a>///     });
-<a href=#574 id=574 data-nosnippet>574</a>/// }
-<a href=#575 id=575 data-nosnippet>575</a>/// # }
-<a href=#576 id=576 data-nosnippet>576</a>/// ```
-<a href=#577 id=577 data-nosnippet>577</a></span><span class="kw">pub fn </span>is_rt_shutdown_err(err: <span class="kw-2">&amp;</span>io::Error) -&gt; bool {
-<a href=#578 id=578 data-nosnippet>578</a>    <span class="kw">if let </span><span class="prelude-val">Some</span>(inner) = err.get_ref() {
-<a href=#579 id=579 data-nosnippet>579</a>        err.kind() == io::ErrorKind::Other
-<a href=#580 id=580 data-nosnippet>580</a>            &amp;&amp; inner.source().is_none()
-<a href=#581 id=581 data-nosnippet>581</a>            &amp;&amp; display_eq(inner, RUNTIME_SHUTTING_DOWN_ERROR)
-<a href=#582 id=582 data-nosnippet>582</a>    } <span class="kw">else </span>{
-<a href=#583 id=583 data-nosnippet>583</a>        <span class="bool-val">false
-<a href=#584 id=584 data-nosnippet>584</a>    </span>}
-<a href=#585 id=585 data-nosnippet>585</a>}
+<a href=#523 id=523 data-nosnippet>523</a><span class="kw">fn </span>display_eq(d: <span class="kw">impl </span>std::fmt::Display, s: <span class="kw-2">&amp;</span>str) -&gt; bool {
+<a href=#524 id=524 data-nosnippet>524</a>    <span class="kw">use </span>std::fmt::Write;
+<a href=#525 id=525 data-nosnippet>525</a>
+<a href=#526 id=526 data-nosnippet>526</a>    <span class="kw">struct </span>FormatEq&lt;<span class="lifetime">'r</span>&gt; {
+<a href=#527 id=527 data-nosnippet>527</a>        remainder: <span class="kw-2">&amp;</span><span class="lifetime">'r </span>str,
+<a href=#528 id=528 data-nosnippet>528</a>        unequal: bool,
+<a href=#529 id=529 data-nosnippet>529</a>    }
+<a href=#530 id=530 data-nosnippet>530</a>
+<a href=#531 id=531 data-nosnippet>531</a>    <span class="kw">impl</span>&lt;<span class="lifetime">'r</span>&gt; Write <span class="kw">for </span>FormatEq&lt;<span class="lifetime">'r</span>&gt; {
+<a href=#532 id=532 data-nosnippet>532</a>        <span class="kw">fn </span>write_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>str) -&gt; std::fmt::Result {
+<a href=#533 id=533 data-nosnippet>533</a>            <span class="kw">if </span>!<span class="self">self</span>.unequal {
+<a href=#534 id=534 data-nosnippet>534</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(new_remainder) = <span class="self">self</span>.remainder.strip_prefix(s) {
+<a href=#535 id=535 data-nosnippet>535</a>                    <span class="self">self</span>.remainder = new_remainder;
+<a href=#536 id=536 data-nosnippet>536</a>                } <span class="kw">else </span>{
+<a href=#537 id=537 data-nosnippet>537</a>                    <span class="self">self</span>.unequal = <span class="bool-val">true</span>;
+<a href=#538 id=538 data-nosnippet>538</a>                }
+<a href=#539 id=539 data-nosnippet>539</a>            }
+<a href=#540 id=540 data-nosnippet>540</a>            <span class="prelude-val">Ok</span>(())
+<a href=#541 id=541 data-nosnippet>541</a>        }
+<a href=#542 id=542 data-nosnippet>542</a>    }
+<a href=#543 id=543 data-nosnippet>543</a>
+<a href=#544 id=544 data-nosnippet>544</a>    <span class="kw">let </span><span class="kw-2">mut </span>fmt_eq = FormatEq {
+<a href=#545 id=545 data-nosnippet>545</a>        remainder: s,
+<a href=#546 id=546 data-nosnippet>546</a>        unequal: <span class="bool-val">false</span>,
+<a href=#547 id=547 data-nosnippet>547</a>    };
+<a href=#548 id=548 data-nosnippet>548</a>    <span class="kw">let _ </span>= <span class="macro">write!</span>(fmt_eq, <span class="string">"{d}"</span>);
+<a href=#549 id=549 data-nosnippet>549</a>    fmt_eq.remainder.is_empty() &amp;&amp; !fmt_eq.unequal
+<a href=#550 id=550 data-nosnippet>550</a>}
+<a href=#551 id=551 data-nosnippet>551</a>
+<a href=#552 id=552 data-nosnippet>552</a><span class="doccomment">/// Checks whether the given error was emitted by Tokio when shutting down its runtime.
+<a href=#553 id=553 data-nosnippet>553</a>///
+<a href=#554 id=554 data-nosnippet>554</a>/// # Examples
+<a href=#555 id=555 data-nosnippet>555</a>///
+<a href=#556 id=556 data-nosnippet>556</a>/// ```
+<a href=#557 id=557 data-nosnippet>557</a>/// # #[cfg(not(target_family = "wasm"))]
+<a href=#558 id=558 data-nosnippet>558</a>/// # {
+<a href=#559 id=559 data-nosnippet>559</a>/// use tokio::runtime::Runtime;
+<a href=#560 id=560 data-nosnippet>560</a>/// use tokio::net::TcpListener;
+<a href=#561 id=561 data-nosnippet>561</a>///
+<a href=#562 id=562 data-nosnippet>562</a>/// fn main() {
+<a href=#563 id=563 data-nosnippet>563</a>///     let rt1 = Runtime::new().unwrap();
+<a href=#564 id=564 data-nosnippet>564</a>///     let rt2 = Runtime::new().unwrap();
+<a href=#565 id=565 data-nosnippet>565</a>///
+<a href=#566 id=566 data-nosnippet>566</a>///     let listener = rt1.block_on(async {
+<a href=#567 id=567 data-nosnippet>567</a>///         TcpListener::bind("127.0.0.1:0").await.unwrap()
+<a href=#568 id=568 data-nosnippet>568</a>///     });
+<a href=#569 id=569 data-nosnippet>569</a>///
+<a href=#570 id=570 data-nosnippet>570</a>///     drop(rt1);
+<a href=#571 id=571 data-nosnippet>571</a>///
+<a href=#572 id=572 data-nosnippet>572</a>///     rt2.block_on(async {
+<a href=#573 id=573 data-nosnippet>573</a>///         let res = listener.accept().await;
+<a href=#574 id=574 data-nosnippet>574</a>///         assert!(res.is_err());
+<a href=#575 id=575 data-nosnippet>575</a>///         assert!(tokio::runtime::is_rt_shutdown_err(res.as_ref().unwrap_err()));
+<a href=#576 id=576 data-nosnippet>576</a>///     });
+<a href=#577 id=577 data-nosnippet>577</a>/// }
+<a href=#578 id=578 data-nosnippet>578</a>/// # }
+<a href=#579 id=579 data-nosnippet>579</a>/// ```
+<a href=#580 id=580 data-nosnippet>580</a></span><span class="kw">pub fn </span>is_rt_shutdown_err(err: <span class="kw-2">&amp;</span>io::Error) -&gt; bool {
+<a href=#581 id=581 data-nosnippet>581</a>    <span class="kw">if let </span><span class="prelude-val">Some</span>(inner) = err.get_ref() {
+<a href=#582 id=582 data-nosnippet>582</a>        err.kind() == io::ErrorKind::Other
+<a href=#583 id=583 data-nosnippet>583</a>            &amp;&amp; inner.source().is_none()
+<a href=#584 id=584 data-nosnippet>584</a>            &amp;&amp; display_eq(inner, RUNTIME_SHUTTING_DOWN_ERROR)
+<a href=#585 id=585 data-nosnippet>585</a>    } <span class="kw">else </span>{
+<a href=#586 id=586 data-nosnippet>586</a>        <span class="bool-val">false
+<a href=#587 id=587 data-nosnippet>587</a>    </span>}
+<a href=#588 id=588 data-nosnippet>588</a>}
 </code></pre></div></section></main></body></html>
