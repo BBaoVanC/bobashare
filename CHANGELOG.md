@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use `sandbox` Content-Security-Policy on raw file pages, to prevent malicious
   HTML files from being possible to serve without downloading first
+- Further restrict Content-Security-Policy to only allow CSS and JS by specific
+  hashes
 
 
 ## [v0.2.18] - 2026-08-19

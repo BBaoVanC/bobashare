@@ -252,8 +252,8 @@ pub fn render_markdown_with_syntax_set(
 ) -> Result<String, RenderMarkdownWithSyntaxError> {
     let mut parser = Parser::new_ext(source, MARKDOWN_OPTIONS).peekable();
     let mut output = Vec::new();
-    // wrap multiline code blocks in a pre.highlight, and apply a syntect class to
-    // the inner code
+    // wrap multiline code blocks in a pre.highlight, and apply a syntect class
+    // to the inner code
     while let Some(event) = parser.next() {
         match event {
             // patch GHSA-g7gw-4888-mr65

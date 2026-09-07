@@ -19,6 +19,7 @@ use axum::{
     routing::get,
     Router,
 };
+use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
 use chrono::TimeDelta;
 use http::header::{HeaderName, HeaderValue};
 use hyper::StatusCode;
@@ -27,7 +28,7 @@ use tower_http::set_header::SetResponseHeaderLayer;
 use tracing::{event, Level};
 use url::Url;
 
-use crate::AppState;
+use crate::{static_routes::get_asset_hashes, AppState};
 
 pub mod about;
 pub mod display;
@@ -143,13 +144,32 @@ pub fn router() -> Router<&'static AppState> {
         HeaderName::from_static("x-robots-tag"),
         HeaderValue::from_static("noindex"),
     );
+    let csp_static_src_hashes = {
+        let hashes = get_asset_hashes();
+        let css_hashes = hashes
+            .css
+            .iter()
+            .map(|s| format!("'sha256-{}'", BASE64_STANDARD.encode(s)))
+            .collect::<Vec<String>>();
+        let js_hashes = hashes
+            .js
+            .iter()
+            .map(|s| format!("'sha256-{}'", BASE64_STANDARD.encode(s)))
+            .collect::<Vec<String>>();
+        format!(
+            "style-src {}; script-src {};",
+            css_hashes.join(" "),
+            js_hashes.join(" ")
+        )
+    };
+    let csp_normal = format!("default-src 'none'; img-src 'self' data:; {csp_static_src_hashes}");
     let csp_normal = SetResponseHeaderLayer::overriding(
         http::header::CONTENT_SECURITY_POLICY,
-        HeaderValue::from_static("default-src 'self'; img-src 'self' data:;"),
+        HeaderValue::from_str(&csp_normal).unwrap(),
     );
     let csp_sandbox = SetResponseHeaderLayer::overriding(
         http::header::CONTENT_SECURITY_POLICY,
-        HeaderValue::from_static("sandbox;"),
+        HeaderValue::from_static("sandbox; default-src none;"),
     );
 
     Router::new()

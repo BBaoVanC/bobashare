@@ -9,6 +9,30 @@ use tracing::{event, instrument, Level};
 #[folder = "static/"]
 struct Asset;
 
+#[derive(Debug, Clone)]
+pub(crate) struct AssetHashes {
+    pub(crate) css: Vec<[u8; 32]>,
+    pub(crate) js: Vec<[u8; 32]>,
+}
+pub(crate) fn get_asset_hashes() -> AssetHashes {
+    let mut hashes = AssetHashes {
+        css: Vec::new(),
+        js: Vec::new(),
+    };
+    for f in Asset::iter() {
+        if f.starts_with("css/") {
+            hashes
+                .css
+                .push(Asset::get(&f).unwrap().metadata.sha256_hash());
+        } else if f.starts_with("js/") {
+            hashes
+                .js
+                .push(Asset::get(&f).unwrap().metadata.sha256_hash());
+        }
+    }
+    hashes
+}
+
 #[instrument(skip(headers), fields(if_none_match = ?headers.get(header::IF_NONE_MATCH)))]
 pub async fn handler(uri: Uri, headers: HeaderMap) -> impl IntoResponse {
     let path = uri.path().trim_start_matches('/');

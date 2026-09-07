@@ -138,11 +138,11 @@ pub async fn put(
     headers: HeaderMap,
     body: Body,
 ) -> Result<impl IntoResponse, UploadError> {
-    // hyper will automatically make sure the body is <= the content-length, so we
-    // can rely on it here
+    // hyper will automatically make sure the body is <= the content-length, so
+    // we can rely on it here
     //
-    // also note that hyper seems to intercept the Content-Length header and return
-    // its own empty response instead of using WithRejection here
+    // also note that hyper seems to intercept the Content-Length header and
+    // return its own empty response instead of using WithRejection here
     if content_length.0 > state.max_file_size {
         event!(
             Level::INFO,
@@ -327,7 +327,8 @@ pub async fn put(
         .context("error flushing upload metadata to disk")?;
     event!(Level::DEBUG, "flushed upload metadata to disk");
 
-    // SAFETY: this shouldn't fail because `metadata.id` should be valid in a URL
+    // SAFETY: this shouldn't fail because `metadata.id` should be valid in a
+    // URL
     let url = state.base_url.join(&metadata.id).unwrap().to_string();
     let direct_url = state.raw_url.join(&metadata.id).unwrap().to_string();
     event!(

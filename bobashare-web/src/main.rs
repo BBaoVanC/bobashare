@@ -147,7 +147,8 @@ async fn main() -> anyhow::Result<()> {
         .unwrap()
         .map(PathBuf::from);
     let about_page_content = if let Some(ref path) = about_page {
-        // no reason to use tokio here since there is nothing to run concurrently yet
+        // no reason to use tokio here since there is nothing to run
+        // concurrently yet
         event!(
             Level::DEBUG,
             "opening about page source file at {}",
@@ -337,7 +338,8 @@ async fn main() -> anyhow::Result<()> {
 
     // start everything
     let join_results = tokio::join!(server_exec, cleanup_exec);
-    join_results.0.context("error running server")?; // handle error in axum server
+    join_results.0.context("error running server")?; // handle error in axum
+                                                     // server
 
     Ok(())
 }
