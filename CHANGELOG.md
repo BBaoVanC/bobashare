@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - with previous behavior, it defaults to having no restrictions and allows
     everything, apart from sandboxing
 
+### Features
+
+- Add support for range requests on file downloads
+  - This supports partial downloads, things such as aria2c or seeking to the
+    middle of a video embed
+- Add support for ETag on raw files
+  - Allows uploads to be cached so clients don't redownload them
 
 ## [v0.2.18] - 2026-08-19
 
