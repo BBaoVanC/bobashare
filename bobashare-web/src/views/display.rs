@@ -3,8 +3,7 @@
 use anyhow::Context;
 use askama::Template;
 use axum::{
-    body::Body,
-    extract::{Path, Query, State},
+    extract::{Path, Query, Request, State},
     response::IntoResponse,
 };
 use bobashare::storage::{file::OpenUploadError, handle::UploadHandle};
@@ -16,7 +15,7 @@ use serde::{Deserialize, Deserializer};
 use syntect::{html::ClassedHTMLGenerator, util::LinesWithEndings};
 use thiserror::Error;
 use tokio::io::AsyncReadExt;
-use tokio_util::io::ReaderStream;
+use tower_http::services::ServeFile;
 use tracing::{event, instrument, Level};
 use url::Url;
 
@@ -236,11 +235,12 @@ pub struct RawParams {
     download: bool,
 }
 /// Download the raw upload file
-#[instrument(skip(state))]
+#[instrument(skip(state, request))]
 pub async fn raw(
     State(state): State<&'static AppState>,
     Path(id): Path<String>,
     Query(RawParams { download }): Query<RawParams>,
+    request: Request,
 ) -> Result<impl IntoResponse, ErrorResponse> {
     let tmpl_state = TemplateState::from(state);
     let upload = open_upload(state, id).await.map_err(|e| match e {
@@ -256,42 +256,43 @@ pub async fn raw(
         },
     })?;
 
-    let size = upload
-        .file
-        .metadata()
+    let response = ServeFile::new_with_mime(&upload.file_path, &upload.metadata.mimetype)
+        .try_call(request)
         .await
         .map_err(|e| ErrorTemplate {
             state: tmpl_state.clone(),
-            code: StatusCode::INTERNAL_SERVER_ERROR,
-            message: format!("error reading file size: {e}"),
-        })?
-        .len();
-    event!(Level::DEBUG, size, "found size of upload file",);
-
-    let body = Body::from_stream(ReaderStream::new(upload.file));
+            code: if e.kind() == std::io::ErrorKind::NotFound {
+                StatusCode::NOT_FOUND
+            } else {
+                StatusCode::INTERNAL_SERVER_ERROR
+            },
+            message: format!("error serving upload: {e}"),
+        })?;
 
     event!(
         Level::INFO,
         "type" = %upload.metadata.mimetype,
-        length = size,
+        status = %response.status(),
         filename = upload.metadata.filename,
-        "successfully streaming upload file to client"
+        "serving upload file to client"
     );
+    if !matches!(
+        response.status(),
+        StatusCode::OK | StatusCode::PARTIAL_CONTENT
+    ) {
+        return Ok(response.into_response());
+    }
+
     Ok((
-        StatusCode::OK,
-        [
-            (header::CONTENT_TYPE, upload.metadata.mimetype.to_string()),
-            (header::CONTENT_LENGTH, size.to_string()),
-            (
-                header::CONTENT_DISPOSITION,
-                // if params.download {
-                if download {
-                    format!("attachment; filename=\"{}\"", upload.metadata.filename)
-                } else {
-                    format!("inline; filename=\"{}\"", upload.metadata.filename)
-                },
-            ),
-        ],
-        body,
-    ))
+        [(
+            header::CONTENT_DISPOSITION,
+            if download {
+                format!("attachment; filename=\"{}\"", upload.metadata.filename)
+            } else {
+                format!("inline; filename=\"{}\"", upload.metadata.filename)
+            },
+        )],
+        response,
+    )
+        .into_response())
 }
