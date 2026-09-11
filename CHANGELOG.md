@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.19] - 2026-09-11
+
 ### Security
 
 - Use `sandbox` Content-Security-Policy on raw file pages, to prevent malicious
@@ -307,7 +309,9 @@ bobashare-web:
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.17..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.19..HEAD
+[v0.2.19]: https://github.com/BBaoVanC/bobashare/compare/v0.2.18..v0.2.19
+[v0.2.18]: https://github.com/BBaoVanC/bobashare/compare/v0.2.17..v0.2.18
 [v0.2.17]: https://github.com/BBaoVanC/bobashare/compare/v0.2.16..v0.2.17
 [v0.2.16]: https://github.com/BBaoVanC/bobashare/compare/v0.2.15..v0.2.16
 [v0.2.15]: https://github.com/BBaoVanC/bobashare/compare/v0.2.14..v0.2.15
