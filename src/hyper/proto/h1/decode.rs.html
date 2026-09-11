@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.0/src/proto/h1/decode.rs`."><title>decode.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/proto/h1/</div>decode.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::error::Error <span class="kw">as </span>StdError;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hyper-1.11.1/src/proto/h1/decode.rs`."><title>decode.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="hyper" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hyper/proto/h1/</div>decode.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::error::Error <span class="kw">as </span>StdError;
 <a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::fmt;
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>std::io;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span>std::task::{Context, Poll};
@@ -147,8 +147,8 @@
 <a href=#147 id=147 data-nosnippet>147</a>        body: <span class="kw-2">&amp;mut </span>R,
 <a href=#148 id=148 data-nosnippet>148</a>    ) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;Frame&lt;Bytes&gt;, io::Error&gt;&gt; {
 <a href=#149 id=149 data-nosnippet>149</a>        <span class="macro">trace!</span>(<span class="string">"decode; state={:?}"</span>, <span class="self">self</span>.kind);
-<a href=#150 id=150 data-nosnippet>150</a>        <span class="kw">match </span><span class="self">self</span>.kind {
-<a href=#151 id=151 data-nosnippet>151</a>            Length(<span class="kw-2">ref mut </span>remaining) =&gt; {
+<a href=#150 id=150 data-nosnippet>150</a>        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.kind {
+<a href=#151 id=151 data-nosnippet>151</a>            Length(remaining) =&gt; {
 <a href=#152 id=152 data-nosnippet>152</a>                <span class="kw">if </span><span class="kw-2">*</span>remaining == <span class="number">0 </span>{
 <a href=#153 id=153 data-nosnippet>153</a>                    Poll::Ready(<span class="prelude-val">Ok</span>(Frame::data(Bytes::new())))
 <a href=#154 id=154 data-nosnippet>154</a>                } <span class="kw">else </span>{
@@ -169,13 +169,13 @@
 <a href=#169 id=169 data-nosnippet>169</a>                }
 <a href=#170 id=170 data-nosnippet>170</a>            }
 <a href=#171 id=171 data-nosnippet>171</a>            Chunked {
-<a href=#172 id=172 data-nosnippet>172</a>                <span class="kw-2">ref mut </span>state,
-<a href=#173 id=173 data-nosnippet>173</a>                <span class="kw-2">ref mut </span>chunk_len,
-<a href=#174 id=174 data-nosnippet>174</a>                <span class="kw-2">ref mut </span>extensions_cnt,
-<a href=#175 id=175 data-nosnippet>175</a>                <span class="kw-2">ref mut </span>trailers_buf,
-<a href=#176 id=176 data-nosnippet>176</a>                <span class="kw-2">ref mut </span>trailers_cnt,
-<a href=#177 id=177 data-nosnippet>177</a>                <span class="kw-2">ref </span>h1_max_headers,
-<a href=#178 id=178 data-nosnippet>178</a>                <span class="kw-2">ref </span>h1_max_header_size,
+<a href=#172 id=172 data-nosnippet>172</a>                state,
+<a href=#173 id=173 data-nosnippet>173</a>                chunk_len,
+<a href=#174 id=174 data-nosnippet>174</a>                extensions_cnt,
+<a href=#175 id=175 data-nosnippet>175</a>                trailers_buf,
+<a href=#176 id=176 data-nosnippet>176</a>                trailers_cnt,
+<a href=#177 id=177 data-nosnippet>177</a>                h1_max_headers,
+<a href=#178 id=178 data-nosnippet>178</a>                h1_max_header_size,
 <a href=#179 id=179 data-nosnippet>179</a>            } =&gt; {
 <a href=#180 id=180 data-nosnippet>180</a>                <span class="kw">let </span>h1_max_headers = h1_max_headers.unwrap_or(DEFAULT_MAX_HEADERS);
 <a href=#181 id=181 data-nosnippet>181</a>                <span class="kw">let </span>h1_max_header_size = h1_max_header_size.unwrap_or(TRAILER_LIMIT);
@@ -221,7 +221,7 @@
 <a href=#221 id=221 data-nosnippet>221</a>                    }
 <a href=#222 id=222 data-nosnippet>222</a>                }
 <a href=#223 id=223 data-nosnippet>223</a>            }
-<a href=#224 id=224 data-nosnippet>224</a>            Eof(<span class="kw-2">ref mut </span>is_eof) =&gt; {
+<a href=#224 id=224 data-nosnippet>224</a>            Eof(is_eof) =&gt; {
 <a href=#225 id=225 data-nosnippet>225</a>                <span class="kw">if </span><span class="kw-2">*</span>is_eof {
 <a href=#226 id=226 data-nosnippet>226</a>                    Poll::Ready(<span class="prelude-val">Ok</span>(Frame::data(Bytes::new())))
 <a href=#227 id=227 data-nosnippet>227</a>                } <span class="kw">else </span>{
@@ -604,7 +604,7 @@
 <a href=#604 id=604 data-nosnippet>604</a>                        buf.put_u8(byte);
 <a href=#605 id=605 data-nosnippet>605</a>                        <span class="kw-2">*</span>trailers_buf = <span class="prelude-val">Some</span>(buf);
 <a href=#606 id=606 data-nosnippet>606</a>                    }
-<a href=#607 id=607 data-nosnippet>607</a>                    <span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>trailers_buf) =&gt; {
+<a href=#607 id=607 data-nosnippet>607</a>                    <span class="prelude-val">Some</span>(trailers_buf) =&gt; {
 <a href=#608 id=608 data-nosnippet>608</a>                        <span class="macro">put_u8!</span>(trailers_buf, byte, h1_max_header_size);
 <a href=#609 id=609 data-nosnippet>609</a>                    }
 <a href=#610 id=610 data-nosnippet>610</a>                }

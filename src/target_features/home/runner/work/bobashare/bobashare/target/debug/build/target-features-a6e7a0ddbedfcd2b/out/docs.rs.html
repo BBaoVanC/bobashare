@@ -1,0 +1,694 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/work/bobashare/bobashare/target/debug/build/target-features-a6e7a0ddbedfcd2b/out/docs.rs`."><title>docs.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../../../../../../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../../../../../../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../../../../../../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../../../../../../../../../" data-static-root-path="../../../../../../../../../../../../static.files/" data-current-crate="target_features" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../../../../../../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../../../../../../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../../../../../../../../../src-files.js"></script><script defer src="../../../../../../../../../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">target_features/home/runner/work/bobashare/bobashare/target/debug/build/target-features-a6e7a0ddbedfcd2b/out/</div>docs.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">/// aarch64 documentation
+<a href=#2 id=2 data-nosnippet>2</a>///
+<a href=#3 id=3 data-nosnippet>3</a>/// ## Features
+<a href=#4 id=4 data-nosnippet>4</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#5 id=5 data-nosnippet>5</a>/// | ------- | ----------- | ------------------------ |
+<a href=#6 id=6 data-nosnippet>6</a>/// | `aes` | Enable AES support (FEAT_AES, FEAT_PMULL). | `neon` |
+<a href=#7 id=7 data-nosnippet>7</a>/// | `bf16` | Enable BFloat16 Extension (FEAT_BF16). |  |
+<a href=#8 id=8 data-nosnippet>8</a>/// | `bti` | Enable Branch Target Identification (FEAT_BTI). |  |
+<a href=#9 id=9 data-nosnippet>9</a>/// | `crc` | Enable ARMv8 CRC-32 checksum instructions (FEAT_CRC32). |  |
+<a href=#10 id=10 data-nosnippet>10</a>/// | `dit` | Enable v8.4-A Data Independent Timing instructions (FEAT_DIT). |  |
+<a href=#11 id=11 data-nosnippet>11</a>/// | `dotprod` | Enable dot product support (FEAT_DotProd). |  |
+<a href=#12 id=12 data-nosnippet>12</a>/// | `dpb` | Enable v8.2 data Cache Clean to Point of Persistence (FEAT_DPB). |  |
+<a href=#13 id=13 data-nosnippet>13</a>/// | `dpb2` | Enable v8.5 Cache Clean to Point of Deep Persistence (FEAT_DPB2). |  |
+<a href=#14 id=14 data-nosnippet>14</a>/// | `f32mm` | Enable Matrix Multiply FP32 Extension (FEAT_F32MM). | `fp16`, `neon`, `sve` |
+<a href=#15 id=15 data-nosnippet>15</a>/// | `f64mm` | Enable Matrix Multiply FP64 Extension (FEAT_F64MM). | `fp16`, `neon`, `sve` |
+<a href=#16 id=16 data-nosnippet>16</a>/// | `fcma` | Enable v8.3-A Floating-point complex number support (FEAT_FCMA). | `neon` |
+<a href=#17 id=17 data-nosnippet>17</a>/// | `fhm` | Enable FP16 FML instructions (FEAT_FHM). | `fp16`, `neon` |
+<a href=#18 id=18 data-nosnippet>18</a>/// | `flagm` | Enable v8.4-A Flag Manipulation Instructions (FEAT_FlagM). |  |
+<a href=#19 id=19 data-nosnippet>19</a>/// | `fp16` | Full FP16 (FEAT_FP16). | `neon` |
+<a href=#20 id=20 data-nosnippet>20</a>/// | `frintts` | Enable FRInt[32|64][Z|X] instructions that round a floating-point number to an integer (in FP format) forcing it to fit into a 32- or 64-bit int (FEAT_FRINTTS). |  |
+<a href=#21 id=21 data-nosnippet>21</a>/// | `i8mm` | Enable Matrix Multiply Int8 Extension (FEAT_I8MM). |  |
+<a href=#22 id=22 data-nosnippet>22</a>/// | `jsconv` | Enable v8.3-A JavaScript FP conversion instructions (FEAT_JSCVT). | `neon` |
+<a href=#23 id=23 data-nosnippet>23</a>/// | `lor` | Enables ARM v8.1 Limited Ordering Regions extension (FEAT_LOR). |  |
+<a href=#24 id=24 data-nosnippet>24</a>/// | `lse` | Enable ARMv8.1 Large System Extension (LSE) atomic instructions (FEAT_LSE). |  |
+<a href=#25 id=25 data-nosnippet>25</a>/// | `mte` | Enable Memory Tagging Extension (FEAT_MTE, FEAT_MTE2). |  |
+<a href=#26 id=26 data-nosnippet>26</a>/// | `neon` | Enable Advanced SIMD instructions (FEAT_AdvSIMD). |  |
+<a href=#27 id=27 data-nosnippet>27</a>/// | `paca` | Enable v8.3-A Pointer Authentication extension (FEAT_PAuth). | `pacg` |
+<a href=#28 id=28 data-nosnippet>28</a>/// | `pacg` | Enable v8.3-A Pointer Authentication extension (FEAT_PAuth). | `paca` |
+<a href=#29 id=29 data-nosnippet>29</a>/// | `pan` | Enables ARM v8.1 Privileged Access-Never extension (FEAT_PAN). |  |
+<a href=#30 id=30 data-nosnippet>30</a>/// | `pmuv3` | Enable Code Generation for ARMv8 PMUv3 Performance Monitors extension (FEAT_PMUv3). |  |
+<a href=#31 id=31 data-nosnippet>31</a>/// | `rand` | Enable Random Number generation instructions (FEAT_RNG). |  |
+<a href=#32 id=32 data-nosnippet>32</a>/// | `ras` | Enable ARMv8 Reliability, Availability and Serviceability Extensions (FEAT_RAS, FEAT_RASv1p1). |  |
+<a href=#33 id=33 data-nosnippet>33</a>/// | `rcpc` | Enable support for RCPC extension (FEAT_LRCPC). |  |
+<a href=#34 id=34 data-nosnippet>34</a>/// | `rcpc2` | Enable v8.4-A RCPC instructions with Immediate Offsets (FEAT_LRCPC2). | `rcpc` |
+<a href=#35 id=35 data-nosnippet>35</a>/// | `rdm` | Enable ARMv8.1 Rounding Double Multiply Add/Subtract instructions (FEAT_RDM). |  |
+<a href=#36 id=36 data-nosnippet>36</a>/// | `sb` | Enable v8.5 Speculation Barrier (FEAT_SB). |  |
+<a href=#37 id=37 data-nosnippet>37</a>/// | `sha2` | Enable SHA1 and SHA256 support (FEAT_SHA1, FEAT_SHA256). | `neon` |
+<a href=#38 id=38 data-nosnippet>38</a>/// | `sha3` | Enable SHA512 and SHA3 support (FEAT_SHA3, FEAT_SHA512). | `neon`, `sha2` |
+<a href=#39 id=39 data-nosnippet>39</a>/// | `sm4` | Enable SM3 and SM4 support (FEAT_SM4, FEAT_SM3). | `neon` |
+<a href=#40 id=40 data-nosnippet>40</a>/// | `spe` | Enable Statistical Profiling extension (FEAT_SPE). |  |
+<a href=#41 id=41 data-nosnippet>41</a>/// | `ssbs` | Enable Speculative Store Bypass Safe bit (FEAT_SSBS, FEAT_SSBS2). |  |
+<a href=#42 id=42 data-nosnippet>42</a>/// | `sve` | Enable Scalable Vector Extension (SVE) instructions (FEAT_SVE). | `fp16`, `neon` |
+<a href=#43 id=43 data-nosnippet>43</a>/// | `sve2` | Enable Scalable Vector Extension 2 (SVE2) instructions (FEAT_SVE2). | `fp16`, `neon`, `sve` |
+<a href=#44 id=44 data-nosnippet>44</a>/// | `sve2-aes` | Enable AES SVE2 instructions (FEAT_SVE_AES, FEAT_SVE_PMULL128). | `aes`, `fp16`, `neon`, `sve`, `sve2` |
+<a href=#45 id=45 data-nosnippet>45</a>/// | `sve2-bitperm` | Enable bit permutation SVE2 instructions (FEAT_SVE_BitPerm). | `fp16`, `neon`, `sve`, `sve2` |
+<a href=#46 id=46 data-nosnippet>46</a>/// | `sve2-sha3` | Enable SHA3 SVE2 instructions (FEAT_SVE_SHA3). | `fp16`, `neon`, `sha2`, `sha3`, `sve`, `sve2` |
+<a href=#47 id=47 data-nosnippet>47</a>/// | `sve2-sm4` | Enable SM4 SVE2 instructions (FEAT_SVE_SM4). | `fp16`, `neon`, `sm4`, `sve`, `sve2` |
+<a href=#48 id=48 data-nosnippet>48</a>/// | `tme` | Enable Transactional Memory Extension (FEAT_TME). |  |
+<a href=#49 id=49 data-nosnippet>49</a>/// | `v8.1a` | Support ARM v8.1a instructions. | `crc`, `lor`, `lse`, `pan`, `rdm`, `vh` |
+<a href=#50 id=50 data-nosnippet>50</a>/// | `v8.2a` | Support ARM v8.2a instructions. | `crc`, `dpb`, `lor`, `lse`, `pan`, `ras`, `rdm`, `v8.1a`, `vh` |
+<a href=#51 id=51 data-nosnippet>51</a>/// | `v8.3a` | Support ARM v8.3a instructions. | `crc`, `dpb`, `fcma`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `ras`, `rcpc`, `rdm`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#52 id=52 data-nosnippet>52</a>/// | `v8.4a` | Support ARM v8.4a instructions. | `crc`, `dit`, `dotprod`, `dpb`, `fcma`, `flagm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `ras`, `rcpc`, `rcpc2`, `rdm`, `v8.1a`, `v8.2a`, `v8.3a`, `vh` |
+<a href=#53 id=53 data-nosnippet>53</a>/// | `v8.5a` | Support ARM v8.5a instructions. | `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `frintts`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#54 id=54 data-nosnippet>54</a>/// | `v8.6a` | Support ARM v8.6a instructions. | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#55 id=55 data-nosnippet>55</a>/// | `v8.7a` | Support ARM v8.7a instructions. | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#56 id=56 data-nosnippet>56</a>/// | `vh` | Enables ARM v8.1 Virtual Host extension (FEAT_VHE). |  |
+<a href=#57 id=57 data-nosnippet>57</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#58 id=58 data-nosnippet>58</a>///
+<a href=#59 id=59 data-nosnippet>59</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#60 id=60 data-nosnippet>60</a>///
+<a href=#61 id=61 data-nosnippet>61</a>/// ## CPUs
+<a href=#62 id=62 data-nosnippet>62</a>/// | CPU | Enabled Features |
+<a href=#63 id=63 data-nosnippet>63</a>/// | --- | -------- |
+<a href=#64 id=64 data-nosnippet>64</a>/// | `a64fx` | `crc`, `dpb`, `fcma`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rdm`, `sha2`, `sve`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#65 id=65 data-nosnippet>65</a>/// | `ampere1` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#66 id=66 data-nosnippet>66</a>/// | `ampere1a` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `sm4`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#67 id=67 data-nosnippet>67</a>/// | `ampere1b` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `sm4`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `v8.7a`, `vh` |
+<a href=#68 id=68 data-nosnippet>68</a>/// | `apple-a10` | `aes`, `crc`, `lor`, `neon`, `pan`, `pmuv3`, `rdm`, `sha2`, `vh` |
+<a href=#69 id=69 data-nosnippet>69</a>/// | `apple-a11` | `aes`, `crc`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#70 id=70 data-nosnippet>70</a>/// | `apple-a12` | `aes`, `crc`, `dpb`, `fcma`, `fp16`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `v8.3a`, `vh` |
+<a href=#71 id=71 data-nosnippet>71</a>/// | `apple-a13` | `aes`, `crc`, `dit`, `dotprod`, `dpb`, `fcma`, `fhm`, `flagm`, `fp16`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sha2`, `sha3`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#72 id=72 data-nosnippet>72</a>/// | `apple-a14` | `aes`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#73 id=73 data-nosnippet>73</a>/// | `apple-a15` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#74 id=74 data-nosnippet>74</a>/// | `apple-a16` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#75 id=75 data-nosnippet>75</a>/// | `apple-a17` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#76 id=76 data-nosnippet>76</a>/// | `apple-a7` | `aes`, `neon`, `pmuv3`, `sha2` |
+<a href=#77 id=77 data-nosnippet>77</a>/// | `apple-a8` | `aes`, `neon`, `pmuv3`, `sha2` |
+<a href=#78 id=78 data-nosnippet>78</a>/// | `apple-a9` | `aes`, `neon`, `pmuv3`, `sha2` |
+<a href=#79 id=79 data-nosnippet>79</a>/// | `apple-latest` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#80 id=80 data-nosnippet>80</a>/// | `apple-m1` | `aes`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#81 id=81 data-nosnippet>81</a>/// | `apple-m2` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#82 id=82 data-nosnippet>82</a>/// | `apple-m3` | `aes`, `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `sha2`, `sha3`, `ssbs`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `vh` |
+<a href=#83 id=83 data-nosnippet>83</a>/// | `apple-s4` | `aes`, `crc`, `dpb`, `fcma`, `fp16`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `v8.3a`, `vh` |
+<a href=#84 id=84 data-nosnippet>84</a>/// | `apple-s5` | `aes`, `crc`, `dpb`, `fcma`, `fp16`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `v8.3a`, `vh` |
+<a href=#85 id=85 data-nosnippet>85</a>/// | `carmel` | `aes`, `crc`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `ras`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#86 id=86 data-nosnippet>86</a>/// | `cortex-a34` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#87 id=87 data-nosnippet>87</a>/// | `cortex-a35` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#88 id=88 data-nosnippet>88</a>/// | `cortex-a510` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#89 id=89 data-nosnippet>89</a>/// | `cortex-a520` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `v8.7a`, `vh` |
+<a href=#90 id=90 data-nosnippet>90</a>/// | `cortex-a53` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#91 id=91 data-nosnippet>91</a>/// | `cortex-a55` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#92 id=92 data-nosnippet>92</a>/// | `cortex-a57` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#93 id=93 data-nosnippet>93</a>/// | `cortex-a65` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#94 id=94 data-nosnippet>94</a>/// | `cortex-a65ae` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#95 id=95 data-nosnippet>95</a>/// | `cortex-a710` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#96 id=96 data-nosnippet>96</a>/// | `cortex-a715` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `spe`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#97 id=97 data-nosnippet>97</a>/// | `cortex-a72` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#98 id=98 data-nosnippet>98</a>/// | `cortex-a720` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `spe`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `v8.7a`, `vh` |
+<a href=#99 id=99 data-nosnippet>99</a>/// | `cortex-a73` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#100 id=100 data-nosnippet>100</a>/// | `cortex-a75` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#101 id=101 data-nosnippet>101</a>/// | `cortex-a76` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#102 id=102 data-nosnippet>102</a>/// | `cortex-a76ae` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#103 id=103 data-nosnippet>103</a>/// | `cortex-a77` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#104 id=104 data-nosnippet>104</a>/// | `cortex-a78` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `spe`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#105 id=105 data-nosnippet>105</a>/// | `cortex-a78c` | `aes`, `crc`, `dotprod`, `dpb`, `flagm`, `fp16`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `spe`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#106 id=106 data-nosnippet>106</a>/// | `cortex-r82` | `crc`, `dit`, `dotprod`, `dpb`, `fcma`, `fhm`, `flagm`, `fp16`, `jsconv`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs` |
+<a href=#107 id=107 data-nosnippet>107</a>/// | `cortex-x1` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `spe`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#108 id=108 data-nosnippet>108</a>/// | `cortex-x1c` | `aes`, `crc`, `dotprod`, `dpb`, `flagm`, `fp16`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sha2`, `spe`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#109 id=109 data-nosnippet>109</a>/// | `cortex-x2` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#110 id=110 data-nosnippet>110</a>/// | `cortex-x3` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `spe`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#111 id=111 data-nosnippet>111</a>/// | `cortex-x4` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `spe`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `v8.6a`, `v8.7a`, `vh` |
+<a href=#112 id=112 data-nosnippet>112</a>/// | `cyclone` | `aes`, `neon`, `pmuv3`, `sha2` |
+<a href=#113 id=113 data-nosnippet>113</a>/// | `exynos-m3` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#114 id=114 data-nosnippet>114</a>/// | `exynos-m4` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#115 id=115 data-nosnippet>115</a>/// | `exynos-m5` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#116 id=116 data-nosnippet>116</a>/// | `falkor` | `aes`, `crc`, `neon`, `pmuv3`, `rdm`, `sha2` |
+<a href=#117 id=117 data-nosnippet>117</a>/// | `generic` | `neon` |
+<a href=#118 id=118 data-nosnippet>118</a>/// | `kryo` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#119 id=119 data-nosnippet>119</a>/// | `neoverse-512tvb` | `aes`, `bf16`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sha2`, `spe`, `ssbs`, `sve`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#120 id=120 data-nosnippet>120</a>/// | `neoverse-e1` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#121 id=121 data-nosnippet>121</a>/// | `neoverse-n1` | `aes`, `crc`, `dotprod`, `dpb`, `fp16`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `spe`, `ssbs`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#122 id=122 data-nosnippet>122</a>/// | `neoverse-n2` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#123 id=123 data-nosnippet>123</a>/// | `neoverse-v1` | `aes`, `bf16`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `i8mm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sha2`, `spe`, `ssbs`, `sve`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#124 id=124 data-nosnippet>124</a>/// | `neoverse-v2` | `bf16`, `bti`, `crc`, `dit`, `dotprod`, `dpb`, `dpb2`, `fcma`, `fhm`, `flagm`, `fp16`, `frintts`, `i8mm`, `jsconv`, `lor`, `lse`, `mte`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `rand`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sb`, `spe`, `ssbs`, `sve`, `sve2`, `sve2-bitperm`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `v8.5a`, `vh` |
+<a href=#125 id=125 data-nosnippet>125</a>/// | `saphira` | `aes`, `crc`, `dit`, `dotprod`, `dpb`, `fcma`, `flagm`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rcpc2`, `rdm`, `sha2`, `spe`, `v8.1a`, `v8.2a`, `v8.3a`, `v8.4a`, `vh` |
+<a href=#126 id=126 data-nosnippet>126</a>/// | `thunderx` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#127 id=127 data-nosnippet>127</a>/// | `thunderx2t99` | `aes`, `crc`, `lor`, `lse`, `neon`, `pan`, `rdm`, `sha2`, `v8.1a`, `vh` |
+<a href=#128 id=128 data-nosnippet>128</a>/// | `thunderx3t110` | `aes`, `crc`, `dpb`, `fcma`, `jsconv`, `lor`, `lse`, `neon`, `paca`, `pacg`, `pan`, `pmuv3`, `ras`, `rcpc`, `rdm`, `sha2`, `v8.1a`, `v8.2a`, `v8.3a`, `vh` |
+<a href=#129 id=129 data-nosnippet>129</a>/// | `thunderxt81` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#130 id=130 data-nosnippet>130</a>/// | `thunderxt83` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#131 id=131 data-nosnippet>131</a>/// | `thunderxt88` | `aes`, `crc`, `neon`, `pmuv3`, `sha2` |
+<a href=#132 id=132 data-nosnippet>132</a>/// | `tsv110` | `aes`, `crc`, `dotprod`, `dpb`, `fcma`, `fhm`, `fp16`, `jsconv`, `lor`, `lse`, `neon`, `pan`, `pmuv3`, `ras`, `rdm`, `sha2`, `spe`, `v8.1a`, `v8.2a`, `vh` |
+<a href=#133 id=133 data-nosnippet>133</a></span><span class="kw">pub mod </span>aarch64 {}
+<a href=#134 id=134 data-nosnippet>134</a><span class="doccomment">/// arm documentation
+<a href=#135 id=135 data-nosnippet>135</a>///
+<a href=#136 id=136 data-nosnippet>136</a>/// ## Features
+<a href=#137 id=137 data-nosnippet>137</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#138 id=138 data-nosnippet>138</a>/// | ------- | ----------- | ------------------------ |
+<a href=#139 id=139 data-nosnippet>139</a>/// | `aclass` | Is application profile ('A' series). |  |
+<a href=#140 id=140 data-nosnippet>140</a>/// | `aes` | Enable AES support. | `d32`, `neon`, `vfp2`, `vfp3` |
+<a href=#141 id=141 data-nosnippet>141</a>/// | `crc` | Enable support for CRC instructions. |  |
+<a href=#142 id=142 data-nosnippet>142</a>/// | `d32` | Extend FP to 32 double registers. |  |
+<a href=#143 id=143 data-nosnippet>143</a>/// | `dotprod` | Enable support for dot product instructions. | `d32`, `neon`, `vfp2`, `vfp3` |
+<a href=#144 id=144 data-nosnippet>144</a>/// | `dsp` | Supports DSP instructions in ARM and/or Thumb2. |  |
+<a href=#145 id=145 data-nosnippet>145</a>/// | `fp-armv8` | Enable ARMv8 FP. | `d32`, `vfp2`, `vfp3`, `vfp4` |
+<a href=#146 id=146 data-nosnippet>146</a>/// | `i8mm` | Enable Matrix Multiply Int8 Extension. | `d32`, `neon`, `vfp2`, `vfp3` |
+<a href=#147 id=147 data-nosnippet>147</a>/// | `mclass` | Is microcontroller profile ('M' series). |  |
+<a href=#148 id=148 data-nosnippet>148</a>/// | `neon` | Enable NEON instructions. | `d32`, `vfp2`, `vfp3` |
+<a href=#149 id=149 data-nosnippet>149</a>/// | `rclass` | Is realtime profile ('R' series). |  |
+<a href=#150 id=150 data-nosnippet>150</a>/// | `sha2` | Enable SHA1 and SHA256 support. | `d32`, `neon`, `vfp2`, `vfp3` |
+<a href=#151 id=151 data-nosnippet>151</a>/// | `thumb-mode` | Thumb mode. |  |
+<a href=#152 id=152 data-nosnippet>152</a>/// | `thumb2` | Enable Thumb2 instructions. |  |
+<a href=#153 id=153 data-nosnippet>153</a>/// | `trustzone` | Enable support for TrustZone security extensions. |  |
+<a href=#154 id=154 data-nosnippet>154</a>/// | `v5te` | Support ARM v5TE, v5TEj, and v5TExp instructions. |  |
+<a href=#155 id=155 data-nosnippet>155</a>/// | `v6` | Support ARM v6 instructions. | `v5te` |
+<a href=#156 id=156 data-nosnippet>156</a>/// | `v6k` | Support ARM v6k instructions. | `v5te`, `v6` |
+<a href=#157 id=157 data-nosnippet>157</a>/// | `v6t2` | Support ARM v6t2 instructions. | `thumb2`, `v5te`, `v6`, `v6k` |
+<a href=#158 id=158 data-nosnippet>158</a>/// | `v7` | Support ARM v7 instructions. | `thumb2`, `v5te`, `v6`, `v6k`, `v6t2` |
+<a href=#159 id=159 data-nosnippet>159</a>/// | `v8` | Support ARM v8 instructions. | `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7` |
+<a href=#160 id=160 data-nosnippet>160</a>/// | `vfp2` | Enable VFP2 instructions. |  |
+<a href=#161 id=161 data-nosnippet>161</a>/// | `vfp3` | Enable VFP3 instructions. | `d32`, `vfp2` |
+<a href=#162 id=162 data-nosnippet>162</a>/// | `vfp4` | Enable VFP4 instructions. | `d32`, `vfp2`, `vfp3` |
+<a href=#163 id=163 data-nosnippet>163</a>/// | `virtualization` | Supports Virtualization extension. |  |
+<a href=#164 id=164 data-nosnippet>164</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#165 id=165 data-nosnippet>165</a>///
+<a href=#166 id=166 data-nosnippet>166</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#167 id=167 data-nosnippet>167</a>///
+<a href=#168 id=168 data-nosnippet>168</a>/// ## CPUs
+<a href=#169 id=169 data-nosnippet>169</a>/// | CPU | Enabled Features |
+<a href=#170 id=170 data-nosnippet>170</a>/// | --- | -------- |
+<a href=#171 id=171 data-nosnippet>171</a>/// | `arm1020e` | `v5te`, `v6`, `vfp2` |
+<a href=#172 id=172 data-nosnippet>172</a>/// | `arm1020t` | `v5te`, `v6`, `vfp2` |
+<a href=#173 id=173 data-nosnippet>173</a>/// | `arm1022e` | `v5te`, `v6`, `vfp2` |
+<a href=#174 id=174 data-nosnippet>174</a>/// | `arm10e` | `v5te`, `v6`, `vfp2` |
+<a href=#175 id=175 data-nosnippet>175</a>/// | `arm10tdmi` | `v5te`, `v6`, `vfp2` |
+<a href=#176 id=176 data-nosnippet>176</a>/// | `arm1136j-s` | `dsp`, `v5te`, `v6`, `vfp2` |
+<a href=#177 id=177 data-nosnippet>177</a>/// | `arm1136jf-s` | `dsp`, `v5te`, `v6`, `vfp2` |
+<a href=#178 id=178 data-nosnippet>178</a>/// | `arm1156t2-s` | `dsp`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `vfp2` |
+<a href=#179 id=179 data-nosnippet>179</a>/// | `arm1156t2f-s` | `dsp`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `vfp2` |
+<a href=#180 id=180 data-nosnippet>180</a>/// | `arm1176jz-s` | `trustzone`, `v5te`, `v6`, `v6k`, `vfp2` |
+<a href=#181 id=181 data-nosnippet>181</a>/// | `arm1176jzf-s` | `trustzone`, `v5te`, `v6`, `v6k`, `vfp2` |
+<a href=#182 id=182 data-nosnippet>182</a>/// | `arm710t` | `v5te`, `v6`, `vfp2` |
+<a href=#183 id=183 data-nosnippet>183</a>/// | `arm720t` | `v5te`, `v6`, `vfp2` |
+<a href=#184 id=184 data-nosnippet>184</a>/// | `arm7tdmi` | `v5te`, `v6`, `vfp2` |
+<a href=#185 id=185 data-nosnippet>185</a>/// | `arm7tdmi-s` | `v5te`, `v6`, `vfp2` |
+<a href=#186 id=186 data-nosnippet>186</a>/// | `arm8` | `v5te`, `v6`, `vfp2` |
+<a href=#187 id=187 data-nosnippet>187</a>/// | `arm810` | `v5te`, `v6`, `vfp2` |
+<a href=#188 id=188 data-nosnippet>188</a>/// | `arm9` | `v5te`, `v6`, `vfp2` |
+<a href=#189 id=189 data-nosnippet>189</a>/// | `arm920` | `v5te`, `v6`, `vfp2` |
+<a href=#190 id=190 data-nosnippet>190</a>/// | `arm920t` | `v5te`, `v6`, `vfp2` |
+<a href=#191 id=191 data-nosnippet>191</a>/// | `arm922t` | `v5te`, `v6`, `vfp2` |
+<a href=#192 id=192 data-nosnippet>192</a>/// | `arm926ej-s` | `v5te`, `v6`, `vfp2` |
+<a href=#193 id=193 data-nosnippet>193</a>/// | `arm940t` | `v5te`, `v6`, `vfp2` |
+<a href=#194 id=194 data-nosnippet>194</a>/// | `arm946e-s` | `v5te`, `v6`, `vfp2` |
+<a href=#195 id=195 data-nosnippet>195</a>/// | `arm966e-s` | `v5te`, `v6`, `vfp2` |
+<a href=#196 id=196 data-nosnippet>196</a>/// | `arm968e-s` | `v5te`, `v6`, `vfp2` |
+<a href=#197 id=197 data-nosnippet>197</a>/// | `arm9e` | `v5te`, `v6`, `vfp2` |
+<a href=#198 id=198 data-nosnippet>198</a>/// | `arm9tdmi` | `v5te`, `v6`, `vfp2` |
+<a href=#199 id=199 data-nosnippet>199</a>/// | `cortex-a12` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2`, `virtualization` |
+<a href=#200 id=200 data-nosnippet>200</a>/// | `cortex-a15` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2`, `virtualization` |
+<a href=#201 id=201 data-nosnippet>201</a>/// | `cortex-a17` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2`, `virtualization` |
+<a href=#202 id=202 data-nosnippet>202</a>/// | `cortex-a32` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#203 id=203 data-nosnippet>203</a>/// | `cortex-a35` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#204 id=204 data-nosnippet>204</a>/// | `cortex-a5` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#205 id=205 data-nosnippet>205</a>/// | `cortex-a53` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#206 id=206 data-nosnippet>206</a>/// | `cortex-a55` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#207 id=207 data-nosnippet>207</a>/// | `cortex-a57` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#208 id=208 data-nosnippet>208</a>/// | `cortex-a7` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2`, `virtualization` |
+<a href=#209 id=209 data-nosnippet>209</a>/// | `cortex-a710` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#210 id=210 data-nosnippet>210</a>/// | `cortex-a72` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#211 id=211 data-nosnippet>211</a>/// | `cortex-a73` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#212 id=212 data-nosnippet>212</a>/// | `cortex-a75` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#213 id=213 data-nosnippet>213</a>/// | `cortex-a76` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#214 id=214 data-nosnippet>214</a>/// | `cortex-a76ae` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#215 id=215 data-nosnippet>215</a>/// | `cortex-a77` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#216 id=216 data-nosnippet>216</a>/// | `cortex-a78` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#217 id=217 data-nosnippet>217</a>/// | `cortex-a78c` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#218 id=218 data-nosnippet>218</a>/// | `cortex-a8` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#219 id=219 data-nosnippet>219</a>/// | `cortex-a9` | `aclass`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#220 id=220 data-nosnippet>220</a>/// | `cortex-m0` | `mclass`, `thumb-mode`, `v5te`, `v6`, `vfp2` |
+<a href=#221 id=221 data-nosnippet>221</a>/// | `cortex-m0plus` | `mclass`, `thumb-mode`, `v5te`, `v6`, `vfp2` |
+<a href=#222 id=222 data-nosnippet>222</a>/// | `cortex-m1` | `mclass`, `thumb-mode`, `v5te`, `v6`, `vfp2` |
+<a href=#223 id=223 data-nosnippet>223</a>/// | `cortex-m23` | `mclass`, `thumb-mode`, `v5te`, `v6`, `vfp2` |
+<a href=#224 id=224 data-nosnippet>224</a>/// | `cortex-m3` | `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#225 id=225 data-nosnippet>225</a>/// | `cortex-m33` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#226 id=226 data-nosnippet>226</a>/// | `cortex-m35p` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#227 id=227 data-nosnippet>227</a>/// | `cortex-m4` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#228 id=228 data-nosnippet>228</a>/// | `cortex-m52` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#229 id=229 data-nosnippet>229</a>/// | `cortex-m55` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#230 id=230 data-nosnippet>230</a>/// | `cortex-m7` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#231 id=231 data-nosnippet>231</a>/// | `cortex-m85` | `dsp`, `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#232 id=232 data-nosnippet>232</a>/// | `cortex-r4` | `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#233 id=233 data-nosnippet>233</a>/// | `cortex-r4f` | `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#234 id=234 data-nosnippet>234</a>/// | `cortex-r5` | `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#235 id=235 data-nosnippet>235</a>/// | `cortex-r52` | `crc`, `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#236 id=236 data-nosnippet>236</a>/// | `cortex-r7` | `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#237 id=237 data-nosnippet>237</a>/// | `cortex-r8` | `dsp`, `rclass`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#238 id=238 data-nosnippet>238</a>/// | `cortex-x1` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#239 id=239 data-nosnippet>239</a>/// | `cortex-x1c` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#240 id=240 data-nosnippet>240</a>/// | `cyclone` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#241 id=241 data-nosnippet>241</a>/// | `ep9312` | `v5te`, `v6`, `vfp2` |
+<a href=#242 id=242 data-nosnippet>242</a>/// | `exynos-m3` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#243 id=243 data-nosnippet>243</a>/// | `exynos-m4` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#244 id=244 data-nosnippet>244</a>/// | `exynos-m5` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#245 id=245 data-nosnippet>245</a>/// | `generic` | `v5te`, `v6`, `vfp2` |
+<a href=#246 id=246 data-nosnippet>246</a>/// | `iwmmxt` | `v5te`, `v6`, `vfp2` |
+<a href=#247 id=247 data-nosnippet>247</a>/// | `krait` | `aclass`, `dsp`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#248 id=248 data-nosnippet>248</a>/// | `kryo` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#249 id=249 data-nosnippet>249</a>/// | `mpcore` | `v5te`, `v6`, `v6k`, `vfp2` |
+<a href=#250 id=250 data-nosnippet>250</a>/// | `mpcorenovfp` | `v5te`, `v6`, `v6k`, `vfp2` |
+<a href=#251 id=251 data-nosnippet>251</a>/// | `neoverse-n1` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#252 id=252 data-nosnippet>252</a>/// | `neoverse-n2` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#253 id=253 data-nosnippet>253</a>/// | `neoverse-v1` | `aclass`, `crc`, `dsp`, `thumb2`, `trustzone`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `v8`, `vfp2`, `virtualization` |
+<a href=#254 id=254 data-nosnippet>254</a>/// | `sc000` | `mclass`, `thumb-mode`, `v5te`, `v6`, `vfp2` |
+<a href=#255 id=255 data-nosnippet>255</a>/// | `sc300` | `mclass`, `thumb-mode`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#256 id=256 data-nosnippet>256</a>/// | `strongarm` | `v5te`, `v6`, `vfp2` |
+<a href=#257 id=257 data-nosnippet>257</a>/// | `strongarm110` | `v5te`, `v6`, `vfp2` |
+<a href=#258 id=258 data-nosnippet>258</a>/// | `strongarm1100` | `v5te`, `v6`, `vfp2` |
+<a href=#259 id=259 data-nosnippet>259</a>/// | `strongarm1110` | `v5te`, `v6`, `vfp2` |
+<a href=#260 id=260 data-nosnippet>260</a>/// | `swift` | `aclass`, `dsp`, `thumb2`, `v5te`, `v6`, `v6k`, `v6t2`, `v7`, `vfp2` |
+<a href=#261 id=261 data-nosnippet>261</a>/// | `xscale` | `v5te`, `v6`, `vfp2` |
+<a href=#262 id=262 data-nosnippet>262</a></span><span class="kw">pub mod </span>arm {}
+<a href=#263 id=263 data-nosnippet>263</a><span class="doccomment">/// bpf documentation
+<a href=#264 id=264 data-nosnippet>264</a>///
+<a href=#265 id=265 data-nosnippet>265</a>/// ## Features
+<a href=#266 id=266 data-nosnippet>266</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#267 id=267 data-nosnippet>267</a>/// | ------- | ----------- | ------------------------ |
+<a href=#268 id=268 data-nosnippet>268</a>/// | `alu32` | Enable ALU32 instructions. |  |
+<a href=#269 id=269 data-nosnippet>269</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#270 id=270 data-nosnippet>270</a>///
+<a href=#271 id=271 data-nosnippet>271</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#272 id=272 data-nosnippet>272</a>///
+<a href=#273 id=273 data-nosnippet>273</a>/// ## CPUs
+<a href=#274 id=274 data-nosnippet>274</a>/// | CPU | Enabled Features |
+<a href=#275 id=275 data-nosnippet>275</a>/// | --- | -------- |
+<a href=#276 id=276 data-nosnippet>276</a>/// | `generic` |  |
+<a href=#277 id=277 data-nosnippet>277</a>/// | `probe` |  |
+<a href=#278 id=278 data-nosnippet>278</a>/// | `v1` |  |
+<a href=#279 id=279 data-nosnippet>279</a>/// | `v2` |  |
+<a href=#280 id=280 data-nosnippet>280</a>/// | `v3` | `alu32` |
+<a href=#281 id=281 data-nosnippet>281</a>/// | `v4` | `alu32` |
+<a href=#282 id=282 data-nosnippet>282</a></span><span class="kw">pub mod </span>bpf {}
+<a href=#283 id=283 data-nosnippet>283</a><span class="doccomment">/// hexagon documentation
+<a href=#284 id=284 data-nosnippet>284</a>///
+<a href=#285 id=285 data-nosnippet>285</a>/// ## Features
+<a href=#286 id=286 data-nosnippet>286</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#287 id=287 data-nosnippet>287</a>/// | ------- | ----------- | ------------------------ |
+<a href=#288 id=288 data-nosnippet>288</a>/// | `hvx` | Hexagon HVX instructions. |  |
+<a href=#289 id=289 data-nosnippet>289</a>/// | `hvx-length128b` | Hexagon HVX 128B instructions. | `hvx` |
+<a href=#290 id=290 data-nosnippet>290</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#291 id=291 data-nosnippet>291</a>///
+<a href=#292 id=292 data-nosnippet>292</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#293 id=293 data-nosnippet>293</a>///
+<a href=#294 id=294 data-nosnippet>294</a>/// ## CPUs
+<a href=#295 id=295 data-nosnippet>295</a>/// | CPU | Enabled Features |
+<a href=#296 id=296 data-nosnippet>296</a>/// | --- | -------- |
+<a href=#297 id=297 data-nosnippet>297</a>/// | `generic` | `hvx`, `hvx-length128b` |
+<a href=#298 id=298 data-nosnippet>298</a>/// | `hexagonv5` | `hvx`, `hvx-length128b` |
+<a href=#299 id=299 data-nosnippet>299</a>/// | `hexagonv55` | `hvx`, `hvx-length128b` |
+<a href=#300 id=300 data-nosnippet>300</a>/// | `hexagonv60` | `hvx`, `hvx-length128b` |
+<a href=#301 id=301 data-nosnippet>301</a>/// | `hexagonv62` | `hvx`, `hvx-length128b` |
+<a href=#302 id=302 data-nosnippet>302</a>/// | `hexagonv65` | `hvx`, `hvx-length128b` |
+<a href=#303 id=303 data-nosnippet>303</a>/// | `hexagonv66` | `hvx`, `hvx-length128b` |
+<a href=#304 id=304 data-nosnippet>304</a>/// | `hexagonv67` | `hvx`, `hvx-length128b` |
+<a href=#305 id=305 data-nosnippet>305</a>/// | `hexagonv67t` | `hvx`, `hvx-length128b` |
+<a href=#306 id=306 data-nosnippet>306</a>/// | `hexagonv68` | `hvx`, `hvx-length128b` |
+<a href=#307 id=307 data-nosnippet>307</a>/// | `hexagonv69` | `hvx`, `hvx-length128b` |
+<a href=#308 id=308 data-nosnippet>308</a>/// | `hexagonv71` | `hvx`, `hvx-length128b` |
+<a href=#309 id=309 data-nosnippet>309</a>/// | `hexagonv71t` | `hvx`, `hvx-length128b` |
+<a href=#310 id=310 data-nosnippet>310</a>/// | `hexagonv73` | `hvx`, `hvx-length128b` |
+<a href=#311 id=311 data-nosnippet>311</a></span><span class="kw">pub mod </span>hexagon {}
+<a href=#312 id=312 data-nosnippet>312</a><span class="doccomment">/// mips documentation
+<a href=#313 id=313 data-nosnippet>313</a>///
+<a href=#314 id=314 data-nosnippet>314</a>/// ## Features
+<a href=#315 id=315 data-nosnippet>315</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#316 id=316 data-nosnippet>316</a>/// | ------- | ----------- | ------------------------ |
+<a href=#317 id=317 data-nosnippet>317</a>/// | `fp64` | Support 64-bit FP registers. |  |
+<a href=#318 id=318 data-nosnippet>318</a>/// | `msa` | Mips MSA ASE. | `fp64` |
+<a href=#319 id=319 data-nosnippet>319</a>/// | `virt` | Mips Virtualization ASE. | `fp64` |
+<a href=#320 id=320 data-nosnippet>320</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. | `fp64` |
+<a href=#321 id=321 data-nosnippet>321</a>///
+<a href=#322 id=322 data-nosnippet>322</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#323 id=323 data-nosnippet>323</a>///
+<a href=#324 id=324 data-nosnippet>324</a>/// ## CPUs
+<a href=#325 id=325 data-nosnippet>325</a>/// | CPU | Enabled Features |
+<a href=#326 id=326 data-nosnippet>326</a>/// | --- | -------- |
+<a href=#327 id=327 data-nosnippet>327</a>/// | `generic` | `fp64` |
+<a href=#328 id=328 data-nosnippet>328</a>/// | `mips1` | `fp64` |
+<a href=#329 id=329 data-nosnippet>329</a>/// | `mips2` | `fp64` |
+<a href=#330 id=330 data-nosnippet>330</a>/// | `mips3` | `fp64` |
+<a href=#331 id=331 data-nosnippet>331</a>/// | `mips32` | `fp64` |
+<a href=#332 id=332 data-nosnippet>332</a>/// | `mips32r2` | `fp64` |
+<a href=#333 id=333 data-nosnippet>333</a>/// | `mips32r3` | `fp64` |
+<a href=#334 id=334 data-nosnippet>334</a>/// | `mips32r5` | `fp64` |
+<a href=#335 id=335 data-nosnippet>335</a>/// | `mips32r6` | `fp64` |
+<a href=#336 id=336 data-nosnippet>336</a>/// | `mips4` | `fp64` |
+<a href=#337 id=337 data-nosnippet>337</a>/// | `mips5` | `fp64` |
+<a href=#338 id=338 data-nosnippet>338</a>/// | `mips64` | `fp64` |
+<a href=#339 id=339 data-nosnippet>339</a>/// | `mips64r2` | `fp64` |
+<a href=#340 id=340 data-nosnippet>340</a>/// | `mips64r3` | `fp64` |
+<a href=#341 id=341 data-nosnippet>341</a>/// | `mips64r5` | `fp64` |
+<a href=#342 id=342 data-nosnippet>342</a>/// | `mips64r6` | `fp64` |
+<a href=#343 id=343 data-nosnippet>343</a>/// | `octeon` | `fp64` |
+<a href=#344 id=344 data-nosnippet>344</a>/// | `octeon+` | `fp64` |
+<a href=#345 id=345 data-nosnippet>345</a>/// | `p5600` | `fp64` |
+<a href=#346 id=346 data-nosnippet>346</a></span><span class="kw">pub mod </span>mips {}
+<a href=#347 id=347 data-nosnippet>347</a><span class="doccomment">/// powerpc documentation
+<a href=#348 id=348 data-nosnippet>348</a>///
+<a href=#349 id=349 data-nosnippet>349</a>/// ## Features
+<a href=#350 id=350 data-nosnippet>350</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#351 id=351 data-nosnippet>351</a>/// | ------- | ----------- | ------------------------ |
+<a href=#352 id=352 data-nosnippet>352</a>/// | `altivec` | Enable Altivec instructions. |  |
+<a href=#353 id=353 data-nosnippet>353</a>/// | `power10-vector` | Enable POWER10 vector instructions. | `altivec`, `power8-altivec`, `power8-vector`, `power9-altivec`, `power9-vector`, `vsx` |
+<a href=#354 id=354 data-nosnippet>354</a>/// | `power8-altivec` | Enable POWER8 Altivec instructions. | `altivec` |
+<a href=#355 id=355 data-nosnippet>355</a>/// | `power8-vector` | Enable POWER8 vector instructions. | `altivec`, `power8-altivec`, `vsx` |
+<a href=#356 id=356 data-nosnippet>356</a>/// | `power9-altivec` | Enable POWER9 Altivec instructions. | `altivec`, `power8-altivec` |
+<a href=#357 id=357 data-nosnippet>357</a>/// | `power9-vector` | Enable POWER9 vector instructions. | `altivec`, `power8-altivec`, `power8-vector`, `power9-altivec`, `vsx` |
+<a href=#358 id=358 data-nosnippet>358</a>/// | `vsx` | Enable VSX instructions. | `altivec` |
+<a href=#359 id=359 data-nosnippet>359</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#360 id=360 data-nosnippet>360</a>///
+<a href=#361 id=361 data-nosnippet>361</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#362 id=362 data-nosnippet>362</a>///
+<a href=#363 id=363 data-nosnippet>363</a>/// ## CPUs
+<a href=#364 id=364 data-nosnippet>364</a>/// | CPU | Enabled Features |
+<a href=#365 id=365 data-nosnippet>365</a>/// | --- | -------- |
+<a href=#366 id=366 data-nosnippet>366</a>/// | `440` |  |
+<a href=#367 id=367 data-nosnippet>367</a>/// | `450` |  |
+<a href=#368 id=368 data-nosnippet>368</a>/// | `601` |  |
+<a href=#369 id=369 data-nosnippet>369</a>/// | `602` |  |
+<a href=#370 id=370 data-nosnippet>370</a>/// | `603` |  |
+<a href=#371 id=371 data-nosnippet>371</a>/// | `603e` |  |
+<a href=#372 id=372 data-nosnippet>372</a>/// | `603ev` |  |
+<a href=#373 id=373 data-nosnippet>373</a>/// | `604` |  |
+<a href=#374 id=374 data-nosnippet>374</a>/// | `604e` |  |
+<a href=#375 id=375 data-nosnippet>375</a>/// | `620` |  |
+<a href=#376 id=376 data-nosnippet>376</a>/// | `7400` | `altivec` |
+<a href=#377 id=377 data-nosnippet>377</a>/// | `7450` | `altivec` |
+<a href=#378 id=378 data-nosnippet>378</a>/// | `750` |  |
+<a href=#379 id=379 data-nosnippet>379</a>/// | `970` | `altivec` |
+<a href=#380 id=380 data-nosnippet>380</a>/// | `a2` |  |
+<a href=#381 id=381 data-nosnippet>381</a>/// | `e500` |  |
+<a href=#382 id=382 data-nosnippet>382</a>/// | `e500mc` |  |
+<a href=#383 id=383 data-nosnippet>383</a>/// | `e5500` |  |
+<a href=#384 id=384 data-nosnippet>384</a>/// | `future` | `altivec`, `power10-vector`, `power8-altivec`, `power8-vector`, `power9-altivec`, `power9-vector`, `vsx` |
+<a href=#385 id=385 data-nosnippet>385</a>/// | `g3` |  |
+<a href=#386 id=386 data-nosnippet>386</a>/// | `g4` | `altivec` |
+<a href=#387 id=387 data-nosnippet>387</a>/// | `g4+` | `altivec` |
+<a href=#388 id=388 data-nosnippet>388</a>/// | `g5` | `altivec` |
+<a href=#389 id=389 data-nosnippet>389</a>/// | `generic` |  |
+<a href=#390 id=390 data-nosnippet>390</a>/// | `ppc` |  |
+<a href=#391 id=391 data-nosnippet>391</a>/// | `ppc32` |  |
+<a href=#392 id=392 data-nosnippet>392</a>/// | `ppc64` | `altivec` |
+<a href=#393 id=393 data-nosnippet>393</a>/// | `ppc64le` | `altivec`, `power8-altivec`, `power8-vector`, `vsx` |
+<a href=#394 id=394 data-nosnippet>394</a>/// | `pwr10` | `altivec`, `power10-vector`, `power8-altivec`, `power8-vector`, `power9-altivec`, `power9-vector`, `vsx` |
+<a href=#395 id=395 data-nosnippet>395</a>/// | `pwr3` | `altivec` |
+<a href=#396 id=396 data-nosnippet>396</a>/// | `pwr4` | `altivec` |
+<a href=#397 id=397 data-nosnippet>397</a>/// | `pwr5` | `altivec` |
+<a href=#398 id=398 data-nosnippet>398</a>/// | `pwr5x` | `altivec` |
+<a href=#399 id=399 data-nosnippet>399</a>/// | `pwr6` | `altivec` |
+<a href=#400 id=400 data-nosnippet>400</a>/// | `pwr6x` | `altivec` |
+<a href=#401 id=401 data-nosnippet>401</a>/// | `pwr7` | `altivec`, `vsx` |
+<a href=#402 id=402 data-nosnippet>402</a>/// | `pwr8` | `altivec`, `power8-altivec`, `power8-vector`, `vsx` |
+<a href=#403 id=403 data-nosnippet>403</a>/// | `pwr9` | `altivec`, `power8-altivec`, `power8-vector`, `power9-altivec`, `power9-vector`, `vsx` |
+<a href=#404 id=404 data-nosnippet>404</a></span><span class="kw">pub mod </span>powerpc {}
+<a href=#405 id=405 data-nosnippet>405</a><span class="doccomment">/// riscv documentation
+<a href=#406 id=406 data-nosnippet>406</a>///
+<a href=#407 id=407 data-nosnippet>407</a>/// ## Features
+<a href=#408 id=408 data-nosnippet>408</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#409 id=409 data-nosnippet>409</a>/// | ------- | ----------- | ------------------------ |
+<a href=#410 id=410 data-nosnippet>410</a>/// | `a` | 'A' (Atomic Instructions). |  |
+<a href=#411 id=411 data-nosnippet>411</a>/// | `c` | 'C' (Compressed Instructions). |  |
+<a href=#412 id=412 data-nosnippet>412</a>/// | `d` | 'D' (Double-Precision Floating-Point). | `f` |
+<a href=#413 id=413 data-nosnippet>413</a>/// | `e` | Implements RV{32,64}E (provides 16 rather than 32 GPRs). |  |
+<a href=#414 id=414 data-nosnippet>414</a>/// | `f` | 'F' (Single-Precision Floating-Point). |  |
+<a href=#415 id=415 data-nosnippet>415</a>/// | `fast-unaligned-access` | Has reasonably performant unaligned loads and stores (both scalar and vector). |  |
+<a href=#416 id=416 data-nosnippet>416</a>/// | `m` | 'M' (Integer Multiplication and Division). |  |
+<a href=#417 id=417 data-nosnippet>417</a>/// | `relax` | Enable Linker relaxation.. |  |
+<a href=#418 id=418 data-nosnippet>418</a>/// | `v` | 'V' (Vector Extension for Application Processors). | `d`, `f` |
+<a href=#419 id=419 data-nosnippet>419</a>/// | `zba` | 'Zba' (Address Generation Instructions). |  |
+<a href=#420 id=420 data-nosnippet>420</a>/// | `zbb` | 'Zbb' (Basic Bit-Manipulation). |  |
+<a href=#421 id=421 data-nosnippet>421</a>/// | `zbc` | 'Zbc' (Carry-Less Multiplication). |  |
+<a href=#422 id=422 data-nosnippet>422</a>/// | `zbkb` | 'Zbkb' (Bitmanip instructions for Cryptography). |  |
+<a href=#423 id=423 data-nosnippet>423</a>/// | `zbkc` | 'Zbkc' (Carry-less multiply instructions for Cryptography). |  |
+<a href=#424 id=424 data-nosnippet>424</a>/// | `zbkx` | 'Zbkx' (Crossbar permutation instructions). |  |
+<a href=#425 id=425 data-nosnippet>425</a>/// | `zbs` | 'Zbs' (Single-Bit Instructions). |  |
+<a href=#426 id=426 data-nosnippet>426</a>/// | `zdinx` | 'Zdinx' (Double in Integer). | `zfinx` |
+<a href=#427 id=427 data-nosnippet>427</a>/// | `zfh` | 'Zfh' (Half-Precision Floating-Point). | `f`, `zfhmin` |
+<a href=#428 id=428 data-nosnippet>428</a>/// | `zfhmin` | 'Zfhmin' (Half-Precision Floating-Point Minimal). | `f` |
+<a href=#429 id=429 data-nosnippet>429</a>/// | `zfinx` | 'Zfinx' (Float in Integer). |  |
+<a href=#430 id=430 data-nosnippet>430</a>/// | `zhinx` | 'Zhinx' (Half Float in Integer). | `zfinx`, `zhinxmin` |
+<a href=#431 id=431 data-nosnippet>431</a>/// | `zhinxmin` | 'Zhinxmin' (Half Float in Integer Minimal). | `zfinx` |
+<a href=#432 id=432 data-nosnippet>432</a>/// | `zk` | 'Zk' (Standard scalar cryptography extension). | `zbkb`, `zbkc`, `zbkx`, `zkn`, `zknd`, `zkne`, `zknh`, `zkr`, `zkt` |
+<a href=#433 id=433 data-nosnippet>433</a>/// | `zkn` | 'Zkn' (NIST Algorithm Suite). | `zbkb`, `zbkc`, `zbkx`, `zknd`, `zkne`, `zknh` |
+<a href=#434 id=434 data-nosnippet>434</a>/// | `zknd` | 'Zknd' (NIST Suite: AES Decryption). |  |
+<a href=#435 id=435 data-nosnippet>435</a>/// | `zkne` | 'Zkne' (NIST Suite: AES Encryption). |  |
+<a href=#436 id=436 data-nosnippet>436</a>/// | `zknh` | 'Zknh' (NIST Suite: Hash Function Instructions). |  |
+<a href=#437 id=437 data-nosnippet>437</a>/// | `zkr` | 'Zkr' (Entropy Source Extension). |  |
+<a href=#438 id=438 data-nosnippet>438</a>/// | `zks` | 'Zks' (ShangMi Algorithm Suite). | `zbkb`, `zbkc`, `zbkx`, `zksed`, `zksh` |
+<a href=#439 id=439 data-nosnippet>439</a>/// | `zksed` | 'Zksed' (ShangMi Suite: SM4 Block Cipher Instructions). |  |
+<a href=#440 id=440 data-nosnippet>440</a>/// | `zksh` | 'Zksh' (ShangMi Suite: SM3 Hash Function Instructions). |  |
+<a href=#441 id=441 data-nosnippet>441</a>/// | `zkt` | 'Zkt' (Data Independent Execution Latency). |  |
+<a href=#442 id=442 data-nosnippet>442</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#443 id=443 data-nosnippet>443</a>///
+<a href=#444 id=444 data-nosnippet>444</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#445 id=445 data-nosnippet>445</a>///
+<a href=#446 id=446 data-nosnippet>446</a>/// ## CPUs
+<a href=#447 id=447 data-nosnippet>447</a>/// | CPU | Enabled Features |
+<a href=#448 id=448 data-nosnippet>448</a>/// | --- | -------- |
+<a href=#449 id=449 data-nosnippet>449</a>/// | `generic` | `a`, `c`, `d`, `f`, `m` |
+<a href=#450 id=450 data-nosnippet>450</a>/// | `generic-rv32` | `a`, `c`, `d`, `f`, `m` |
+<a href=#451 id=451 data-nosnippet>451</a>/// | `generic-rv64` | `a`, `c`, `d`, `f`, `m` |
+<a href=#452 id=452 data-nosnippet>452</a>/// | `rocket` | `a`, `c`, `d`, `f`, `m` |
+<a href=#453 id=453 data-nosnippet>453</a>/// | `rocket-rv32` | `a`, `c`, `d`, `f`, `m` |
+<a href=#454 id=454 data-nosnippet>454</a>/// | `rocket-rv64` | `a`, `c`, `d`, `f`, `m` |
+<a href=#455 id=455 data-nosnippet>455</a>/// | `sifive-7-series` | `a`, `c`, `d`, `f`, `m` |
+<a href=#456 id=456 data-nosnippet>456</a>/// | `sifive-e20` | `a`, `c`, `d`, `f`, `m` |
+<a href=#457 id=457 data-nosnippet>457</a>/// | `sifive-e21` | `a`, `c`, `d`, `f`, `m` |
+<a href=#458 id=458 data-nosnippet>458</a>/// | `sifive-e24` | `a`, `c`, `d`, `f`, `m` |
+<a href=#459 id=459 data-nosnippet>459</a>/// | `sifive-e31` | `a`, `c`, `d`, `f`, `m` |
+<a href=#460 id=460 data-nosnippet>460</a>/// | `sifive-e34` | `a`, `c`, `d`, `f`, `m` |
+<a href=#461 id=461 data-nosnippet>461</a>/// | `sifive-e76` | `a`, `c`, `d`, `f`, `m` |
+<a href=#462 id=462 data-nosnippet>462</a>/// | `sifive-p450` | `a`, `c`, `d`, `f`, `fast-unaligned-access`, `m`, `zba`, `zbb`, `zbs`, `zfhmin` |
+<a href=#463 id=463 data-nosnippet>463</a>/// | `sifive-p670` | `a`, `c`, `d`, `f`, `fast-unaligned-access`, `m`, `v`, `zba`, `zbb`, `zbs`, `zfhmin` |
+<a href=#464 id=464 data-nosnippet>464</a>/// | `sifive-s21` | `a`, `c`, `d`, `f`, `m` |
+<a href=#465 id=465 data-nosnippet>465</a>/// | `sifive-s51` | `a`, `c`, `d`, `f`, `m` |
+<a href=#466 id=466 data-nosnippet>466</a>/// | `sifive-s54` | `a`, `c`, `d`, `f`, `m` |
+<a href=#467 id=467 data-nosnippet>467</a>/// | `sifive-s76` | `a`, `c`, `d`, `f`, `m` |
+<a href=#468 id=468 data-nosnippet>468</a>/// | `sifive-u54` | `a`, `c`, `d`, `f`, `m` |
+<a href=#469 id=469 data-nosnippet>469</a>/// | `sifive-u74` | `a`, `c`, `d`, `f`, `m` |
+<a href=#470 id=470 data-nosnippet>470</a>/// | `sifive-x280` | `a`, `c`, `d`, `f`, `m`, `v`, `zba`, `zbb`, `zfh`, `zfhmin` |
+<a href=#471 id=471 data-nosnippet>471</a>/// | `syntacore-scr1-base` | `a`, `c`, `d`, `f`, `m` |
+<a href=#472 id=472 data-nosnippet>472</a>/// | `syntacore-scr1-max` | `a`, `c`, `d`, `f`, `m` |
+<a href=#473 id=473 data-nosnippet>473</a>/// | `veyron-v1` | `a`, `c`, `d`, `f`, `m`, `zba`, `zbb`, `zbc`, `zbs` |
+<a href=#474 id=474 data-nosnippet>474</a>/// | `xiangshan-nanhu` | `a`, `c`, `d`, `f`, `m`, `zba`, `zbb`, `zbc`, `zbkb`, `zbkc`, `zbkx`, `zbs`, `zkn`, `zknd`, `zkne`, `zknh`, `zksed`, `zksh` |
+<a href=#475 id=475 data-nosnippet>475</a></span><span class="kw">pub mod </span>riscv {}
+<a href=#476 id=476 data-nosnippet>476</a><span class="doccomment">/// wasm documentation
+<a href=#477 id=477 data-nosnippet>477</a>///
+<a href=#478 id=478 data-nosnippet>478</a>/// ## Features
+<a href=#479 id=479 data-nosnippet>479</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#480 id=480 data-nosnippet>480</a>/// | ------- | ----------- | ------------------------ |
+<a href=#481 id=481 data-nosnippet>481</a>/// | `atomics` | Enable Atomics. |  |
+<a href=#482 id=482 data-nosnippet>482</a>/// | `bulk-memory` | Enable bulk memory operations. |  |
+<a href=#483 id=483 data-nosnippet>483</a>/// | `exception-handling` | Enable Wasm exception handling. |  |
+<a href=#484 id=484 data-nosnippet>484</a>/// | `multivalue` | Enable multivalue blocks, instructions, and functions. |  |
+<a href=#485 id=485 data-nosnippet>485</a>/// | `mutable-globals` | Enable mutable globals. |  |
+<a href=#486 id=486 data-nosnippet>486</a>/// | `nontrapping-fptoint` | Enable non-trapping float-to-int conversion operators. |  |
+<a href=#487 id=487 data-nosnippet>487</a>/// | `reference-types` | Enable reference types. |  |
+<a href=#488 id=488 data-nosnippet>488</a>/// | `relaxed-simd` | Enable relaxed-simd instructions. |  |
+<a href=#489 id=489 data-nosnippet>489</a>/// | `sign-ext` | Enable sign extension operators. |  |
+<a href=#490 id=490 data-nosnippet>490</a>/// | `simd128` | Enable 128-bit SIMD. |  |
+<a href=#491 id=491 data-nosnippet>491</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#492 id=492 data-nosnippet>492</a>///
+<a href=#493 id=493 data-nosnippet>493</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#494 id=494 data-nosnippet>494</a>///
+<a href=#495 id=495 data-nosnippet>495</a>/// ## CPUs
+<a href=#496 id=496 data-nosnippet>496</a>/// | CPU | Enabled Features |
+<a href=#497 id=497 data-nosnippet>497</a>/// | --- | -------- |
+<a href=#498 id=498 data-nosnippet>498</a>/// | `bleeding-edge` | `atomics`, `bulk-memory`, `mutable-globals`, `nontrapping-fptoint`, `sign-ext`, `simd128` |
+<a href=#499 id=499 data-nosnippet>499</a>/// | `generic` | `mutable-globals`, `sign-ext` |
+<a href=#500 id=500 data-nosnippet>500</a>/// | `mvp` |  |
+<a href=#501 id=501 data-nosnippet>501</a></span><span class="kw">pub mod </span>wasm {}
+<a href=#502 id=502 data-nosnippet>502</a><span class="doccomment">/// x86 documentation
+<a href=#503 id=503 data-nosnippet>503</a>///
+<a href=#504 id=504 data-nosnippet>504</a>/// ## Features
+<a href=#505 id=505 data-nosnippet>505</a>/// | Feature | Description | Also Enables&lt;sup&gt;†&lt;/sup&gt; |
+<a href=#506 id=506 data-nosnippet>506</a>/// | ------- | ----------- | ------------------------ |
+<a href=#507 id=507 data-nosnippet>507</a>/// | `adx` | Support ADX instructions. |  |
+<a href=#508 id=508 data-nosnippet>508</a>/// | `aes` | Enable AES instructions. | `sse`, `sse2` |
+<a href=#509 id=509 data-nosnippet>509</a>/// | `avx` | Enable AVX instructions. | `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#510 id=510 data-nosnippet>510</a>/// | `avx2` | Enable AVX2 instructions. | `avx`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#511 id=511 data-nosnippet>511</a>/// | `avx512bf16` | Support bfloat16 floating point. | `avx`, `avx2`, `avx512bw`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#512 id=512 data-nosnippet>512</a>/// | `avx512bitalg` | Enable AVX-512 Bit Algorithms. | `avx`, `avx2`, `avx512bw`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#513 id=513 data-nosnippet>513</a>/// | `avx512bw` | Enable AVX-512 Byte and Word Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#514 id=514 data-nosnippet>514</a>/// | `avx512cd` | Enable AVX-512 Conflict Detection Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#515 id=515 data-nosnippet>515</a>/// | `avx512dq` | Enable AVX-512 Doubleword and Quadword Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#516 id=516 data-nosnippet>516</a>/// | `avx512er` | Enable AVX-512 Exponential and Reciprocal Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#517 id=517 data-nosnippet>517</a>/// | `avx512f` | Enable AVX-512 instructions. | `avx`, `avx2`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#518 id=518 data-nosnippet>518</a>/// | `avx512fp16` | Support 16-bit floating point. | `avx`, `avx2`, `avx512bw`, `avx512dq`, `avx512f`, `avx512vl`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#519 id=519 data-nosnippet>519</a>/// | `avx512ifma` | Enable AVX-512 Integer Fused Multiple-Add. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#520 id=520 data-nosnippet>520</a>/// | `avx512pf` | Enable AVX-512 PreFetch Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#521 id=521 data-nosnippet>521</a>/// | `avx512vbmi` | Enable AVX-512 Vector Byte Manipulation Instructions. | `avx`, `avx2`, `avx512bw`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#522 id=522 data-nosnippet>522</a>/// | `avx512vbmi2` | Enable AVX-512 further Vector Byte Manipulation Instructions. | `avx`, `avx2`, `avx512bw`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#523 id=523 data-nosnippet>523</a>/// | `avx512vl` | Enable AVX-512 Vector Length eXtensions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#524 id=524 data-nosnippet>524</a>/// | `avx512vnni` | Enable AVX-512 Vector Neural Network Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#525 id=525 data-nosnippet>525</a>/// | `avx512vp2intersect` | Enable AVX-512 vp2intersect. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#526 id=526 data-nosnippet>526</a>/// | `avx512vpopcntdq` | Enable AVX-512 Population Count Instructions. | `avx`, `avx2`, `avx512f`, `f16c`, `fma`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#527 id=527 data-nosnippet>527</a>/// | `bmi1` | Support BMI instructions. |  |
+<a href=#528 id=528 data-nosnippet>528</a>/// | `bmi2` | Support BMI2 instructions. |  |
+<a href=#529 id=529 data-nosnippet>529</a>/// | `cmpxchg16b` | 64-bit with cmpxchg16b (this is true for most x86-64 chips, but not the first AMD chips). |  |
+<a href=#530 id=530 data-nosnippet>530</a>/// | `ermsb` | REP MOVS/STOS are fast. |  |
+<a href=#531 id=531 data-nosnippet>531</a>/// | `f16c` | Support 16-bit floating point conversion instructions. | `avx`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#532 id=532 data-nosnippet>532</a>/// | `fma` | Enable three-operand fused multiple-add. | `avx`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#533 id=533 data-nosnippet>533</a>/// | `fxsr` | Support fxsave/fxrestore instructions. |  |
+<a href=#534 id=534 data-nosnippet>534</a>/// | `gfni` | Enable Galois Field Arithmetic Instructions. | `sse`, `sse2` |
+<a href=#535 id=535 data-nosnippet>535</a>/// | `lahfsahf` | Support LAHF and SAHF instructions in 64-bit mode. |  |
+<a href=#536 id=536 data-nosnippet>536</a>/// | `lzcnt` | Support LZCNT instruction. |  |
+<a href=#537 id=537 data-nosnippet>537</a>/// | `movbe` | Support MOVBE instruction. |  |
+<a href=#538 id=538 data-nosnippet>538</a>/// | `pclmulqdq` | Enable packed carry-less multiplication instructions. | `sse`, `sse2` |
+<a href=#539 id=539 data-nosnippet>539</a>/// | `popcnt` | Support POPCNT instruction. |  |
+<a href=#540 id=540 data-nosnippet>540</a>/// | `prfchw` | Support PRFCHW instructions. |  |
+<a href=#541 id=541 data-nosnippet>541</a>/// | `rdrand` | Support RDRAND instruction. |  |
+<a href=#542 id=542 data-nosnippet>542</a>/// | `rdseed` | Support RDSEED instruction. |  |
+<a href=#543 id=543 data-nosnippet>543</a>/// | `rtm` | Support RTM instructions. |  |
+<a href=#544 id=544 data-nosnippet>544</a>/// | `sha` | Enable SHA instructions. | `sse`, `sse2` |
+<a href=#545 id=545 data-nosnippet>545</a>/// | `sse` | Enable SSE instructions. |  |
+<a href=#546 id=546 data-nosnippet>546</a>/// | `sse2` | Enable SSE2 instructions. | `sse` |
+<a href=#547 id=547 data-nosnippet>547</a>/// | `sse3` | Enable SSE3 instructions. | `sse`, `sse2` |
+<a href=#548 id=548 data-nosnippet>548</a>/// | `sse4.1` | Enable SSE 4.1 instructions. | `sse`, `sse2`, `sse3`, `ssse3` |
+<a href=#549 id=549 data-nosnippet>549</a>/// | `sse4.2` | Enable SSE 4.2 instructions. | `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#550 id=550 data-nosnippet>550</a>/// | `sse4a` | Support SSE 4a instructions. | `sse`, `sse2`, `sse3` |
+<a href=#551 id=551 data-nosnippet>551</a>/// | `ssse3` | Enable SSSE3 instructions. | `sse`, `sse2`, `sse3` |
+<a href=#552 id=552 data-nosnippet>552</a>/// | `tbm` | Enable TBM instructions. |  |
+<a href=#553 id=553 data-nosnippet>553</a>/// | `vaes` | Promote selected AES instructions to AVX512/AVX registers. | `aes`, `avx`, `avx2`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#554 id=554 data-nosnippet>554</a>/// | `vpclmulqdq` | Enable vpclmulqdq instructions. | `avx`, `pclmulqdq`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#555 id=555 data-nosnippet>555</a>/// | `xsave` | Support xsave instructions. |  |
+<a href=#556 id=556 data-nosnippet>556</a>/// | `xsavec` | Support xsavec instructions. | `xsave` |
+<a href=#557 id=557 data-nosnippet>557</a>/// | `xsaveopt` | Support xsaveopt instructions. | `xsave` |
+<a href=#558 id=558 data-nosnippet>558</a>/// | `xsaves` | Support xsaves instructions. | `xsave` |
+<a href=#559 id=559 data-nosnippet>559</a>/// | `crt-static` | Enables C Run-time Libraries to be statically linked. |  |
+<a href=#560 id=560 data-nosnippet>560</a>///
+<a href=#561 id=561 data-nosnippet>561</a>/// &lt;sup&gt;†&lt;/sup&gt; This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.
+<a href=#562 id=562 data-nosnippet>562</a>///
+<a href=#563 id=563 data-nosnippet>563</a>/// ## CPUs
+<a href=#564 id=564 data-nosnippet>564</a>/// | CPU | Enabled Features |
+<a href=#565 id=565 data-nosnippet>565</a>/// | --- | -------- |
+<a href=#566 id=566 data-nosnippet>566</a>/// | `alderlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#567 id=567 data-nosnippet>567</a>/// | `amdfam10` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `lzcnt`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4a` |
+<a href=#568 id=568 data-nosnippet>568</a>/// | `arrowlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#569 id=569 data-nosnippet>569</a>/// | `arrowlake-s` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#570 id=570 data-nosnippet>570</a>/// | `arrowlake_s` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#571 id=571 data-nosnippet>571</a>/// | `athlon` | `sse`, `sse2` |
+<a href=#572 id=572 data-nosnippet>572</a>/// | `athlon-4` | `fxsr`, `sse`, `sse2` |
+<a href=#573 id=573 data-nosnippet>573</a>/// | `athlon-fx` | `fxsr`, `sse`, `sse2` |
+<a href=#574 id=574 data-nosnippet>574</a>/// | `athlon-mp` | `fxsr`, `sse`, `sse2` |
+<a href=#575 id=575 data-nosnippet>575</a>/// | `athlon-tbird` | `sse`, `sse2` |
+<a href=#576 id=576 data-nosnippet>576</a>/// | `athlon-xp` | `fxsr`, `sse`, `sse2` |
+<a href=#577 id=577 data-nosnippet>577</a>/// | `athlon64` | `fxsr`, `sse`, `sse2` |
+<a href=#578 id=578 data-nosnippet>578</a>/// | `athlon64-sse3` | `cmpxchg16b`, `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#579 id=579 data-nosnippet>579</a>/// | `atom` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `sse`, `sse2`, `sse3`, `ssse3` |
+<a href=#580 id=580 data-nosnippet>580</a>/// | `atom_sse4_2` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#581 id=581 data-nosnippet>581</a>/// | `atom_sse4_2_movbe` | `aes`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#582 id=582 data-nosnippet>582</a>/// | `barcelona` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `lzcnt`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4a` |
+<a href=#583 id=583 data-nosnippet>583</a>/// | `bdver1` | `aes`, `avx`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `lzcnt`, `pclmulqdq`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `xsave` |
+<a href=#584 id=584 data-nosnippet>584</a>/// | `bdver2` | `aes`, `avx`, `bmi1`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `pclmulqdq`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `tbm`, `xsave` |
+<a href=#585 id=585 data-nosnippet>585</a>/// | `bdver3` | `aes`, `avx`, `bmi1`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `pclmulqdq`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `tbm`, `xsave`, `xsaveopt` |
+<a href=#586 id=586 data-nosnippet>586</a>/// | `bdver4` | `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `tbm`, `xsave`, `xsaveopt` |
+<a href=#587 id=587 data-nosnippet>587</a>/// | `bonnell` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `sse`, `sse2`, `sse3`, `ssse3` |
+<a href=#588 id=588 data-nosnippet>588</a>/// | `broadwell` | `adx`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#589 id=589 data-nosnippet>589</a>/// | `btver1` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `lzcnt`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4a`, `ssse3` |
+<a href=#590 id=590 data-nosnippet>590</a>/// | `btver2` | `aes`, `avx`, `bmi1`, `cmpxchg16b`, `f16c`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#591 id=591 data-nosnippet>591</a>/// | `c3` | `sse`, `sse2` |
+<a href=#592 id=592 data-nosnippet>592</a>/// | `c3-2` | `fxsr`, `sse`, `sse2` |
+<a href=#593 id=593 data-nosnippet>593</a>/// | `cannonlake` | `adx`, `aes`, `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vl`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#594 id=594 data-nosnippet>594</a>/// | `cascadelake` | `adx`, `aes`, `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `avx512vnni`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#595 id=595 data-nosnippet>595</a>/// | `clearwaterforest` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#596 id=596 data-nosnippet>596</a>/// | `cooperlake` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `avx512vnni`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#597 id=597 data-nosnippet>597</a>/// | `core-avx-i` | `avx`, `cmpxchg16b`, `f16c`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#598 id=598 data-nosnippet>598</a>/// | `core-avx2` | `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#599 id=599 data-nosnippet>599</a>/// | `core2` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `sse`, `sse2`, `sse3`, `ssse3` |
+<a href=#600 id=600 data-nosnippet>600</a>/// | `core_2_duo_sse4_1` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#601 id=601 data-nosnippet>601</a>/// | `core_2_duo_ssse3` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `sse`, `sse2`, `sse3`, `ssse3` |
+<a href=#602 id=602 data-nosnippet>602</a>/// | `core_2nd_gen_avx` | `avx`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#603 id=603 data-nosnippet>603</a>/// | `core_3rd_gen_avx` | `avx`, `cmpxchg16b`, `f16c`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#604 id=604 data-nosnippet>604</a>/// | `core_4th_gen_avx` | `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#605 id=605 data-nosnippet>605</a>/// | `core_4th_gen_avx_tsx` | `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#606 id=606 data-nosnippet>606</a>/// | `core_5th_gen_avx` | `adx`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#607 id=607 data-nosnippet>607</a>/// | `core_5th_gen_avx_tsx` | `adx`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#608 id=608 data-nosnippet>608</a>/// | `core_aes_pclmulqdq` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#609 id=609 data-nosnippet>609</a>/// | `core_i7_sse4_2` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#610 id=610 data-nosnippet>610</a>/// | `corei7` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#611 id=611 data-nosnippet>611</a>/// | `corei7-avx` | `avx`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#612 id=612 data-nosnippet>612</a>/// | `emeraldrapids` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512fp16`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#613 id=613 data-nosnippet>613</a>/// | `generic` | `sse`, `sse2` |
+<a href=#614 id=614 data-nosnippet>614</a>/// | `geode` | `sse`, `sse2` |
+<a href=#615 id=615 data-nosnippet>615</a>/// | `goldmont` | `aes`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#616 id=616 data-nosnippet>616</a>/// | `goldmont-plus` | `aes`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#617 id=617 data-nosnippet>617</a>/// | `goldmont_plus` | `aes`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#618 id=618 data-nosnippet>618</a>/// | `gracemont` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#619 id=619 data-nosnippet>619</a>/// | `grandridge` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#620 id=620 data-nosnippet>620</a>/// | `graniterapids` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512fp16`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#621 id=621 data-nosnippet>621</a>/// | `graniterapids-d` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512fp16`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#622 id=622 data-nosnippet>622</a>/// | `graniterapids_d` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512fp16`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#623 id=623 data-nosnippet>623</a>/// | `haswell` | `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#624 id=624 data-nosnippet>624</a>/// | `i386` | `sse`, `sse2` |
+<a href=#625 id=625 data-nosnippet>625</a>/// | `i486` | `sse`, `sse2` |
+<a href=#626 id=626 data-nosnippet>626</a>/// | `i586` | `sse`, `sse2` |
+<a href=#627 id=627 data-nosnippet>627</a>/// | `i686` | `sse`, `sse2` |
+<a href=#628 id=628 data-nosnippet>628</a>/// | `icelake-client` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#629 id=629 data-nosnippet>629</a>/// | `icelake-server` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#630 id=630 data-nosnippet>630</a>/// | `icelake_client` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#631 id=631 data-nosnippet>631</a>/// | `icelake_server` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#632 id=632 data-nosnippet>632</a>/// | `ivybridge` | `avx`, `cmpxchg16b`, `f16c`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#633 id=633 data-nosnippet>633</a>/// | `k6` | `sse`, `sse2` |
+<a href=#634 id=634 data-nosnippet>634</a>/// | `k6-2` | `sse`, `sse2` |
+<a href=#635 id=635 data-nosnippet>635</a>/// | `k6-3` | `sse`, `sse2` |
+<a href=#636 id=636 data-nosnippet>636</a>/// | `k8` | `fxsr`, `sse`, `sse2` |
+<a href=#637 id=637 data-nosnippet>637</a>/// | `k8-sse3` | `cmpxchg16b`, `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#638 id=638 data-nosnippet>638</a>/// | `knl` | `adx`, `aes`, `avx`, `avx2`, `avx512cd`, `avx512er`, `avx512f`, `avx512pf`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#639 id=639 data-nosnippet>639</a>/// | `knm` | `adx`, `aes`, `avx`, `avx2`, `avx512cd`, `avx512er`, `avx512f`, `avx512pf`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#640 id=640 data-nosnippet>640</a>/// | `lakemont` | `sse`, `sse2` |
+<a href=#641 id=641 data-nosnippet>641</a>/// | `lunarlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#642 id=642 data-nosnippet>642</a>/// | `meteorlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#643 id=643 data-nosnippet>643</a>/// | `mic_avx512` | `adx`, `aes`, `avx`, `avx2`, `avx512cd`, `avx512er`, `avx512f`, `avx512pf`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#644 id=644 data-nosnippet>644</a>/// | `nehalem` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#645 id=645 data-nosnippet>645</a>/// | `nocona` | `cmpxchg16b`, `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#646 id=646 data-nosnippet>646</a>/// | `opteron` | `fxsr`, `sse`, `sse2` |
+<a href=#647 id=647 data-nosnippet>647</a>/// | `opteron-sse3` | `cmpxchg16b`, `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#648 id=648 data-nosnippet>648</a>/// | `pantherlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#649 id=649 data-nosnippet>649</a>/// | `penryn` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `sse`, `sse2`, `sse3`, `sse4.1`, `ssse3` |
+<a href=#650 id=650 data-nosnippet>650</a>/// | `pentium` | `sse`, `sse2` |
+<a href=#651 id=651 data-nosnippet>651</a>/// | `pentium-m` | `fxsr`, `sse`, `sse2` |
+<a href=#652 id=652 data-nosnippet>652</a>/// | `pentium-mmx` | `sse`, `sse2` |
+<a href=#653 id=653 data-nosnippet>653</a>/// | `pentium2` | `fxsr`, `sse`, `sse2` |
+<a href=#654 id=654 data-nosnippet>654</a>/// | `pentium3` | `fxsr`, `sse`, `sse2` |
+<a href=#655 id=655 data-nosnippet>655</a>/// | `pentium3m` | `fxsr`, `sse`, `sse2` |
+<a href=#656 id=656 data-nosnippet>656</a>/// | `pentium4` | `fxsr`, `sse`, `sse2` |
+<a href=#657 id=657 data-nosnippet>657</a>/// | `pentium4m` | `fxsr`, `sse`, `sse2` |
+<a href=#658 id=658 data-nosnippet>658</a>/// | `pentium_4` | `fxsr`, `sse`, `sse2` |
+<a href=#659 id=659 data-nosnippet>659</a>/// | `pentium_4_sse3` | `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#660 id=660 data-nosnippet>660</a>/// | `pentium_ii` | `fxsr`, `sse`, `sse2` |
+<a href=#661 id=661 data-nosnippet>661</a>/// | `pentium_iii` | `fxsr`, `sse`, `sse2` |
+<a href=#662 id=662 data-nosnippet>662</a>/// | `pentium_iii_no_xmm_regs` | `fxsr`, `sse`, `sse2` |
+<a href=#663 id=663 data-nosnippet>663</a>/// | `pentium_m` | `fxsr`, `sse`, `sse2` |
+<a href=#664 id=664 data-nosnippet>664</a>/// | `pentium_mmx` | `sse`, `sse2` |
+<a href=#665 id=665 data-nosnippet>665</a>/// | `pentium_pro` | `sse`, `sse2` |
+<a href=#666 id=666 data-nosnippet>666</a>/// | `pentiumpro` | `sse`, `sse2` |
+<a href=#667 id=667 data-nosnippet>667</a>/// | `prescott` | `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#668 id=668 data-nosnippet>668</a>/// | `raptorlake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#669 id=669 data-nosnippet>669</a>/// | `rocketlake` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#670 id=670 data-nosnippet>670</a>/// | `sandybridge` | `avx`, `cmpxchg16b`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsaveopt` |
+<a href=#671 id=671 data-nosnippet>671</a>/// | `sapphirerapids` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512fp16`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#672 id=672 data-nosnippet>672</a>/// | `sierraforest` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#673 id=673 data-nosnippet>673</a>/// | `silvermont` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#674 id=674 data-nosnippet>674</a>/// | `skx` | `adx`, `aes`, `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#675 id=675 data-nosnippet>675</a>/// | `skylake` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#676 id=676 data-nosnippet>676</a>/// | `skylake-avx512` | `adx`, `aes`, `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#677 id=677 data-nosnippet>677</a>/// | `skylake_avx512` | `adx`, `aes`, `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#678 id=678 data-nosnippet>678</a>/// | `slm` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#679 id=679 data-nosnippet>679</a>/// | `tigerlake` | `adx`, `aes`, `avx`, `avx2`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vp2intersect`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `ermsb`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#680 id=680 data-nosnippet>680</a>/// | `tremont` | `aes`, `cmpxchg16b`, `fxsr`, `gfni`, `lahfsahf`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#681 id=681 data-nosnippet>681</a>/// | `westmere` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `pclmulqdq`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#682 id=682 data-nosnippet>682</a>/// | `winchip-c6` | `sse`, `sse2` |
+<a href=#683 id=683 data-nosnippet>683</a>/// | `winchip2` | `sse`, `sse2` |
+<a href=#684 id=684 data-nosnippet>684</a>/// | `x86-64` | `fxsr`, `sse`, `sse2` |
+<a href=#685 id=685 data-nosnippet>685</a>/// | `x86-64-v2` | `cmpxchg16b`, `fxsr`, `lahfsahf`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3` |
+<a href=#686 id=686 data-nosnippet>686</a>/// | `x86-64-v3` | `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave` |
+<a href=#687 id=687 data-nosnippet>687</a>/// | `x86-64-v4` | `avx`, `avx2`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512vl`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `popcnt`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `ssse3`, `xsave` |
+<a href=#688 id=688 data-nosnippet>688</a>/// | `yonah` | `fxsr`, `sse`, `sse2`, `sse3` |
+<a href=#689 id=689 data-nosnippet>689</a>/// | `znver1` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#690 id=690 data-nosnippet>690</a>/// | `znver2` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#691 id=691 data-nosnippet>691</a>/// | `znver3` | `adx`, `aes`, `avx`, `avx2`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#692 id=692 data-nosnippet>692</a>/// | `znver4` | `adx`, `aes`, `avx`, `avx2`, `avx512bf16`, `avx512bitalg`, `avx512bw`, `avx512cd`, `avx512dq`, `avx512f`, `avx512ifma`, `avx512vbmi`, `avx512vbmi2`, `avx512vl`, `avx512vnni`, `avx512vpopcntdq`, `bmi1`, `bmi2`, `cmpxchg16b`, `f16c`, `fma`, `fxsr`, `gfni`, `lahfsahf`, `lzcnt`, `movbe`, `pclmulqdq`, `popcnt`, `prfchw`, `rdrand`, `rdseed`, `sha`, `sse`, `sse2`, `sse3`, `sse4.1`, `sse4.2`, `sse4a`, `ssse3`, `vaes`, `vpclmulqdq`, `xsave`, `xsavec`, `xsaveopt`, `xsaves` |
+<a href=#693 id=693 data-nosnippet>693</a></span><span class="kw">pub mod </span>x86 {}
+</code></pre></div></section></main></body></html>

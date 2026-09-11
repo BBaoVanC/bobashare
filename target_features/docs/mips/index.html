@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="mips documentation"><title>target_features::docs::mips - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="target_features" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module mips</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../target_features/index.html">target_<wbr>features</a><span class="version">0.1.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module mips</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#features" title="Features">Features</a></li><li><a href="#cpus" title="CPUs">CPUs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In target_<wbr>features::<wbr>docs</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">target_features</a>::<wbr><a href="../index.html">docs</a></div><h1>Module <span>mips</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/target_features/home/runner/work/bobashare/bobashare/target/debug/build/target-features-a6e7a0ddbedfcd2b/out/docs.rs.html#346">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>mips documentation</p>
+<h3 id="features"><a class="doc-anchor" href="#features">§</a>Features</h3><div><table><thead><tr><th>Feature</th><th>Description</th><th>Also Enables<sup>†</sup></th></tr></thead><tbody>
+<tr><td><code>fp64</code></td><td>Support 64-bit FP registers.</td><td></td></tr>
+<tr><td><code>msa</code></td><td>Mips MSA ASE.</td><td><code>fp64</code></td></tr>
+<tr><td><code>virt</code></td><td>Mips Virtualization ASE.</td><td><code>fp64</code></td></tr>
+<tr><td><code>crt-static</code></td><td>Enables C Run-time Libraries to be statically linked.</td><td><code>fp64</code></td></tr>
+</tbody></table>
+</div>
+<p><sup>†</sup> This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.</p>
+<h3 id="cpus"><a class="doc-anchor" href="#cpus">§</a>CPUs</h3><div><table><thead><tr><th>CPU</th><th>Enabled Features</th></tr></thead><tbody>
+<tr><td><code>generic</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips1</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips2</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips3</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips32</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips32r2</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips32r3</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips32r5</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips32r6</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips4</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips5</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips64</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips64r2</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips64r3</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips64r5</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>mips64r6</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>octeon</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>octeon+</code></td><td><code>fp64</code></td></tr>
+<tr><td><code>p5600</code></td><td><code>fp64</code></td></tr>
+</tbody></table>
+</div></div></details></section></div></main></body></html>

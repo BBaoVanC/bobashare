@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="riscv documentation"><title>target_features::docs::riscv - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="target_features" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module riscv</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../target_features/index.html">target_<wbr>features</a><span class="version">0.1.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module riscv</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#features" title="Features">Features</a></li><li><a href="#cpus" title="CPUs">CPUs</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="../index.html">In target_<wbr>features::<wbr>docs</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">target_features</a>::<wbr><a href="../index.html">docs</a></div><h1>Module <span>riscv</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/target_features/home/runner/work/bobashare/bobashare/target/debug/build/target-features-a6e7a0ddbedfcd2b/out/docs.rs.html#475">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>riscv documentation</p>
+<h3 id="features"><a class="doc-anchor" href="#features">§</a>Features</h3><div><table><thead><tr><th>Feature</th><th>Description</th><th>Also Enables<sup>†</sup></th></tr></thead><tbody>
+<tr><td><code>a</code></td><td>‘A’ (Atomic Instructions).</td><td></td></tr>
+<tr><td><code>c</code></td><td>‘C’ (Compressed Instructions).</td><td></td></tr>
+<tr><td><code>d</code></td><td>‘D’ (Double-Precision Floating-Point).</td><td><code>f</code></td></tr>
+<tr><td><code>e</code></td><td>Implements RV{32,64}E (provides 16 rather than 32 GPRs).</td><td></td></tr>
+<tr><td><code>f</code></td><td>‘F’ (Single-Precision Floating-Point).</td><td></td></tr>
+<tr><td><code>fast-unaligned-access</code></td><td>Has reasonably performant unaligned loads and stores (both scalar and vector).</td><td></td></tr>
+<tr><td><code>m</code></td><td>‘M’ (Integer Multiplication and Division).</td><td></td></tr>
+<tr><td><code>relax</code></td><td>Enable Linker relaxation..</td><td></td></tr>
+<tr><td><code>v</code></td><td>‘V’ (Vector Extension for Application Processors).</td><td><code>d</code>, <code>f</code></td></tr>
+<tr><td><code>zba</code></td><td>‘Zba’ (Address Generation Instructions).</td><td></td></tr>
+<tr><td><code>zbb</code></td><td>‘Zbb’ (Basic Bit-Manipulation).</td><td></td></tr>
+<tr><td><code>zbc</code></td><td>‘Zbc’ (Carry-Less Multiplication).</td><td></td></tr>
+<tr><td><code>zbkb</code></td><td>‘Zbkb’ (Bitmanip instructions for Cryptography).</td><td></td></tr>
+<tr><td><code>zbkc</code></td><td>‘Zbkc’ (Carry-less multiply instructions for Cryptography).</td><td></td></tr>
+<tr><td><code>zbkx</code></td><td>‘Zbkx’ (Crossbar permutation instructions).</td><td></td></tr>
+<tr><td><code>zbs</code></td><td>‘Zbs’ (Single-Bit Instructions).</td><td></td></tr>
+<tr><td><code>zdinx</code></td><td>‘Zdinx’ (Double in Integer).</td><td><code>zfinx</code></td></tr>
+<tr><td><code>zfh</code></td><td>‘Zfh’ (Half-Precision Floating-Point).</td><td><code>f</code>, <code>zfhmin</code></td></tr>
+<tr><td><code>zfhmin</code></td><td>‘Zfhmin’ (Half-Precision Floating-Point Minimal).</td><td><code>f</code></td></tr>
+<tr><td><code>zfinx</code></td><td>‘Zfinx’ (Float in Integer).</td><td></td></tr>
+<tr><td><code>zhinx</code></td><td>‘Zhinx’ (Half Float in Integer).</td><td><code>zfinx</code>, <code>zhinxmin</code></td></tr>
+<tr><td><code>zhinxmin</code></td><td>‘Zhinxmin’ (Half Float in Integer Minimal).</td><td><code>zfinx</code></td></tr>
+<tr><td><code>zk</code></td><td>‘Zk’ (Standard scalar cryptography extension).</td><td><code>zbkb</code>, <code>zbkc</code>, <code>zbkx</code>, <code>zkn</code>, <code>zknd</code>, <code>zkne</code>, <code>zknh</code>, <code>zkr</code>, <code>zkt</code></td></tr>
+<tr><td><code>zkn</code></td><td>‘Zkn’ (NIST Algorithm Suite).</td><td><code>zbkb</code>, <code>zbkc</code>, <code>zbkx</code>, <code>zknd</code>, <code>zkne</code>, <code>zknh</code></td></tr>
+<tr><td><code>zknd</code></td><td>‘Zknd’ (NIST Suite: AES Decryption).</td><td></td></tr>
+<tr><td><code>zkne</code></td><td>‘Zkne’ (NIST Suite: AES Encryption).</td><td></td></tr>
+<tr><td><code>zknh</code></td><td>‘Zknh’ (NIST Suite: Hash Function Instructions).</td><td></td></tr>
+<tr><td><code>zkr</code></td><td>‘Zkr’ (Entropy Source Extension).</td><td></td></tr>
+<tr><td><code>zks</code></td><td>‘Zks’ (ShangMi Algorithm Suite).</td><td><code>zbkb</code>, <code>zbkc</code>, <code>zbkx</code>, <code>zksed</code>, <code>zksh</code></td></tr>
+<tr><td><code>zksed</code></td><td>‘Zksed’ (ShangMi Suite: SM4 Block Cipher Instructions).</td><td></td></tr>
+<tr><td><code>zksh</code></td><td>‘Zksh’ (ShangMi Suite: SM3 Hash Function Instructions).</td><td></td></tr>
+<tr><td><code>zkt</code></td><td>‘Zkt’ (Data Independent Execution Latency).</td><td></td></tr>
+<tr><td><code>crt-static</code></td><td>Enables C Run-time Libraries to be statically linked.</td><td></td></tr>
+</tbody></table>
+</div>
+<p><sup>†</sup> This is often empirical, rather than specified in any standard, i.e. all available CPUs with a particular feature also have another feature.</p>
+<h3 id="cpus"><a class="doc-anchor" href="#cpus">§</a>CPUs</h3><div><table><thead><tr><th>CPU</th><th>Enabled Features</th></tr></thead><tbody>
+<tr><td><code>generic</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>generic-rv32</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>generic-rv64</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>rocket</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>rocket-rv32</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>rocket-rv64</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-7-series</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e20</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e21</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e24</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e31</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e34</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-e76</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-p450</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>fast-unaligned-access</code>, <code>m</code>, <code>zba</code>, <code>zbb</code>, <code>zbs</code>, <code>zfhmin</code></td></tr>
+<tr><td><code>sifive-p670</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>fast-unaligned-access</code>, <code>m</code>, <code>v</code>, <code>zba</code>, <code>zbb</code>, <code>zbs</code>, <code>zfhmin</code></td></tr>
+<tr><td><code>sifive-s21</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-s51</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-s54</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-s76</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-u54</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-u74</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>sifive-x280</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code>, <code>v</code>, <code>zba</code>, <code>zbb</code>, <code>zfh</code>, <code>zfhmin</code></td></tr>
+<tr><td><code>syntacore-scr1-base</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>syntacore-scr1-max</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code></td></tr>
+<tr><td><code>veyron-v1</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code>, <code>zba</code>, <code>zbb</code>, <code>zbc</code>, <code>zbs</code></td></tr>
+<tr><td><code>xiangshan-nanhu</code></td><td><code>a</code>, <code>c</code>, <code>d</code>, <code>f</code>, <code>m</code>, <code>zba</code>, <code>zbb</code>, <code>zbc</code>, <code>zbkb</code>, <code>zbkc</code>, <code>zbkx</code>, <code>zbs</code>, <code>zkn</code>, <code>zknd</code>, <code>zkne</code>, <code>zknh</code>, <code>zksed</code>, <code>zksh</code></td></tr>
+</tbody></table>
+</div></div></details></section></div></main></body></html>

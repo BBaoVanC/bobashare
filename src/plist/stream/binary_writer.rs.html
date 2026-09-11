@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/plist-1.10.0/src/stream/binary_writer.rs`."><title>binary_writer.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="plist" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.0 (88d9e12ae 2026-08-18)" data-channel="1.98.0" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">plist/stream/</div>binary_writer.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// TODO: Revisit the design of `Event` once the `HashMap` raw interface is stabilised.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/plist-1.10.1/src/stream/binary_writer.rs`."><title>binary_writer.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="plist" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">plist/stream/</div>binary_writer.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// TODO: Revisit the design of `Event` once the `HashMap` raw interface is stabilised.
 <a href=#2 id=2 data-nosnippet>2</a>// Ideally `Value`s would be stored inline in `Event`.
 <a href=#3 id=3 data-nosnippet>3</a>
 <a href=#4 id=4 data-nosnippet>4</a></span><span class="kw">use </span>indexmap::IndexMap;
@@ -9,9 +9,9 @@
 <a href=#9 id=9 data-nosnippet>9</a>};
 <a href=#10 id=10 data-nosnippet>10</a>
 <a href=#11 id=11 data-nosnippet>11</a><span class="kw">use crate</span>::{
-<a href=#12 id=12 data-nosnippet>12</a>    error::{<span class="self">self</span>, Error, ErrorKind, EventKind},
-<a href=#13 id=13 data-nosnippet>13</a>    stream::Writer,
-<a href=#14 id=14 data-nosnippet>14</a>    Date, Integer, Uid,
+<a href=#12 id=12 data-nosnippet>12</a>    Date, Integer, Uid,
+<a href=#13 id=13 data-nosnippet>13</a>    error::{<span class="self">self</span>, Error, ErrorKind, EventKind},
+<a href=#14 id=14 data-nosnippet>14</a>    stream::Writer,
 <a href=#15 id=15 data-nosnippet>15</a>};
 <a href=#16 id=16 data-nosnippet>16</a>
 <a href=#17 id=17 data-nosnippet>17</a><span class="kw">pub struct </span>BinaryWriter&lt;W: Write&gt; {
@@ -209,7 +209,7 @@
 <a href=#209 id=209 data-nosnippet>209</a>                    expected: EventKind::DictionaryKeyOrEndCollection,
 <a href=#210 id=210 data-nosnippet>210</a>                    found: value.event_kind(),
 <a href=#211 id=211 data-nosnippet>211</a>                }
-<a href=#212 id=212 data-nosnippet>212</a>                .without_position())
+<a href=#212 id=212 data-nosnippet>212</a>                .without_position());
 <a href=#213 id=213 data-nosnippet>213</a>            }
 <a href=#214 id=214 data-nosnippet>214</a>        }
 <a href=#215 id=215 data-nosnippet>215</a>
@@ -612,7 +612,7 @@
 <a href=#612 id=612 data-nosnippet>612</a><span class="kw">fn </span>plist_ref_size(max_value: usize) -&gt; u8 {
 <a href=#613 id=613 data-nosnippet>613</a>    <span class="kw">let </span>significant_bits = <span class="number">64 </span>- (max_value <span class="kw">as </span>u64).leading_zeros() <span class="kw">as </span>u8;
 <a href=#614 id=614 data-nosnippet>614</a>    <span class="comment">// Convert to number of bytes
-<a href=#615 id=615 data-nosnippet>615</a>    </span><span class="kw">let </span>significant_bytes = (significant_bits + <span class="number">7</span>) / <span class="number">8</span>;
+<a href=#615 id=615 data-nosnippet>615</a>    </span><span class="kw">let </span>significant_bytes = significant_bits.div_ceil(<span class="number">8</span>);
 <a href=#616 id=616 data-nosnippet>616</a>    <span class="comment">// Round up to the next integer byte size which must be power of two.
 <a href=#617 id=617 data-nosnippet>617</a>    </span>significant_bytes.next_power_of_two()
 <a href=#618 id=618 data-nosnippet>618</a>}
@@ -700,7 +700,7 @@
 <a href=#700 id=700 data-nosnippet>700</a></span><span class="kw">mod </span>tests {
 <a href=#701 id=701 data-nosnippet>701</a>    <span class="kw">use </span>std::{fs::File, io::Cursor, path::Path};
 <a href=#702 id=702 data-nosnippet>702</a>
-<a href=#703 id=703 data-nosnippet>703</a>    <span class="kw">use crate</span>::{stream::BinaryReader, Value};
+<a href=#703 id=703 data-nosnippet>703</a>    <span class="kw">use crate</span>::{Value, stream::BinaryReader};
 <a href=#704 id=704 data-nosnippet>704</a>
 <a href=#705 id=705 data-nosnippet>705</a>    <span class="kw">fn </span>test_roundtrip&lt;P: AsRef&lt;Path&gt;&gt;(path: P) {
 <a href=#706 id=706 data-nosnippet>706</a>        <span class="kw">let </span>reader = File::open(path).unwrap();

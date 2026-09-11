@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_MAX_DECLARATIONS_PER_ELEMENT"],"enum":["NamespaceError","PrefixDeclaration","ResolveResult"],"struct":["LocalName","Namespace","NamespaceBindingsIter","NamespaceBindingsOfLevelIter","NamespaceResolver","Prefix","QName"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_MAX_NAMESPACE_BINDINGS"],"enum":["NamespaceError","PrefixDeclaration","ResolveResult"],"struct":["LocalName","Namespace","NamespaceBindingsIter","NamespaceBindingsOfLevelIter","NamespaceResolver","Prefix","QName"]};
