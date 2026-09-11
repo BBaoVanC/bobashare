@@ -239,6 +239,9 @@ pub fn str_to_duration(s: &str) -> Result<StdDuration, StrToDurationError> {
 pub enum RenderMarkdownWithSyntaxError {
     /// error highlighting markdown-fenced code block: {0}
     HighlightCodeBlock(#[source] syntect::Error),
+
+    /// error rendering math with katex: {0}
+    RenderMath(#[source] katex::Error),
 }
 
 /// Render markdown into HTML, including syntax highlighting for code blocks
@@ -259,6 +262,18 @@ pub fn render_markdown_with_syntax_set(
             // patch GHSA-g7gw-4888-mr65
             Event::Html(s) | Event::InlineHtml(s) => {
                 event!(Level::TRACE, ?s, "removed raw HTML");
+            }
+
+            Event::InlineMath(s) => {
+                let rendered =
+                    katex::render(&s).map_err(RenderMarkdownWithSyntaxError::RenderMath)?;
+                output.push(Event::Html(rendered.into()));
+            }
+            Event::DisplayMath(s) => {
+                let opts = katex::Opts::builder().display_mode(true).build().unwrap();
+                let rendered = katex::render_with_opts(&s, opts)
+                    .map_err(RenderMarkdownWithSyntaxError::RenderMath)?;
+                output.push(Event::Html(rendered.into()));
             }
 
             Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(token))) => {

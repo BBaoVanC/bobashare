@@ -69,3 +69,24 @@ s<i>ha</i>re<b>!!!</b>"#;
     let rendered = render_markdown_with_syntax_set(input, &syntax_set).unwrap();
     assert_eq!(rendered, expected);
 }
+
+#[test]
+fn render_markdown_inline_math() {
+    use syntect::parsing::SyntaxSet;
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+
+    let input = "The equation is $E = mc^2$ in physics.";
+    let rendered = render_markdown_with_syntax_set(input, &syntax_set).unwrap();
+    assert!(rendered.contains(r#"<span class="katex">"#));
+    assert!(rendered.contains("E = mc^2"));
+}
+
+#[test]
+fn render_markdown_display_math() {
+    use syntect::parsing::SyntaxSet;
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+
+    let input = "$$\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$";
+    let rendered = render_markdown_with_syntax_set(input, &syntax_set).unwrap();
+    assert!(rendered.contains(r#"<span class="katex-display">"#));
+}
