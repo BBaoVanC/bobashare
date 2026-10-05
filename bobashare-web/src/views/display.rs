@@ -129,6 +129,10 @@ pub async fn display(
     let contents = {
         let mimetype = upload.metadata.mimetype.clone();
         match (mimetype.type_(), mimetype.subtype()) {
+            (mime::IMAGE, _) => DisplayType::Image,
+            (mime::VIDEO, _) => DisplayType::Video,
+            (mime::AUDIO, _) => DisplayType::Audio,
+            (mime::APPLICATION, mime::PDF) => DisplayType::Pdf,
             (mime::TEXT, _) | (mime::APPLICATION, mime::JSON) => {
                 if size > MAX_DISPLAY_SIZE {
                     DisplayType::TooLarge
@@ -197,10 +201,6 @@ pub async fn display(
                     }
                 }
             }
-            (mime::IMAGE, _) => DisplayType::Image,
-            (mime::VIDEO, _) => DisplayType::Video,
-            (mime::AUDIO, _) => DisplayType::Audio,
-            (mime::APPLICATION, mime::PDF) => DisplayType::Pdf,
             (_, _) => DisplayType::Other,
         }
     };
