@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+- Don't try to detect UTF-8 and override the mimetype
+  - I think we should respect the client's mimetype more. Where I'm heading is a
+    different upload route(s) which is more user-friendly which will be used by
+    the web UI and by end-users doing CLI
+
 ### Bugfixes
 
 ## [v0.2.19] - 2026-09-11

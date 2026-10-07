@@ -1,7 +1,5 @@
 //! API to create an upload
 
-use std::io::SeekFrom;
-
 use anyhow::Context;
 use axum::{
     body::Body,
@@ -18,8 +16,8 @@ use headers::{ContentLength, ContentType};
 use hyper::{header, HeaderMap, StatusCode};
 use serde::Serialize;
 use thiserror::Error;
-use tokio::io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt, BufWriter};
-use tracing::{event, instrument, Instrument, Level};
+use tokio::io::{AsyncWriteExt, BufWriter};
+use tracing::{event, instrument, Level};
 
 use super::ApiErrorExt;
 use crate::{clamp_expiry, str_to_duration, AppState};
@@ -102,7 +100,7 @@ impl IntoResponse for UploadError {
 /// ## Headers
 ///
 /// - `Content-Type` (required) -- mimetype -- the mime type (file format) of
-///   the file. Note that it will be ignored if the file is plaintext.
+///   the file.
 /// - `Bobashare-Expiry` (optional) -- number -- duration until the upload
 ///   should expire
 ///   - specify `0` for no expiry
@@ -295,31 +293,6 @@ pub async fn put(
         .flush()
         .await
         .context("error flushing file buffer")?;
-
-    let detect_plaintext_span = tracing::span!(Level::INFO, "detect_plaintext");
-    async {
-        tracing::event!(Level::INFO, "detecting whether the upload is plaintext");
-        let upload = &mut upload;
-        if let Err(err) = upload.file.seek(SeekFrom::Start(0)).await {
-            tracing::event!(Level::ERROR, ?err, "error seeking to beginning of file");
-            return;
-        };
-        let mut buf = [0; 1024];
-        if let Err(err) = upload.file.read(&mut buf).await {
-            tracing::event!(Level::ERROR, ?err, "error reading first 1024 bytes of file");
-            return;
-        };
-
-        // TODO: would be nice to support other text encodings
-        if std::str::from_utf8(&buf).is_ok() {
-            tracing::event!(Level::INFO, "upload is plaintext");
-            upload.metadata.mimetype = mime::TEXT_PLAIN_UTF_8;
-        } else {
-            tracing::event!(Level::INFO, "upload is not plaintext");
-        }
-    }
-    .instrument(detect_plaintext_span)
-    .await;
 
     let metadata = upload
         .flush()
