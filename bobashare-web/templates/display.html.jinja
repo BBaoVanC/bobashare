@@ -85,6 +85,7 @@
             <div class="upload-size" title='{{ size }} bytes'>{{ size|humansize }}</div>
             {% match contents %}
                 {% when DisplayType::Text{ .. }
+                    | DisplayType::FailedParseText{ .. }
                     | DisplayType::Markdown{ .. }
                 %}
                     <div class="upload-wrap-text-checkbox">
@@ -116,6 +117,13 @@
             {% when DisplayType::Text with { highlighted } %}
                 <div id="upload-display-text" class="upload-content upload-display-text">
                     <pre>{{ highlighted|safe }}</pre>
+                </div>
+            {% when DisplayType::FailedParseText with { text } %}
+                <div id="upload-display-text" class="upload-content-warning upload-utf8-failed">
+                    <p>This text is not valid UTF-8. There may be errors in this display:</p>
+                </div>
+                <div id="upload-display-text" class="upload-content upload-display-text">
+                    <pre>{{ text }}</pre>
                 </div>
             {% when DisplayType::Markdown with { highlighted, displayed } %}
                 <div id="markdown-toggle-tabs" class="markdown-toggle-tabs">

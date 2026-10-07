@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bugfixes
 
+- Fix 500 Internal Server Error when viewing plaintext that isn't UTF-8 (#24)
+  - Now attempts rendering the text and displays a warning that it might have
+    mistakes.
+
 ## [v0.2.19] - 2026-09-11
 
 ### Security

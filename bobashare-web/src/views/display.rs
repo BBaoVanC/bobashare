@@ -81,6 +81,9 @@ pub enum DisplayType {
     Text {
         highlighted: String,
     },
+    FailedParseText {
+        text: String,
+    },
     Markdown {
         highlighted: String,
         displayed: String,
@@ -133,72 +136,79 @@ pub async fn display(
             (mime::VIDEO, _) => DisplayType::Video,
             (mime::AUDIO, _) => DisplayType::Audio,
             (mime::APPLICATION, mime::PDF) => DisplayType::Pdf,
-            (mime::TEXT, _) | (mime::APPLICATION, mime::JSON) => {
+            (mime::TEXT, _) | (mime::APPLICATION, mime::JSON) => 'arm: {
                 if size > MAX_DISPLAY_SIZE {
-                    DisplayType::TooLarge
-                } else {
-                    let extension = std::path::Path::new(&upload.metadata.filename)
-                        .extension()
-                        .and_then(|s| s.to_str())
-                        .unwrap_or("");
-                    let syntax = state
-                        .syntax_set
-                        .find_syntax_by_extension(extension)
-                        .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
-                    // should be alright to assume that 1,048,576 fits in usize
-                    // on relevant platforms
-                    let mut contents = String::with_capacity(size as usize);
-                    upload
-                        .file
-                        .read_to_string(&mut contents)
-                        .await
-                        .map_err(|e| ErrorTemplate {
-                            state: tmpl_state.clone(),
-                            code: StatusCode::INTERNAL_SERVER_ERROR,
-                            message: format!("error reading file contents: {e}"),
-                        })?;
+                    break 'arm DisplayType::TooLarge;
+                }
 
-                    event!(
-                        Level::DEBUG,
-                        "highlighting file with syntax {}",
-                        syntax.name
-                    );
-                    let highlighted = {
-                        let mut generator = ClassedHTMLGenerator::new_with_class_style(
-                            syntax,
-                            &state.syntax_set,
-                            CLASS_STYLE,
-                        );
-                        for line in LinesWithEndings::from(&contents) {
-                            generator
-                                .parse_html_for_line_which_includes_newline(line)
-                                .map_err(|e| ErrorTemplate {
-                                    state: tmpl_state.clone(),
-                                    code: StatusCode::INTERNAL_SERVER_ERROR,
-                                    message: format!("error highlighting file contents: {e}"),
-                                })?;
-                        }
-                        generator.finalize()
+                // should be alright to assume that 1,048,576 fits in usize
+                // on relevant platforms
+                let mut bytes: Vec<u8> = Vec::with_capacity(size as usize);
+                upload
+                    .file
+                    .read_to_end(&mut bytes)
+                    .await
+                    .map_err(|e| ErrorTemplate {
+                        state: tmpl_state.clone(),
+                        code: StatusCode::INTERNAL_SERVER_ERROR,
+                        message: format!("error reading file contents: {e}"),
+                    })?;
+
+                let extension = std::path::Path::new(&upload.metadata.filename)
+                    .extension()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("");
+                let syntax = state
+                    .syntax_set
+                    .find_syntax_by_extension(extension)
+                    .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
+
+                let Ok(contents) = String::from_utf8(bytes.clone()) else {
+                    break 'arm DisplayType::FailedParseText{
+                        text: String::from_utf8_lossy(&bytes).to_string()
                     };
+                };
 
-                    if extension.eq_ignore_ascii_case("md") {
-                        let displayed = render_markdown_with_syntax_set(
-                            &contents,
-                            &state.syntax_set,
-                        )
-                        .map_err(|e| ErrorTemplate {
-                            state: tmpl_state.clone(),
-                            code: StatusCode::INTERNAL_SERVER_ERROR,
-                            message: format!("error highlighting markdown fenced code block: {e}",),
-                        })?;
-
-                        DisplayType::Markdown {
-                            highlighted,
-                            displayed,
-                        }
-                    } else {
-                        DisplayType::Text { highlighted }
+                event!(
+                    Level::DEBUG,
+                    "highlighting file with syntax {}",
+                    syntax.name
+                );
+                let highlighted = {
+                    let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                        syntax,
+                        &state.syntax_set,
+                        CLASS_STYLE,
+                    );
+                    for line in LinesWithEndings::from(&contents) {
+                        generator
+                            .parse_html_for_line_which_includes_newline(line)
+                            .map_err(|e| ErrorTemplate {
+                                state: tmpl_state.clone(),
+                                code: StatusCode::INTERNAL_SERVER_ERROR,
+                                message: format!("error highlighting file contents: {e}"),
+                            })?;
                     }
+                    generator.finalize()
+                };
+
+                if extension.eq_ignore_ascii_case("md") {
+                    let displayed = render_markdown_with_syntax_set(
+                        &contents,
+                        &state.syntax_set,
+                    )
+                    .map_err(|e| ErrorTemplate {
+                        state: tmpl_state.clone(),
+                        code: StatusCode::INTERNAL_SERVER_ERROR,
+                        message: format!("error highlighting markdown fenced code block: {e}",),
+                    })?;
+
+                    DisplayType::Markdown {
+                        highlighted,
+                        displayed,
+                    }
+                } else {
+                    DisplayType::Text { highlighted }
                 }
             }
             (_, _) => DisplayType::Other,
