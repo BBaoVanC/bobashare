@@ -164,8 +164,8 @@ pub async fn display(
                     .unwrap_or_else(|| state.syntax_set.find_syntax_plain_text());
 
                 let Ok(contents) = String::from_utf8(bytes.clone()) else {
-                    break 'arm DisplayType::FailedParseText{
-                        text: String::from_utf8_lossy(&bytes).to_string()
+                    break 'arm DisplayType::FailedParseText {
+                        text: String::from_utf8_lossy(&bytes).to_string(),
                     };
                 };
 
@@ -193,11 +193,8 @@ pub async fn display(
                 };
 
                 if extension.eq_ignore_ascii_case("md") {
-                    let displayed = render_markdown_with_syntax_set(
-                        &contents,
-                        &state.syntax_set,
-                    )
-                    .map_err(|e| ErrorTemplate {
+                    let displayed = render_markdown_with_syntax_set(&contents, &state.syntax_set)
+                        .map_err(|e| ErrorTemplate {
                         state: tmpl_state.clone(),
                         code: StatusCode::INTERNAL_SERVER_ERROR,
                         message: format!("error highlighting markdown fenced code block: {e}",),
