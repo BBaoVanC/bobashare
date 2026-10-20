@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
+### Bugfixes
+
+## [v0.2.20] - 2026-10-20
+
+### Security
+
+### Features
+
 - Don't try to detect UTF-8 and override the mimetype
   - I think we should respect the client's mimetype more. Where I'm heading is a
     different upload route(s) which is more user-friendly which will be used by
@@ -324,7 +332,8 @@ bobashare-web:
 
 - The first release.
 
-[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.19..HEAD
+[unreleased]: https://github.com/BBaoVanC/bobashare/compare/v0.2.20..HEAD
+[v0.2.20]: https://github.com/BBaoVanC/bobashare/compare/v0.2.19..v0.2.20
 [v0.2.19]: https://github.com/BBaoVanC/bobashare/compare/v0.2.18..v0.2.19
 [v0.2.18]: https://github.com/BBaoVanC/bobashare/compare/v0.2.17..v0.2.18
 [v0.2.17]: https://github.com/BBaoVanC/bobashare/compare/v0.2.16..v0.2.17
