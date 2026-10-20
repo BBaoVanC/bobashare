@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["VisitMap"],"fn":["is_datetime"],"struct":["DatetimeDeserializer"]};

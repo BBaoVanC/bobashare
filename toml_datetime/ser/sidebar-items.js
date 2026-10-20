@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["SerializerError"],"fn":["is_datetime"],"struct":["DatetimeSerializer"]};

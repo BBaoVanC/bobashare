@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["RuntimeFlavor"],"fn":["is_rt_shutdown_err"],"struct":["Builder","EnterGuard","Handle","Id","LocalOptions","LocalRuntime","Runtime","RuntimeMetrics","TryCurrentError"]};
+window.SIDEBAR_ITEMS = {"enum":["RuntimeFlavor"],"fn":["is_rt_shutdown_err","worker_index"],"struct":["Builder","EnterGuard","Handle","Id","LocalOptions","LocalRuntime","Runtime","RuntimeMetrics","TryCurrentError"]};

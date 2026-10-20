@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/sync/notify.rs`."><title>notify.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/sync/</div>notify.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// Allow `unreachable_pub` warnings when sync is not enabled
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.0/src/sync/notify.rs`."><title>notify.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-0c87338a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.1 (58cf8f9c3 2026-10-13)" data-channel="1.99.1" data-search-js="search-cf4fc35e.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/sync/</div>notify.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="comment">// Allow `unreachable_pub` warnings when sync is not enabled
 <a href=#2 id=2 data-nosnippet>2</a>// due to the usage of `Notify` within the `rt` feature set.
 <a href=#3 id=3 data-nosnippet>3</a>// When this module is compiled with `sync` enabled we will warn on
 <a href=#4 id=4 data-nosnippet>4</a>// this lint. When `rt` is enabled we use `pub(crate)` which
@@ -16,7 +16,7 @@
 <a href=#16 id=16 data-nosnippet>16</a><span class="kw">use </span>std::panic::{RefUnwindSafe, UnwindSafe};
 <a href=#17 id=17 data-nosnippet>17</a><span class="kw">use </span>std::pin::Pin;
 <a href=#18 id=18 data-nosnippet>18</a><span class="kw">use </span>std::ptr::NonNull;
-<a href=#19 id=19 data-nosnippet>19</a><span class="kw">use </span>std::sync::atomic::Ordering::{<span class="self">self</span>, Acquire, Relaxed, Release, SeqCst};
+<a href=#19 id=19 data-nosnippet>19</a><span class="kw">use </span>std::sync::atomic::Ordering::{<span class="self">self</span>, AcqRel, Acquire, Relaxed, Release};
 <a href=#20 id=20 data-nosnippet>20</a><span class="kw">use </span>std::sync::Arc;
 <a href=#21 id=21 data-nosnippet>21</a><span class="kw">use </span>std::task::{Context, Poll, Waker};
 <a href=#22 id=22 data-nosnippet>22</a>
@@ -464,7 +464,7 @@
 <a href=#464 id=464 data-nosnippet>464</a>}
 <a href=#465 id=465 data-nosnippet>465</a>
 <a href=#466 id=466 data-nosnippet>466</a><span class="kw">fn </span>atomic_inc_num_notify_waiters_calls(data: <span class="kw-2">&amp;</span>AtomicUsize) {
-<a href=#467 id=467 data-nosnippet>467</a>    data.fetch_add(<span class="number">1 </span>&lt;&lt; NOTIFY_WAITERS_SHIFT, SeqCst);
+<a href=#467 id=467 data-nosnippet>467</a>    data.fetch_add(<span class="number">1 </span>&lt;&lt; NOTIFY_WAITERS_SHIFT, AcqRel);
 <a href=#468 id=468 data-nosnippet>468</a>}
 <a href=#469 id=469 data-nosnippet>469</a>
 <a href=#470 id=470 data-nosnippet>470</a><span class="kw">impl </span>Notify {
@@ -562,7 +562,7 @@
 <a href=#562 id=562 data-nosnippet>562</a>    </span><span class="kw">pub fn </span>notified(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Notified&lt;<span class="lifetime">'_</span>&gt; {
 <a href=#563 id=563 data-nosnippet>563</a>        <span class="comment">// we load the number of times notify_waiters
 <a href=#564 id=564 data-nosnippet>564</a>        // was called and store that in the future.
-<a href=#565 id=565 data-nosnippet>565</a>        </span><span class="kw">let </span>state = <span class="self">self</span>.state.load(SeqCst);
+<a href=#565 id=565 data-nosnippet>565</a>        </span><span class="kw">let </span>state = <span class="self">self</span>.state.load(Acquire);
 <a href=#566 id=566 data-nosnippet>566</a>        Notified {
 <a href=#567 id=567 data-nosnippet>567</a>            notify: <span class="self">self</span>,
 <a href=#568 id=568 data-nosnippet>568</a>            state: State::Init,
@@ -610,7 +610,7 @@
 <a href=#610 id=610 data-nosnippet>610</a>    </span><span class="kw">pub fn </span>notified_owned(<span class="self">self</span>: Arc&lt;<span class="self">Self</span>&gt;) -&gt; OwnedNotified {
 <a href=#611 id=611 data-nosnippet>611</a>        <span class="comment">// we load the number of times notify_waiters
 <a href=#612 id=612 data-nosnippet>612</a>        // was called and store that in the future.
-<a href=#613 id=613 data-nosnippet>613</a>        </span><span class="kw">let </span>state = <span class="self">self</span>.state.load(SeqCst);
+<a href=#613 id=613 data-nosnippet>613</a>        </span><span class="kw">let </span>state = <span class="self">self</span>.state.load(Acquire);
 <a href=#614 id=614 data-nosnippet>614</a>        OwnedNotified {
 <a href=#615 id=615 data-nosnippet>615</a>            notify: <span class="self">self</span>,
 <a href=#616 id=616 data-nosnippet>616</a>            state: State::Init,
@@ -673,7 +673,7 @@
 <a href=#673 id=673 data-nosnippet>673</a>
 <a href=#674 id=674 data-nosnippet>674</a>    <span class="kw">fn </span>notify_with_strategy(<span class="kw-2">&amp;</span><span class="self">self</span>, strategy: NotifyOneStrategy) {
 <a href=#675 id=675 data-nosnippet>675</a>        <span class="comment">// Load the current state
-<a href=#676 id=676 data-nosnippet>676</a>        </span><span class="kw">let </span><span class="kw-2">mut </span>curr = <span class="self">self</span>.state.load(SeqCst);
+<a href=#676 id=676 data-nosnippet>676</a>        </span><span class="kw">let </span><span class="kw-2">mut </span>curr = <span class="self">self</span>.state.load(Acquire);
 <a href=#677 id=677 data-nosnippet>677</a>
 <a href=#678 id=678 data-nosnippet>678</a>        <span class="comment">// If the state is `EMPTY`, transition to `NOTIFIED` and return.
 <a href=#679 id=679 data-nosnippet>679</a>        </span><span class="kw">while let </span>EMPTY | NOTIFIED = get_state(curr) {
@@ -681,7 +681,7 @@
 <a href=#681 id=681 data-nosnippet>681</a>            // happens-before synchronization must happen between this atomic
 <a href=#682 id=682 data-nosnippet>682</a>            // operation and a task calling `notified().await`.
 <a href=#683 id=683 data-nosnippet>683</a>            </span><span class="kw">let </span>new = set_state(curr, NOTIFIED);
-<a href=#684 id=684 data-nosnippet>684</a>            <span class="kw">let </span>res = <span class="self">self</span>.state.compare_exchange(curr, new, SeqCst, SeqCst);
+<a href=#684 id=684 data-nosnippet>684</a>            <span class="kw">let </span>res = <span class="self">self</span>.state.compare_exchange(curr, new, AcqRel, Acquire);
 <a href=#685 id=685 data-nosnippet>685</a>
 <a href=#686 id=686 data-nosnippet>686</a>            <span class="kw">match </span>res {
 <a href=#687 id=687 data-nosnippet>687</a>                <span class="comment">// No waiters, no further work to do
@@ -697,7 +697,7 @@
 <a href=#697 id=697 data-nosnippet>697</a>
 <a href=#698 id=698 data-nosnippet>698</a>        <span class="comment">// The state must be reloaded while the lock is held. The state may only
 <a href=#699 id=699 data-nosnippet>699</a>        // transition out of WAITING while the lock is held.
-<a href=#700 id=700 data-nosnippet>700</a>        </span>curr = <span class="self">self</span>.state.load(SeqCst);
+<a href=#700 id=700 data-nosnippet>700</a>        </span>curr = <span class="self">self</span>.state.load(Acquire);
 <a href=#701 id=701 data-nosnippet>701</a>
 <a href=#702 id=702 data-nosnippet>702</a>        <span class="kw">if let </span><span class="prelude-val">Some</span>(waker) = notify_locked(<span class="kw-2">&amp;mut </span>waiters, <span class="kw-2">&amp;</span><span class="self">self</span>.state, curr, strategy) {
 <a href=#703 id=703 data-nosnippet>703</a>            drop(waiters);
@@ -756,7 +756,7 @@
 <a href=#756 id=756 data-nosnippet>756</a>        <span class="comment">// Increment the number of times this method was called
 <a href=#757 id=757 data-nosnippet>757</a>        // and transition to empty.
 <a href=#758 id=758 data-nosnippet>758</a>        </span><span class="kw">let </span>new_state = set_state(inc_num_notify_waiters_calls(curr), EMPTY);
-<a href=#759 id=759 data-nosnippet>759</a>        <span class="self">self</span>.state.store(new_state, SeqCst);
+<a href=#759 id=759 data-nosnippet>759</a>        <span class="self">self</span>.state.store(new_state, Release);
 <a href=#760 id=760 data-nosnippet>760</a>
 <a href=#761 id=761 data-nosnippet>761</a>        <span class="comment">// It is critical for `GuardedLinkedList` safety that the guard node is
 <a href=#762 id=762 data-nosnippet>762</a>        // pinned in memory and is not dropped until the guarded list is dropped.
@@ -819,7 +819,7 @@
 <a href=#819 id=819 data-nosnippet>819</a>
 <a href=#820 id=820 data-nosnippet>820</a>        <span class="comment">// The state must be loaded while the lock is held. The state may only
 <a href=#821 id=821 data-nosnippet>821</a>        // transition out of WAITING while the lock is held.
-<a href=#822 id=822 data-nosnippet>822</a>        </span><span class="kw">let </span>current_state = <span class="self">self</span>.state.load(SeqCst);
+<a href=#822 id=822 data-nosnippet>822</a>        </span><span class="kw">let </span>current_state = <span class="self">self</span>.state.load(Acquire);
 <a href=#823 id=823 data-nosnippet>823</a>
 <a href=#824 id=824 data-nosnippet>824</a>        NotifyGuard {
 <a href=#825 id=825 data-nosnippet>825</a>            guarded_notify: <span class="self">self</span>,
@@ -846,14 +846,14 @@
 <a href=#846 id=846 data-nosnippet>846</a>) -&gt; <span class="prelude-ty">Option</span>&lt;Waker&gt; {
 <a href=#847 id=847 data-nosnippet>847</a>    <span class="kw">match </span>get_state(curr) {
 <a href=#848 id=848 data-nosnippet>848</a>        EMPTY | NOTIFIED =&gt; {
-<a href=#849 id=849 data-nosnippet>849</a>            <span class="kw">let </span>res = state.compare_exchange(curr, set_state(curr, NOTIFIED), SeqCst, SeqCst);
+<a href=#849 id=849 data-nosnippet>849</a>            <span class="kw">let </span>res = state.compare_exchange(curr, set_state(curr, NOTIFIED), AcqRel, Acquire);
 <a href=#850 id=850 data-nosnippet>850</a>
 <a href=#851 id=851 data-nosnippet>851</a>            <span class="kw">match </span>res {
 <a href=#852 id=852 data-nosnippet>852</a>                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
 <a href=#853 id=853 data-nosnippet>853</a>                <span class="prelude-val">Err</span>(actual) =&gt; {
 <a href=#854 id=854 data-nosnippet>854</a>                    <span class="kw">let </span>actual_state = get_state(actual);
 <a href=#855 id=855 data-nosnippet>855</a>                    <span class="macro">assert!</span>(actual_state == EMPTY || actual_state == NOTIFIED);
-<a href=#856 id=856 data-nosnippet>856</a>                    state.store(set_state(actual, NOTIFIED), SeqCst);
+<a href=#856 id=856 data-nosnippet>856</a>                    state.store(set_state(actual, NOTIFIED), Release);
 <a href=#857 id=857 data-nosnippet>857</a>                    <span class="prelude-val">None
 <a href=#858 id=858 data-nosnippet>858</a>                </span>}
 <a href=#859 id=859 data-nosnippet>859</a>            }
@@ -885,7 +885,7 @@
 <a href=#885 id=885 data-nosnippet>885</a>                // must be transitioned to `EMPTY`. As transitioning
 <a href=#886 id=886 data-nosnippet>886</a>                // **from** `WAITING` requires the lock to be held, a
 <a href=#887 id=887 data-nosnippet>887</a>                // `store` is sufficient.
-<a href=#888 id=888 data-nosnippet>888</a>                </span>state.store(set_state(curr, EMPTY), SeqCst);
+<a href=#888 id=888 data-nosnippet>888</a>                </span>state.store(set_state(curr, EMPTY), Release);
 <a href=#889 id=889 data-nosnippet>889</a>            }
 <a href=#890 id=890 data-nosnippet>890</a>            waker
 <a href=#891 id=891 data-nosnippet>891</a>        }
@@ -1022,8 +1022,8 @@
 <a href=#1022 id=1022 data-nosnippet>1022</a>        }
 <a href=#1023 id=1023 data-nosnippet>1023</a>    }
 <a href=#1024 id=1024 data-nosnippet>1024</a>
-<a href=#1025 id=1025 data-nosnippet>1025</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, waker: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Waker&gt;) -&gt; Poll&lt;()&gt; {
-<a href=#1026 id=1026 data-nosnippet>1026</a>        <span class="self">self</span>.project().poll_notified(waker)
+<a href=#1025 id=1025 data-nosnippet>1025</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, ctx: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;&gt;) -&gt; Poll&lt;()&gt; {
+<a href=#1026 id=1026 data-nosnippet>1026</a>        <span class="self">self</span>.project().poll_notified(ctx)
 <a href=#1027 id=1027 data-nosnippet>1027</a>    }
 <a href=#1028 id=1028 data-nosnippet>1028</a>}
 <a href=#1029 id=1029 data-nosnippet>1029</a>
@@ -1031,7 +1031,7 @@
 <a href=#1031 id=1031 data-nosnippet>1031</a>    <span class="kw">type </span>Output = ();
 <a href=#1032 id=1032 data-nosnippet>1032</a>
 <a href=#1033 id=1033 data-nosnippet>1033</a>    <span class="kw">fn </span>poll(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;()&gt; {
-<a href=#1034 id=1034 data-nosnippet>1034</a>        <span class="self">self</span>.poll_notified(<span class="prelude-val">Some</span>(cx.waker()))
+<a href=#1034 id=1034 data-nosnippet>1034</a>        <span class="self">self</span>.poll_notified(<span class="prelude-val">Some</span>(cx))
 <a href=#1035 id=1035 data-nosnippet>1035</a>    }
 <a href=#1036 id=1036 data-nosnippet>1036</a>}
 <a href=#1037 id=1037 data-nosnippet>1037</a>
@@ -1077,8 +1077,8 @@
 <a href=#1077 id=1077 data-nosnippet>1077</a>        }
 <a href=#1078 id=1078 data-nosnippet>1078</a>    }
 <a href=#1079 id=1079 data-nosnippet>1079</a>
-<a href=#1080 id=1080 data-nosnippet>1080</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, waker: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Waker&gt;) -&gt; Poll&lt;()&gt; {
-<a href=#1081 id=1081 data-nosnippet>1081</a>        <span class="self">self</span>.project().poll_notified(waker)
+<a href=#1080 id=1080 data-nosnippet>1080</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, ctx: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;&gt;) -&gt; Poll&lt;()&gt; {
+<a href=#1081 id=1081 data-nosnippet>1081</a>        <span class="self">self</span>.project().poll_notified(ctx)
 <a href=#1082 id=1082 data-nosnippet>1082</a>    }
 <a href=#1083 id=1083 data-nosnippet>1083</a>}
 <a href=#1084 id=1084 data-nosnippet>1084</a>
@@ -1086,7 +1086,7 @@
 <a href=#1086 id=1086 data-nosnippet>1086</a>    <span class="kw">type </span>Output = ();
 <a href=#1087 id=1087 data-nosnippet>1087</a>
 <a href=#1088 id=1088 data-nosnippet>1088</a>    <span class="kw">fn </span>poll(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;) -&gt; Poll&lt;()&gt; {
-<a href=#1089 id=1089 data-nosnippet>1089</a>        <span class="self">self</span>.poll_notified(<span class="prelude-val">Some</span>(cx.waker()))
+<a href=#1089 id=1089 data-nosnippet>1089</a>        <span class="self">self</span>.poll_notified(<span class="prelude-val">Some</span>(cx))
 <a href=#1090 id=1090 data-nosnippet>1090</a>    }
 <a href=#1091 id=1091 data-nosnippet>1091</a>}
 <a href=#1092 id=1092 data-nosnippet>1092</a>
@@ -1102,7 +1102,7 @@
 <a href=#1102 id=1102 data-nosnippet>1102</a><span class="comment">// ===== impl NotifiedProject =====
 <a href=#1103 id=1103 data-nosnippet>1103</a>
 <a href=#1104 id=1104 data-nosnippet>1104</a></span><span class="kw">impl </span>NotifiedProject&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#1105 id=1105 data-nosnippet>1105</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>, waker: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Waker&gt;) -&gt; Poll&lt;()&gt; {
+<a href=#1105 id=1105 data-nosnippet>1105</a>    <span class="kw">fn </span>poll_notified(<span class="self">self</span>, <span class="kw-2">mut </span>ctx: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">'_</span>&gt;&gt;) -&gt; Poll&lt;()&gt; {
 <a href=#1106 id=1106 data-nosnippet>1106</a>        <span class="kw">let </span>NotifiedProject {
 <a href=#1107 id=1107 data-nosnippet>1107</a>            notify,
 <a href=#1108 id=1108 data-nosnippet>1108</a>            state,
@@ -1113,7 +1113,7 @@
 <a href=#1113 id=1113 data-nosnippet>1113</a>        <span class="lifetime">'outer_loop</span>: <span class="kw">loop </span>{
 <a href=#1114 id=1114 data-nosnippet>1114</a>            <span class="kw">match </span><span class="kw-2">*</span>state {
 <a href=#1115 id=1115 data-nosnippet>1115</a>                State::Init =&gt; {
-<a href=#1116 id=1116 data-nosnippet>1116</a>                    <span class="kw">let </span>curr = notify.state.load(SeqCst);
+<a href=#1116 id=1116 data-nosnippet>1116</a>                    <span class="kw">let </span>curr = notify.state.load(Acquire);
 <a href=#1117 id=1117 data-nosnippet>1117</a>
 <a href=#1118 id=1118 data-nosnippet>1118</a>                    <span class="comment">// Check if `notify_waiters` was called before attempting to acquire
 <a href=#1119 id=1119 data-nosnippet>1119</a>                    // the `NOTIFIED` state. If a broadcast occurred, we will be woken by it,
@@ -1127,8 +1127,8 @@
 <a href=#1127 id=1127 data-nosnippet>1127</a>                    </span><span class="kw">let </span>res = notify.state.compare_exchange(
 <a href=#1128 id=1128 data-nosnippet>1128</a>                        set_state(curr, NOTIFIED),
 <a href=#1129 id=1129 data-nosnippet>1129</a>                        set_state(curr, EMPTY),
-<a href=#1130 id=1130 data-nosnippet>1130</a>                        SeqCst,
-<a href=#1131 id=1131 data-nosnippet>1131</a>                        SeqCst,
+<a href=#1130 id=1130 data-nosnippet>1130</a>                        AcqRel,
+<a href=#1131 id=1131 data-nosnippet>1131</a>                        Acquire,
 <a href=#1132 id=1132 data-nosnippet>1132</a>                    );
 <a href=#1133 id=1133 data-nosnippet>1133</a>
 <a href=#1134 id=1134 data-nosnippet>1134</a>                    <span class="kw">if </span>res.is_ok() {
@@ -1139,14 +1139,14 @@
 <a href=#1139 id=1139 data-nosnippet>1139</a>
 <a href=#1140 id=1140 data-nosnippet>1140</a>                    <span class="comment">// Clone the waker before locking, a waker clone can be
 <a href=#1141 id=1141 data-nosnippet>1141</a>                    // triggering arbitrary code.
-<a href=#1142 id=1142 data-nosnippet>1142</a>                    </span><span class="kw">let </span>waker = waker.cloned();
+<a href=#1142 id=1142 data-nosnippet>1142</a>                    </span><span class="kw">let </span>waker = ctx.as_mut().map(|ctx| ctx.waker().clone());
 <a href=#1143 id=1143 data-nosnippet>1143</a>
 <a href=#1144 id=1144 data-nosnippet>1144</a>                    <span class="comment">// Acquire the lock and attempt to transition to the waiting
 <a href=#1145 id=1145 data-nosnippet>1145</a>                    // state.
 <a href=#1146 id=1146 data-nosnippet>1146</a>                    </span><span class="kw">let </span><span class="kw-2">mut </span>waiters = notify.waiters.lock();
 <a href=#1147 id=1147 data-nosnippet>1147</a>
 <a href=#1148 id=1148 data-nosnippet>1148</a>                    <span class="comment">// Reload the state with the lock held
-<a href=#1149 id=1149 data-nosnippet>1149</a>                    </span><span class="kw">let </span><span class="kw-2">mut </span>curr = notify.state.load(SeqCst);
+<a href=#1149 id=1149 data-nosnippet>1149</a>                    </span><span class="kw">let </span><span class="kw-2">mut </span>curr = notify.state.load(Acquire);
 <a href=#1150 id=1150 data-nosnippet>1150</a>
 <a href=#1151 id=1151 data-nosnippet>1151</a>                    <span class="comment">// if notify_waiters has been called after the future
 <a href=#1152 id=1152 data-nosnippet>1152</a>                    // was created, then we are done
@@ -1163,8 +1163,8 @@
 <a href=#1163 id=1163 data-nosnippet>1163</a>                                </span><span class="kw">let </span>res = notify.state.compare_exchange(
 <a href=#1164 id=1164 data-nosnippet>1164</a>                                    set_state(curr, EMPTY),
 <a href=#1165 id=1165 data-nosnippet>1165</a>                                    set_state(curr, WAITING),
-<a href=#1166 id=1166 data-nosnippet>1166</a>                                    SeqCst,
-<a href=#1167 id=1167 data-nosnippet>1167</a>                                    SeqCst,
+<a href=#1166 id=1166 data-nosnippet>1166</a>                                    AcqRel,
+<a href=#1167 id=1167 data-nosnippet>1167</a>                                    Acquire,
 <a href=#1168 id=1168 data-nosnippet>1168</a>                                );
 <a href=#1169 id=1169 data-nosnippet>1169</a>
 <a href=#1170 id=1170 data-nosnippet>1170</a>                                <span class="kw">if let </span><span class="prelude-val">Err</span>(actual) = res {
@@ -1180,8 +1180,8 @@
 <a href=#1180 id=1180 data-nosnippet>1180</a>                                </span><span class="kw">let </span>res = notify.state.compare_exchange(
 <a href=#1181 id=1181 data-nosnippet>1181</a>                                    set_state(curr, NOTIFIED),
 <a href=#1182 id=1182 data-nosnippet>1182</a>                                    set_state(curr, EMPTY),
-<a href=#1183 id=1183 data-nosnippet>1183</a>                                    SeqCst,
-<a href=#1184 id=1184 data-nosnippet>1184</a>                                    SeqCst,
+<a href=#1183 id=1183 data-nosnippet>1183</a>                                    AcqRel,
+<a href=#1184 id=1184 data-nosnippet>1184</a>                                    Acquire,
 <a href=#1185 id=1185 data-nosnippet>1185</a>                                );
 <a href=#1186 id=1186 data-nosnippet>1186</a>
 <a href=#1187 id=1187 data-nosnippet>1187</a>                                <span class="kw">match </span>res {
@@ -1223,9 +1223,9 @@
 <a href=#1223 id=1223 data-nosnippet>1223</a>                    <span class="kw">return </span>Poll::Pending;
 <a href=#1224 id=1224 data-nosnippet>1224</a>                }
 <a href=#1225 id=1225 data-nosnippet>1225</a>                State::Waiting =&gt; {
-<a href=#1226 id=1226 data-nosnippet>1226</a>                    <span class="attr">#[cfg(feature = <span class="string">"taskdump"</span>)]
-<a href=#1227 id=1227 data-nosnippet>1227</a>                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(_waker) = waker {
-<a href=#1228 id=1228 data-nosnippet>1228</a>                        <span class="macro">std::task::ready!</span>(<span class="kw">crate</span>::trace::trace_leaf());
+<a href=#1226 id=1226 data-nosnippet>1226</a>                    <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"taskdump"</span>))]
+<a href=#1227 id=1227 data-nosnippet>1227</a>                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(ctx) = ctx.as_mut() {
+<a href=#1228 id=1228 data-nosnippet>1228</a>                        <span class="macro">std::task::ready!</span>(<span class="kw">crate</span>::trace::trace_leaf(ctx));
 <a href=#1229 id=1229 data-nosnippet>1229</a>                    }
 <a href=#1230 id=1230 data-nosnippet>1230</a>
 <a href=#1231 id=1231 data-nosnippet>1231</a>                    <span class="kw">if </span>waiter.notification.load(Acquire).is_some() {
@@ -1264,7 +1264,7 @@
 <a href=#1264 id=1264 data-nosnippet>1264</a>                    }
 <a href=#1265 id=1265 data-nosnippet>1265</a>
 <a href=#1266 id=1266 data-nosnippet>1266</a>                    <span class="comment">// Load the state with the lock held.
-<a href=#1267 id=1267 data-nosnippet>1267</a>                    </span><span class="kw">let </span>curr = notify.state.load(SeqCst);
+<a href=#1267 id=1267 data-nosnippet>1267</a>                    </span><span class="kw">let </span>curr = notify.state.load(Acquire);
 <a href=#1268 id=1268 data-nosnippet>1268</a>
 <a href=#1269 id=1269 data-nosnippet>1269</a>                    <span class="kw">if </span>get_num_notify_waiters_calls(curr) != <span class="kw-2">*</span>notify_waiters_calls {
 <a href=#1270 id=1270 data-nosnippet>1270</a>                        <span class="comment">// Before we add a waiter to the list we check if these numbers are
@@ -1286,128 +1286,129 @@
 <a href=#1286 id=1286 data-nosnippet>1286</a>                        <span class="comment">// Safety: we hold the lock, so we can modify the waker.
 <a href=#1287 id=1287 data-nosnippet>1287</a>                        </span><span class="kw">unsafe </span>{
 <a href=#1288 id=1288 data-nosnippet>1288</a>                            waiter.waker.with_mut(|v| {
-<a href=#1289 id=1289 data-nosnippet>1289</a>                                <span class="kw">if let </span><span class="prelude-val">Some</span>(waker) = waker {
-<a href=#1290 id=1290 data-nosnippet>1290</a>                                    <span class="kw">let </span>should_update = <span class="kw">match </span><span class="kw-2">&amp;*</span>v {
-<a href=#1291 id=1291 data-nosnippet>1291</a>                                        <span class="prelude-val">Some</span>(current_waker) =&gt; !current_waker.will_wake(waker),
-<a href=#1292 id=1292 data-nosnippet>1292</a>                                        <span class="prelude-val">None </span>=&gt; <span class="bool-val">true</span>,
-<a href=#1293 id=1293 data-nosnippet>1293</a>                                    };
-<a href=#1294 id=1294 data-nosnippet>1294</a>                                    <span class="kw">if </span>should_update {
-<a href=#1295 id=1295 data-nosnippet>1295</a>                                        old_waker = (<span class="kw-2">*</span>v).replace(waker.clone());
-<a href=#1296 id=1296 data-nosnippet>1296</a>                                    }
-<a href=#1297 id=1297 data-nosnippet>1297</a>                                }
-<a href=#1298 id=1298 data-nosnippet>1298</a>                            });
-<a href=#1299 id=1299 data-nosnippet>1299</a>                        }
-<a href=#1300 id=1300 data-nosnippet>1300</a>
-<a href=#1301 id=1301 data-nosnippet>1301</a>                        <span class="comment">// Drop the old waker after releasing the lock.
-<a href=#1302 id=1302 data-nosnippet>1302</a>                        </span>drop(waiters);
-<a href=#1303 id=1303 data-nosnippet>1303</a>                        drop(old_waker);
-<a href=#1304 id=1304 data-nosnippet>1304</a>
-<a href=#1305 id=1305 data-nosnippet>1305</a>                        <span class="kw">return </span>Poll::Pending;
-<a href=#1306 id=1306 data-nosnippet>1306</a>                    }
-<a href=#1307 id=1307 data-nosnippet>1307</a>
-<a href=#1308 id=1308 data-nosnippet>1308</a>                    <span class="comment">// Explicit drop of the lock to indicate the scope that the
-<a href=#1309 id=1309 data-nosnippet>1309</a>                    // lock is held. Because holding the lock is required to
-<a href=#1310 id=1310 data-nosnippet>1310</a>                    // ensure safe access to fields not held within the lock, it
-<a href=#1311 id=1311 data-nosnippet>1311</a>                    // is helpful to visualize the scope of the critical
-<a href=#1312 id=1312 data-nosnippet>1312</a>                    // section.
-<a href=#1313 id=1313 data-nosnippet>1313</a>                    </span>drop(waiters);
-<a href=#1314 id=1314 data-nosnippet>1314</a>
-<a href=#1315 id=1315 data-nosnippet>1315</a>                    <span class="comment">// Drop the old waker after releasing the lock.
-<a href=#1316 id=1316 data-nosnippet>1316</a>                    </span>drop(old_waker);
-<a href=#1317 id=1317 data-nosnippet>1317</a>                }
-<a href=#1318 id=1318 data-nosnippet>1318</a>                State::Done =&gt; {
-<a href=#1319 id=1319 data-nosnippet>1319</a>                    <span class="attr">#[cfg(feature = <span class="string">"taskdump"</span>)]
-<a href=#1320 id=1320 data-nosnippet>1320</a>                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(_waker) = waker {
-<a href=#1321 id=1321 data-nosnippet>1321</a>                        <span class="macro">std::task::ready!</span>(<span class="kw">crate</span>::trace::trace_leaf());
-<a href=#1322 id=1322 data-nosnippet>1322</a>                    }
-<a href=#1323 id=1323 data-nosnippet>1323</a>                    <span class="kw">return </span>Poll::Ready(());
-<a href=#1324 id=1324 data-nosnippet>1324</a>                }
-<a href=#1325 id=1325 data-nosnippet>1325</a>            }
-<a href=#1326 id=1326 data-nosnippet>1326</a>        }
-<a href=#1327 id=1327 data-nosnippet>1327</a>    }
-<a href=#1328 id=1328 data-nosnippet>1328</a>
-<a href=#1329 id=1329 data-nosnippet>1329</a>    <span class="kw">fn </span>drop_notified(<span class="self">self</span>) {
-<a href=#1330 id=1330 data-nosnippet>1330</a>        <span class="kw">let </span>NotifiedProject {
-<a href=#1331 id=1331 data-nosnippet>1331</a>            notify,
-<a href=#1332 id=1332 data-nosnippet>1332</a>            state,
-<a href=#1333 id=1333 data-nosnippet>1333</a>            waiter,
-<a href=#1334 id=1334 data-nosnippet>1334</a>            ..
-<a href=#1335 id=1335 data-nosnippet>1335</a>        } = <span class="self">self</span>;
-<a href=#1336 id=1336 data-nosnippet>1336</a>
-<a href=#1337 id=1337 data-nosnippet>1337</a>        <span class="comment">// This is where we ensure safety. The `Notified` value is being
-<a href=#1338 id=1338 data-nosnippet>1338</a>        // dropped, which means we must ensure that the waiter entry is no
-<a href=#1339 id=1339 data-nosnippet>1339</a>        // longer stored in the linked list.
-<a href=#1340 id=1340 data-nosnippet>1340</a>        </span><span class="kw">if </span><span class="macro">matches!</span>(<span class="kw-2">*</span>state, State::Waiting) {
-<a href=#1341 id=1341 data-nosnippet>1341</a>            <span class="kw">let </span><span class="kw-2">mut </span>waiters = notify.waiters.lock();
-<a href=#1342 id=1342 data-nosnippet>1342</a>            <span class="kw">let </span><span class="kw-2">mut </span>notify_state = notify.state.load(SeqCst);
-<a href=#1343 id=1343 data-nosnippet>1343</a>
-<a href=#1344 id=1344 data-nosnippet>1344</a>            <span class="comment">// We hold the lock, so this field is not concurrently accessed by
-<a href=#1345 id=1345 data-nosnippet>1345</a>            // `notify_*` functions and we can use the relaxed ordering.
-<a href=#1346 id=1346 data-nosnippet>1346</a>            </span><span class="kw">let </span>notification = waiter.notification.load(Relaxed);
-<a href=#1347 id=1347 data-nosnippet>1347</a>
-<a href=#1348 id=1348 data-nosnippet>1348</a>            <span class="comment">// remove the entry from the list (if not already removed)
-<a href=#1349 id=1349 data-nosnippet>1349</a>            //
-<a href=#1350 id=1350 data-nosnippet>1350</a>            // Safety: we hold the lock, so we have an exclusive access to every list the
-<a href=#1351 id=1351 data-nosnippet>1351</a>            // waiter may be contained in. If the node is not contained in the `waiters`
-<a href=#1352 id=1352 data-nosnippet>1352</a>            // list, then it is contained by a guarded list used by `notify_waiters`.
-<a href=#1353 id=1353 data-nosnippet>1353</a>            </span><span class="kw">unsafe </span>{ waiters.remove(NonNull::from(waiter)) };
-<a href=#1354 id=1354 data-nosnippet>1354</a>
-<a href=#1355 id=1355 data-nosnippet>1355</a>            <span class="kw">if </span>waiters.is_empty() &amp;&amp; get_state(notify_state) == WAITING {
-<a href=#1356 id=1356 data-nosnippet>1356</a>                notify_state = set_state(notify_state, EMPTY);
-<a href=#1357 id=1357 data-nosnippet>1357</a>                notify.state.store(notify_state, SeqCst);
-<a href=#1358 id=1358 data-nosnippet>1358</a>            }
-<a href=#1359 id=1359 data-nosnippet>1359</a>
-<a href=#1360 id=1360 data-nosnippet>1360</a>            <span class="comment">// See if the node was notified but not received. In this case, if
-<a href=#1361 id=1361 data-nosnippet>1361</a>            // the notification was triggered via `notify_one`, it must be sent
-<a href=#1362 id=1362 data-nosnippet>1362</a>            // to the next waiter.
-<a href=#1363 id=1363 data-nosnippet>1363</a>            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(Notification::One(strategy)) = notification {
-<a href=#1364 id=1364 data-nosnippet>1364</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(waker) =
-<a href=#1365 id=1365 data-nosnippet>1365</a>                    notify_locked(<span class="kw-2">&amp;mut </span>waiters, <span class="kw-2">&amp;</span>notify.state, notify_state, strategy)
-<a href=#1366 id=1366 data-nosnippet>1366</a>                {
-<a href=#1367 id=1367 data-nosnippet>1367</a>                    drop(waiters);
-<a href=#1368 id=1368 data-nosnippet>1368</a>                    waker.wake();
-<a href=#1369 id=1369 data-nosnippet>1369</a>                }
-<a href=#1370 id=1370 data-nosnippet>1370</a>            }
-<a href=#1371 id=1371 data-nosnippet>1371</a>        }
-<a href=#1372 id=1372 data-nosnippet>1372</a>    }
-<a href=#1373 id=1373 data-nosnippet>1373</a>}
-<a href=#1374 id=1374 data-nosnippet>1374</a>
-<a href=#1375 id=1375 data-nosnippet>1375</a><span class="doccomment">/// # Safety
-<a href=#1376 id=1376 data-nosnippet>1376</a>///
-<a href=#1377 id=1377 data-nosnippet>1377</a>/// `Waiter` is forced to be !Unpin.
-<a href=#1378 id=1378 data-nosnippet>1378</a></span><span class="kw">unsafe impl </span>linked_list::Link <span class="kw">for </span>Waiter {
-<a href=#1379 id=1379 data-nosnippet>1379</a>    <span class="kw">type </span>Handle = NonNull&lt;Waiter&gt;;
-<a href=#1380 id=1380 data-nosnippet>1380</a>    <span class="kw">type </span>Target = Waiter;
-<a href=#1381 id=1381 data-nosnippet>1381</a>
-<a href=#1382 id=1382 data-nosnippet>1382</a>    <span class="kw">fn </span>as_raw(handle: <span class="kw-2">&amp;</span>NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;Waiter&gt; {
-<a href=#1383 id=1383 data-nosnippet>1383</a>        <span class="kw-2">*</span>handle
-<a href=#1384 id=1384 data-nosnippet>1384</a>    }
-<a href=#1385 id=1385 data-nosnippet>1385</a>
-<a href=#1386 id=1386 data-nosnippet>1386</a>    <span class="kw">unsafe fn </span>from_raw(ptr: NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;Waiter&gt; {
-<a href=#1387 id=1387 data-nosnippet>1387</a>        ptr
-<a href=#1388 id=1388 data-nosnippet>1388</a>    }
-<a href=#1389 id=1389 data-nosnippet>1389</a>
-<a href=#1390 id=1390 data-nosnippet>1390</a>    <span class="kw">unsafe fn </span>pointers(target: NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;linked_list::Pointers&lt;Waiter&gt;&gt; {
-<a href=#1391 id=1391 data-nosnippet>1391</a>        <span class="kw">unsafe </span>{ Waiter::addr_of_pointers(target) }
-<a href=#1392 id=1392 data-nosnippet>1392</a>    }
-<a href=#1393 id=1393 data-nosnippet>1393</a>}
-<a href=#1394 id=1394 data-nosnippet>1394</a>
-<a href=#1395 id=1395 data-nosnippet>1395</a><span class="kw">fn </span>is_unpin&lt;T: Unpin&gt;() {}
-<a href=#1396 id=1396 data-nosnippet>1396</a>
-<a href=#1397 id=1397 data-nosnippet>1397</a><span class="doccomment">/// A guard that provides exclusive access to a `Notify`'s internal
-<a href=#1398 id=1398 data-nosnippet>1398</a>/// waiters list.
-<a href=#1399 id=1399 data-nosnippet>1399</a>///
-<a href=#1400 id=1400 data-nosnippet>1400</a>/// While this guard is held, the `Notify` instance's waiter list is locked.
-<a href=#1401 id=1401 data-nosnippet>1401</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>NotifyGuard&lt;<span class="lifetime">'a</span>&gt; {
-<a href=#1402 id=1402 data-nosnippet>1402</a>    guarded_notify: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Notify,
-<a href=#1403 id=1403 data-nosnippet>1403</a>    guarded_waiters: <span class="kw">crate</span>::loom::sync::MutexGuard&lt;<span class="lifetime">'a</span>, LinkedList&lt;Waiter&gt;&gt;,
-<a href=#1404 id=1404 data-nosnippet>1404</a>    current_state: usize,
-<a href=#1405 id=1405 data-nosnippet>1405</a>}
-<a href=#1406 id=1406 data-nosnippet>1406</a>
-<a href=#1407 id=1407 data-nosnippet>1407</a><span class="kw">impl </span>NotifyGuard&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#1408 id=1408 data-nosnippet>1408</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>notify_waiters(<span class="self">self</span>) {
-<a href=#1409 id=1409 data-nosnippet>1409</a>        <span class="self">self</span>.guarded_notify
-<a href=#1410 id=1410 data-nosnippet>1410</a>            .inner_notify_waiters(<span class="self">self</span>.current_state, <span class="self">self</span>.guarded_waiters);
-<a href=#1411 id=1411 data-nosnippet>1411</a>    }
-<a href=#1412 id=1412 data-nosnippet>1412</a>}
+<a href=#1289 id=1289 data-nosnippet>1289</a>                                <span class="kw">if let </span><span class="prelude-val">Some</span>(ctx) = ctx.as_ref() {
+<a href=#1290 id=1290 data-nosnippet>1290</a>                                    <span class="kw">let </span>waker = ctx.waker();
+<a href=#1291 id=1291 data-nosnippet>1291</a>                                    <span class="kw">let </span>should_update = <span class="kw">match </span><span class="kw-2">&amp;*</span>v {
+<a href=#1292 id=1292 data-nosnippet>1292</a>                                        <span class="prelude-val">Some</span>(current_waker) =&gt; !current_waker.will_wake(waker),
+<a href=#1293 id=1293 data-nosnippet>1293</a>                                        <span class="prelude-val">None </span>=&gt; <span class="bool-val">true</span>,
+<a href=#1294 id=1294 data-nosnippet>1294</a>                                    };
+<a href=#1295 id=1295 data-nosnippet>1295</a>                                    <span class="kw">if </span>should_update {
+<a href=#1296 id=1296 data-nosnippet>1296</a>                                        old_waker = (<span class="kw-2">*</span>v).replace(waker.clone());
+<a href=#1297 id=1297 data-nosnippet>1297</a>                                    }
+<a href=#1298 id=1298 data-nosnippet>1298</a>                                }
+<a href=#1299 id=1299 data-nosnippet>1299</a>                            });
+<a href=#1300 id=1300 data-nosnippet>1300</a>                        }
+<a href=#1301 id=1301 data-nosnippet>1301</a>
+<a href=#1302 id=1302 data-nosnippet>1302</a>                        <span class="comment">// Drop the old waker after releasing the lock.
+<a href=#1303 id=1303 data-nosnippet>1303</a>                        </span>drop(waiters);
+<a href=#1304 id=1304 data-nosnippet>1304</a>                        drop(old_waker);
+<a href=#1305 id=1305 data-nosnippet>1305</a>
+<a href=#1306 id=1306 data-nosnippet>1306</a>                        <span class="kw">return </span>Poll::Pending;
+<a href=#1307 id=1307 data-nosnippet>1307</a>                    }
+<a href=#1308 id=1308 data-nosnippet>1308</a>
+<a href=#1309 id=1309 data-nosnippet>1309</a>                    <span class="comment">// Explicit drop of the lock to indicate the scope that the
+<a href=#1310 id=1310 data-nosnippet>1310</a>                    // lock is held. Because holding the lock is required to
+<a href=#1311 id=1311 data-nosnippet>1311</a>                    // ensure safe access to fields not held within the lock, it
+<a href=#1312 id=1312 data-nosnippet>1312</a>                    // is helpful to visualize the scope of the critical
+<a href=#1313 id=1313 data-nosnippet>1313</a>                    // section.
+<a href=#1314 id=1314 data-nosnippet>1314</a>                    </span>drop(waiters);
+<a href=#1315 id=1315 data-nosnippet>1315</a>
+<a href=#1316 id=1316 data-nosnippet>1316</a>                    <span class="comment">// Drop the old waker after releasing the lock.
+<a href=#1317 id=1317 data-nosnippet>1317</a>                    </span>drop(old_waker);
+<a href=#1318 id=1318 data-nosnippet>1318</a>                }
+<a href=#1319 id=1319 data-nosnippet>1319</a>                State::Done =&gt; {
+<a href=#1320 id=1320 data-nosnippet>1320</a>                    <span class="attr">#[cfg(all(tokio_unstable, feature = <span class="string">"taskdump"</span>))]
+<a href=#1321 id=1321 data-nosnippet>1321</a>                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(ctx) = ctx.as_mut() {
+<a href=#1322 id=1322 data-nosnippet>1322</a>                        <span class="macro">std::task::ready!</span>(<span class="kw">crate</span>::trace::trace_leaf(ctx));
+<a href=#1323 id=1323 data-nosnippet>1323</a>                    }
+<a href=#1324 id=1324 data-nosnippet>1324</a>                    <span class="kw">return </span>Poll::Ready(());
+<a href=#1325 id=1325 data-nosnippet>1325</a>                }
+<a href=#1326 id=1326 data-nosnippet>1326</a>            }
+<a href=#1327 id=1327 data-nosnippet>1327</a>        }
+<a href=#1328 id=1328 data-nosnippet>1328</a>    }
+<a href=#1329 id=1329 data-nosnippet>1329</a>
+<a href=#1330 id=1330 data-nosnippet>1330</a>    <span class="kw">fn </span>drop_notified(<span class="self">self</span>) {
+<a href=#1331 id=1331 data-nosnippet>1331</a>        <span class="kw">let </span>NotifiedProject {
+<a href=#1332 id=1332 data-nosnippet>1332</a>            notify,
+<a href=#1333 id=1333 data-nosnippet>1333</a>            state,
+<a href=#1334 id=1334 data-nosnippet>1334</a>            waiter,
+<a href=#1335 id=1335 data-nosnippet>1335</a>            ..
+<a href=#1336 id=1336 data-nosnippet>1336</a>        } = <span class="self">self</span>;
+<a href=#1337 id=1337 data-nosnippet>1337</a>
+<a href=#1338 id=1338 data-nosnippet>1338</a>        <span class="comment">// This is where we ensure safety. The `Notified` value is being
+<a href=#1339 id=1339 data-nosnippet>1339</a>        // dropped, which means we must ensure that the waiter entry is no
+<a href=#1340 id=1340 data-nosnippet>1340</a>        // longer stored in the linked list.
+<a href=#1341 id=1341 data-nosnippet>1341</a>        </span><span class="kw">if </span><span class="macro">matches!</span>(<span class="kw-2">*</span>state, State::Waiting) {
+<a href=#1342 id=1342 data-nosnippet>1342</a>            <span class="kw">let </span><span class="kw-2">mut </span>waiters = notify.waiters.lock();
+<a href=#1343 id=1343 data-nosnippet>1343</a>            <span class="kw">let </span><span class="kw-2">mut </span>notify_state = notify.state.load(Acquire);
+<a href=#1344 id=1344 data-nosnippet>1344</a>
+<a href=#1345 id=1345 data-nosnippet>1345</a>            <span class="comment">// We hold the lock, so this field is not concurrently accessed by
+<a href=#1346 id=1346 data-nosnippet>1346</a>            // `notify_*` functions and we can use the relaxed ordering.
+<a href=#1347 id=1347 data-nosnippet>1347</a>            </span><span class="kw">let </span>notification = waiter.notification.load(Relaxed);
+<a href=#1348 id=1348 data-nosnippet>1348</a>
+<a href=#1349 id=1349 data-nosnippet>1349</a>            <span class="comment">// remove the entry from the list (if not already removed)
+<a href=#1350 id=1350 data-nosnippet>1350</a>            //
+<a href=#1351 id=1351 data-nosnippet>1351</a>            // Safety: we hold the lock, so we have an exclusive access to every list the
+<a href=#1352 id=1352 data-nosnippet>1352</a>            // waiter may be contained in. If the node is not contained in the `waiters`
+<a href=#1353 id=1353 data-nosnippet>1353</a>            // list, then it is contained by a guarded list used by `notify_waiters`.
+<a href=#1354 id=1354 data-nosnippet>1354</a>            </span><span class="kw">unsafe </span>{ waiters.remove(NonNull::from(waiter)) };
+<a href=#1355 id=1355 data-nosnippet>1355</a>
+<a href=#1356 id=1356 data-nosnippet>1356</a>            <span class="kw">if </span>waiters.is_empty() &amp;&amp; get_state(notify_state) == WAITING {
+<a href=#1357 id=1357 data-nosnippet>1357</a>                notify_state = set_state(notify_state, EMPTY);
+<a href=#1358 id=1358 data-nosnippet>1358</a>                notify.state.store(notify_state, Release);
+<a href=#1359 id=1359 data-nosnippet>1359</a>            }
+<a href=#1360 id=1360 data-nosnippet>1360</a>
+<a href=#1361 id=1361 data-nosnippet>1361</a>            <span class="comment">// See if the node was notified but not received. In this case, if
+<a href=#1362 id=1362 data-nosnippet>1362</a>            // the notification was triggered via `notify_one`, it must be sent
+<a href=#1363 id=1363 data-nosnippet>1363</a>            // to the next waiter.
+<a href=#1364 id=1364 data-nosnippet>1364</a>            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(Notification::One(strategy)) = notification {
+<a href=#1365 id=1365 data-nosnippet>1365</a>                <span class="kw">if let </span><span class="prelude-val">Some</span>(waker) =
+<a href=#1366 id=1366 data-nosnippet>1366</a>                    notify_locked(<span class="kw-2">&amp;mut </span>waiters, <span class="kw-2">&amp;</span>notify.state, notify_state, strategy)
+<a href=#1367 id=1367 data-nosnippet>1367</a>                {
+<a href=#1368 id=1368 data-nosnippet>1368</a>                    drop(waiters);
+<a href=#1369 id=1369 data-nosnippet>1369</a>                    waker.wake();
+<a href=#1370 id=1370 data-nosnippet>1370</a>                }
+<a href=#1371 id=1371 data-nosnippet>1371</a>            }
+<a href=#1372 id=1372 data-nosnippet>1372</a>        }
+<a href=#1373 id=1373 data-nosnippet>1373</a>    }
+<a href=#1374 id=1374 data-nosnippet>1374</a>}
+<a href=#1375 id=1375 data-nosnippet>1375</a>
+<a href=#1376 id=1376 data-nosnippet>1376</a><span class="doccomment">/// # Safety
+<a href=#1377 id=1377 data-nosnippet>1377</a>///
+<a href=#1378 id=1378 data-nosnippet>1378</a>/// `Waiter` is forced to be !Unpin.
+<a href=#1379 id=1379 data-nosnippet>1379</a></span><span class="kw">unsafe impl </span>linked_list::Link <span class="kw">for </span>Waiter {
+<a href=#1380 id=1380 data-nosnippet>1380</a>    <span class="kw">type </span>Handle = NonNull&lt;Waiter&gt;;
+<a href=#1381 id=1381 data-nosnippet>1381</a>    <span class="kw">type </span>Target = Waiter;
+<a href=#1382 id=1382 data-nosnippet>1382</a>
+<a href=#1383 id=1383 data-nosnippet>1383</a>    <span class="kw">fn </span>as_raw(handle: <span class="kw-2">&amp;</span>NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;Waiter&gt; {
+<a href=#1384 id=1384 data-nosnippet>1384</a>        <span class="kw-2">*</span>handle
+<a href=#1385 id=1385 data-nosnippet>1385</a>    }
+<a href=#1386 id=1386 data-nosnippet>1386</a>
+<a href=#1387 id=1387 data-nosnippet>1387</a>    <span class="kw">unsafe fn </span>from_raw(ptr: NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;Waiter&gt; {
+<a href=#1388 id=1388 data-nosnippet>1388</a>        ptr
+<a href=#1389 id=1389 data-nosnippet>1389</a>    }
+<a href=#1390 id=1390 data-nosnippet>1390</a>
+<a href=#1391 id=1391 data-nosnippet>1391</a>    <span class="kw">unsafe fn </span>pointers(target: NonNull&lt;Waiter&gt;) -&gt; NonNull&lt;linked_list::Pointers&lt;Waiter&gt;&gt; {
+<a href=#1392 id=1392 data-nosnippet>1392</a>        <span class="kw">unsafe </span>{ Waiter::addr_of_pointers(target) }
+<a href=#1393 id=1393 data-nosnippet>1393</a>    }
+<a href=#1394 id=1394 data-nosnippet>1394</a>}
+<a href=#1395 id=1395 data-nosnippet>1395</a>
+<a href=#1396 id=1396 data-nosnippet>1396</a><span class="kw">fn </span>is_unpin&lt;T: Unpin&gt;() {}
+<a href=#1397 id=1397 data-nosnippet>1397</a>
+<a href=#1398 id=1398 data-nosnippet>1398</a><span class="doccomment">/// A guard that provides exclusive access to a `Notify`'s internal
+<a href=#1399 id=1399 data-nosnippet>1399</a>/// waiters list.
+<a href=#1400 id=1400 data-nosnippet>1400</a>///
+<a href=#1401 id=1401 data-nosnippet>1401</a>/// While this guard is held, the `Notify` instance's waiter list is locked.
+<a href=#1402 id=1402 data-nosnippet>1402</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>NotifyGuard&lt;<span class="lifetime">'a</span>&gt; {
+<a href=#1403 id=1403 data-nosnippet>1403</a>    guarded_notify: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Notify,
+<a href=#1404 id=1404 data-nosnippet>1404</a>    guarded_waiters: <span class="kw">crate</span>::loom::sync::MutexGuard&lt;<span class="lifetime">'a</span>, LinkedList&lt;Waiter&gt;&gt;,
+<a href=#1405 id=1405 data-nosnippet>1405</a>    current_state: usize,
+<a href=#1406 id=1406 data-nosnippet>1406</a>}
+<a href=#1407 id=1407 data-nosnippet>1407</a>
+<a href=#1408 id=1408 data-nosnippet>1408</a><span class="kw">impl </span>NotifyGuard&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1409 id=1409 data-nosnippet>1409</a>    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>notify_waiters(<span class="self">self</span>) {
+<a href=#1410 id=1410 data-nosnippet>1410</a>        <span class="self">self</span>.guarded_notify
+<a href=#1411 id=1411 data-nosnippet>1411</a>            .inner_notify_waiters(<span class="self">self</span>.current_state, <span class="self">self</span>.guarded_waiters);
+<a href=#1412 id=1412 data-nosnippet>1412</a>    }
+<a href=#1413 id=1413 data-nosnippet>1413</a>}
 </code></pre></div></section></main></body></html>

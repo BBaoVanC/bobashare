@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.1/src/net/tcp/socket.rs`."><title>socket.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-1ed95124.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.98.1 (48a229cea 2026-09-01)" data-channel="1.98.1" data-search-js="search-9944d736.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/tcp/</div>socket.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::net::{TcpListener, TcpStream};
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.0/src/net/tcp/socket.rs`."><title>socket.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-0c87338a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tokio" data-themes="" data-resource-suffix="" data-rustdoc-version="1.99.1 (58cf8f9c3 2026-10-13)" data-channel="1.99.1" data-search-js="search-cf4fc35e.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../../static.files/src-script-813739b1.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-417ebf0a.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">tokio/net/tcp/</div>socket.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><span class="kw">crate</span>::net::{TcpListener, TcpStream};
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a><span class="kw">use </span>std::fmt;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span>std::io;
@@ -904,162 +904,163 @@
 <a href=#904 id=904 data-nosnippet>904</a>    /// }
 <a href=#905 id=905 data-nosnippet>905</a>    /// ```
 <a href=#906 id=906 data-nosnippet>906</a>    </span><span class="kw">pub fn </span>listen(<span class="self">self</span>, backlog: u32) -&gt; io::Result&lt;TcpListener&gt; {
-<a href=#907 id=907 data-nosnippet>907</a>        <span class="self">self</span>.inner.listen(backlog <span class="kw">as </span>i32)<span class="question-mark">?</span>;
-<a href=#908 id=908 data-nosnippet>908</a>        <span class="attr">#[cfg(not(windows))]
-<a href=#909 id=909 data-nosnippet>909</a>        </span><span class="kw">let </span>mio = {
-<a href=#910 id=910 data-nosnippet>910</a>            <span class="kw">use </span>std::os::fd::{FromRawFd, IntoRawFd};
-<a href=#911 id=911 data-nosnippet>911</a>
-<a href=#912 id=912 data-nosnippet>912</a>            <span class="kw">let </span>raw_fd = <span class="self">self</span>.inner.into_raw_fd();
-<a href=#913 id=913 data-nosnippet>913</a>            <span class="kw">unsafe </span>{ mio::net::TcpListener::from_raw_fd(raw_fd) }
-<a href=#914 id=914 data-nosnippet>914</a>        };
-<a href=#915 id=915 data-nosnippet>915</a>
-<a href=#916 id=916 data-nosnippet>916</a>        <span class="attr">#[cfg(windows)]
-<a href=#917 id=917 data-nosnippet>917</a>        </span><span class="kw">let </span>mio = {
-<a href=#918 id=918 data-nosnippet>918</a>            <span class="kw">use </span>std::os::windows::io::{FromRawSocket, IntoRawSocket};
-<a href=#919 id=919 data-nosnippet>919</a>
-<a href=#920 id=920 data-nosnippet>920</a>            <span class="kw">let </span>raw_socket = <span class="self">self</span>.inner.into_raw_socket();
-<a href=#921 id=921 data-nosnippet>921</a>            <span class="kw">unsafe </span>{ mio::net::TcpListener::from_raw_socket(raw_socket) }
-<a href=#922 id=922 data-nosnippet>922</a>        };
-<a href=#923 id=923 data-nosnippet>923</a>
-<a href=#924 id=924 data-nosnippet>924</a>        TcpListener::new(mio)
-<a href=#925 id=925 data-nosnippet>925</a>    }
-<a href=#926 id=926 data-nosnippet>926</a>
-<a href=#927 id=927 data-nosnippet>927</a>    <span class="doccomment">/// Converts a [`std::net::TcpStream`] into a `TcpSocket`. The provided
-<a href=#928 id=928 data-nosnippet>928</a>    /// socket must not have been connected prior to calling this function. This
-<a href=#929 id=929 data-nosnippet>929</a>    /// function is typically used together with crates such as [`socket2`] to
-<a href=#930 id=930 data-nosnippet>930</a>    /// configure socket options that are not available on `TcpSocket`.
-<a href=#931 id=931 data-nosnippet>931</a>    ///
-<a href=#932 id=932 data-nosnippet>932</a>    /// [`std::net::TcpStream`]: struct@std::net::TcpStream
-<a href=#933 id=933 data-nosnippet>933</a>    /// [`socket2`]: https://docs.rs/socket2/
-<a href=#934 id=934 data-nosnippet>934</a>    ///
-<a href=#935 id=935 data-nosnippet>935</a>    /// # Notes
-<a href=#936 id=936 data-nosnippet>936</a>    ///
-<a href=#937 id=937 data-nosnippet>937</a>    /// The caller is responsible for ensuring that the socket is in
-<a href=#938 id=938 data-nosnippet>938</a>    /// non-blocking mode. Otherwise all I/O operations on the socket
-<a href=#939 id=939 data-nosnippet>939</a>    /// will block the thread, which will cause unexpected behavior.
-<a href=#940 id=940 data-nosnippet>940</a>    /// Non-blocking mode can be set using [`set_nonblocking`].
-<a href=#941 id=941 data-nosnippet>941</a>    ///
-<a href=#942 id=942 data-nosnippet>942</a>    /// [`set_nonblocking`]: std::net::TcpStream::set_nonblocking
-<a href=#943 id=943 data-nosnippet>943</a>    ///
-<a href=#944 id=944 data-nosnippet>944</a>    /// # Examples
-<a href=#945 id=945 data-nosnippet>945</a>    ///
-<a href=#946 id=946 data-nosnippet>946</a>    /// ```
-<a href=#947 id=947 data-nosnippet>947</a>    /// use tokio::net::TcpSocket;
-<a href=#948 id=948 data-nosnippet>948</a>    /// use socket2::{Domain, Socket, Type};
-<a href=#949 id=949 data-nosnippet>949</a>    ///
-<a href=#950 id=950 data-nosnippet>950</a>    /// #[tokio::main]
-<a href=#951 id=951 data-nosnippet>951</a>    /// async fn main() -&gt; std::io::Result&lt;()&gt; {
-<a href=#952 id=952 data-nosnippet>952</a>    ///     let socket2_socket = Socket::new(Domain::IPV4, Type::STREAM, None)?;
-<a href=#953 id=953 data-nosnippet>953</a>    ///     socket2_socket.set_nonblocking(true)?;
-<a href=#954 id=954 data-nosnippet>954</a>    ///
-<a href=#955 id=955 data-nosnippet>955</a>    ///     let socket = TcpSocket::from_std_stream(socket2_socket.into());
-<a href=#956 id=956 data-nosnippet>956</a>    ///
-<a href=#957 id=957 data-nosnippet>957</a>    ///     Ok(())
-<a href=#958 id=958 data-nosnippet>958</a>    /// }
-<a href=#959 id=959 data-nosnippet>959</a>    /// ```
-<a href=#960 id=960 data-nosnippet>960</a>    </span><span class="kw">pub fn </span>from_std_stream(std_stream: std::net::TcpStream) -&gt; TcpSocket {
-<a href=#961 id=961 data-nosnippet>961</a>        <span class="attr">#[cfg(not(windows))]
-<a href=#962 id=962 data-nosnippet>962</a>        </span>{
-<a href=#963 id=963 data-nosnippet>963</a>            <span class="kw">use </span>std::os::fd::{FromRawFd, IntoRawFd};
-<a href=#964 id=964 data-nosnippet>964</a>
-<a href=#965 id=965 data-nosnippet>965</a>            <span class="kw">let </span>raw_fd = std_stream.into_raw_fd();
-<a href=#966 id=966 data-nosnippet>966</a>            <span class="kw">unsafe </span>{ TcpSocket::from_raw_fd(raw_fd) }
-<a href=#967 id=967 data-nosnippet>967</a>        }
-<a href=#968 id=968 data-nosnippet>968</a>
-<a href=#969 id=969 data-nosnippet>969</a>        <span class="attr">#[cfg(windows)]
-<a href=#970 id=970 data-nosnippet>970</a>        </span>{
-<a href=#971 id=971 data-nosnippet>971</a>            <span class="kw">use </span>std::os::windows::io::{FromRawSocket, IntoRawSocket};
-<a href=#972 id=972 data-nosnippet>972</a>
-<a href=#973 id=973 data-nosnippet>973</a>            <span class="kw">let </span>raw_socket = std_stream.into_raw_socket();
-<a href=#974 id=974 data-nosnippet>974</a>            <span class="kw">unsafe </span>{ TcpSocket::from_raw_socket(raw_socket) }
-<a href=#975 id=975 data-nosnippet>975</a>        }
-<a href=#976 id=976 data-nosnippet>976</a>    }
-<a href=#977 id=977 data-nosnippet>977</a>}
-<a href=#978 id=978 data-nosnippet>978</a>
-<a href=#979 id=979 data-nosnippet>979</a><span class="kw">fn </span>convert_address(address: socket2::SockAddr) -&gt; io::Result&lt;SocketAddr&gt; {
-<a href=#980 id=980 data-nosnippet>980</a>    <span class="kw">match </span>address.as_socket() {
-<a href=#981 id=981 data-nosnippet>981</a>        <span class="prelude-val">Some</span>(address) =&gt; <span class="prelude-val">Ok</span>(address),
-<a href=#982 id=982 data-nosnippet>982</a>        <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(io::Error::new(
-<a href=#983 id=983 data-nosnippet>983</a>            io::ErrorKind::InvalidInput,
-<a href=#984 id=984 data-nosnippet>984</a>            <span class="string">"invalid address family (not IPv4 or IPv6)"</span>,
-<a href=#985 id=985 data-nosnippet>985</a>        )),
-<a href=#986 id=986 data-nosnippet>986</a>    }
-<a href=#987 id=987 data-nosnippet>987</a>}
-<a href=#988 id=988 data-nosnippet>988</a>
-<a href=#989 id=989 data-nosnippet>989</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>TcpSocket {
-<a href=#990 id=990 data-nosnippet>990</a>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, fmt: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
-<a href=#991 id=991 data-nosnippet>991</a>        <span class="self">self</span>.inner.fmt(fmt)
-<a href=#992 id=992 data-nosnippet>992</a>    }
-<a href=#993 id=993 data-nosnippet>993</a>}
-<a href=#994 id=994 data-nosnippet>994</a>
-<a href=#995 id=995 data-nosnippet>995</a><span class="comment">// These trait implementations can't be build on Windows, so we completely
-<a href=#996 id=996 data-nosnippet>996</a>// ignore them, even when building documentation.
-<a href=#997 id=997 data-nosnippet>997</a></span><span class="attr">#[cfg(any(unix, target_os = <span class="string">"wasi"</span>))]
-<a href=#998 id=998 data-nosnippet>998</a></span><span class="macro">cfg_unix_or_wasi!</span> {
-<a href=#999 id=999 data-nosnippet>999</a>    <span class="kw">impl </span>AsRawFd <span class="kw">for </span>TcpSocket {
-<a href=#1000 id=1000 data-nosnippet>1000</a>        <span class="kw">fn </span>as_raw_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawFd {
-<a href=#1001 id=1001 data-nosnippet>1001</a>            <span class="self">self</span>.inner.as_raw_fd()
-<a href=#1002 id=1002 data-nosnippet>1002</a>        }
-<a href=#1003 id=1003 data-nosnippet>1003</a>    }
-<a href=#1004 id=1004 data-nosnippet>1004</a>
-<a href=#1005 id=1005 data-nosnippet>1005</a>    <span class="kw">impl </span>AsFd <span class="kw">for </span>TcpSocket {
-<a href=#1006 id=1006 data-nosnippet>1006</a>        <span class="kw">fn </span>as_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedFd&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#1007 id=1007 data-nosnippet>1007</a>            <span class="kw">unsafe </span>{ BorrowedFd::borrow_raw(<span class="self">self</span>.as_raw_fd()) }
-<a href=#1008 id=1008 data-nosnippet>1008</a>        }
-<a href=#1009 id=1009 data-nosnippet>1009</a>    }
-<a href=#1010 id=1010 data-nosnippet>1010</a>
-<a href=#1011 id=1011 data-nosnippet>1011</a>    <span class="kw">impl </span>FromRawFd <span class="kw">for </span>TcpSocket {
-<a href=#1012 id=1012 data-nosnippet>1012</a>        <span class="doccomment">/// Converts a `RawFd` to a `TcpSocket`.
-<a href=#1013 id=1013 data-nosnippet>1013</a>        ///
-<a href=#1014 id=1014 data-nosnippet>1014</a>        /// # Notes
-<a href=#1015 id=1015 data-nosnippet>1015</a>        ///
-<a href=#1016 id=1016 data-nosnippet>1016</a>        /// The caller is responsible for ensuring that the socket is in
-<a href=#1017 id=1017 data-nosnippet>1017</a>        /// non-blocking mode.
-<a href=#1018 id=1018 data-nosnippet>1018</a>        </span><span class="kw">unsafe fn </span>from_raw_fd(fd: RawFd) -&gt; TcpSocket {
-<a href=#1019 id=1019 data-nosnippet>1019</a>            <span class="comment">// Safety: exactly the same safety requirements as the
-<a href=#1020 id=1020 data-nosnippet>1020</a>            // `FromRawFd::from_raw_fd` trait method.
-<a href=#1021 id=1021 data-nosnippet>1021</a>            </span><span class="kw">let </span>inner = <span class="kw">unsafe </span>{ socket2::Socket::from_raw_fd(fd) };
-<a href=#1022 id=1022 data-nosnippet>1022</a>            TcpSocket { inner }
-<a href=#1023 id=1023 data-nosnippet>1023</a>        }
-<a href=#1024 id=1024 data-nosnippet>1024</a>    }
-<a href=#1025 id=1025 data-nosnippet>1025</a>
-<a href=#1026 id=1026 data-nosnippet>1026</a>    <span class="kw">impl </span>IntoRawFd <span class="kw">for </span>TcpSocket {
-<a href=#1027 id=1027 data-nosnippet>1027</a>        <span class="kw">fn </span>into_raw_fd(<span class="self">self</span>) -&gt; RawFd {
-<a href=#1028 id=1028 data-nosnippet>1028</a>            <span class="self">self</span>.inner.into_raw_fd()
-<a href=#1029 id=1029 data-nosnippet>1029</a>        }
-<a href=#1030 id=1030 data-nosnippet>1030</a>    }
-<a href=#1031 id=1031 data-nosnippet>1031</a>}
-<a href=#1032 id=1032 data-nosnippet>1032</a>
-<a href=#1033 id=1033 data-nosnippet>1033</a><span class="macro">cfg_windows!</span> {
-<a href=#1034 id=1034 data-nosnippet>1034</a>    <span class="kw">impl </span>IntoRawSocket <span class="kw">for </span>TcpSocket {
-<a href=#1035 id=1035 data-nosnippet>1035</a>        <span class="kw">fn </span>into_raw_socket(<span class="self">self</span>) -&gt; RawSocket {
-<a href=#1036 id=1036 data-nosnippet>1036</a>            <span class="self">self</span>.inner.into_raw_socket()
-<a href=#1037 id=1037 data-nosnippet>1037</a>        }
-<a href=#1038 id=1038 data-nosnippet>1038</a>    }
-<a href=#1039 id=1039 data-nosnippet>1039</a>
-<a href=#1040 id=1040 data-nosnippet>1040</a>    <span class="kw">impl </span>AsRawSocket <span class="kw">for </span>TcpSocket {
-<a href=#1041 id=1041 data-nosnippet>1041</a>        <span class="kw">fn </span>as_raw_socket(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawSocket {
-<a href=#1042 id=1042 data-nosnippet>1042</a>            <span class="self">self</span>.inner.as_raw_socket()
-<a href=#1043 id=1043 data-nosnippet>1043</a>        }
-<a href=#1044 id=1044 data-nosnippet>1044</a>    }
-<a href=#1045 id=1045 data-nosnippet>1045</a>
-<a href=#1046 id=1046 data-nosnippet>1046</a>    <span class="kw">impl </span>AsSocket <span class="kw">for </span>TcpSocket {
-<a href=#1047 id=1047 data-nosnippet>1047</a>        <span class="kw">fn </span>as_socket(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedSocket&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#1048 id=1048 data-nosnippet>1048</a>            <span class="kw">unsafe </span>{ BorrowedSocket::borrow_raw(<span class="self">self</span>.as_raw_socket()) }
-<a href=#1049 id=1049 data-nosnippet>1049</a>        }
-<a href=#1050 id=1050 data-nosnippet>1050</a>    }
-<a href=#1051 id=1051 data-nosnippet>1051</a>
-<a href=#1052 id=1052 data-nosnippet>1052</a>    <span class="kw">impl </span>FromRawSocket <span class="kw">for </span>TcpSocket {
-<a href=#1053 id=1053 data-nosnippet>1053</a>        <span class="doccomment">/// Converts a `RawSocket` to a `TcpStream`.
-<a href=#1054 id=1054 data-nosnippet>1054</a>        ///
-<a href=#1055 id=1055 data-nosnippet>1055</a>        /// # Notes
-<a href=#1056 id=1056 data-nosnippet>1056</a>        ///
-<a href=#1057 id=1057 data-nosnippet>1057</a>        /// The caller is responsible for ensuring that the socket is in
-<a href=#1058 id=1058 data-nosnippet>1058</a>        /// non-blocking mode.
-<a href=#1059 id=1059 data-nosnippet>1059</a>        </span><span class="kw">unsafe fn </span>from_raw_socket(socket: RawSocket) -&gt; TcpSocket {
-<a href=#1060 id=1060 data-nosnippet>1060</a>            <span class="kw">let </span>inner = <span class="kw">unsafe </span>{ socket2::Socket::from_raw_socket(socket) };
-<a href=#1061 id=1061 data-nosnippet>1061</a>            TcpSocket { inner }
-<a href=#1062 id=1062 data-nosnippet>1062</a>        }
-<a href=#1063 id=1063 data-nosnippet>1063</a>    }
-<a href=#1064 id=1064 data-nosnippet>1064</a>}
+<a href=#907 id=907 data-nosnippet>907</a>        <span class="self">self</span>.inner
+<a href=#908 id=908 data-nosnippet>908</a>            .listen(i32::try_from(backlog).unwrap_or(i32::MAX))<span class="question-mark">?</span>;
+<a href=#909 id=909 data-nosnippet>909</a>        <span class="attr">#[cfg(not(windows))]
+<a href=#910 id=910 data-nosnippet>910</a>        </span><span class="kw">let </span>mio = {
+<a href=#911 id=911 data-nosnippet>911</a>            <span class="kw">use </span>std::os::fd::{FromRawFd, IntoRawFd};
+<a href=#912 id=912 data-nosnippet>912</a>
+<a href=#913 id=913 data-nosnippet>913</a>            <span class="kw">let </span>raw_fd = <span class="self">self</span>.inner.into_raw_fd();
+<a href=#914 id=914 data-nosnippet>914</a>            <span class="kw">unsafe </span>{ mio::net::TcpListener::from_raw_fd(raw_fd) }
+<a href=#915 id=915 data-nosnippet>915</a>        };
+<a href=#916 id=916 data-nosnippet>916</a>
+<a href=#917 id=917 data-nosnippet>917</a>        <span class="attr">#[cfg(windows)]
+<a href=#918 id=918 data-nosnippet>918</a>        </span><span class="kw">let </span>mio = {
+<a href=#919 id=919 data-nosnippet>919</a>            <span class="kw">use </span>std::os::windows::io::{FromRawSocket, IntoRawSocket};
+<a href=#920 id=920 data-nosnippet>920</a>
+<a href=#921 id=921 data-nosnippet>921</a>            <span class="kw">let </span>raw_socket = <span class="self">self</span>.inner.into_raw_socket();
+<a href=#922 id=922 data-nosnippet>922</a>            <span class="kw">unsafe </span>{ mio::net::TcpListener::from_raw_socket(raw_socket) }
+<a href=#923 id=923 data-nosnippet>923</a>        };
+<a href=#924 id=924 data-nosnippet>924</a>
+<a href=#925 id=925 data-nosnippet>925</a>        TcpListener::new(mio)
+<a href=#926 id=926 data-nosnippet>926</a>    }
+<a href=#927 id=927 data-nosnippet>927</a>
+<a href=#928 id=928 data-nosnippet>928</a>    <span class="doccomment">/// Converts a [`std::net::TcpStream`] into a `TcpSocket`. The provided
+<a href=#929 id=929 data-nosnippet>929</a>    /// socket must not have been connected prior to calling this function. This
+<a href=#930 id=930 data-nosnippet>930</a>    /// function is typically used together with crates such as [`socket2`] to
+<a href=#931 id=931 data-nosnippet>931</a>    /// configure socket options that are not available on `TcpSocket`.
+<a href=#932 id=932 data-nosnippet>932</a>    ///
+<a href=#933 id=933 data-nosnippet>933</a>    /// [`std::net::TcpStream`]: struct@std::net::TcpStream
+<a href=#934 id=934 data-nosnippet>934</a>    /// [`socket2`]: https://docs.rs/socket2/
+<a href=#935 id=935 data-nosnippet>935</a>    ///
+<a href=#936 id=936 data-nosnippet>936</a>    /// # Notes
+<a href=#937 id=937 data-nosnippet>937</a>    ///
+<a href=#938 id=938 data-nosnippet>938</a>    /// The caller is responsible for ensuring that the socket is in
+<a href=#939 id=939 data-nosnippet>939</a>    /// non-blocking mode. Otherwise all I/O operations on the socket
+<a href=#940 id=940 data-nosnippet>940</a>    /// will block the thread, which will cause unexpected behavior.
+<a href=#941 id=941 data-nosnippet>941</a>    /// Non-blocking mode can be set using [`set_nonblocking`].
+<a href=#942 id=942 data-nosnippet>942</a>    ///
+<a href=#943 id=943 data-nosnippet>943</a>    /// [`set_nonblocking`]: std::net::TcpStream::set_nonblocking
+<a href=#944 id=944 data-nosnippet>944</a>    ///
+<a href=#945 id=945 data-nosnippet>945</a>    /// # Examples
+<a href=#946 id=946 data-nosnippet>946</a>    ///
+<a href=#947 id=947 data-nosnippet>947</a>    /// ```
+<a href=#948 id=948 data-nosnippet>948</a>    /// use tokio::net::TcpSocket;
+<a href=#949 id=949 data-nosnippet>949</a>    /// use socket2::{Domain, Socket, Type};
+<a href=#950 id=950 data-nosnippet>950</a>    ///
+<a href=#951 id=951 data-nosnippet>951</a>    /// #[tokio::main]
+<a href=#952 id=952 data-nosnippet>952</a>    /// async fn main() -&gt; std::io::Result&lt;()&gt; {
+<a href=#953 id=953 data-nosnippet>953</a>    ///     let socket2_socket = Socket::new(Domain::IPV4, Type::STREAM, None)?;
+<a href=#954 id=954 data-nosnippet>954</a>    ///     socket2_socket.set_nonblocking(true)?;
+<a href=#955 id=955 data-nosnippet>955</a>    ///
+<a href=#956 id=956 data-nosnippet>956</a>    ///     let socket = TcpSocket::from_std_stream(socket2_socket.into());
+<a href=#957 id=957 data-nosnippet>957</a>    ///
+<a href=#958 id=958 data-nosnippet>958</a>    ///     Ok(())
+<a href=#959 id=959 data-nosnippet>959</a>    /// }
+<a href=#960 id=960 data-nosnippet>960</a>    /// ```
+<a href=#961 id=961 data-nosnippet>961</a>    </span><span class="kw">pub fn </span>from_std_stream(std_stream: std::net::TcpStream) -&gt; TcpSocket {
+<a href=#962 id=962 data-nosnippet>962</a>        <span class="attr">#[cfg(not(windows))]
+<a href=#963 id=963 data-nosnippet>963</a>        </span>{
+<a href=#964 id=964 data-nosnippet>964</a>            <span class="kw">use </span>std::os::fd::{FromRawFd, IntoRawFd};
+<a href=#965 id=965 data-nosnippet>965</a>
+<a href=#966 id=966 data-nosnippet>966</a>            <span class="kw">let </span>raw_fd = std_stream.into_raw_fd();
+<a href=#967 id=967 data-nosnippet>967</a>            <span class="kw">unsafe </span>{ TcpSocket::from_raw_fd(raw_fd) }
+<a href=#968 id=968 data-nosnippet>968</a>        }
+<a href=#969 id=969 data-nosnippet>969</a>
+<a href=#970 id=970 data-nosnippet>970</a>        <span class="attr">#[cfg(windows)]
+<a href=#971 id=971 data-nosnippet>971</a>        </span>{
+<a href=#972 id=972 data-nosnippet>972</a>            <span class="kw">use </span>std::os::windows::io::{FromRawSocket, IntoRawSocket};
+<a href=#973 id=973 data-nosnippet>973</a>
+<a href=#974 id=974 data-nosnippet>974</a>            <span class="kw">let </span>raw_socket = std_stream.into_raw_socket();
+<a href=#975 id=975 data-nosnippet>975</a>            <span class="kw">unsafe </span>{ TcpSocket::from_raw_socket(raw_socket) }
+<a href=#976 id=976 data-nosnippet>976</a>        }
+<a href=#977 id=977 data-nosnippet>977</a>    }
+<a href=#978 id=978 data-nosnippet>978</a>}
+<a href=#979 id=979 data-nosnippet>979</a>
+<a href=#980 id=980 data-nosnippet>980</a><span class="kw">fn </span>convert_address(address: socket2::SockAddr) -&gt; io::Result&lt;SocketAddr&gt; {
+<a href=#981 id=981 data-nosnippet>981</a>    <span class="kw">match </span>address.as_socket() {
+<a href=#982 id=982 data-nosnippet>982</a>        <span class="prelude-val">Some</span>(address) =&gt; <span class="prelude-val">Ok</span>(address),
+<a href=#983 id=983 data-nosnippet>983</a>        <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(io::Error::new(
+<a href=#984 id=984 data-nosnippet>984</a>            io::ErrorKind::InvalidInput,
+<a href=#985 id=985 data-nosnippet>985</a>            <span class="string">"invalid address family (not IPv4 or IPv6)"</span>,
+<a href=#986 id=986 data-nosnippet>986</a>        )),
+<a href=#987 id=987 data-nosnippet>987</a>    }
+<a href=#988 id=988 data-nosnippet>988</a>}
+<a href=#989 id=989 data-nosnippet>989</a>
+<a href=#990 id=990 data-nosnippet>990</a><span class="kw">impl </span>fmt::Debug <span class="kw">for </span>TcpSocket {
+<a href=#991 id=991 data-nosnippet>991</a>    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, fmt: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; fmt::Result {
+<a href=#992 id=992 data-nosnippet>992</a>        <span class="self">self</span>.inner.fmt(fmt)
+<a href=#993 id=993 data-nosnippet>993</a>    }
+<a href=#994 id=994 data-nosnippet>994</a>}
+<a href=#995 id=995 data-nosnippet>995</a>
+<a href=#996 id=996 data-nosnippet>996</a><span class="comment">// These trait implementations can't be build on Windows, so we completely
+<a href=#997 id=997 data-nosnippet>997</a>// ignore them, even when building documentation.
+<a href=#998 id=998 data-nosnippet>998</a></span><span class="attr">#[cfg(any(unix, target_os = <span class="string">"wasi"</span>))]
+<a href=#999 id=999 data-nosnippet>999</a></span><span class="macro">cfg_unix_or_wasi!</span> {
+<a href=#1000 id=1000 data-nosnippet>1000</a>    <span class="kw">impl </span>AsRawFd <span class="kw">for </span>TcpSocket {
+<a href=#1001 id=1001 data-nosnippet>1001</a>        <span class="kw">fn </span>as_raw_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawFd {
+<a href=#1002 id=1002 data-nosnippet>1002</a>            <span class="self">self</span>.inner.as_raw_fd()
+<a href=#1003 id=1003 data-nosnippet>1003</a>        }
+<a href=#1004 id=1004 data-nosnippet>1004</a>    }
+<a href=#1005 id=1005 data-nosnippet>1005</a>
+<a href=#1006 id=1006 data-nosnippet>1006</a>    <span class="kw">impl </span>AsFd <span class="kw">for </span>TcpSocket {
+<a href=#1007 id=1007 data-nosnippet>1007</a>        <span class="kw">fn </span>as_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedFd&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1008 id=1008 data-nosnippet>1008</a>            <span class="kw">unsafe </span>{ BorrowedFd::borrow_raw(<span class="self">self</span>.as_raw_fd()) }
+<a href=#1009 id=1009 data-nosnippet>1009</a>        }
+<a href=#1010 id=1010 data-nosnippet>1010</a>    }
+<a href=#1011 id=1011 data-nosnippet>1011</a>
+<a href=#1012 id=1012 data-nosnippet>1012</a>    <span class="kw">impl </span>FromRawFd <span class="kw">for </span>TcpSocket {
+<a href=#1013 id=1013 data-nosnippet>1013</a>        <span class="doccomment">/// Converts a `RawFd` to a `TcpSocket`.
+<a href=#1014 id=1014 data-nosnippet>1014</a>        ///
+<a href=#1015 id=1015 data-nosnippet>1015</a>        /// # Notes
+<a href=#1016 id=1016 data-nosnippet>1016</a>        ///
+<a href=#1017 id=1017 data-nosnippet>1017</a>        /// The caller is responsible for ensuring that the socket is in
+<a href=#1018 id=1018 data-nosnippet>1018</a>        /// non-blocking mode.
+<a href=#1019 id=1019 data-nosnippet>1019</a>        </span><span class="kw">unsafe fn </span>from_raw_fd(fd: RawFd) -&gt; TcpSocket {
+<a href=#1020 id=1020 data-nosnippet>1020</a>            <span class="comment">// Safety: exactly the same safety requirements as the
+<a href=#1021 id=1021 data-nosnippet>1021</a>            // `FromRawFd::from_raw_fd` trait method.
+<a href=#1022 id=1022 data-nosnippet>1022</a>            </span><span class="kw">let </span>inner = <span class="kw">unsafe </span>{ socket2::Socket::from_raw_fd(fd) };
+<a href=#1023 id=1023 data-nosnippet>1023</a>            TcpSocket { inner }
+<a href=#1024 id=1024 data-nosnippet>1024</a>        }
+<a href=#1025 id=1025 data-nosnippet>1025</a>    }
+<a href=#1026 id=1026 data-nosnippet>1026</a>
+<a href=#1027 id=1027 data-nosnippet>1027</a>    <span class="kw">impl </span>IntoRawFd <span class="kw">for </span>TcpSocket {
+<a href=#1028 id=1028 data-nosnippet>1028</a>        <span class="kw">fn </span>into_raw_fd(<span class="self">self</span>) -&gt; RawFd {
+<a href=#1029 id=1029 data-nosnippet>1029</a>            <span class="self">self</span>.inner.into_raw_fd()
+<a href=#1030 id=1030 data-nosnippet>1030</a>        }
+<a href=#1031 id=1031 data-nosnippet>1031</a>    }
+<a href=#1032 id=1032 data-nosnippet>1032</a>}
+<a href=#1033 id=1033 data-nosnippet>1033</a>
+<a href=#1034 id=1034 data-nosnippet>1034</a><span class="macro">cfg_windows!</span> {
+<a href=#1035 id=1035 data-nosnippet>1035</a>    <span class="kw">impl </span>IntoRawSocket <span class="kw">for </span>TcpSocket {
+<a href=#1036 id=1036 data-nosnippet>1036</a>        <span class="kw">fn </span>into_raw_socket(<span class="self">self</span>) -&gt; RawSocket {
+<a href=#1037 id=1037 data-nosnippet>1037</a>            <span class="self">self</span>.inner.into_raw_socket()
+<a href=#1038 id=1038 data-nosnippet>1038</a>        }
+<a href=#1039 id=1039 data-nosnippet>1039</a>    }
+<a href=#1040 id=1040 data-nosnippet>1040</a>
+<a href=#1041 id=1041 data-nosnippet>1041</a>    <span class="kw">impl </span>AsRawSocket <span class="kw">for </span>TcpSocket {
+<a href=#1042 id=1042 data-nosnippet>1042</a>        <span class="kw">fn </span>as_raw_socket(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RawSocket {
+<a href=#1043 id=1043 data-nosnippet>1043</a>            <span class="self">self</span>.inner.as_raw_socket()
+<a href=#1044 id=1044 data-nosnippet>1044</a>        }
+<a href=#1045 id=1045 data-nosnippet>1045</a>    }
+<a href=#1046 id=1046 data-nosnippet>1046</a>
+<a href=#1047 id=1047 data-nosnippet>1047</a>    <span class="kw">impl </span>AsSocket <span class="kw">for </span>TcpSocket {
+<a href=#1048 id=1048 data-nosnippet>1048</a>        <span class="kw">fn </span>as_socket(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BorrowedSocket&lt;<span class="lifetime">'_</span>&gt; {
+<a href=#1049 id=1049 data-nosnippet>1049</a>            <span class="kw">unsafe </span>{ BorrowedSocket::borrow_raw(<span class="self">self</span>.as_raw_socket()) }
+<a href=#1050 id=1050 data-nosnippet>1050</a>        }
+<a href=#1051 id=1051 data-nosnippet>1051</a>    }
+<a href=#1052 id=1052 data-nosnippet>1052</a>
+<a href=#1053 id=1053 data-nosnippet>1053</a>    <span class="kw">impl </span>FromRawSocket <span class="kw">for </span>TcpSocket {
+<a href=#1054 id=1054 data-nosnippet>1054</a>        <span class="doccomment">/// Converts a `RawSocket` to a `TcpStream`.
+<a href=#1055 id=1055 data-nosnippet>1055</a>        ///
+<a href=#1056 id=1056 data-nosnippet>1056</a>        /// # Notes
+<a href=#1057 id=1057 data-nosnippet>1057</a>        ///
+<a href=#1058 id=1058 data-nosnippet>1058</a>        /// The caller is responsible for ensuring that the socket is in
+<a href=#1059 id=1059 data-nosnippet>1059</a>        /// non-blocking mode.
+<a href=#1060 id=1060 data-nosnippet>1060</a>        </span><span class="kw">unsafe fn </span>from_raw_socket(socket: RawSocket) -&gt; TcpSocket {
+<a href=#1061 id=1061 data-nosnippet>1061</a>            <span class="kw">let </span>inner = <span class="kw">unsafe </span>{ socket2::Socket::from_raw_socket(socket) };
+<a href=#1062 id=1062 data-nosnippet>1062</a>            TcpSocket { inner }
+<a href=#1063 id=1063 data-nosnippet>1063</a>        }
+<a href=#1064 id=1064 data-nosnippet>1064</a>    }
+<a href=#1065 id=1065 data-nosnippet>1065</a>}
 </code></pre></div></section></main></body></html>

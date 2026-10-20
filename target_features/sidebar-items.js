@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["CURRENT_TARGET"],"enum":["Architecture"],"mod":["docs"],"struct":["Feature","FeaturesIter","Target","UnknownCpu","UnknownFeature"],"trait":["SimdType"]};
