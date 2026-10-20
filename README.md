@@ -131,8 +131,7 @@ Create an upload
 
 **Request headers:**
 
-- `Content-Type` **(required)** - the mime type (file format) of the file. Note that
-  it will be ignored if the file is found to be UTF-8 plaintext.
+- `Content-Type` **(required)** - the mime type (file format) of the file.
 - `Bobashare-Expiry` *(optional)* - duration until the upload should expire
   - specify `0` for no expiry
   - examples (see
